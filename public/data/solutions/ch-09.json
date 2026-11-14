@@ -1,0 +1,353 @@
+[
+  {
+    "seq": 148,
+    "whyNext": "Entry to Chapter 9 (Binary Search Tree): BST invariant left < root < right enables binary search in tree.",
+    "brute": {
+      "idea": "Blind tree traversal searching both children ignoring the BST ordering property.",
+      "steps": [
+        "Check if root == null or root.val == val.",
+        "Recurse left child; if found return.",
+        "Recurse right child."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "whySlow": "Searches both branches instead of using BST property to prune one branch.",
+      "code": {
+        "java": "class Solution {\n    public TreeNode searchBST(TreeNode root, int val) {\n        if (root == null || root.val == val) return root;\n        TreeNode left = searchBST(root.left, val);\n        if (left != null) return left;\n        return searchBST(root.right, val);\n    }\n}",
+        "python": "class Solution:\n    def searchBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        if not root or root.val == val:\n            return root\n        left = self.searchBST(root.left, val)\n        return left if left else self.searchBST(root.right, val)"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative BST search: if val < cur.val go left, if val > cur.val go right; achieves O(1) extra space.",
+      "steps": [
+        "While cur != null and cur.val != val:",
+        "cur = (val < cur.val) ? cur.left : cur.right.",
+        "Return cur."
+      ],
+      "time": "O(h)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode searchBST(TreeNode root, int val) {\n        TreeNode cur = root;\n        while (cur != null && cur.val != val) {\n            cur = (val < cur.val) ? cur.left : cur.right;\n        }\n        return cur;\n    }\n}",
+        "python": "class Solution:\n    def searchBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        cur = root\n        while cur and cur.val != val:\n            cur = cur.left if val < cur.val else cur.right\n        return cur"
+      }
+    },
+    "hints": [
+      "What is the base case when reaching a null node or leaf, and how do results from the left and right subtrees combine?.",
+      "Apply Depth-First Search DFS / Tree Traversal. This achieves O h time and O 1 auxiliary space.",
+      "Handle null nodes with a base value, recursively compute the result for child subproblems, and combine their returns into the answer for the current root. In detail: While cur is not equal to null and cur.val is not equal to val:. Then cur = val is less than cur.val ? the left child of cur : the right child of cur."
+    ]
+  },
+  {
+    "seq": 149,
+    "whyNext": "BST property validation: every node must satisfy minVal < node.val < maxVal across its entire ancestor chain.",
+    "brute": {
+      "idea": "For every node, check that max of left subtree < node.val and min of right subtree > node.val.",
+      "steps": [
+        "Find maxValue in left subtree and minValue in right subtree.",
+        "Verify leftMax < node.val < rightMin.",
+        "Recurse for children."
+      ],
+      "time": "O(n^2)",
+      "space": "O(h)",
+      "whySlow": "Recalculates subtree minimums and maximums repeatedly at each level.",
+      "code": {
+        "java": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n        if (root == null) return true;\n        if (root.left != null && maxValue(root.left) >= root.val) return false;\n        if (root.right != null && minValue(root.right) <= root.val) return false;\n        return isValidBST(root.left) && isValidBST(root.right);\n    }\n    private long maxValue(TreeNode node) {\n        if (node == null) return Long.MIN_VALUE;\n        return Math.max(node.val, Math.max(maxValue(node.left), maxValue(node.right)));\n    }\n    private long minValue(TreeNode node) {\n        if (node == null) return Long.MAX_VALUE;\n        return Math.min(node.val, Math.min(minValue(node.left), minValue(node.right)));\n    }\n}",
+        "python": "class Solution:\n    def isValidBST(self, root: TreeNode | None) -> bool:\n        if not root: return True\n        def max_val(node):\n            if not node: return float('-inf')\n            return max(node.val, max_val(node.left), max_val(node.right))\n        def min_val(node):\n            if not node: return float('inf')\n            return min(node.val, min_val(node.left), min_val(node.right))\n        if root.left and max_val(root.left) >= root.val: return False\n        if root.right and min_val(root.right) <= root.val: return False\n        return self.isValidBST(root.left) and self.isValidBST(root.right)"
+      }
+    },
+    "optimal": {
+      "idea": "Top-down recursion passing valid range (lower, upper); every node must satisfy lower < node.val < upper.",
+      "steps": [
+        "Helper validate(node, Long min, Long max).",
+        "If node == null return true.",
+        "If node.val <= min || node.val >= max return false.",
+        "Return validate(node.left, min, node.val) && validate(node.right, node.val, max)."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n        return validate(root, null, null);\n    }\n    private boolean validate(TreeNode node, Integer min, Integer max) {\n        if (node == null) return true;\n        if (min != null && node.val <= min) return false;\n        if (max != null && node.val >= max) return false;\n        return validate(node.left, min, node.val) && validate(node.right, node.val, max);\n    }\n}",
+        "python": "class Solution:\n    def isValidBST(self, root: TreeNode | None) -> bool:\n        def validate(node: TreeNode | None, low: float, high: float) -> bool:\n            if not node:\n                return True\n            if not (low < node.val < high):\n                return False\n            return validate(node.left, low, node.val) and validate(node.right, node.val, high)\n        return validate(root, float('-inf'), float('inf'))"
+      }
+    },
+    "hints": [
+      "What is the base case when reaching a null node or leaf, and how do results from the left and right subtrees combine?.",
+      "Apply Depth-First Search DFS / Tree Traversal. This achieves O n time and O h auxiliary space.",
+      "Handle null nodes with a base value, recursively compute the result for child subproblems, and combine their returns into the answer for the current root. In detail: Helper validate node, Long min, Long max . Then if node is equal to null return true."
+    ]
+  },
+  {
+    "seq": 150,
+    "whyNext": "BST insertion: traverse until finding null position maintaining BST invariant, attach new TreeNode(val).",
+    "brute": {
+      "idea": "Collect all nodes into a sorted list, insert val into list, and rebuild balanced BST.",
+      "steps": [
+        "Inorder traversal to get sorted list.",
+        "Insert val in sorted order.",
+        "Reconstruct BST from sorted list."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Allocates array and completely rebuilds tree instead of inserting at a leaf in O(h).",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public TreeNode insertIntoBST(TreeNode root, int val) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, list);\n        int pos = 0;\n        while (pos < list.size() && list.get(pos) < val) pos++;\n        list.add(pos, val);\n        return build(list, 0, list.size() - 1);\n    }\n    private void inorder(TreeNode node, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, list);\n        list.add(node.val);\n        inorder(node.right, list);\n    }\n    private TreeNode build(List<Integer> list, int l, int r) {\n        if (l > r) return null;\n        int m = l + (r - l) / 2;\n        TreeNode node = new TreeNode(list.get(m));\n        node.left = build(list, l, m - 1);\n        node.right = build(list, m + 1, r);\n        return node;\n    }\n}",
+        "python": "class Solution:\n    def insertIntoBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        vals = []\n        def inorder(node):\n            if not node: return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        import bisect\n        bisect.insort(vals, val)\n        def build(l, r):\n            if l > r: return None\n            m = (l + r) // 2\n            node = TreeNode(vals[m])\n            node.left = build(l, m - 1)\n            node.right = build(m + 1, r)\n            return node\n        return build(0, len(vals) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative BST insertion: navigate down tree comparing val with cur.val; attach new leaf when target child is null.",
+      "steps": [
+        "If root == null return new TreeNode(val).",
+        "cur = root.",
+        "While true: if val < cur.val: if cur.left == null { cur.left = new TreeNode(val); break; } else cur = cur.left.",
+        "Else: if cur.right == null { cur.right = new TreeNode(val); break; } else cur = cur.right.",
+        "Return root."
+      ],
+      "time": "O(h)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode insertIntoBST(TreeNode root, int val) {\n        if (root == null) return new TreeNode(val);\n        TreeNode cur = root;\n        while (true) {\n            if (val < cur.val) {\n                if (cur.left == null) {\n                    cur.left = new TreeNode(val);\n                    break;\n                }\n                cur = cur.left;\n            } else {\n                if (cur.right == null) {\n                    cur.right = new TreeNode(val);\n                    break;\n                }\n                cur = cur.right;\n            }\n        }\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def insertIntoBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        if not root:\n            return TreeNode(val)\n        cur = root\n        while True:\n            if val < cur.val:\n                if not cur.left:\n                    cur.left = TreeNode(val)\n                    break\n                cur = cur.left\n            else:\n                if not cur.right:\n                    cur.right = TreeNode(val)\n                    break\n                cur = cur.right\n        return root"
+      }
+    },
+    "hints": [
+      "What is the base case when reaching a null node or leaf, and how do results from the left and right subtrees combine?.",
+      "Apply Depth-First Search DFS / Tree Traversal. This achieves O h time and O 1 auxiliary space.",
+      "Handle null nodes with a base value, recursively compute the result for child subproblems, and combine their returns into the answer for the current root. In detail: If root is equal to null return new TreeNode val . Then cur = root."
+    ]
+  },
+  {
+    "seq": 151,
+    "whyNext": "Builds on BST insertion: 3 cases when deleting a node (leaf, one child, two children replaced by inorder successor).",
+    "brute": {
+      "idea": "Perform inorder traversal into list, remove key, and rebuild balanced BST from remaining elements.",
+      "steps": [
+        "Inorder traversal collecting all values except key.",
+        "Reconstruct balanced BST from sorted array."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Allocates array and rebuilds whole tree instead of rewiring pointers at deletion site in O(h).",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public TreeNode deleteNode(TreeNode root, int key) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, key, list);\n        return build(list, 0, list.size() - 1);\n    }\n    private void inorder(TreeNode node, int key, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, key, list);\n        if (node.val != key) list.add(node.val);\n        inorder(node.right, key, list);\n    }\n    private TreeNode build(List<Integer> list, int l, int r) {\n        if (l > r) return null;\n        int m = l + (r - l) / 2;\n        TreeNode node = new TreeNode(list.get(m));\n        node.left = build(list, l, m - 1);\n        node.right = build(list, m + 1, r);\n        return node;\n    }\n}",
+        "python": "class Solution:\n    def deleteNode(self, root: TreeNode | None, key: int) -> TreeNode | None:\n        vals = []\n        def inorder(node):\n            if not node: return\n            inorder(node.left)\n            if node.val != key: vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        def build(l, r):\n            if l > r: return None\n            m = (l + r) // 2\n            node = TreeNode(vals[m])\n            node.left = build(l, m - 1)\n            node.right = build(m + 1, r)\n            return node\n        return build(0, len(vals) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Recursive BST deletion: search key; if node has 2 children, replace val with min of right subtree and delete successor.",
+      "steps": [
+        "If root == null return null.",
+        "If key < root.val, root.left = deleteNode(root.left, key).",
+        "Else if key > root.val, root.right = deleteNode(root.right, key).",
+        "Else: if left is null return right; if right is null return left.",
+        "Find min in right subtree, copy val to root.val, root.right = deleteNode(root.right, root.val)."
+      ],
+      "time": "O(h)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode deleteNode(TreeNode root, int key) {\n        if (root == null) return null;\n        if (key < root.val) {\n            root.left = deleteNode(root.left, key);\n        } else if (key > root.val) {\n            root.right = deleteNode(root.right, key);\n        } else {\n            if (root.left == null) return root.right;\n            if (root.right == null) return root.left;\n            TreeNode successor = root.right;\n            while (successor.left != null) successor = successor.left;\n            root.val = successor.val;\n            root.right = deleteNode(root.right, successor.val);\n        }\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def deleteNode(self, root: TreeNode | None, key: int) -> TreeNode | None:\n        if not root:\n            return None\n        if key < root.val:\n            root.left = self.deleteNode(root.left, key)\n        elif key > root.val:\n            root.right = self.deleteNode(root.right, key)\n        else:\n            if not root.left: return root.right\n            if not root.right: return root.left\n            succ = root.right\n            while succ.left:\n                succ = succ.left\n            root.val = succ.val\n            root.right = self.deleteNode(root.right, succ.val)\n        return root"
+      }
+    },
+    "hints": [
+      "What is the base case when reaching a null node or leaf, and how do results from the left and right subtrees combine?.",
+      "Apply Depth-First Search DFS / Tree Traversal. This achieves O h time and O h auxiliary space.",
+      "Handle null nodes with a base value, recursively compute the result for child subproblems, and combine their returns into the answer for the current root. In detail: If root is equal to null return null. Then if key is less than root.val, the left child of root = deletenode the left child of root, key ."
+    ]
+  },
+  {
+    "seq": 152,
+    "whyNext": "Inorder traversal of BST yields sorted values in ascending order: kth visited node is kth smallest.",
+    "brute": {
+      "idea": "Full inorder traversal into an ArrayList, then return element at index k - 1.",
+      "steps": [
+        "Run recursive inorder traversal collecting all values.",
+        "Return list.get(k - 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Stores all n elements in memory instead of stopping at the kth node.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int kthSmallest(TreeNode root, int k) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, list);\n        return list.get(k - 1);\n    }\n    private void inorder(TreeNode node, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, list);\n        list.add(node.val);\n        inorder(node.right, list);\n    }\n}",
+        "python": "class Solution:\n    def kthSmallest(self, root: TreeNode | None, k: int) -> int:\n        vals = []\n        def inorder(node):\n            if not node: return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        return vals[k - 1]"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative inorder with stack: stop and return immediately as soon as k nodes have been popped.",
+      "steps": [
+        "Maintain explicit stack and cur pointer starting at root.",
+        "Push all left descendants.",
+        "Pop node, decrement k.",
+        "If k == 0, return node.val.",
+        "Move cur = node.right."
+      ],
+      "time": "O(h + k)",
+      "space": "O(h)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int kthSmallest(TreeNode root, int k) {\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        TreeNode cur = root;\n        while (cur != null || !stack.isEmpty()) {\n            while (cur != null) {\n                stack.push(cur);\n                cur = cur.left;\n            }\n            cur = stack.pop();\n            if (--k == 0) return cur.val;\n            cur = cur.right;\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def kthSmallest(self, root: TreeNode | None, k: int) -> int:\n        stack = []\n        cur = root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            k -= 1\n            if k == 0:\n                return cur.val\n            cur = cur.right\n        return -1"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O h + k time and O h auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Maintain explicit stack and cur pointer starting at root. Then push all left descendants."
+    ]
+  },
+  {
+    "seq": 153,
+    "whyNext": "Builds on LCA of general tree: BST property allows choosing left or right child in O(1) without visiting both.",
+    "brute": {
+      "idea": "Use general binary tree LCA algorithm ignoring BST value comparisons.",
+      "steps": [
+        "Recurse left and right.",
+        "Return root if left and right both non-null."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "whySlow": "Visits both subtrees instead of pruning half the tree at each step using BST ordering.",
+      "code": {
+        "java": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        if (root == null || root == p || root == q) return root;\n        TreeNode left = lowestCommonAncestor(root.left, p, q);\n        TreeNode right = lowestCommonAncestor(root.right, p, q);\n        if (left != null && right != null) return root;\n        return left != null ? left : right;\n    }\n}",
+        "python": "class Solution:\n    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:\n        if not root or root == p or root == q:\n            return root\n        left = self.lowestCommonAncestor(root.left, p, q)\n        right = self.lowestCommonAncestor(root.right, p, q)\n        if left and right: return root\n        return left if left else right"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative BST walk: if both p and q < cur.val go left; if both > cur.val go right; otherwise cur is the split point (LCA).",
+      "steps": [
+        "While cur != null:",
+        "If p.val < cur.val && q.val < cur.val: cur = cur.left.",
+        "Else if p.val > cur.val && q.val > cur.val: cur = cur.right.",
+        "Else: return cur (split point)."
+      ],
+      "time": "O(h)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        TreeNode cur = root;\n        while (cur != null) {\n            if (p.val < cur.val && q.val < cur.val) {\n                cur = cur.left;\n            } else if (p.val > cur.val && q.val > cur.val) {\n                cur = cur.right;\n            } else {\n                return cur;\n            }\n        }\n        return null;\n    }\n}",
+        "python": "class Solution:\n    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:\n        cur = root\n        while cur:\n            if p.val < cur.val and q.val < cur.val:\n                cur = cur.left\n            elif p.val > cur.val and q.val > cur.val:\n                cur = cur.right\n            else:\n                return cur\n        return None"
+      }
+    },
+    "hints": [
+      "What is the base case when reaching a null node or leaf, and how do results from the left and right subtrees combine?.",
+      "Apply Depth-First Search DFS / Tree Traversal. This achieves O h time and O 1 auxiliary space.",
+      "Handle null nodes with a base value, recursively compute the result for child subproblems, and combine their returns into the answer for the current root. In detail: While cur is not equal to null:. Then if p.val is less than cur.val && q.val is less than cur.val: cur = the left child of cur."
+    ]
+  },
+  {
+    "seq": 154,
+    "whyNext": "Divide and conquer BST construction: picking midpoint as root guarantees height-balanced subtrees (|h_L - h_R| <= 1).",
+    "brute": {
+      "idea": "Sequentially insert elements one-by-one from left to right into a BST using insertIntoBST.",
+      "steps": [
+        "Start with empty tree.",
+        "For each number in sorted array, insert into BST."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "whySlow": "Inserting sorted elements sequentially into standard BST results in a degenerate linked list of depth n.",
+      "code": {
+        "java": "class Solution {\n    public TreeNode sortedArrayToBST(int[] nums) {\n        return build(nums, 0, nums.length - 1);\n    }\n    private TreeNode build(int[] nums, int l, int r) {\n        if (l > r) return null;\n        int m = l + (r - l) / 2;\n        TreeNode node = new TreeNode(nums[m]);\n        node.left = build(nums, l, m - 1);\n        node.right = build(nums, m + 1, r);\n        return node;\n    }\n}",
+        "python": "class Solution:\n    def sortedArrayToBST(self, nums: list[int]) -> TreeNode | None:\n        def build(l, r):\n            if l > r: return None\n            m = (l + r) // 2\n            node = TreeNode(nums[m])\n            node.left = build(l, m - 1)\n            node.right = build(m + 1, r)\n            return node\n        return build(0, len(nums) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search divide-and-conquer: mid = (l + r) / 2 is root, left subarray builds left subtree, right subarray builds right subtree.",
+      "steps": [
+        "Define helper build(nums, left, right).",
+        "Base case: if left > right return null.",
+        "mid = left + (right - left) / 2.",
+        "root = new TreeNode(nums[mid]).",
+        "root.left = build(nums, left, mid - 1); root.right = build(nums, mid + 1, right).",
+        "Return root."
+      ],
+      "time": "O(n)",
+      "space": "O(log n)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode sortedArrayToBST(int[] nums) {\n        return build(nums, 0, nums.length - 1);\n    }\n    private TreeNode build(int[] nums, int left, int right) {\n        if (left > right) return null;\n        int mid = left + (right - left) / 2;\n        TreeNode root = new TreeNode(nums[mid]);\n        root.left = build(nums, left, mid - 1);\n        root.right = build(nums, mid + 1, right);\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def sortedArrayToBST(self, nums: list[int]) -> TreeNode | None:\n        def build(left: int, right: int) -> TreeNode | None:\n            if left > right:\n                return None\n            mid = (left + right) // 2\n            root = TreeNode(nums[mid])\n            root.left = build(left, mid - 1)\n            root.right = build(mid + 1, right)\n            return root\n        return build(0, len(nums) - 1)"
+      }
+    },
+    "hints": [
+      "Look for monotonicity: can you test the midpoint of your search range and discard half of all remaining candidates on every step?.",
+      "Apply Binary Search. This achieves O n time and O log n auxiliary space.",
+      "Compute the midpoint between the search bounds, test whether it satisfies your condition, and adjust the left or right boundary accordingly to narrow the range logarithmically. In detail: Define helper build nums, left, right . Then base case: if left is greater than right return null."
+    ]
+  },
+  {
+    "seq": 155,
+    "whyNext": "Lazy evaluation of BST inorder traversal: controlled stack yields next() in O(1) amortized and O(h) space.",
+    "brute": {
+      "idea": "Flatten entire BST into a list during constructor; next() reads index pointer.",
+      "steps": [
+        "In constructor, run full inorder traversal into ArrayList.",
+        "Maintain idx pointer; next() increments idx; hasNext() checks idx < size."
+      ],
+      "time": "O(n) constructor, O(1) calls",
+      "space": "O(n)",
+      "whySlow": "Eagerly traverses and stores all n elements in memory instead of lazy O(h) space.",
+      "code": {
+        "java": "import java.util.*;\npublic class BSTIterator {\n    private List<Integer> list = new ArrayList<>();\n    private int idx = 0;\n    public BSTIterator(TreeNode root) {\n        inorder(root);\n    }\n    private void inorder(TreeNode node) {\n        if (node == null) return;\n        inorder(node.left);\n        list.add(node.val);\n        inorder(node.right);\n    }\n    public int next() {\n        return list.get(idx++);\n    }\n    public boolean hasNext() {\n        return idx < list.size();\n    }\n}",
+        "python": "class BSTIterator:\n    def __init__(self, root: TreeNode | None):\n        self.vals = []\n        self.idx = 0\n        def inorder(node):\n            if not node: return\n            inorder(node.left)\n            self.vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n\n    def next(self) -> int:\n        val = self.vals[self.idx]\n        self.idx += 1\n        return val\n\n    def hasNext(self) -> bool:\n        return self.idx < len(self.vals)"
+      }
+    },
+    "optimal": {
+      "idea": "Controlled stack simulation of inorder traversal: pushLeft on constructor and on right child in next().",
+      "steps": [
+        "Maintain stack of TreeNodes.",
+        "Helper pushLeft(node): while node != null, stack.push(node), node = node.left.",
+        "constructor: call pushLeft(root).",
+        "next(): pop node, pushLeft(node.right), return node.val.",
+        "hasNext(): return !stack.isEmpty()."
+      ],
+      "time": "O(1) amortized next, O(1) hasNext",
+      "space": "O(h)",
+      "code": {
+        "java": "import java.util.*;\npublic class BSTIterator {\n    private Deque<TreeNode> stack = new ArrayDeque<>();\n    public BSTIterator(TreeNode root) {\n        pushLeft(root);\n    }\n    public int next() {\n        TreeNode node = stack.pop();\n        if (node.right != null) {\n            pushLeft(node.right);\n        }\n        return node.val;\n    }\n    public boolean hasNext() {\n        return !stack.isEmpty();\n    }\n    private void pushLeft(TreeNode node) {\n        while (node != null) {\n            stack.push(node);\n            node = node.left;\n        }\n    }\n}",
+        "python": "class BSTIterator:\n    def __init__(self, root: TreeNode | None):\n        self.stack = []\n        self._push_left(root)\n\n    def _push_left(self, node: TreeNode | None):\n        while node:\n            self.stack.append(node)\n            node = node.left\n\n    def next(self) -> int:\n        node = self.stack.pop()\n        if node.right:\n            self._push_left(node.right)\n        return node.val\n\n    def hasNext(self) -> bool:\n        return len(self.stack) > 0"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O 1 amortized next, O 1 hasNext time and O h auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Maintain stack of TreeNodes. Then helper pushleft node : while node is not equal to null, stack.push node , node = the left child of node."
+    ]
+  },
+  {
+    "seq": 156,
+    "whyNext": "Two swapped nodes in BST create 1 or 2 inversions during inorder traversal; identify first and second swapped nodes.",
+    "brute": {
+      "idea": "Inorder traversal to collect all nodes into a list; sort values and reassign back to nodes.",
+      "steps": [
+        "Collect all nodes in inorder list.",
+        "Extract values, sort them.",
+        "Assign sorted values back to nodes in order."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "whySlow": "Allocates lists and sorts values instead of finding the 2 inverted pointers directly in O(1) space.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public void recoverTree(TreeNode root) {\n        List<TreeNode> nodes = new ArrayList<>();\n        List<Integer> vals = new ArrayList<>();\n        inorder(root, nodes, vals);\n        Collections.sort(vals);\n        for (int i = 0; i < nodes.size(); i++) {\n            nodes.get(i).val = vals.get(i);\n        }\n    }\n    private void inorder(TreeNode node, List<TreeNode> nodes, List<Integer> vals) {\n        if (node == null) return;\n        inorder(node.left, nodes, vals);\n        nodes.add(node);\n        vals.add(node.val);\n        inorder(node.right, nodes, vals);\n    }\n}",
+        "python": "class Solution:\n    def recoverTree(self, root: TreeNode | None) -> None:\n        nodes = []\n        vals = []\n        def inorder(node):\n            if not node: return\n            inorder(node.left)\n            nodes.append(node)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        vals.sort()\n        for node, val in zip(nodes, vals):\n            node.val = val"
+      }
+    },
+    "optimal": {
+      "idea": "Inorder traversal tracking prev node: first anomaly is when prev.val > cur.val (record first = prev, second = cur); subsequent anomaly updates second = cur.",
+      "steps": [
+        "Track TreeNode first = null, second = null, prev = null.",
+        "During inorder DFS: if prev != null && prev.val > cur.val:",
+        "If first == null, first = prev; second = cur.",
+        "After traversal, swap values: int temp = first.val; first.val = second.val; second.val = temp."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private TreeNode first = null;\n    private TreeNode second = null;\n    private TreeNode prev = null;\n    public void recoverTree(TreeNode root) {\n        inorder(root);\n        int temp = first.val;\n        first.val = second.val;\n        second.val = temp;\n    }\n    private void inorder(TreeNode node) {\n        if (node == null) return;\n        inorder(node.left);\n        if (prev != null && prev.val > node.val) {\n            if (first == null) first = prev;\n            second = node;\n        }\n        prev = node;\n        inorder(node.right);\n    }\n}",
+        "python": "class Solution:\n    def recoverTree(self, root: TreeNode | None) -> None:\n        first = second = prev = None\n        def inorder(node: TreeNode | None):\n            nonlocal first, second, prev\n            if not node:\n                return\n            inorder(node.left)\n            if prev and prev.val > node.val:\n                if not first:\n                    first = prev\n                second = node\n            prev = node\n            inorder(node.right)\n        inorder(root)\n        first.val, second.val = second.val, first.val"
+      }
+    },
+    "hints": [
+      "What is the base case when reaching a null node or leaf, and how do results from the left and right subtrees combine?.",
+      "Apply Depth-First Search DFS / Tree Traversal. This achieves O n time and O h auxiliary space.",
+      "Handle null nodes with a base value, recursively compute the result for child subproblems, and combine their returns into the answer for the current root. In detail: Track TreeNode first = null, second = null, prev = null. Then during inorder dfs: if prev is not equal to null && prev.val is greater than cur.val:."
+    ]
+  }
+]

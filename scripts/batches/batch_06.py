@@ -1,0 +1,858 @@
+# Batch 6: Questions 126 to 150
+
+def get_batch():
+    return [
+    {
+        "seq": 126,
+        "whyNext": "Builds on Maximum Depth: checks whether difference between heights of left and right subtrees is at most 1 at every node.",
+        "brute": {
+            "idea": "For every node, calculate height(node.left) and height(node.right) and verify diff <= 1.",
+            "steps": [
+                "Recursively compute depth of left and right children.",
+                "Check |depth(left) - depth(right)| <= 1.",
+                "Recurse for left and right children."
+            ],
+            "time": "O(n^2)",
+            "space": "O(h)",
+            "whySlow": "Recalculates depths of subtrees repeatedly at every ancestor node.",
+            "code": {
+                "java": "class Solution {\n    public boolean isBalanced(TreeNode root) {\n        if (root == null) return true;\n        int leftH = depth(root.left);\n        int rightH = depth(root.right);\n        if (Math.abs(leftH - rightH) > 1) return false;\n        return isBalanced(root.left) && isBalanced(root.right);\n    }\n    private int depth(TreeNode node) {\n        if (node == null) return 0;\n        return 1 + Math.max(depth(node.left), depth(node.right));\n    }\n}",
+                "python": "class Solution:\n    def isBalanced(self, root: TreeNode | None) -> bool:\n        if not root:\n            return True\n        def depth(node):\n            if not node: return 0\n            return 1 + max(depth(node.left), depth(node.right))\n        if abs(depth(root.left) - depth(root.right)) > 1:\n            return False\n        return self.isBalanced(root.left) and self.isBalanced(root.right)"
+            }
+        },
+        "optimal": {
+            "idea": "Bottom-up DFS: return height if balanced, or -1 immediately when unbalanced to short-circuit in O(n).",
+            "steps": [
+                "Define checkHeight(node): returns height or -1 if unbalanced.",
+                "If node == null return 0.",
+                "Recursively get left = checkHeight(node.left); if left == -1 return -1.",
+                "Get right = checkHeight(node.right); if right == -1 return -1.",
+                "If |left - right| > 1 return -1; else return 1 + max(left, right)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public boolean isBalanced(TreeNode root) {\n        return checkHeight(root) != -1;\n    }\n    private int checkHeight(TreeNode node) {\n        if (node == null) return 0;\n        int left = checkHeight(node.left);\n        if (left == -1) return -1;\n        int right = checkHeight(node.right);\n        if (right == -1) return -1;\n        if (Math.abs(left - right) > 1) return -1;\n        return 1 + Math.max(left, right);\n    }\n}",
+                "python": "class Solution:\n    def isBalanced(self, root: TreeNode | None) -> bool:\n        def check(node: TreeNode | None) -> int:\n            if not node:\n                return 0\n            left = check(node.left)\n            if left == -1: return -1\n            right = check(node.right)\n            if right == -1: return -1\n            if abs(left - right) > 1: return -1\n            return 1 + max(left, right)\n        return check(root) != -1"
+            }
+        }
+    },
+    {
+        "seq": 127,
+        "whyNext": "Builds on height calculation: diameter at node is left_depth + right_depth; track global maximum during post-order traversal.",
+        "brute": {
+            "idea": "For every node in the tree, calculate maxDepth(left) + maxDepth(right) and return the overall max.",
+            "steps": [
+                "Traverse every node in the tree.",
+                "At each node, call depth(node.left) + depth(node.right).",
+                "Take maximum across all nodes."
+            ],
+            "time": "O(n^2)",
+            "space": "O(h)",
+            "whySlow": "Depth is recomputed independently for all descendants, leading to quadratic running time.",
+            "code": {
+                "java": "class Solution {\n    public int diameterOfBinaryTree(TreeNode root) {\n        if (root == null) return 0;\n        int throughRoot = depth(root.left) + depth(root.right);\n        int leftD = diameterOfBinaryTree(root.left);\n        int rightD = diameterOfBinaryTree(root.right);\n        return Math.max(throughRoot, Math.max(leftD, rightD));\n    }\n    private int depth(TreeNode node) {\n        if (node == null) return 0;\n        return 1 + Math.max(depth(node.left), depth(node.right));\n    }\n}",
+                "python": "class Solution:\n    def diameterOfBinaryTree(self, root: TreeNode | None) -> int:\n        if not root:\n            return 0\n        def depth(node):\n            if not node: return 0\n            return 1 + max(depth(node.left), depth(node.right))\n        cur = depth(root.left) + depth(root.right)\n        return max(cur, self.diameterOfBinaryTree(root.left), self.diameterOfBinaryTree(root.right))"
+            }
+        },
+        "optimal": {
+            "idea": "Post-order DFS updating global diameter while returning 1 + max(left, right) height upwards.",
+            "steps": [
+                "Initialize maxDiameter = 0.",
+                "In dfs(node): if node == null return 0.",
+                "Recursively compute left = dfs(node.left), right = dfs(node.right).",
+                "Update maxDiameter = max(maxDiameter, left + right).",
+                "Return 1 + max(left, right)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    private int maxDiameter = 0;\n    public int diameterOfBinaryTree(TreeNode root) {\n        dfs(root);\n        return maxDiameter;\n    }\n    private int dfs(TreeNode node) {\n        if (node == null) return 0;\n        int left = dfs(node.left);\n        int right = dfs(node.right);\n        maxDiameter = Math.max(maxDiameter, left + right);\n        return 1 + Math.max(left, right);\n    }\n}",
+                "python": "class Solution:\n    def diameterOfBinaryTree(self, root: TreeNode | None) -> int:\n        max_d = 0\n        def dfs(node: TreeNode | None) -> int:\n            nonlocal max_d\n            if not node:\n                return 0\n            left = dfs(node.left)\n            right = dfs(node.right)\n            max_d = max(max_d, left + right)\n            return 1 + max(left, right)\n        dfs(root)\n        return max_d"
+            }
+        }
+    },
+    {
+        "seq": 128,
+        "whyNext": "Builds on Same Tree: checks if tree contains a subtree identical to subRoot at any node.",
+        "brute": {
+            "idea": "Serialize both trees with unique null markers and check if subRoot serialized string is substring of root string.",
+            "steps": [
+                "Serialize root and subRoot into comma-delimited strings with delimiters (e.g. ^val$).",
+                "Perform substring search."
+            ],
+            "time": "O(m * n)",
+            "space": "O(m + n)",
+            "whySlow": "String serialization and search requires large string allocations and delimiter care.",
+            "code": {
+                "java": "class Solution {\n    public boolean isSubtree(TreeNode root, TreeNode subRoot) {\n        StringBuilder sb1 = new StringBuilder();\n        StringBuilder sb2 = new StringBuilder();\n        serialize(root, sb1);\n        serialize(subRoot, sb2);\n        return sb1.toString().contains(sb2.toString());\n    }\n    private void serialize(TreeNode node, StringBuilder sb) {\n        if (node == null) {\n            sb.append(\",#\");\n            return;\n        }\n        sb.append(\",\").append(node.val);\n        serialize(node.left, sb);\n        serialize(node.right, sb);\n    }\n}",
+                "python": "class Solution:\n    def isSubtree(self, root: TreeNode | None, subRoot: TreeNode | None) -> bool:\n        def serialize(node: TreeNode | None) -> str:\n            if not node:\n                return \",#\"\n            return f\",{node.val}\" + serialize(node.left) + serialize(node.right)\n        return serialize(subRoot) in serialize(root)"
+            }
+        },
+        "optimal": {
+            "idea": "Recursive tree traversal: at each node check isSameTree(node, subRoot); if not, recurse on left and right subtrees.",
+            "steps": [
+                "If root == null return false.",
+                "If isSameTree(root, subRoot) return true.",
+                "Return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot)."
+            ],
+            "time": "O(m * n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public boolean isSubtree(TreeNode root, TreeNode subRoot) {\n        if (root == null) return false;\n        if (isSame(root, subRoot)) return true;\n        return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);\n    }\n    private boolean isSame(TreeNode s, TreeNode t) {\n        if (s == null && t == null) return true;\n        if (s == null || t == null || s.val != t.val) return false;\n        return isSame(s.left, t.left) && isSame(s.right, t.right);\n    }\n}",
+                "python": "class Solution:\n    def isSubtree(self, root: TreeNode | None, subRoot: TreeNode | None) -> bool:\n        if not root:\n            return False\n        def is_same(s: TreeNode | None, t: TreeNode | None) -> bool:\n            if not s and not t: return True\n            if not s or not t or s.val != t.val: return False\n            return is_same(s.left, t.left) and is_same(s.right, t.right)\n        if is_same(root, subRoot):\n            return True\n        return self.isSubtree(root.left, subRoot) or self.isSubtree(root.right, subRoot)"
+            }
+        }
+    },
+    {
+        "seq": 129,
+        "whyNext": "Root-to-leaf path tracking: subtract node.val along path; verify targetSum == 0 at leaf nodes.",
+        "brute": {
+            "idea": "Collect all root-to-leaf path sums into a list and check if targetSum is present.",
+            "steps": [
+                "Traverse all root-to-leaf paths, accumulating path sum.",
+                "At leaves, record total sum.",
+                "Check if targetSum is in accumulated sums."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Stores all path sums in auxiliary collections instead of short-circuiting.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public boolean hasPathSum(TreeNode root, int targetSum) {\n        List<Integer> sums = new ArrayList<>();\n        collectSums(root, 0, sums);\n        return sums.contains(targetSum);\n    }\n    private void collectSums(TreeNode node, int cur, List<Integer> sums) {\n        if (node == null) return;\n        cur += node.val;\n        if (node.left == null && node.right == null) {\n            sums.add(cur);\n            return;\n        }\n        collectSums(node.left, cur, sums);\n        collectSums(node.right, cur, sums);\n    }\n}",
+                "python": "class Solution:\n    def hasPathSum(self, root: TreeNode | None, targetSum: int) -> bool:\n        sums = []\n        def dfs(node, cur):\n            if not node: return\n            cur += node.val\n            if not node.left and not node.right:\n                sums.append(cur)\n                return\n            dfs(node.left, cur)\n            dfs(node.right, cur)\n        dfs(root, 0)\n        return targetSum in sums"
+            }
+        },
+        "optimal": {
+            "idea": "Short-circuit recursive DFS: decrement targetSum by node.val. At leaf, return targetSum == node.val.",
+            "steps": [
+                "If root == null return false.",
+                "If root.left == null and root.right == null, return targetSum == root.val.",
+                "Return hasPathSum(root.left, targetSum - root.val) || hasPathSum(root.right, targetSum - root.val)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public boolean hasPathSum(TreeNode root, int targetSum) {\n        if (root == null) return false;\n        if (root.left == null && root.right == null) {\n            return targetSum == root.val;\n        }\n        return hasPathSum(root.left, targetSum - root.val) ||\n               hasPathSum(root.right, targetSum - root.val);\n    }\n}",
+                "python": "class Solution:\n    def hasPathSum(self, root: TreeNode | None, targetSum: int) -> bool:\n        if not root:\n            return False\n        if not root.left and not root.right:\n            return targetSum == root.val\n        rem = targetSum - root.val\n        return self.hasPathSum(root.left, rem) or self.hasPathSum(root.right, rem)"
+            }
+        }
+    },
+    {
+        "seq": 130,
+        "whyNext": "Builds on Path Sum: must record the complete path of node values for every path equaling targetSum.",
+        "brute": {
+            "idea": "Generate all root-to-leaf paths as lists of integers; filter those that sum to targetSum.",
+            "steps": [
+                "Recursively collect all root-to-leaf paths.",
+                "Sum each path and filter paths matching targetSum."
+            ],
+            "time": "O(n * h)",
+            "space": "O(n * h)",
+            "whySlow": "Copies lists at each recursive branching point even when sum diverges.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {\n        List<List<Integer>> allPaths = new ArrayList<>();\n        getAllPaths(root, new ArrayList<>(), allPaths);\n        List<List<Integer>> res = new ArrayList<>();\n        for (List<Integer> path : allPaths) {\n            int s = 0;\n            for (int v : path) s += v;\n            if (s == targetSum) res.add(path);\n        }\n        return res;\n    }\n    private void getAllPaths(TreeNode node, List<Integer> cur, List<List<Integer>> all) {\n        if (node == null) return;\n        cur.add(node.val);\n        if (node.left == null && node.right == null) {\n            all.add(new ArrayList<>(cur));\n        } else {\n            getAllPaths(node.left, new ArrayList<>(cur), all);\n            getAllPaths(node.right, new ArrayList<>(cur), all);\n        }\n    }\n}",
+                "python": "class Solution:\n    def pathSum(self, root: TreeNode | None, targetSum: int) -> list[list[int]]:\n        all_paths = []\n        def dfs(node, path):\n            if not node: return\n            new_path = path + [node.val]\n            if not node.left and not node.right:\n                all_paths.append(new_path)\n            else:\n                dfs(node.left, new_path)\n                dfs(node.right, new_path)\n        dfs(root, [])\n        return [p for p in all_paths if sum(p) == targetSum]"
+            }
+        },
+        "optimal": {
+            "idea": "Backtracking with single path list: push node.val, recurse, save copy at leaf if target == node.val, then pop.",
+            "steps": [
+                "Maintain a single mutable path list.",
+                "At each node, append node.val.",
+                "If leaf and targetSum == node.val, append copy of path to result.",
+                "Recurse left and right with targetSum - node.val.",
+                "Pop node.val to backtrack."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {\n        List<List<Integer>> res = new ArrayList<>();\n        List<Integer> path = new ArrayList<>();\n        dfs(root, targetSum, path, res);\n        return res;\n    }\n    private void dfs(TreeNode node, int rem, List<Integer> path, List<List<Integer>> res) {\n        if (node == null) return;\n        path.add(node.val);\n        if (node.left == null && node.right == null && rem == node.val) {\n            res.add(new ArrayList<>(path));\n        } else {\n            dfs(node.left, rem - node.val, path, res);\n            dfs(node.right, rem - node.val, path, res);\n        }\n        path.remove(path.size() - 1);\n    }\n}",
+                "python": "class Solution:\n    def pathSum(self, root: TreeNode | None, targetSum: int) -> list[list[int]]:\n        res = []\n        path = []\n        def dfs(node: TreeNode | None, rem: int):\n            if not node:\n                return\n            path.append(node.val)\n            if not node.left and not node.right and rem == node.val:\n                res.append(list(path))\n            else:\n                dfs(node.left, rem - node.val)\n                dfs(node.right, rem - node.val)\n            path.pop()\n        dfs(root, targetSum)\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 131,
+        "whyNext": "Builds on root-to-leaf paths: formats paths into arrow strings 'val->val->val'.",
+        "brute": {
+            "idea": "Recursively concatenate strings with '->' at each recursive step.",
+            "steps": [
+                "At each node, create a new string appending '->' and node.val.",
+                "If leaf, add string to result list."
+            ],
+            "time": "O(n * h)",
+            "space": "O(n * h)",
+            "whySlow": "String immutability creates numerous intermediate string objects on each recursive step.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<String> binaryTreePaths(TreeNode root) {\n        List<String> res = new ArrayList<>();\n        if (root != null) dfs(root, \"\", res);\n        return res;\n    }\n    private void dfs(TreeNode node, String path, List<String> res) {\n        path += node.val;\n        if (node.left == null && node.right == null) {\n            res.add(path);\n            return;\n        }\n        if (node.left != null) dfs(node.left, path + \"->\", res);\n        if (node.right != null) dfs(node.right, path + \"->\", res);\n    }\n}",
+                "python": "class Solution:\n    def binaryTreePaths(self, root: TreeNode | None) -> list[str]:\n        res = []\n        def dfs(node: TreeNode | None, path: str):\n            if not node: return\n            path += str(node.val)\n            if not node.left and not node.right:\n                res.append(path)\n                return\n            if node.left: dfs(node.left, path + \"->\")\n            if node.right: dfs(node.right, path + \"->\")\n        if root: dfs(root, \"\")\n        return res"
+            }
+        },
+        "optimal": {
+            "idea": "Backtracking with StringBuilder: record length, append node.val, backtrack by resetting length.",
+            "steps": [
+                "Use a single StringBuilder.",
+                "Save len = sb.length(); append node.val.",
+                "If leaf, add sb.toString() to res.",
+                "Else if children exist, append '->' and recurse on left and right.",
+                "Reset sb.setLength(len) to backtrack cleanly."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<String> binaryTreePaths(TreeNode root) {\n        List<String> res = new ArrayList<>();\n        if (root == null) return res;\n        dfs(root, new StringBuilder(), res);\n        return res;\n    }\n    private void dfs(TreeNode node, StringBuilder sb, List<String> res) {\n        int len = sb.length();\n        sb.append(node.val);\n        if (node.left == null && node.right == null) {\n            res.add(sb.toString());\n        } else {\n            sb.append(\"->\");\n            if (node.left != null) dfs(node.left, sb, res);\n            if (node.right != null) dfs(node.right, sb, res);\n        }\n        sb.setLength(len);\n    }\n}",
+                "python": "class Solution:\n    def binaryTreePaths(self, root: TreeNode | None) -> list[str]:\n        res = []\n        path = []\n        def dfs(node: TreeNode | None):\n            if not node:\n                return\n            path.append(str(node.val))\n            if not node.left and not node.right:\n                res.append(\"->\".join(path))\n            else:\n                dfs(node.left)\n                dfs(node.right)\n            path.pop()\n        dfs(root)\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 132,
+        "whyNext": "Path does not need to start at root or end at leaf: prefix sum hash map technique applied to tree DFS.",
+        "brute": {
+            "idea": "For every node in the tree, run Path Sum starting from that node as the root.",
+            "steps": [
+                "At each node, call countFromNode(node, targetSum).",
+                "Recurse pathSum on node.left and node.right."
+            ],
+            "time": "O(n^2)",
+            "space": "O(h)",
+            "whySlow": "Paths are re-traversed repeatedly from every ancestor node.",
+            "code": {
+                "java": "class Solution {\n    public int pathSum(TreeNode root, int targetSum) {\n        if (root == null) return 0;\n        return countFrom(root, targetSum) + pathSum(root.left, targetSum) + pathSum(root.right, targetSum);\n    }\n    private int countFrom(TreeNode node, long rem) {\n        if (node == null) return 0;\n        int count = (rem == node.val) ? 1 : 0;\n        count += countFrom(node.left, rem - node.val);\n        count += countFrom(node.right, rem - node.val);\n        return count;\n    }\n}",
+                "python": "class Solution:\n    def pathSum(self, root: TreeNode | None, targetSum: int) -> int:\n        if not root:\n            return 0\n        def count_from(node, rem):\n            if not node: return 0\n            cnt = 1 if rem == node.val else 0\n            return cnt + count_from(node.left, rem - node.val) + count_from(node.right, rem - node.val)\n        return count_from(root, targetSum) + self.pathSum(root.left, targetSum) + self.pathSum(root.right, targetSum)"
+            }
+        },
+        "optimal": {
+            "idea": "Prefix sum hash map with backtracking: count paths ending at current node with prefixSum = curSum - targetSum in O(1).",
+            "steps": [
+                "Maintain HashMap<Long, Integer> prefixCount initialized with map.put(0L, 1).",
+                "At current node, curSum += node.val.",
+                "totalPaths += prefixCount.getOrDefault(curSum - targetSum, 0).",
+                "Put curSum into map, recurse left and right.",
+                "Backtrack: decrement prefixCount for curSum before returning."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    private int total = 0;\n    public int pathSum(TreeNode root, int targetSum) {\n        Map<Long, Integer> prefixMap = new HashMap<>();\n        prefixMap.put(0L, 1);\n        dfs(root, 0L, targetSum, prefixMap);\n        return total;\n    }\n    private void dfs(TreeNode node, long curSum, int target, Map<Long, Integer> map) {\n        if (node == null) return;\n        curSum += node.val;\n        total += map.getOrDefault(curSum - target, 0);\n        map.put(curSum, map.getOrDefault(curSum, 0) + 1);\n        dfs(node.left, curSum, target, map);\n        dfs(node.right, curSum, target, map);\n        map.put(curSum, map.get(curSum) - 1);\n    }\n}",
+                "python": "from collections import defaultdict\n\nclass Solution:\n    def pathSum(self, root: TreeNode | None, targetSum: int) -> int:\n        total = 0\n        prefix_map = defaultdict(int)\n        prefix_map[0] = 1\n        def dfs(node: TreeNode | None, cur_sum: int):\n            nonlocal total\n            if not node:\n                return\n            cur_sum += node.val\n            total += prefix_map[cur_sum - targetSum]\n            prefix_map[cur_sum] += 1\n            dfs(node.left, cur_sum)\n            dfs(node.right, cur_sum)\n            prefix_map[cur_sum] -= 1\n        dfs(root, 0)\n        return total"
+            }
+        }
+    },
+    {
+        "seq": 133,
+        "whyNext": "Path maximum tracking: node is good if node.val >= max value seen along path from root.",
+        "brute": {
+            "idea": "For every node, trace the path back to the root to verify whether node.val is the maximum.",
+            "steps": [
+                "Store parent pointers for all nodes using a hash map.",
+                "For each node, traverse backwards to root; if any ancestor > node.val, it is not good.",
+                "Count good nodes."
+            ],
+            "time": "O(n * h)",
+            "space": "O(n)",
+            "whySlow": "Tracing back to root repeatedly costs O(h) per node.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public int goodNodes(TreeNode root) {\n        List<TreeNode> all = new ArrayList<>();\n        Map<TreeNode, TreeNode> parent = new HashMap<>();\n        collect(root, null, all, parent);\n        int good = 0;\n        for (TreeNode node : all) {\n            boolean isGood = true;\n            TreeNode cur = parent.get(node);\n            while (cur != null) {\n                if (cur.val > node.val) {\n                    isGood = false;\n                    break;\n                }\n                cur = parent.get(cur);\n            }\n            if (isGood) good++;\n        }\n        return good;\n    }\n    private void collect(TreeNode node, TreeNode par, List<TreeNode> all, Map<TreeNode, TreeNode> p) {\n        if (node == null) return;\n        all.add(node);\n        p.put(node, par);\n        collect(node.left, node, all, p);\n        collect(node.right, node, all, p);\n    }\n}",
+                "python": "class Solution:\n    def goodNodes(self, root: TreeNode) -> int:\n        parent = {}\n        all_nodes = []\n        def collect(node, p):\n            if not node: return\n            all_nodes.append(node)\n            parent[node] = p\n            collect(node.left, node)\n            collect(node.right, node)\n        collect(root, None)\n        ans = 0\n        for node in all_nodes:\n            cur = parent[node]\n            good = True\n            while cur:\n                if cur.val > node.val:\n                    good = False\n                    break\n                cur = parent[cur]\n            if good: ans += 1\n        return ans"
+            }
+        },
+        "optimal": {
+            "idea": "Pass running maximum down the DFS recursion tree: if node.val >= maxVal, increment count and update maxVal.",
+            "steps": [
+                "In dfs(node, maxVal): if node == null return 0.",
+                "good = (node.val >= maxVal) ? 1 : 0.",
+                "newMax = Math.max(maxVal, node.val).",
+                "Return good + dfs(node.left, newMax) + dfs(node.right, newMax)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public int goodNodes(TreeNode root) {\n        return dfs(root, root.val);\n    }\n    private int dfs(TreeNode node, int maxVal) {\n        if (node == null) return 0;\n        int count = 0;\n        if (node.val >= maxVal) {\n            count = 1;\n            maxVal = node.val;\n        }\n        return count + dfs(node.left, maxVal) + dfs(node.right, maxVal);\n    }\n}",
+                "python": "class Solution:\n    def goodNodes(self, root: TreeNode) -> int:\n        def dfs(node: TreeNode | None, max_val: int) -> int:\n            if not node:\n                return 0\n            count = 1 if node.val >= max_val else 0\n            new_max = max(max_val, node.val)\n            return count + dfs(node.left, new_max) + dfs(node.right, new_max)\n        return dfs(root, root.val)"
+            }
+        }
+    },
+    {
+        "seq": 134,
+        "whyNext": "Builds on Diameter: max path sum can turn at any node (left_gain + val + right_gain); ignore negative subtree sums with max(0, gain).",
+        "brute": {
+            "idea": "For every node, consider it as the highest point of the path: compute max downward path from left child + node.val + right child.",
+            "steps": [
+                "For every node, calculate max path starting down left and max path starting down right.",
+                "Sum them with node.val and update overall maximum.",
+                "Recurse for all nodes in the tree."
+            ],
+            "time": "O(n^2)",
+            "space": "O(h)",
+            "whySlow": "Repeatedly computes downward subtree maximums at every ancestor.",
+            "code": {
+                "java": "class Solution {\n    public int maxPathSum(TreeNode root) {\n        if (root == null) return Integer.MIN_VALUE;\n        int leftGain = Math.max(0, maxGain(root.left));\n        int rightGain = Math.max(0, maxGain(root.right));\n        int cur = root.val + leftGain + rightGain;\n        return Math.max(cur, Math.max(maxPathSum(root.left), maxPathSum(root.right)));\n    }\n    private int maxGain(TreeNode node) {\n        if (node == null) return 0;\n        return node.val + Math.max(0, Math.max(maxGain(node.left), maxGain(node.right)));\n    }\n}",
+                "python": "class Solution:\n    def maxPathSum(self, root: TreeNode | None) -> int:\n        if not root:\n            return float('-inf')\n        def max_gain(node):\n            if not node: return 0\n            return node.val + max(0, max(max_gain(node.left), max_gain(node.right)))\n        cur = root.val + max(0, max_gain(root.left)) + max(0, max_gain(root.right))\n        return max(cur, self.maxPathSum(root.left), self.maxPathSum(root.right))"
+            }
+        },
+        "optimal": {
+            "idea": "Post-order DFS: each node returns max single branch contribution (node.val + max(0, max(left, right))) while updating global max with left + right + node.val.",
+            "steps": [
+                "Initialize maxSum = Integer.MIN_VALUE.",
+                "In dfs(node): if node == null return 0.",
+                "leftGain = Math.max(0, dfs(node.left)).",
+                "rightGain = Math.max(0, dfs(node.right)).",
+                "maxSum = Math.max(maxSum, node.val + leftGain + rightGain).",
+                "Return node.val + Math.max(leftGain, rightGain)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    private int maxSum = Integer.MIN_VALUE;\n    public int maxPathSum(TreeNode root) {\n        dfs(root);\n        return maxSum;\n    }\n    private int dfs(TreeNode node) {\n        if (node == null) return 0;\n        int left = Math.max(0, dfs(node.left));\n        int right = Math.max(0, dfs(node.right));\n        maxSum = Math.max(maxSum, node.val + left + right);\n        return node.val + Math.max(left, right);\n    }\n}",
+                "python": "class Solution:\n    def maxPathSum(self, root: TreeNode | None) -> int:\n        max_sum = float('-inf')\n        def dfs(node: TreeNode | None) -> int:\n            nonlocal max_sum\n            if not node:\n                return 0\n            left = max(0, dfs(node.left))\n            right = max(0, dfs(node.right))\n            max_sum = max(max_sum, node.val + left + right)\n            return node.val + max(left, right)\n        dfs(root)\n        return max_sum"
+            }
+        }
+    },
+    {
+        "seq": 135,
+        "whyNext": "Canonical BFS queue traversal: process nodes level-by-level using queue snapshot size.",
+        "brute": {
+            "idea": "Perform DFS passing level index; append node values into a 2D array indexed by level.",
+            "steps": [
+                "Recursively visit nodes passing current level.",
+                "If result.size() == level, append a new list.",
+                "Add node.val to result.get(level)."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Recursive call stack overhead instead of standard BFS queue.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        dfs(root, 0, res);\n        return res;\n    }\n    private void dfs(TreeNode node, int level, List<List<Integer>> res) {\n        if (node == null) return;\n        if (level == res.size()) res.add(new ArrayList<>());\n        res.get(level).add(node.val);\n        dfs(node.left, level + 1, res);\n        dfs(node.right, level + 1, res);\n    }\n}",
+                "python": "class Solution:\n    def levelOrder(self, root: TreeNode | None) -> list[list[int]]:\n        res = []\n        def dfs(node: TreeNode | None, level: int):\n            if not node: return\n            if level == len(res):\n                res.append([])\n            res[level].append(node.val)\n            dfs(node.left, level + 1)\n            dfs(node.right, level + 1)\n        dfs(root, 0)\n        return res"
+            }
+        },
+        "optimal": {
+            "idea": "Iterative BFS with Queue: at each level, read queue.size(), process exactly that many nodes, and push their children.",
+            "steps": [
+                "If root == null return empty list.",
+                "Push root into Queue.",
+                "While queue is not empty: size = queue.size(), create level list.",
+                "Poll size nodes, add vals to level, enqueue non-null left and right.",
+                "Add level to res."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            List<Integer> level = new ArrayList<>(size);\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                level.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(level);\n        }\n        return res;\n    }\n}",
+                "python": "from collections import deque\n\nclass Solution:\n    def levelOrder(self, root: TreeNode | None) -> list[list[int]]:\n        if not root:\n            return []\n        res = []\n        q = deque([root])\n        while q:\n            level = []\n            for _ in range(len(q)):\n                node = q.popleft()\n                level.append(node.val)\n                if node.left: q.append(node.left)\n                if node.right: q.append(node.right)\n            res.append(level)\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 136,
+        "whyNext": "Builds on Level Order: pick the last element of every level or use reverse preorder (root -> right -> left) DFS.",
+        "brute": {
+            "idea": "Run full level order traversal BFS, take the last element of each level array.",
+            "steps": [
+                "Execute BFS level order traversal.",
+                "Extract last item from each level list."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Stores all node values across all levels in memory just to inspect the rightmost one.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            int lastVal = 0;\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                lastVal = node.val;\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(lastVal);\n        }\n        return res;\n    }\n}",
+                "python": "from collections import deque\n\nclass Solution:\n    def rightSideView(self, root: TreeNode | None) -> list[int]:\n        if not root: return []\n        res = []\n        q = deque([root])\n        while q:\n            val = 0\n            for _ in range(len(q)):\n                node = q.popleft()\n                val = node.val\n                if node.left: q.append(node.left)\n                if node.right: q.append(node.right)\n            res.append(val)\n        return res"
+            }
+        },
+        "optimal": {
+            "idea": "DFS visiting Right child before Left child: first node visited at each depth level is the rightmost node.",
+            "steps": [
+                "In dfs(node, depth): if node == null return.",
+                "If depth == res.size(), add node.val to res (first time reaching this level from the right).",
+                "Recurse right child: dfs(node.right, depth + 1).",
+                "Recurse left child: dfs(node.left, depth + 1)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        dfs(root, 0, res);\n        return res;\n    }\n    private void dfs(TreeNode node, int depth, List<Integer> res) {\n        if (node == null) return;\n        if (depth == res.size()) {\n            res.add(node.val);\n        }\n        dfs(node.right, depth + 1, res);\n        dfs(node.left, depth + 1, res);\n    }\n}",
+                "python": "class Solution:\n    def rightSideView(self, root: TreeNode | None) -> list[int]:\n        res = []\n        def dfs(node: TreeNode | None, depth: int):\n            if not node:\n                return\n            if depth == len(res):\n                res.append(node.val)\n            dfs(node.right, depth + 1)\n            dfs(node.left, depth + 1)\n        dfs(root, 0)\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 137,
+        "whyNext": "Builds on Level Order: alternate direction between left-to-right and right-to-left at each level.",
+        "brute": {
+            "idea": "Collect normal level order traversal; reverse odd-indexed level lists with Collections.reverse.",
+            "steps": [
+                "Perform normal level order BFS.",
+                "For every level at odd index, reverse the list.",
+                "Return result."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Reversing list elements takes an extra traversal pass per level.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        boolean leftToRight = true;\n        while (!q.isEmpty()) {\n            int size = q.size();\n            List<Integer> level = new ArrayList<>(size);\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                level.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            if (!leftToRight) Collections.reverse(level);\n            res.add(level);\n            leftToRight = !leftToRight;\n        }\n        return res;\n    }\n}",
+                "python": "from collections import deque\n\nclass Solution:\n    def zigzagLevelOrder(self, root: TreeNode | None) -> list[list[int]]:\n        if not root: return []\n        res = []\n        q = deque([root])\n        left_to_right = True\n        while q:\n            level = []\n            for _ in range(len(q)):\n                node = q.popleft()\n                level.append(node.val)\n                if node.left: q.append(node.left)\n                if node.right: q.append(node.right)\n            if not left_to_right:\n                level.reverse()\n            res.append(level)\n            left_to_right = not left_to_right\n        return res"
+            }
+        },
+        "optimal": {
+            "idea": "Use LinkedList / deque for each level: add to tail if left-to-right, add to head if right-to-left.",
+            "steps": [
+                "BFS with queue.",
+                "Maintain boolean leftToRight = true.",
+                "For each node in current level, if leftToRight append to tail, else prepend to head (addFirst).",
+                "Toggle leftToRight flag after each level."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        boolean leftToRight = true;\n        while (!q.isEmpty()) {\n            int size = q.size();\n            LinkedList<Integer> level = new LinkedList<>();\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                if (leftToRight) level.addLast(node.val);\n                else level.addFirst(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(level);\n            leftToRight = !leftToRight;\n        }\n        return res;\n    }\n}",
+                "python": "from collections import deque\n\nclass Solution:\n    def zigzagLevelOrder(self, root: TreeNode | None) -> list[list[int]]:\n        if not root:\n            return []\n        res = []\n        q = deque([root])\n        left_to_right = True\n        while q:\n            level = deque()\n            for _ in range(len(q)):\n                node = q.popleft()\n                if left_to_right:\n                    level.append(node.val)\n                else:\n                    level.appendleft(node.val)\n                if node.left: q.append(node.left)\n                if node.right: q.append(node.right)\n            res.append(list(level))\n            left_to_right = not left_to_right\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 138,
+        "whyNext": "LNR traversal: standard recursive vs iterative with explicit stack vs Morris traversal in O(1) space.",
+        "brute": {
+            "idea": "Simple recursion: visit left child, record node.val, visit right child.",
+            "steps": [
+                "If root == null return.",
+                "Recurse left child.",
+                "Add root.val to result list.",
+                "Recurse right child."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "whySlow": "Uses O(h) recursion stack frames.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> inorderTraversal(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        dfs(root, res);\n        return res;\n    }\n    private void dfs(TreeNode node, List<Integer> res) {\n        if (node == null) return;\n        dfs(node.left, res);\n        res.add(node.val);\n        dfs(node.right, res);\n    }\n}",
+                "python": "class Solution:\n    def inorderTraversal(self, root: TreeNode | None) -> list[int]:\n        res = []\n        def dfs(node):\n            if not node: return\n            dfs(node.left)\n            res.append(node.val)\n            dfs(node.right)\n        dfs(root)\n        return res"
+            }
+        },
+        "optimal": {
+            "idea": "Iterative stack traversal: push all left children to stack, pop to visit, then move to right child.",
+            "steps": [
+                "Initialize empty stack and cur = root.",
+                "While cur != null or stack is not empty:",
+                "While cur != null: stack.push(cur), cur = cur.left.",
+                "cur = stack.pop(), res.add(cur.val), cur = cur.right."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> inorderTraversal(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        TreeNode cur = root;\n        while (cur != null || !stack.isEmpty()) {\n            while (cur != null) {\n                stack.push(cur);\n                cur = cur.left;\n            }\n            cur = stack.pop();\n            res.add(cur.val);\n            cur = cur.right;\n        }\n        return res;\n    }\n}",
+                "python": "class Solution:\n    def inorderTraversal(self, root: TreeNode | None) -> list[int]:\n        res = []\n        stack = []\n        cur = root\n        while cur or stack:\n            while cur:\n                stack.append(cur)\n                cur = cur.left\n            cur = stack.pop()\n            res.append(cur.val)\n            cur = cur.right\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 139,
+        "whyNext": "NLR traversal: visit node immediately upon arrival, push right then left child to stack for iterative processing.",
+        "brute": {
+            "idea": "Standard recursive preorder traversal: visit node, then left child, then right child.",
+            "steps": [
+                "If root == null return.",
+                "Add root.val to result list.",
+                "dfs(node.left), dfs(node.right)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "whySlow": "Uses call stack instead of explicit iterative control.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> preorderTraversal(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        dfs(root, res);\n        return res;\n    }\n    private void dfs(TreeNode node, List<Integer> res) {\n        if (node == null) return;\n        res.add(node.val);\n        dfs(node.left, res);\n        dfs(node.right, res);\n    }\n}",
+                "python": "class Solution:\n    def preorderTraversal(self, root: TreeNode | None) -> list[int]:\n        res = []\n        def dfs(node):\n            if not node: return\n            res.append(node.val)\n            dfs(node.left)\n            dfs(node.right)\n        dfs(root)\n        return res"
+            }
+        },
+        "optimal": {
+            "idea": "Iterative stack: push root. While stack not empty: pop node, record val, push right child then left child.",
+            "steps": [
+                "If root == null return empty list.",
+                "Stack with root.",
+                "Pop node, add node.val to res.",
+                "If node.right != null, push node.right.",
+                "If node.left != null, push node.left."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> preorderTraversal(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        if (root == null) return res;\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        stack.push(root);\n        while (!stack.isEmpty()) {\n            TreeNode node = stack.pop();\n            res.add(node.val);\n            if (node.right != null) stack.push(node.right);\n            if (node.left != null) stack.push(node.left);\n        }\n        return res;\n    }\n}",
+                "python": "class Solution:\n    def preorderTraversal(self, root: TreeNode | None) -> list[int]:\n        if not root:\n            return []\n        res = []\n        stack = [root]\n        while stack:\n            node = stack.pop()\n            res.append(node.val)\n            if node.right: stack.append(node.right)\n            if node.left: stack.append(node.left)\n        return res"
+            }
+        }
+    },
+    {
+        "seq": 140,
+        "whyNext": "Combines Preorder and Inorder: preorder[0] is root; finding root in inorder splits left and right subtrees.",
+        "brute": {
+            "idea": "Linear scan inorder array to find root index; recursively build left and right subtrees using array slices.",
+            "steps": [
+                "Root val is preorder[0].",
+                "Linear search root in inorder array to find index k.",
+                "Slice preorder and inorder into left and right sub-arrays and recurse."
+            ],
+            "time": "O(n^2)",
+            "space": "O(n^2)",
+            "whySlow": "Linear scan for index and copying sub-arrays takes O(n) per node.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public TreeNode buildTree(int[] preorder, int[] inorder) {\n        if (preorder.length == 0) return null;\n        int rootVal = preorder[0];\n        TreeNode root = new TreeNode(rootVal);\n        int mid = 0;\n        while (inorder[mid] != rootVal) mid++;\n        root.left = buildTree(\n            Arrays.copyOfRange(preorder, 1, 1 + mid),\n            Arrays.copyOfRange(inorder, 0, mid)\n        );\n        root.right = buildTree(\n            Arrays.copyOfRange(preorder, 1 + mid, preorder.length),\n            Arrays.copyOfRange(inorder, mid + 1, inorder.length)\n        );\n        return root;\n    }\n}",
+                "python": "class Solution:\n    def buildTree(self, preorder: list[int], inorder: list[int]) -> TreeNode | None:\n        if not preorder or not inorder:\n            return None\n        val = preorder[0]\n        root = TreeNode(val)\n        mid = inorder.index(val)\n        root.left = self.buildTree(preorder[1:mid+1], inorder[:mid])\n        root.right = self.buildTree(preorder[mid+1:], inorder[mid+1:])\n        return root"
+            }
+        },
+        "optimal": {
+            "idea": "HashMap for O(1) inorder index lookups + index pointers avoids all array slicing.",
+            "steps": [
+                "Store (value -> index) mapping of inorder array in a HashMap.",
+                "Maintain preIdx = 0 pointer.",
+                "Define helper build(inStart, inEnd): if inStart > inEnd return null.",
+                "rootVal = preorder[preIdx++], root = new TreeNode(rootVal), mid = map.get(rootVal).",
+                "root.left = build(inStart, mid - 1); root.right = build(mid + 1, inEnd); return root."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    private int preIdx = 0;\n    private Map<Integer, Integer> inMap = new HashMap<>();\n    public TreeNode buildTree(int[] preorder, int[] inorder) {\n        for (int i = 0; i < inorder.length; i++) {\n            inMap.put(inorder[i], i);\n        }\n        return build(preorder, 0, inorder.length - 1);\n    }\n    private TreeNode build(int[] preorder, int inStart, int inEnd) {\n        if (inStart > inEnd) return null;\n        int rootVal = preorder[preIdx++];\n        TreeNode root = new TreeNode(rootVal);\n        int mid = inMap.get(rootVal);\n        root.left = build(preorder, inStart, mid - 1);\n        root.right = build(preorder, mid + 1, inEnd);\n        return root;\n    }\n}",
+                "python": "class Solution:\n    def buildTree(self, preorder: list[int], inorder: list[int]) -> TreeNode | None:\n        in_map = {v: i for i, v in enumerate(inorder)}\n        pre_idx = 0\n        def build(in_start: int, in_end: int) -> TreeNode | None:\n            nonlocal pre_idx\n            if in_start > in_end:\n                return None\n            val = preorder[pre_idx]\n            pre_idx += 1\n            root = TreeNode(val)\n            mid = in_map[val]\n            root.left = build(in_start, mid - 1)\n            root.right = build(mid + 1, in_end)\n            return root\n        return build(0, len(inorder) - 1)"
+            }
+        }
+    },
+    {
+        "seq": 141,
+        "whyNext": "LCA divide and conquer: if left and right subtrees both report finding targets, current node is their LCA.",
+        "brute": {
+            "idea": "Find root-to-p path and root-to-q path as node lists, then compare to find the last common node.",
+            "steps": [
+                "Find path from root to p.",
+                "Find path from root to q.",
+                "Walk both paths simultaneously; return last node they share."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Stores entire paths in lists instead of short-circuiting in single recursive pass.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        List<TreeNode> pathP = new ArrayList<>();\n        List<TreeNode> pathQ = new ArrayList<>();\n        findPath(root, p, pathP);\n        findPath(root, q, pathQ);\n        TreeNode lca = null;\n        int minLen = Math.min(pathP.size(), pathQ.size());\n        for (int i = 0; i < minLen; i++) {\n            if (pathP.get(i) == pathQ.get(i)) lca = pathP.get(i);\n            else break;\n        }\n        return lca;\n    }\n    private boolean findPath(TreeNode node, TreeNode target, List<TreeNode> path) {\n        if (node == null) return false;\n        path.add(node);\n        if (node == target) return true;\n        if (findPath(node.left, target, path) || findPath(node.right, target, path)) return true;\n        path.remove(path.size() - 1);\n        return false;\n    }\n}",
+                "python": "class Solution:\n    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:\n        def find_path(node, target, path):\n            if not node: return False\n            path.append(node)\n            if node == target: return True\n            if find_path(node.left, target, path) or find_path(node.right, target, path):\n                return True\n            path.pop()\n            return False\n        p_path, q_path = [], []\n        find_path(root, p, p_path)\n        find_path(root, q, q_path)\n        lca = root\n        for a, b in zip(p_path, q_path):\n            if a == b: lca = a\n            else: break\n        return lca"
+            }
+        },
+        "optimal": {
+            "idea": "Single-pass DFS: if root is null, p, or q, return root. Recurse left and right: if both non-null, root is LCA.",
+            "steps": [
+                "If root == null || root == p || root == q, return root.",
+                "left = lowestCommonAncestor(root.left, p, q).",
+                "right = lowestCommonAncestor(root.right, p, q).",
+                "If left != null && right != null, return root.",
+                "Return left != null ? left : right."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {\n        if (root == null || root == p || root == q) return root;\n        TreeNode left = lowestCommonAncestor(root.left, p, q);\n        TreeNode right = lowestCommonAncestor(root.right, p, q);\n        if (left != null && right != null) return root;\n        return left != null ? left : right;\n    }\n}",
+                "python": "class Solution:\n    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:\n        if not root or root == p or root == q:\n            return root\n        left = self.lowestCommonAncestor(root.left, p, q)\n        right = self.lowestCommonAncestor(root.right, p, q)\n        if left and right:\n            return root\n        return left if left else right"
+            }
+        }
+    },
+    {
+        "seq": 142,
+        "whyNext": "Tree restructuring: rearrange pointers so right child forms preorder linked list and left child is null.",
+        "brute": {
+            "idea": "Perform preorder traversal into a list of nodes, then rewire node.right = list[i+1] and node.left = null.",
+            "steps": [
+                "Traverse tree preorder into a list.",
+                "Loop through list rewiring pointers."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Requires O(n) auxiliary memory to hold all tree nodes.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public void flatten(TreeNode root) {\n        if (root == null) return;\n        List<TreeNode> list = new ArrayList<>();\n        preorder(root, list);\n        for (int i = 0; i < list.size() - 1; i++) {\n            list.get(i).left = null;\n            list.get(i).right = list.get(i + 1);\n        }\n        list.get(list.size() - 1).left = null;\n        list.get(list.size() - 1).right = null;\n    }\n    private void preorder(TreeNode node, List<TreeNode> list) {\n        if (node == null) return;\n        list.add(node);\n        preorder(node.left, list);\n        preorder(node.right, list);\n    }\n}",
+                "python": "class Solution:\n    def flatten(self, root: TreeNode | None) -> None:\n        if not root: return\n        nodes = []\n        def preorder(node):\n            if not node: return\n            nodes.append(node)\n            preorder(node.left)\n            preorder(node.right)\n        preorder(root)\n        for i in range(len(nodes) - 1):\n            nodes[i].left = None\n            nodes[i].right = nodes[i + 1]\n        nodes[-1].left = None\n        nodes[-1].right = None"
+            }
+        },
+        "optimal": {
+            "idea": "Morris-style pointer rewiring in O(1) space: at cur with left child, find rightmost node of cur.left and connect to cur.right.",
+            "steps": [
+                "While cur != null:",
+                "If cur.left != null: find rightmost node of cur.left.",
+                "Attach cur.right to rightmost.right, set cur.right = cur.left, cur.left = null.",
+                "Advance cur = cur.right."
+            ],
+            "time": "O(n)",
+            "space": "O(1)",
+            "code": {
+                "java": "class Solution {\n    public void flatten(TreeNode root) {\n        TreeNode cur = root;\n        while (cur != null) {\n            if (cur.left != null) {\n                TreeNode rightmost = cur.left;\n                while (rightmost.right != null) {\n                    rightmost = rightmost.right;\n                }\n                rightmost.right = cur.right;\n                cur.right = cur.left;\n                cur.left = null;\n            }\n            cur = cur.right;\n        }\n    }\n}",
+                "python": "class Solution:\n    def flatten(self, root: TreeNode | None) -> None:\n        cur = root\n        while cur:\n            if cur.left:\n                rightmost = cur.left\n                while rightmost.right:\n                    rightmost = rightmost.right\n                rightmost.right = cur.right\n                cur.right = cur.left\n                cur.left = None\n            cur = cur.right"
+            }
+        }
+    },
+    {
+        "seq": 143,
+        "whyNext": "Full tree serialization and reconstruction: encode tree into string representation and parse back.",
+        "brute": {
+            "idea": "Level-order serialization with null markers; reconstruct using queue by levels.",
+            "steps": [
+                "BFS level order: serialize every node value or 'null'.",
+                "Deserialize: split by delimiter, use queue to attach children."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Stores null placeholders for all leaf children in BFS queue.",
+            "code": {
+                "java": "import java.util.*;\npublic class Codec {\n    public String serialize(TreeNode root) {\n        if (root == null) return \"\";\n        StringBuilder sb = new StringBuilder();\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            TreeNode node = q.poll();\n            if (node == null) {\n                sb.append(\"null,\");\n            } else {\n                sb.append(node.val).append(\",\");\n                q.offer(node.left);\n                q.offer(node.right);\n            }\n        }\n        return sb.toString();\n    }\n\n    public TreeNode deserialize(String data) {\n        if (data.isEmpty()) return null;\n        String[] vals = data.split(\",\");\n        TreeNode root = new TreeNode(Integer.parseInt(vals[0]));\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        int i = 1;\n        while (!q.isEmpty() && i < vals.length) {\n            TreeNode parent = q.poll();\n            if (!vals[i].equals(\"null\")) {\n                parent.left = new TreeNode(Integer.parseInt(vals[i]));\n                q.offer(parent.left);\n            }\n            i++;\n            if (i < vals.length && !vals[i].equals(\"null\")) {\n                parent.right = new TreeNode(Integer.parseInt(vals[i]));\n                q.offer(parent.right);\n            }\n            i++;\n        }\n        return root;\n    }\n}",
+                "python": "from collections import deque\n\nclass Codec:\n    def serialize(self, root):\n        if not root: return \"\"\n        q = deque([root])\n        res = []\n        while q:\n            node = q.popleft()\n            if node:\n                res.append(str(node.val))\n                q.append(node.left)\n                q.append(node.right)\n            else:\n                res.append(\"null\")\n        return \",\".join(res)\n\n    def deserialize(self, data):\n        if not data: return None\n        vals = data.split(\",\")\n        root = TreeNode(int(vals[0]))\n        q = deque([root])\n        i = 1\n        while q and i < len(vals):\n            node = q.popleft()\n            if vals[i] != \"null\":\n                node.left = TreeNode(int(vals[i]))\n                q.append(node.left)\n            i += 1\n            if i < len(vals) and vals[i] != \"null\":\n                node.right = TreeNode(int(vals[i]))\n                q.append(node.right)\n            i += 1\n        return root"
+            }
+        },
+        "optimal": {
+            "idea": "Preorder DFS with '#' for null: serialize root->left->right; deserialize recursively consuming queue or iterator.",
+            "steps": [
+                "serialize: if node == null append '#,'; else append node.val + ',' and recurse left then right.",
+                "deserialize: split data by ',', place tokens in a Queue, and recursively build nodes.",
+                "In helper: poll token; if token is '#', return null; else make TreeNode and recurse left then right."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "code": {
+                "java": "import java.util.*;\npublic class Codec {\n    public String serialize(TreeNode root) {\n        StringBuilder sb = new StringBuilder();\n        buildString(root, sb);\n        return sb.toString();\n    }\n    private void buildString(TreeNode node, StringBuilder sb) {\n        if (node == null) {\n            sb.append(\"#,\");\n        } else {\n            sb.append(node.val).append(\",\");\n            buildString(node.left, sb);\n            buildString(node.right, sb);\n        }\n    }\n\n    public TreeNode deserialize(String data) {\n        Queue<String> nodes = new LinkedList<>(Arrays.asList(data.split(\",\")));\n        return buildTree(nodes);\n    }\n    private TreeNode buildTree(Queue<String> nodes) {\n        String val = nodes.poll();\n        if (val == null || val.equals(\"#\")) return null;\n        TreeNode node = new TreeNode(Integer.parseInt(val));\n        node.left = buildTree(nodes);\n        node.right = buildTree(nodes);\n        return node;\n    }\n}",
+                "python": "class Codec:\n    def serialize(self, root):\n        res = []\n        def dfs(node):\n            if not node:\n                res.append(\"#\")\n                return\n            res.append(str(node.val))\n            dfs(node.left)\n            dfs(node.right)\n        dfs(root)\n        return \",\".join(res)\n\n    def deserialize(self, data):\n        tokens = iter(data.split(\",\"))\n        def build():\n            val = next(tokens)\n            if val == \"#\":\n                return None\n            node = TreeNode(int(val))\n            node.left = build()\n            node.right = build()\n            return node\n        return build()"
+            }
+        }
+    },
+    {
+        "seq": 144,
+        "whyNext": "Converts binary tree to undirected graph: traverse parents and children with BFS up to distance k.",
+        "brute": {
+            "idea": "Convert entire tree into an adjacency list graph, then run standard BFS from target node.",
+            "steps": [
+                "Build graph (Map<Integer, List<Integer>>) using DFS on tree.",
+                "Run BFS from target.val up to k steps, tracking visited nodes.",
+                "Return nodes at layer k."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Allocates an entirely new adjacency list structure for all nodes.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {\n        Map<Integer, List<Integer>> graph = new HashMap<>();\n        buildGraph(root, null, graph);\n        List<Integer> res = new ArrayList<>();\n        Set<Integer> visited = new HashSet<>();\n        Queue<Integer> q = new LinkedList<>();\n        q.offer(target.val);\n        visited.add(target.val);\n        int dist = 0;\n        while (!q.isEmpty()) {\n            if (dist == k) {\n                res.addAll(q);\n                return res;\n            }\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                int cur = q.poll();\n                for (int neighbor : graph.getOrDefault(cur, Collections.emptyList())) {\n                    if (visited.add(neighbor)) {\n                        q.offer(neighbor);\n                    }\n                }\n            }\n            dist++;\n        }\n        return res;\n    }\n    private void buildGraph(TreeNode node, TreeNode par, Map<Integer, List<Integer>> g) {\n        if (node == null) return;\n        g.putIfAbsent(node.val, new ArrayList<>());\n        if (par != null) {\n            g.get(node.val).add(par.val);\n            g.get(par.val).add(node.val);\n        }\n        buildGraph(node.left, node, g);\n        buildGraph(node.right, node, g);\n    }\n}",
+                "python": "from collections import deque, defaultdict\n\nclass Solution:\n    def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> list[int]:\n        graph = defaultdict(list)\n        def build(node, parent):\n            if not node: return\n            if parent:\n                graph[node.val].append(parent.val)\n                graph[parent.val].append(node.val)\n            build(node.left, node)\n            build(node.right, node)\n        build(root, None)\n        q = deque([target.val])\n        visited = {target.val}\n        dist = 0\n        while q:\n            if dist == k: return list(q)\n            for _ in range(len(q)):\n                cur = q.popleft()\n                for nxt in graph[cur]:\n                    if nxt not in visited:\n                        visited.add(nxt)\n                        q.append(nxt)\n            dist += 1\n        return []"
+            }
+        },
+        "optimal": {
+            "idea": "Parent map + BFS: store parent pointers in Map<TreeNode, TreeNode>, then launch BFS from target node.",
+            "steps": [
+                "Map each TreeNode to its parent using DFS.",
+                "Queue with target node and visited Set with target.",
+                "Run BFS: expand to left, right, and parent.",
+                "Stop at step k and return nodes in queue."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {\n        Map<TreeNode, TreeNode> parentMap = new HashMap<>();\n        populateParents(root, null, parentMap);\n        Queue<TreeNode> q = new LinkedList<>();\n        Set<TreeNode> visited = new HashSet<>();\n        q.offer(target);\n        visited.add(target);\n        int dist = 0;\n        while (!q.isEmpty()) {\n            if (dist == k) {\n                List<Integer> res = new ArrayList<>();\n                for (TreeNode n : q) res.add(n.val);\n                return res;\n            }\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                if (node.left != null && visited.add(node.left)) q.offer(node.left);\n                if (node.right != null && visited.add(node.right)) q.offer(node.right);\n                TreeNode p = parentMap.get(node);\n                if (p != null && visited.add(p)) q.offer(p);\n            }\n            dist++;\n        }\n        return Collections.emptyList();\n    }\n    private void populateParents(TreeNode node, TreeNode parent, Map<TreeNode, TreeNode> map) {\n        if (node == null) return;\n        if (parent != null) map.put(node, parent);\n        populateParents(node.left, node, map);\n        populateParents(node.right, node, map);\n    }\n}",
+                "python": "from collections import deque\n\nclass Solution:\n    def distanceK(self, root: TreeNode, target: TreeNode, k: int) -> list[int]:\n        parents = {}\n        def map_parents(node, par):\n            if not node: return\n            if par: parents[node] = par\n            map_parents(node.left, node)\n            map_parents(node.right, node)\n        map_parents(root, None)\n        q = deque([target])\n        visited = {target}\n        dist = 0\n        while q:\n            if dist == k:\n                return [n.val for n in q]\n            for _ in range(len(q)):\n                node = q.popleft()\n                for neighbor in (node.left, node.right, parents.get(node)):\n                    if neighbor and neighbor not in visited:\n                        visited.add(neighbor)\n                        q.append(neighbor)\n            dist += 1\n        return []"
+            }
+        }
+    },
+    {
+        "seq": 145,
+        "whyNext": "Binary heap indexing: assign 1-based index (left = 2*i, right = 2*i + 1); normalize indices per level to avoid overflow.",
+        "brute": {
+            "idea": "Full BFS queue storing nulls for missing nodes; measure width between first and last non-null node on each level.",
+            "steps": [
+                "Enqueue nulls for missing branches.",
+                "For each level, find distance between first and last non-null node."
+            ],
+            "time": "O(2^h)",
+            "space": "O(2^h)",
+            "whySlow": "Generates exponential number of null placeholder nodes, leading to memory limit exceeded.",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public int widthOfBinaryTree(TreeNode root) {\n        if (root == null) return 0;\n        List<Integer> firstIndex = new ArrayList<>();\n        return dfs(root, 0, 1, firstIndex);\n    }\n    private int dfs(TreeNode node, int level, int index, List<Integer> firstIndex) {\n        if (node == null) return 0;\n        if (level == firstIndex.size()) firstIndex.add(index);\n        int cur = index - firstIndex.get(level) + 1;\n        int left = dfs(node.left, level + 1, 2 * index, firstIndex);\n        int right = dfs(node.right, level + 1, 2 * index + 1, firstIndex);\n        return Math.max(cur, Math.max(left, right));\n    }\n}",
+                "python": "class Solution:\n    def widthOfBinaryTree(self, root: TreeNode | None) -> int:\n        if not root: return 0\n        first_idx = []\n        def dfs(node, level, idx):\n            if not node: return 0\n            if level == len(first_idx):\n                first_idx.append(idx)\n            cur = idx - first_idx[level] + 1\n            left = dfs(node.left, level + 1, 2 * idx)\n            right = dfs(node.right, level + 1, 2 * idx + 1)\n            return max(cur, left, right)\n        return dfs(root, 0, 1)"
+            }
+        },
+        "optimal": {
+            "idea": "BFS level order with normalized index pairs (node, index): width = last_index - first_index + 1.",
+            "steps": [
+                "Queue storing pairs (TreeNode, long index).",
+                "At each level, offset = q.peek().index to keep numbers small and prevent 64-bit integer overflow.",
+                "First index is q.peek().index - offset; track last index.",
+                "Push children with 2 * (index - offset) and 2 * (index - offset) + 1.",
+                "Update maxWidth = max(maxWidth, last - first + 1)."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public int widthOfBinaryTree(TreeNode root) {\n        if (root == null) return 0;\n        Queue<Pair> q = new LinkedList<>();\n        q.offer(new Pair(root, 0L));\n        int maxWidth = 0;\n        while (!q.isEmpty()) {\n            int size = q.size();\n            long offset = q.peek().index;\n            long first = 0, last = 0;\n            for (int i = 0; i < size; i++) {\n                Pair p = q.poll();\n                long curIdx = p.index - offset;\n                if (i == 0) first = curIdx;\n                if (i == size - 1) last = curIdx;\n                if (p.node.left != null) q.offer(new Pair(p.node.left, 2 * curIdx + 1));\n                if (p.node.right != null) q.offer(new Pair(p.node.right, 2 * curIdx + 2));\n            }\n            maxWidth = Math.max(maxWidth, (int)(last - first + 1));\n        }\n        return maxWidth;\n    }\n    static class Pair {\n        TreeNode node;\n        long index;\n        Pair(TreeNode n, long i) { node = n; index = i; }\n    }\n}",
+                "python": "from collections import deque\n\nclass Solution:\n    def widthOfBinaryTree(self, root: TreeNode | None) -> int:\n        if not root:\n            return 0\n        q = deque([(root, 0)])\n        max_width = 0\n        while q:\n            size = len(q)\n            offset = q[0][1]\n            first = last = 0\n            for i in range(size):\n                node, idx = q.popleft()\n                cur = idx - offset\n                if i == 0: first = cur\n                if i == size - 1: last = cur\n                if node.left: q.append((node.left, 2 * cur + 1))\n                if node.right: q.append((node.right, 2 * cur + 2))\n            max_width = max(max_width, last - first + 1)\n        return max_width"
+            }
+        }
+    },
+    {
+        "seq": 146,
+        "whyNext": "Exploits complete binary tree structure: if left depth equals right depth, left subtree is full (2^h - 1) in O(log^2 n).",
+        "brute": {
+            "idea": "Standard recursive DFS counting every node 1 + count(left) + count(right).",
+            "steps": [
+                "If root == null return 0.",
+                "Return 1 + countNodes(root.left) + countNodes(root.right)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "whySlow": "Visits every node linearly without exploiting the complete tree geometry.",
+            "code": {
+                "java": "class Solution {\n    public int countNodes(TreeNode root) {\n        if (root == null) return 0;\n        return 1 + countNodes(root.left) + countNodes(root.right);\n    }\n}",
+                "python": "class Solution:\n    def countNodes(self, root: TreeNode | None) -> int:\n        if not root:\n            return 0\n        return 1 + self.countNodes(root.left) + self.countNodes(root.right)"
+            }
+        },
+        "optimal": {
+            "idea": "Binary search on complete tree: compare left depth and right depth. If equal, left subtree is full 2^h; else right subtree is full 2^(h-1).",
+            "steps": [
+                "Find leftmost depth leftH and rightmost depth rightH.",
+                "If leftH == rightH, node count is (1 << leftH) - 1.",
+                "Otherwise, return 1 + countNodes(root.left) + countNodes(root.right)."
+            ],
+            "time": "O(log^2 n)",
+            "space": "O(log n)",
+            "code": {
+                "java": "class Solution {\n    public int countNodes(TreeNode root) {\n        if (root == null) return 0;\n        int leftH = getLeftHeight(root);\n        int rightH = getRightHeight(root);\n        if (leftH == rightH) {\n            return (1 << leftH) - 1;\n        }\n        return 1 + countNodes(root.left) + countNodes(root.right);\n    }\n    private int getLeftHeight(TreeNode node) {\n        int h = 0;\n        while (node != null) { h++; node = node.left; }\n        return h;\n    }\n    private int getRightHeight(TreeNode node) {\n        int h = 0;\n        while (node != null) { h++; node = node.right; }\n        return h;\n    }\n}",
+                "python": "class Solution:\n    def countNodes(self, root: TreeNode | None) -> int:\n        if not root:\n            return 0\n        def left_h(node):\n            h = 0\n            while node:\n                h += 1\n                node = node.left\n            return h\n        def right_h(node):\n            h = 0\n            while node:\n                h += 1\n                node = node.right\n            return h\n        lh = left_h(root)\n        rh = right_h(root)\n        if lh == rh:\n            return (1 << lh) - 1\n        return 1 + self.countNodes(root.left) + self.countNodes(root.right)"
+            }
+        }
+    },
+    {
+        "seq": 147,
+        "whyNext": "Tree DP: each node returns pair [rob_node, skip_node]; rob_node includes children skip, skip_node takes max of each child.",
+        "brute": {
+            "idea": "Recursion: either rob root + grandchildren, or rob left child + right child.",
+            "steps": [
+                "If root == null return 0.",
+                "Calculate robRoot = root.val + grandchildren sums.",
+                "Calculate skipRoot = rob(root.left) + rob(root.right).",
+                "Return max(robRoot, skipRoot)."
+            ],
+            "time": "O(2^n)",
+            "space": "O(h)",
+            "whySlow": "Recomputes values of grandchildren and children redundantly across branches.",
+            "code": {
+                "java": "class Solution {\n    public int rob(TreeNode root) {\n        if (root == null) return 0;\n        int robRoot = root.val;\n        if (root.left != null) {\n            robRoot += rob(root.left.left) + rob(root.left.right);\n        }\n        if (root.right != null) {\n            robRoot += rob(root.right.left) + rob(root.right.right);\n        }\n        int skipRoot = rob(root.left) + rob(root.right);\n        return Math.max(robRoot, skipRoot);\n    }\n}",
+                "python": "class Solution:\n    def rob(self, root: TreeNode | None) -> int:\n        if not root:\n            return 0\n        rob_root = root.val\n        if root.left:\n            rob_root += self.rob(root.left.left) + self.rob(root.left.right)\n        if root.right:\n            rob_root += self.rob(root.right.left) + self.rob(root.right.right)\n        skip_root = self.rob(root.left) + self.rob(root.right)\n        return max(rob_root, skip_root)"
+            }
+        },
+        "optimal": {
+            "idea": "Post-order Tree DP returning int[2] = {rob_node, not_rob_node} in a single pass.",
+            "steps": [
+                "In dfs(node): returns int[]{robThis, skipThis}.",
+                "If node == null return {0, 0}.",
+                "left = dfs(node.left), right = dfs(node.right).",
+                "robThis = node.val + left[1] + right[1].",
+                "skipThis = max(left[0], left[1]) + max(right[0], right[1]).",
+                "Return {robThis, skipThis}."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public int rob(TreeNode root) {\n        int[] res = dfs(root);\n        return Math.max(res[0], res[1]);\n    }\n    private int[] dfs(TreeNode node) {\n        if (node == null) return new int[]{0, 0};\n        int[] left = dfs(node.left);\n        int[] right = dfs(node.right);\n        int robThis = node.val + left[1] + right[1];\n        int skipThis = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);\n        return new int[]{robThis, skipThis};\n    }\n}",
+                "python": "class Solution:\n    def rob(self, root: TreeNode | None) -> int:\n        def dfs(node: TreeNode | None) -> tuple[int, int]:\n            if not node:\n                return (0, 0)\n            l_rob, l_skip = dfs(node.left)\n            r_rob, r_skip = dfs(node.right)\n            rob_this = node.val + l_skip + r_skip\n            skip_this = max(l_rob, l_skip) + max(r_rob, r_skip)\n            return (rob_this, skip_this)\n        return max(dfs(root))"
+            }
+        }
+    },
+    {
+        "seq": 148,
+        "whyNext": "Entry to Chapter 9 (Binary Search Tree): BST invariant left < root < right enables binary search in tree.",
+        "brute": {
+            "idea": "Blind tree traversal searching both children ignoring the BST ordering property.",
+            "steps": [
+                "Check if root == null or root.val == val.",
+                "Recurse left child; if found return.",
+                "Recurse right child."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "whySlow": "Searches both branches instead of using BST property to prune one branch.",
+            "code": {
+                "java": "class Solution {\n    public TreeNode searchBST(TreeNode root, int val) {\n        if (root == null || root.val == val) return root;\n        TreeNode left = searchBST(root.left, val);\n        if (left != null) return left;\n        return searchBST(root.right, val);\n    }\n}",
+                "python": "class Solution:\n    def searchBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        if not root or root.val == val:\n            return root\n        left = self.searchBST(root.left, val)\n        return left if left else self.searchBST(root.right, val)"
+            }
+        },
+        "optimal": {
+            "idea": "Iterative BST search: if val < cur.val go left, if val > cur.val go right; achieves O(1) extra space.",
+            "steps": [
+                "While cur != null and cur.val != val:",
+                "cur = (val < cur.val) ? cur.left : cur.right.",
+                "Return cur."
+            ],
+            "time": "O(h)",
+            "space": "O(1)",
+            "code": {
+                "java": "class Solution {\n    public TreeNode searchBST(TreeNode root, int val) {\n        TreeNode cur = root;\n        while (cur != null && cur.val != val) {\n            cur = (val < cur.val) ? cur.left : cur.right;\n        }\n        return cur;\n    }\n}",
+                "python": "class Solution:\n    def searchBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        cur = root\n        while cur and cur.val != val:\n            cur = cur.left if val < cur.val else cur.right\n        return cur"
+            }
+        }
+    },
+    {
+        "seq": 149,
+        "whyNext": "BST property validation: every node must satisfy minVal < node.val < maxVal across its entire ancestor chain.",
+        "brute": {
+            "idea": "For every node, check that max of left subtree < node.val and min of right subtree > node.val.",
+            "steps": [
+                "Find maxValue in left subtree and minValue in right subtree.",
+                "Verify leftMax < node.val < rightMin.",
+                "Recurse for children."
+            ],
+            "time": "O(n^2)",
+            "space": "O(h)",
+            "whySlow": "Recalculates subtree minimums and maximums repeatedly at each level.",
+            "code": {
+                "java": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n        if (root == null) return true;\n        if (root.left != null && maxValue(root.left) >= root.val) return false;\n        if (root.right != null && minValue(root.right) <= root.val) return false;\n        return isValidBST(root.left) && isValidBST(root.right);\n    }\n    private long maxValue(TreeNode node) {\n        if (node == null) return Long.MIN_VALUE;\n        return Math.max(node.val, Math.max(maxValue(node.left), maxValue(node.right)));\n    }\n    private long minValue(TreeNode node) {\n        if (node == null) return Long.MAX_VALUE;\n        return Math.min(node.val, Math.min(minValue(node.left), minValue(node.right)));\n    }\n}",
+                "python": "class Solution:\n    def isValidBST(self, root: TreeNode | None) -> bool:\n        if not root: return True\n        def max_val(node):\n            if not node: return float('-inf')\n            return max(node.val, max_val(node.left), max_val(node.right))\n        def min_val(node):\n            if not node: return float('inf')\n            return min(node.val, min_val(node.left), min_val(node.right))\n        if root.left and max_val(root.left) >= root.val: return False\n        if root.right and min_val(root.right) <= root.val: return False\n        return self.isValidBST(root.left) and self.isValidBST(root.right)"
+            }
+        },
+        "optimal": {
+            "idea": "Top-down recursion passing valid range (lower, upper); every node must satisfy lower < node.val < upper.",
+            "steps": [
+                "Helper validate(node, Long min, Long max).",
+                "If node == null return true.",
+                "If node.val <= min || node.val >= max return false.",
+                "Return validate(node.left, min, node.val) && validate(node.right, node.val, max)."
+            ],
+            "time": "O(n)",
+            "space": "O(h)",
+            "code": {
+                "java": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n        return validate(root, null, null);\n    }\n    private boolean validate(TreeNode node, Integer min, Integer max) {\n        if (node == null) return true;\n        if (min != null && node.val <= min) return false;\n        if (max != null && node.val >= max) return false;\n        return validate(node.left, min, node.val) && validate(node.right, node.val, max);\n    }\n}",
+                "python": "class Solution:\n    def isValidBST(self, root: TreeNode | None) -> bool:\n        def validate(node: TreeNode | None, low: float, high: float) -> bool:\n            if not node:\n                return True\n            if not (low < node.val < high):\n                return False\n            return validate(node.left, low, node.val) and validate(node.right, node.val, high)\n        return validate(root, float('-inf'), float('inf'))"
+            }
+        }
+    },
+    {
+        "seq": 150,
+        "whyNext": "BST insertion: traverse until finding null position maintaining BST invariant, attach new TreeNode(val).",
+        "brute": {
+            "idea": "Collect all nodes into a sorted list, insert val into list, and rebuild balanced BST.",
+            "steps": [
+                "Inorder traversal to get sorted list.",
+                "Insert val in sorted order.",
+                "Reconstruct BST from sorted list."
+            ],
+            "time": "O(n)",
+            "space": "O(n)",
+            "whySlow": "Allocates array and completely rebuilds tree instead of inserting at a leaf in O(h).",
+            "code": {
+                "java": "import java.util.*;\nclass Solution {\n    public TreeNode insertIntoBST(TreeNode root, int val) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, list);\n        int pos = 0;\n        while (pos < list.size() && list.get(pos) < val) pos++;\n        list.add(pos, val);\n        return build(list, 0, list.size() - 1);\n    }\n    private void inorder(TreeNode node, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, list);\n        list.add(node.val);\n        inorder(node.right, list);\n    }\n    private TreeNode build(List<Integer> list, int l, int r) {\n        if (l > r) return null;\n        int m = l + (r - l) / 2;\n        TreeNode node = new TreeNode(list.get(m));\n        node.left = build(list, l, m - 1);\n        node.right = build(list, m + 1, r);\n        return node;\n    }\n}",
+                "python": "class Solution:\n    def insertIntoBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        vals = []\n        def inorder(node):\n            if not node: return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        import bisect\n        bisect.insort(vals, val)\n        def build(l, r):\n            if l > r: return None\n            m = (l + r) // 2\n            node = TreeNode(vals[m])\n            node.left = build(l, m - 1)\n            node.right = build(m + 1, r)\n            return node\n        return build(0, len(vals) - 1)"
+            }
+        },
+        "optimal": {
+            "idea": "Iterative BST insertion: navigate down tree comparing val with cur.val; attach new leaf when target child is null.",
+            "steps": [
+                "If root == null return new TreeNode(val).",
+                "cur = root.",
+                "While true: if val < cur.val: if cur.left == null { cur.left = new TreeNode(val); break; } else cur = cur.left.",
+                "Else: if cur.right == null { cur.right = new TreeNode(val); break; } else cur = cur.right.",
+                "Return root."
+            ],
+            "time": "O(h)",
+            "space": "O(1)",
+            "code": {
+                "java": "class Solution {\n    public TreeNode insertIntoBST(TreeNode root, int val) {\n        if (root == null) return new TreeNode(val);\n        TreeNode cur = root;\n        while (true) {\n            if (val < cur.val) {\n                if (cur.left == null) {\n                    cur.left = new TreeNode(val);\n                    break;\n                }\n                cur = cur.left;\n            } else {\n                if (cur.right == null) {\n                    cur.right = new TreeNode(val);\n                    break;\n                }\n                cur = cur.right;\n            }\n        }\n        return root;\n    }\n}",
+                "python": "class Solution:\n    def insertIntoBST(self, root: TreeNode | None, val: int) -> TreeNode | None:\n        if not root:\n            return TreeNode(val)\n        cur = root\n        while True:\n            if val < cur.val:\n                if not cur.left:\n                    cur.left = TreeNode(val)\n                    break\n                cur = cur.left\n            else:\n                if not cur.right:\n                    cur.right = TreeNode(val)\n                    break\n                cur = cur.right\n        return root"
+            }
+        }
+    }
+]

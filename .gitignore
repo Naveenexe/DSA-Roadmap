@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.temp_verify/
+__pycache__/
+*.py[cod]
+.env
+.DS_Store
+Thumbs.db

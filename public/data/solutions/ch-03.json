@@ -1,0 +1,561 @@
+[
+  {
+    "seq": 36,
+    "whyNext": "Opens Chapter 3 (Sliding Window): track lowest buying price seen so far to compute maximum selling profit.",
+    "brute": {
+      "idea": "Try every buy day i and every subsequent sell day j to find the maximum profit prices[j] - prices[i].",
+      "steps": [
+        "Loop buy day i from 0 to n - 1.",
+        "Loop sell day j from i + 1 to n - 1.",
+        "maxProfit = max(maxProfit, prices[j] - prices[i])."
+      ],
+      "whySlow": "Evaluating all pairs of days takes quadratic O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxProfit(int[] prices) {\n        int max = 0;\n        for (int i = 0; i < prices.length; i++) {\n            for (int j = i + 1; j < prices.length; j++) {\n                max = Math.max(max, prices[j] - prices[i]);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        max_p = 0\n        for i in range(len(prices)):\n            for j in range(i + 1, len(prices)):\n                max_p = max(max_p, prices[j] - prices[i])\n        return max_p"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass: maintain the minimum price observed so far and update maximum profit at each day.",
+      "steps": [
+        "Initialize minPrice = Integer.MAX_VALUE, maxProfit = 0.",
+        "For each price p:",
+        "minPrice = min(minPrice, p).",
+        "maxProfit = max(maxProfit, p - minPrice)."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxProfit(int[] prices) {\n        int minPrice = Integer.MAX_VALUE, maxProfit = 0;\n        for (int p : prices) {\n            if (p < minPrice) minPrice = p;\n            else maxProfit = Math.max(maxProfit, p - minPrice);\n        }\n        return maxProfit;\n    }\n}",
+        "python": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        min_price = float('inf')\n        max_profit = 0\n        for p in prices:\n            if p < min_price: min_price = p\n            else: max_profit = max(max_profit, p - min_price)\n        return max_profit"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Sliding Window. This achieves O n time and O 1 auxiliary space.",
+      "Single pass: maintain the minimum price observed so far and update maximum profit at each day. In detail: Initialize minPrice = Integer.MAX VALUE, maxProfit = 0. Then for each price p:."
+    ]
+  },
+  {
+    "seq": 37,
+    "whyNext": "Fixed size sliding window: calculate sum of window of size k in O(1) time by adding incoming and subtracting outgoing element.",
+    "brute": {
+      "idea": "Re-sum every window of length k from scratch.",
+      "steps": [
+        "For each starting index i from 0 to n - k:",
+        "Sum elements from i to i + k - 1.",
+        "Track maximum average."
+      ],
+      "whySlow": "Re-summing overlapping windows takes O(nk) time.",
+      "time": "O(nk)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public double findMaxAverage(int[] nums, int k) {\n        double max = -Double.MAX_VALUE;\n        for (int i = 0; i <= nums.length - k; i++) {\n            double sum = 0;\n            for (int j = i; j < i + k; j++) sum += nums[j];\n            max = Math.max(max, sum / k);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def findMaxAverage(self, nums: list[int], k: int) -> float:\n        max_avg = -float('inf')\n        for i in range(len(nums) - k + 1):\n            s = sum(nums[i:i+k])\n            max_avg = max(max_avg, s / k)\n        return max_avg"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window of fixed size k: sum of first k elements, then slide window by adding nums[i] and subtracting nums[i - k].",
+      "steps": [
+        "Compute sum of first k elements.",
+        "Track maxSum = sum.",
+        "Loop i from k to n - 1:",
+        "sum += nums[i] - nums[i - k].",
+        "maxSum = max(maxSum, sum).",
+        "Return maxSum / k."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public double findMaxAverage(int[] nums, int k) {\n        double sum = 0;\n        for (int i = 0; i < k; i++) sum += nums[i];\n        double maxSum = sum;\n        for (int i = k; i < nums.length; i++) {\n            sum += nums[i] - nums[i - k];\n            maxSum = Math.max(maxSum, sum);\n        }\n        return maxSum / k;\n    }\n}",
+        "python": "class Solution:\n    def findMaxAverage(self, nums: list[int], k: int) -> float:\n        curr_sum = sum(nums[:k])\n        max_sum = curr_sum\n        for i in range(k, len(nums)):\n            curr_sum += nums[i] - nums[i - k]\n            max_sum = max(max_sum, curr_sum)\n        return max_sum / k"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Compute sum of first k elements. Then track maxsum = sum."
+    ]
+  },
+  {
+    "seq": 38,
+    "whyNext": "Dynamic sliding window: expand right edge, advance left edge when duplicate character encountered using a hash map.",
+    "brute": {
+      "idea": "Check every substring to see if all its characters are distinct.",
+      "steps": [
+        "Loop start i from 0 to n - 1.",
+        "Loop end j from i to n - 1.",
+        "Check if substring s[i...j] has unique characters with a set.",
+        "Update max length."
+      ],
+      "whySlow": "Evaluating all substrings takes O(n\u00b3) time.",
+      "time": "O(n\u00b3)",
+      "space": "O(min(n, m))",
+      "code": {
+        "java": "class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        int max = 0;\n        for (int i = 0; i < s.length(); i++) {\n            Set<Character> seen = new HashSet<>();\n            for (int j = i; j < s.length(); j++) {\n                if (seen.contains(s.charAt(j))) break;\n                seen.add(s.charAt(j));\n                max = Math.max(max, j - i + 1);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        max_l = 0\n        for i in range(len(s)):\n            seen = set()\n            for j in range(i, len(s)):\n                if s[j] in seen: break\n                seen.add(s[j])\n                max_l = max(max_l, j - i + 1)\n        return max_l"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window with map of character to last seen index: when duplicate seen at j, move left pointer to max(left, last_seen + 1).",
+      "steps": [
+        "Initialize map of char -> index, left = 0, maxLen = 0.",
+        "For right from 0 to n - 1:",
+        "If char s[right] in map, left = max(left, map[s[right]] + 1).",
+        "map[s[right]] = right.",
+        "maxLen = max(maxLen, right - left + 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(min(n, m))",
+      "code": {
+        "java": "class Solution {\n    public int lengthOfLongestSubstring(String s) {\n        Map<Character, Integer> map = new HashMap<>();\n        int left = 0, maxLen = 0;\n        for (int right = 0; right < s.length(); right++) {\n            char c = s.charAt(right);\n            if (map.containsKey(c)) left = Math.max(left, map.get(c) + 1);\n            map.put(c, right);\n            maxLen = Math.max(maxLen, right - left + 1);\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        last = {}\n        left = 0\n        max_len = 0\n        for right, c in enumerate(s):\n            if c in last and last[c] >= left:\n                left = last[c] + 1\n            last[c] = right\n            max_len = max(max_len, right - left + 1)\n        return max_len"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O min n, m auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Initialize map of char - is greater than index, left = 0, maxLen = 0. Then for right from 0 to n - 1:."
+    ]
+  },
+  {
+    "seq": 39,
+    "whyNext": "Builds on sliding window: window length - maxFreq <= k defines valid window where at most k replacements make all characters identical.",
+    "brute": {
+      "idea": "For every substring, count frequencies of all letters; check if length - maxFreq <= k.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i to n - 1.",
+        "Compute most frequent character in s[i...j].",
+        "If (j - i + 1) - maxFreq <= k, update max length."
+      ],
+      "whySlow": "Evaluating all substrings takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int characterReplacement(String s, int k) {\n        int maxLen = 0;\n        for (int i = 0; i < s.length(); i++) {\n            int[] counts = new int[26];\n            int maxF = 0;\n            for (int j = i; j < s.length(); j++) {\n                counts[s.charAt(j) - 'A']++;\n                maxF = Math.max(maxF, counts[s.charAt(j) - 'A']);\n                if ((j - i + 1) - maxF <= k) maxLen = Math.max(maxLen, j - i + 1);\n            }\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def characterReplacement(self, s: str, k: int) -> int:\n        max_l = 0\n        for i in range(len(s)):\n            counts = collections.Counter()\n            for j in range(i, len(s)):\n                counts[s[j]] += 1\n                max_f = max(counts.values())\n                if (j - i + 1) - max_f <= k:\n                    max_l = max(max_l, j - i + 1)\n        return max_l"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window maintaining count of characters and maxFreq. If window size - maxFreq > k, advance left pointer.",
+      "steps": [
+        "Initialize counts array of size 26, left = 0, maxFreq = 0, maxLen = 0.",
+        "Loop right from 0 to n - 1:",
+        "counts[s[right]]++, update maxFreq = max(maxFreq, counts[s[right]]).",
+        "If (right - left + 1) - maxFreq > k: counts[s[left]]--, left++.",
+        "maxLen = max(maxLen, right - left + 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int characterReplacement(String s, int k) {\n        int[] count = new int[26];\n        int left = 0, maxFreq = 0, maxLen = 0;\n        for (int right = 0; right < s.length(); right++) {\n            count[s.charAt(right) - 'A']++;\n            maxFreq = Math.max(maxFreq, count[s.charAt(right) - 'A']);\n            while ((right - left + 1) - maxFreq > k) {\n                count[s.charAt(left) - 'A']--;\n                left++;\n            }\n            maxLen = Math.max(maxLen, right - left + 1);\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def characterReplacement(self, s: str, k: int) -> int:\n        count = collections.defaultdict(int)\n        left = 0\n        max_freq = 0\n        max_len = 0\n        for right, c in enumerate(s):\n            count[c] += 1\n            max_freq = max(max_freq, count[c])\n            while (right - left + 1) - max_freq > k:\n                count[s[left]] -= 1\n                left += 1\n            max_len = max(max_len, right - left + 1)\n        return max_len"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Initialize counts array of size 26, left = 0, maxFreq = 0, maxLen = 0. Then loop right from 0 to n - 1:."
+    ]
+  },
+  {
+    "seq": 40,
+    "whyNext": "Builds on fixed window and anagram frequencies: check if any window of length len(s1) in s2 has matching character counts.",
+    "brute": {
+      "idea": "Generate all permutations of s1 and check if any permutation appears as a substring of s2.",
+      "steps": [
+        "Generate all permutations of s1.",
+        "For each permutation, check if it exists in s2.",
+        "Return true if found."
+      ],
+      "whySlow": "Generating |s1|! permutations is exponential.",
+      "time": "O(n!)",
+      "space": "O(n!)",
+      "code": {
+        "java": "class Solution {\n    public boolean checkInclusion(String s1, String s2) {\n        if (s1.length() > s2.length()) return false;\n        int[] c1 = new int[26];\n        for (char c : s1.toCharArray()) c1[c - 'a']++;\n        int k = s1.length();\n        for (int i = 0; i <= s2.length() - k; i++) {\n            int[] c2 = new int[26];\n            for (int j = i; j < i + k; j++) c2[s2.charAt(j) - 'a']++;\n            if (Arrays.equals(c1, c2)) return true;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def checkInclusion(self, s1: str, s2: str) -> bool:\n        if len(s1) > len(s2): return False\n        c1 = collections.Counter(s1)\n        k = len(s1)\n        for i in range(len(s2) - k + 1):\n            if collections.Counter(s2[i:i+k]) == c1:\n                return True\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Fixed-size sliding window of size len(s1): maintain character count comparison, sliding by adding incoming and subtracting outgoing.",
+      "steps": [
+        "If s1.length > s2.length, return false.",
+        "Count frequencies of s1 and first s1.length characters of s2.",
+        "If counts match, return true.",
+        "Slide window: add s2[i], remove s2[i - k], check for match at each step."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean checkInclusion(String s1, String s2) {\n        if (s1.length() > s2.length()) return false;\n        int[] c1 = new int[26], c2 = new int[26];\n        int k = s1.length();\n        for (int i = 0; i < k; i++) {\n            c1[s1.charAt(i) - 'a']++;\n            c2[s2.charAt(i) - 'a']++;\n        }\n        if (Arrays.equals(c1, c2)) return true;\n        for (int i = k; i < s2.length(); i++) {\n            c2[s2.charAt(i) - 'a']++;\n            c2[s2.charAt(i - k) - 'a']--;\n            if (Arrays.equals(c1, c2)) return true;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def checkInclusion(self, s1: str, s2: str) -> bool:\n        if len(s1) > len(s2): return False\n        c1, c2 = [0] * 26, [0] * 26\n        k = len(s1)\n        for i in range(k):\n            c1[ord(s1[i]) - ord('a')] += 1\n            c2[ord(s2[i]) - ord('a')] += 1\n        if c1 == c2: return True\n        for i in range(k, len(s2)):\n            c2[ord(s2[i]) - ord('a')] += 1\n            c2[ord(s2[i - k]) - ord('a')] -= 1\n            if c1 == c2: return True\n        return False"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: If the length of s1 is greater than the length of s2, return false. Then count frequencies of s1 and first the length of s1 characters of s2."
+    ]
+  },
+  {
+    "seq": 41,
+    "whyNext": "Builds on Permutation in String: instead of returning upon first match, collect all window starting indices matching anagram frequencies.",
+    "brute": {
+      "idea": "For every window of length p in s, sort characters and compare with sorted p.",
+      "steps": [
+        "Sort string p.",
+        "Loop i from 0 to s.length - p.length.",
+        "If sorted s[i...i+p.len] == sorted p, add i to result."
+      ],
+      "whySlow": "Sorting every window takes O(s * p log p) time.",
+      "time": "O(nk log k)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> findAnagrams(String s, String p) {\n        List<Integer> res = new ArrayList<>();\n        if (s.length() < p.length()) return res;\n        char[] pArr = p.toCharArray();\n        Arrays.sort(pArr);\n        String sortedP = new String(pArr);\n        int k = p.length();\n        for (int i = 0; i <= s.length() - k; i++) {\n            char[] sub = s.substring(i, i + k).toCharArray();\n            Arrays.sort(sub);\n            if (new String(sub).equals(sortedP)) res.add(i);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findAnagrams(self, s: str, p: str) -> list[int]:\n        res = []\n        if len(s) < len(p): return res\n        sp = sorted(p)\n        k = len(p)\n        for i in range(len(s) - k + 1):\n            if sorted(s[i:i+k]) == sp:\n                res.append(i)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window with frequency array: slide a window of size len(p) across s, recording start index whenever frequency counts match.",
+      "steps": [
+        "If s.length < p.length, return empty list.",
+        "Fill count arrays for p and the first len(p) characters of s.",
+        "If counts equal, add 0 to result.",
+        "Slide window: add s[i], remove s[i - len(p)], check equality, add index if equal."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> findAnagrams(String s, String p) {\n        List<Integer> res = new ArrayList<>();\n        if (s.length() < p.length()) return res;\n        int[] pCount = new int[26], sCount = new int[26];\n        int k = p.length();\n        for (int i = 0; i < k; i++) {\n            pCount[p.charAt(i) - 'a']++;\n            sCount[s.charAt(i) - 'a']++;\n        }\n        if (Arrays.equals(pCount, sCount)) res.add(0);\n        for (int i = k; i < s.length(); i++) {\n            sCount[s.charAt(i) - 'a']++;\n            sCount[s.charAt(i - k) - 'a']--;\n            if (Arrays.equals(pCount, sCount)) res.add(i - k + 1);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findAnagrams(self, s: str, p: str) -> list[int]:\n        res = []\n        if len(s) < len(p): return res\n        p_c, s_c = [0] * 26, [0] * 26\n        k = len(p)\n        for i in range(k):\n            p_c[ord(p[i]) - ord('a')] += 1\n            s_c[ord(s[i]) - ord('a')] += 1\n        if p_c == s_c: res.append(0)\n        for i in range(k, len(s)):\n            s_c[ord(s[i]) - ord('a')] += 1\n            s_c[ord(s[i - k]) - ord('a')] -= 1\n            if p_c == s_c: res.append(i - k + 1)\n        return res"
+      }
+    },
+    "hints": [
+      "Instead of nested loops, can you store previous elements or counts so you can query complementary values in constant time?.",
+      "Apply a Hash Map or frequency table. This achieves O n time and O 1 auxiliary space.",
+      "Record each element and its occurrence or index in the map, and look up whether the required match or complement has already been recorded. In detail: If the length of s is less than the length of p, return empty list. Then fill count arrays for p and the first len p characters of s."
+    ]
+  },
+  {
+    "seq": 42,
+    "whyNext": "Dynamic window minimization: expand right until window sum >= target, then shrink left to minimize window size.",
+    "brute": {
+      "idea": "Check all subarrays using nested loops and find the minimum length whose sum is at least target.",
+      "steps": [
+        "Loop start i from 0 to n - 1.",
+        "Loop end j from i to n - 1, summing elements.",
+        "If sum >= target, minLen = min(minLen, j - i + 1)."
+      ],
+      "whySlow": "Evaluating all subarrays takes quadratic O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int minLen = Integer.MAX_VALUE;\n        for (int i = 0; i < nums.length; i++) {\n            int sum = 0;\n            for (int j = i; j < nums.length; j++) {\n                sum += nums[j];\n                if (sum >= target) { minLen = Math.min(minLen, j - i + 1); break; }\n            }\n        }\n        return minLen == Integer.MAX_VALUE ? 0 : minLen;\n    }\n}",
+        "python": "class Solution:\n    def minSubArrayLen(self, target: int, nums: list[int]) -> int:\n        min_len = float('inf')\n        for i in range(len(nums)):\n            s = 0\n            for j in range(i, len(nums)):\n                s += nums[j]\n                if s >= target:\n                    min_len = min(min_len, j - i + 1)\n                    break\n        return 0 if min_len == float('inf') else min_len"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers: expand right adding nums[right] to sum. While sum >= target, update minLen and subtract nums[left], incrementing left.",
+      "steps": [
+        "Initialize left = 0, sum = 0, minLen = Integer.MAX_VALUE.",
+        "For right = 0 to n - 1:",
+        "sum += nums[right].",
+        "While sum >= target: minLen = min(minLen, right - left + 1), sum -= nums[left++].",
+        "Return minLen if updated, else 0."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int l = 0, sum = 0, min = Integer.MAX_VALUE;\n        for (int r = 0; r < nums.length; r++) {\n            sum += nums[r];\n            while (sum >= target) {\n                min = Math.min(min, r - l + 1);\n                sum -= nums[l++];\n            }\n        }\n        return min == Integer.MAX_VALUE ? 0 : min;\n    }\n}",
+        "python": "class Solution:\n    def minSubArrayLen(self, target: int, nums: list[int]) -> int:\n        l = 0\n        s = 0\n        min_l = float('inf')\n        for r in range(len(nums)):\n            s += nums[r]\n            while s >= target:\n                min_l = min(min_l, r - l + 1)\n                s -= nums[l]\n                l += 1\n        return 0 if min_l == float('inf') else min_l"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize left = 0, sum = 0, minLen = Integer.MAX VALUE. Then for right = 0 to n - 1:."
+    ]
+  },
+  {
+    "seq": 43,
+    "whyNext": "Builds on dynamic window: counting subarrays where product < k by adding (right - left + 1) at each expansion step.",
+    "brute": {
+      "idea": "Calculate the product of every subarray and count those strictly less than k.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Maintain running product prod = 1.",
+        "Loop j from i to n - 1: prod *= nums[j]; if prod < k increment count, else break."
+      ],
+      "whySlow": "Evaluating all subarrays takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numSubarrayProductLessThanK(int[] nums, int k) {\n        if (k <= 1) return 0;\n        int count = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int prod = 1;\n            for (int j = i; j < nums.length; j++) {\n                prod *= nums[j];\n                if (prod < k) count++;\n                else break;\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def numSubarrayProductLessThanK(self, nums: list[int], k: int) -> int:\n        if k <= 1: return 0\n        count = 0\n        for i in range(len(nums)):\n            p = 1\n            for j in range(i, len(nums)):\n                p *= nums[j]\n                if p < k: count += 1\n                else: break\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window: multiply prod *= nums[right]. While prod >= k, prod /= nums[left++]. Add (right - left + 1) to count.",
+      "steps": [
+        "If k <= 1, return 0.",
+        "Initialize left = 0, prod = 1, count = 0.",
+        "For right = 0 to n - 1:",
+        "prod *= nums[right].",
+        "While prod >= k, prod /= nums[left++].",
+        "count += right - left + 1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numSubarrayProductLessThanK(int[] nums, int k) {\n        if (k <= 1) return 0;\n        int count = 0, l = 0, prod = 1;\n        for (int r = 0; r < nums.length; r++) {\n            prod *= nums[r];\n            while (prod >= k) prod /= nums[l++];\n            count += r - l + 1;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def numSubarrayProductLessThanK(self, nums: list[int], k: int) -> int:\n        if k <= 1: return 0\n        l, prod, count = 0, 1, 0\n        for r, x in enumerate(nums):\n            prod *= x\n            while prod >= k:\n                prod //= nums[l]\n                l += 1\n            count += r - l + 1\n        return count"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: If k is at most 1, return 0. Then initialize left = 0, prod = 1, count = 0."
+    ]
+  },
+  {
+    "seq": 44,
+    "whyNext": "Builds on sliding window with distinct element counts: shrink window when number of distinct fruit types exceeds 2.",
+    "brute": {
+      "idea": "For each starting tree i, extend until encountering a 3rd distinct fruit type.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Track distinct fruits with a set.",
+        "Advance j until set size > 2.",
+        "Update max length with j - i."
+      ],
+      "whySlow": "Evaluating every starting position takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int totalFruit(int[] fruits) {\n        int max = 0;\n        for (int i = 0; i < fruits.length; i++) {\n            Set<Integer> set = new HashSet<>();\n            for (int j = i; j < fruits.length; j++) {\n                set.add(fruits[j]);\n                if (set.size() > 2) break;\n                max = Math.max(max, j - i + 1);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def totalFruit(self, fruits: list[int]) -> int:\n        max_f = 0\n        for i in range(len(fruits)):\n            s = set()\n            for j in range(i, len(fruits)):\n                s.add(fruits[j])\n                if len(s) > 2: break\n                max_f = max(max_f, j - i + 1)\n        return max_f"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window with frequency map: expand right; when map size > 2, decrement count of fruits[left] and shrink until size <= 2.",
+      "steps": [
+        "Map count of each fruit type.",
+        "Loop right from 0 to n - 1, adding fruits[right] to map.",
+        "While map.size() > 2, decrement fruits[left]; remove from map if count reaches 0, then left++.",
+        "maxLen = max(maxLen, right - left + 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int totalFruit(int[] fruits) {\n        Map<Integer, Integer> map = new HashMap<>();\n        int l = 0, max = 0;\n        for (int r = 0; r < fruits.length; r++) {\n            map.put(fruits[r], map.getOrDefault(fruits[r], 0) + 1);\n            while (map.size() > 2) {\n                map.put(fruits[l], map.get(fruits[l]) - 1);\n                if (map.get(fruits[l]) == 0) map.remove(fruits[l]);\n                l++;\n            }\n            max = Math.max(max, r - l + 1);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def totalFruit(self, fruits: list[int]) -> int:\n        count = collections.defaultdict(int)\n        l, max_f = 0, 0\n        for r, f in enumerate(fruits):\n            count[f] += 1\n            while len(count) > 2:\n                count[fruits[l]] -= 1\n                if count[fruits[l]] == 0:\n                    del count[fruits[l]]\n                l += 1\n            max_f = max(max_f, r - l + 1)\n        return max_f"
+      }
+    },
+    "hints": [
+      "Instead of nested loops, can you store previous elements or counts so you can query complementary values in constant time?.",
+      "Apply a Hash Map or frequency table. This achieves O n time and O 1 auxiliary space.",
+      "Record each element and its occurrence or index in the map, and look up whether the required match or complement has already been recorded. In detail: Map count of each fruit type. Then loop right from 0 to n - 1, adding fruits at index right to map."
+    ]
+  },
+  {
+    "seq": 45,
+    "whyNext": "Builds on Fruit Into Baskets: sliding window allowing at most k zeroes (analogous to allowing k flips).",
+    "brute": {
+      "idea": "For every starting point, extend subarray counting zeroes until zeroes exceed k.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Count zeros; stop when zeros > k.",
+        "Update max length."
+      ],
+      "whySlow": "Evaluating every starting position takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestOnes(int[] nums, int k) {\n        int max = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int zeros = 0;\n            for (int j = i; j < nums.length; j++) {\n                if (nums[j] == 0) zeros++;\n                if (zeros > k) break;\n                max = Math.max(max, j - i + 1);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestOnes(self, nums: list[int], k: int) -> int:\n        max_l = 0\n        for i in range(len(nums)):\n            z = 0\n            for j in range(i, len(nums)):\n                if nums[j] == 0: z += 1\n                if z > k: break\n                max_l = max(max_l, j - i + 1)\n        return max_l"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window: expand right. When nums[right] == 0, increment zeroCount. While zeroCount > k, if nums[left] == 0 decrement zeroCount, and left++.",
+      "steps": [
+        "Initialize left = 0, zeroCount = 0, maxLen = 0.",
+        "For right = 0 to n - 1:",
+        "If nums[right] == 0, zeroCount++.",
+        "While zeroCount > k, if nums[left] == 0 zeroCount--, left++.",
+        "maxLen = max(maxLen, right - left + 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestOnes(int[] nums, int k) {\n        int l = 0, zeros = 0, max = 0;\n        for (int r = 0; r < nums.length; r++) {\n            if (nums[r] == 0) zeros++;\n            while (zeros > k) {\n                if (nums[l] == 0) zeros--;\n                l++;\n            }\n            max = Math.max(max, r - l + 1);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestOnes(self, nums: list[int], k: int) -> int:\n        l, zeros, max_l = 0, 0, 0\n        for r, x in enumerate(nums):\n            if x == 0: zeros += 1\n            while zeros > k:\n                if nums[l] == 0: zeros -= 1\n                l += 1\n            max_l = max(max_l, r - l + 1)\n        return max_l"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Initialize left = 0, zeroCount = 0, maxLen = 0. Then for right = 0 to n - 1:."
+    ]
+  },
+  {
+    "seq": 46,
+    "whyNext": "Solves exact sum problem using sliding window: atMost(goal) - atMost(goal - 1), or prefix sum hash map.",
+    "brute": {
+      "idea": "Calculate the sum of all subarrays and count those equal to goal.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i to n - 1, maintaining sum.",
+        "If sum == goal, increment count."
+      ],
+      "whySlow": "Evaluating every subarray takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numSubarraysWithSum(int[] nums, int goal) {\n        int count = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int sum = 0;\n            for (int j = i; j < nums.length; j++) {\n                sum += nums[j];\n                if (sum == goal) count++;\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def numSubarraysWithSum(self, nums: list[int], goal: int) -> int:\n        count = 0\n        for i in range(len(nums)):\n            s = 0\n            for j in range(i, len(nums)):\n                s += nums[j]\n                if s == goal: count += 1\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Use the atMost trick: exact(goal) = atMost(goal) - atMost(goal - 1), each computed with sliding window in O(n).",
+      "steps": [
+        "Define helper atMost(S): count subarrays with sum <= S using sliding window.",
+        "If S < 0, return 0.",
+        "Expand right adding nums[right] to sum; shrink left while sum > S; add (right - left + 1) to total.",
+        "Return atMost(goal) - atMost(goal - 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numSubarraysWithSum(int[] nums, int goal) {\n        return atMost(nums, goal) - atMost(nums, goal - 1);\n    }\n    private int atMost(int[] nums, int s) {\n        if (s < 0) return 0;\n        int l = 0, sum = 0, count = 0;\n        for (int r = 0; r < nums.length; r++) {\n            sum += nums[r];\n            while (sum > s) sum -= nums[l++];\n            count += r - l + 1;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def numSubarraysWithSum(self, nums: list[int], goal: int) -> int:\n        def at_most(s):\n            if s < 0: return 0\n            l, curr, count = 0, 0, 0\n            for r, x in enumerate(nums):\n                curr += x\n                while curr > s:\n                    curr -= nums[l]\n                    l += 1\n                count += r - l + 1\n            return count\n        return at_most(goal) - at_most(goal - 1)"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Define helper atMost S : count subarrays with sum is at most S using sliding window. Then if s is less than 0, return 0."
+    ]
+  },
+  {
+    "seq": 47,
+    "whyNext": "Builds on Find All Anagrams: dynamically expand window until all target characters satisfied, then shrink left to find minimal substring.",
+    "brute": {
+      "idea": "Examine every substring of s and check if it contains all characters of t in required quantities.",
+      "steps": [
+        "Loop start i from 0 to n - 1.",
+        "Loop end j from i to n - 1.",
+        "Check if frequency of every char in t is satisfied in s[i...j].",
+        "Track shortest valid substring."
+      ],
+      "whySlow": "Checking all substrings takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(t)",
+      "code": {
+        "java": "class Solution {\n    public String minWindow(String s, String t) {\n        if (s.length() < t.length()) return \"\";\n        Map<Character, Integer> tMap = new HashMap<>();\n        for (char c : t.toCharArray()) tMap.put(c, tMap.getOrDefault(c, 0) + 1);\n        String minStr = \"\";\n        int minLen = Integer.MAX_VALUE;\n        for (int i = 0; i < s.length(); i++) {\n            Map<Character, Integer> sMap = new HashMap<>();\n            for (int j = i; j < s.length(); j++) {\n                char c = s.charAt(j);\n                sMap.put(c, sMap.getOrDefault(c, 0) + 1);\n                boolean valid = true;\n                for (char tc : tMap.keySet()) {\n                    if (sMap.getOrDefault(tc, 0) < tMap.get(tc)) { valid = false; break; }\n                }\n                if (valid && (j - i + 1) < minLen) {\n                    minLen = j - i + 1;\n                    minStr = s.substring(i, j + 1);\n                    break;\n                }\n            }\n        }\n        return minStr;\n    }\n}",
+        "python": "class Solution:\n    def minWindow(self, s: str, t: str) -> str:\n        if len(s) < len(t): return \"\"\n        t_count = collections.Counter(t)\n        min_str = \"\"\n        min_len = float('inf')\n        for i in range(len(s)):\n            s_count = collections.Counter()\n            for j in range(i, len(s)):\n                s_count[s[j]] += 1\n                if all(s_count[c] >= t_count[c] for c in t_count):\n                    if j - i + 1 < min_len:\n                        min_len = j - i + 1\n                        min_str = s[i:j+1]\n                    break\n        return min_str"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers with formed match counter: expand right to satisfy all characters; shrink left to minimize window length.",
+      "steps": [
+        "Map character requirements of t into count array.",
+        "Track required matches needed vs formed.",
+        "Expand right: decrement count; if count[c] >= 0, formed++.",
+        "While formed == t.length: update min window, increment count for s[left]; if count > 0, formed--, left++.",
+        "Return min window."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public String minWindow(String s, String t) {\n        if (s.length() < t.length()) return \"\";\n        int[] map = new int[128];\n        for (char c : t.toCharArray()) map[c]++;\n        int count = t.length(), l = 0, minLen = Integer.MAX_VALUE, start = 0;\n        for (int r = 0; r < s.length(); r++) {\n            if (map[s.charAt(r)]-- > 0) count--;\n            while (count == 0) {\n                if (r - l + 1 < minLen) { minLen = r - l + 1; start = l; }\n                if (++map[s.charAt(l++)] > 0) count++;\n            }\n        }\n        return minLen == Integer.MAX_VALUE ? \"\" : s.substring(start, start + minLen);\n    }\n}",
+        "python": "class Solution:\n    def minWindow(self, s: str, t: str) -> str:\n        if len(s) < len(t): return \"\"\n        counts = collections.Counter(t)\n        needed = len(t)\n        l, start, min_len = 0, 0, float('inf')\n        for r, c in enumerate(s):\n            if counts[c] > 0: needed -= 1\n            counts[c] -= 1\n            while needed == 0:\n                if r - l + 1 < min_len:\n                    min_len = r - l + 1\n                    start = l\n                counts[s[l]] += 1\n                if counts[s[l]] > 0: needed += 1\n                l += 1\n        return \"\" if min_len == float('inf') else s[start:start+min_len]"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O 1 auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Map character requirements of t into count array. Then track required matches needed vs formed."
+    ]
+  },
+  {
+    "seq": 48,
+    "whyNext": "Maintains sliding window extremum: monotonic deque stores indices of decreasing elements, answering maximum in O(1).",
+    "brute": {
+      "idea": "For every window of length k, scan all k elements to locate the maximum.",
+      "steps": [
+        "Loop i from 0 to n - k.",
+        "Scan nums[i ... i + k - 1] to find maximum value.",
+        "Record maximum in result."
+      ],
+      "whySlow": "Scanning each of n - k + 1 windows takes O(nk) time.",
+      "time": "O(nk)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int n = nums.length;\n        int[] res = new int[n - k + 1];\n        for (int i = 0; i <= n - k; i++) {\n            int max = nums[i];\n            for (int j = i + 1; j < i + k; j++) max = Math.max(max, nums[j]);\n            res[i] = max;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        return [max(nums[i:i+k]) for i in range(len(nums) - k + 1)]"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing deque storing indices: remove indices outside current window from front; remove smaller elements from back.",
+      "steps": [
+        "Initialize an ArrayDeque of indices.",
+        "For each index i:",
+        "Remove front indices if out of window (q.peekFirst() <= i - k).",
+        "Remove back indices while nums[q.peekLast()] <= nums[i].",
+        "Add i to back.",
+        "When i >= k - 1, nums[q.peekFirst()] is window maximum."
+      ],
+      "time": "O(n)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int n = nums.length;\n        int[] res = new int[n - k + 1];\n        Deque<Integer> q = new ArrayDeque<>();\n        for (int i = 0; i < n; i++) {\n            while (!q.isEmpty() && q.peekFirst() < i - k + 1) q.pollFirst();\n            while (!q.isEmpty() && nums[q.peekLast()] < nums[i]) q.pollLast();\n            q.offerLast(i);\n            if (i >= k - 1) res[i - k + 1] = nums[q.peekFirst()];\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        q = collections.deque()\n        res = []\n        for i, x in enumerate(nums):\n            while q and q[0] < i - k + 1:\n                q.popleft()\n            while q and nums[q[-1]] < x:\n                q.pop()\n            q.append(i)\n            if i >= k - 1:\n                res.append(nums[q[0]])\n        return res"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O k auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Initialize an ArrayDeque of indices. Then for each index i:."
+    ]
+  },
+  {
+    "seq": 49,
+    "whyNext": "Completes Chapter 3: applies the atMost trick with distinct count map: exact(K) = atMost(K) - atMost(K - 1).",
+    "brute": {
+      "idea": "For each starting index i, expand j and count distinct elements with a set until distinct count exceeds k.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Track distinct elements in a set.",
+        "If set.size() == k, increment count; if > k, break."
+      ],
+      "whySlow": "Evaluating every subarray takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public int subarraysWithKDistinct(int[] nums, int k) {\n        int count = 0;\n        for (int i = 0; i < nums.length; i++) {\n            Set<Integer> set = new HashSet<>();\n            for (int j = i; j < nums.length; j++) {\n                set.add(nums[j]);\n                if (set.size() == k) count++;\n                else if (set.size() > k) break;\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def subarraysWithKDistinct(self, nums: list[int], k: int) -> int:\n        count = 0\n        for i in range(len(nums)):\n            s = set()\n            for j in range(i, len(nums)):\n                s.add(nums[j])\n                if len(s) == k: count += 1\n                elif len(s) > k: break\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "atMost helper: count subarrays with at most K distinct elements using sliding window. Answer is atMost(k) - atMost(k - 1).",
+      "steps": [
+        "Define atMost(K): expand right adding to frequency map; while map.size() > K, decrement nums[left] and left++; add (right - left + 1) to sum.",
+        "Return atMost(k) - atMost(k - 1)."
+      ],
+      "time": "O(n)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public int subarraysWithKDistinct(int[] nums, int k) {\n        return atMost(nums, k) - atMost(nums, k - 1);\n    }\n    private int atMost(int[] nums, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        int l = 0, count = 0;\n        for (int r = 0; r < nums.length; r++) {\n            map.put(nums[r], map.getOrDefault(nums[r], 0) + 1);\n            while (map.size() > k) {\n                map.put(nums[l], map.get(nums[l]) - 1);\n                if (map.get(nums[l]) == 0) map.remove(nums[l]);\n                l++;\n            }\n            count += r - l + 1;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def subarraysWithKDistinct(self, nums: list[int], k: int) -> int:\n        def at_most(k_distinct):\n            count = collections.defaultdict(int)\n            l, total = 0, 0\n            for r, x in enumerate(nums):\n                count[x] += 1\n                while len(count) > k_distinct:\n                    count[nums[l]] -= 1\n                    if count[nums[l]] == 0:\n                        del count[nums[l]]\n                    l += 1\n                total += r - l + 1\n            return total\n        return at_most(k) - at_most(k - 1)"
+      }
+    },
+    "hints": [
+      "Notice that contiguous subarrays or substrings can be examined by expanding an end pointer and shrinking a start pointer when constraints are violated.",
+      "Apply the Sliding Window technique. This achieves O n time and O k auxiliary space.",
+      "Expand the right boundary to incorporate new elements into the window, and increment the left boundary to restore the valid condition whenever constraints are exceeded. In detail: Define atMost K : expand right adding to frequency map while map.size is greater than K, decrement nums at index left and left++ add right - left + 1 to sum. Then return atmost k - atmost k - 1 ."
+    ]
+  }
+]

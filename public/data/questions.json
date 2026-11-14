@@ -1,0 +1,5102 @@
+[
+  {
+    "seq": 1,
+    "lc": 217,
+    "title": "Contains Duplicate",
+    "slug": "contains-duplicate",
+    "difficulty": "Easy",
+    "chapter": "ch-01",
+    "buildsOn": null,
+    "brute": {
+      "idea": "Compare every pair",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Add to a HashSet, stop on a repeat",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 2,
+    "lc": 1,
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "difficulty": "Easy",
+    "chapter": "ch-01",
+    "buildsOn": 1,
+    "brute": {
+      "idea": "Check every pair",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "HashMap of value to index, look up the complement",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 3,
+    "lc": 242,
+    "title": "Valid Anagram",
+    "slug": "valid-anagram",
+    "difficulty": "Easy",
+    "chapter": "ch-01",
+    "buildsOn": 2,
+    "brute": {
+      "idea": "Sort both strings and compare",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Count letters in a 26-slot array",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 4,
+    "lc": 49,
+    "title": "Group Anagrams",
+    "slug": "group-anagrams",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 3,
+    "brute": {
+      "idea": "Compare each word with every group",
+      "time": "O(n\u00b2k)"
+    },
+    "optimal": {
+      "idea": "Map keyed by sorted word or letter counts",
+      "time": "O(nk)"
+    }
+  },
+  {
+    "seq": 5,
+    "lc": 347,
+    "title": "Top K Frequent Elements",
+    "slug": "top-k-frequent-elements",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 4,
+    "brute": {
+      "idea": "Count, then sort by frequency",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Bucket sort by frequency",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 6,
+    "lc": 169,
+    "title": "Majority Element",
+    "slug": "majority-element",
+    "difficulty": "Easy",
+    "chapter": "ch-01",
+    "buildsOn": 5,
+    "brute": {
+      "idea": "HashMap counts or sort",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Boyer\u2013Moore voting",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 7,
+    "lc": 229,
+    "title": "Majority Element II",
+    "slug": "majority-element-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 6,
+    "brute": {
+      "idea": "HashMap counts",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Boyer\u2013Moore with two candidates",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 8,
+    "lc": 238,
+    "title": "Product of Array Except Self",
+    "slug": "product-of-array-except-self",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 7,
+    "brute": {
+      "idea": "For each index multiply all others",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Prefix and suffix products",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 9,
+    "lc": 560,
+    "title": "Subarray Sum Equals K",
+    "slug": "subarray-sum-equals-k",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 8,
+    "brute": {
+      "idea": "Sum every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Prefix sums with a HashMap of counts",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 10,
+    "lc": 525,
+    "title": "Contiguous Array",
+    "slug": "contiguous-array",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 9,
+    "brute": {
+      "idea": "Check every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Treat 0 as \u22121, map first index of each prefix",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 11,
+    "lc": 974,
+    "title": "Subarray Sums Divisible by K",
+    "slug": "subarray-sums-divisible-by-k",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 9,
+    "brute": {
+      "idea": "Sum every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Count prefix remainders",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 12,
+    "lc": 128,
+    "title": "Longest Consecutive Sequence",
+    "slug": "longest-consecutive-sequence",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 1,
+    "brute": {
+      "idea": "Sort and scan",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Set; start counting only at sequence starts",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 13,
+    "lc": 442,
+    "title": "Find All Duplicates in an Array",
+    "slug": "find-all-duplicates-in-an-array",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 1,
+    "brute": {
+      "idea": "HashSet of seen values",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Mark visited by negating a\\[abs(x)\u22121\\]",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 14,
+    "lc": 287,
+    "title": "Find the Duplicate Number",
+    "slug": "find-the-duplicate-number",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 13,
+    "brute": {
+      "idea": "Sort or HashSet",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Floyd cycle detection on indices",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 15,
+    "lc": 41,
+    "title": "First Missing Positive",
+    "slug": "first-missing-positive",
+    "difficulty": "Hard",
+    "chapter": "ch-01",
+    "buildsOn": 13,
+    "brute": {
+      "idea": "Put all in a set, test 1, 2, 3 and so on",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Cyclic placement: put x at index x\u22121",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 16,
+    "lc": 36,
+    "title": "Valid Sudoku",
+    "slug": "valid-sudoku",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 1,
+    "brute": {
+      "idea": "Three separate passes (rows, columns, boxes)",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "One pass with row, column and box sets",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 17,
+    "lc": 73,
+    "title": "Set Matrix Zeroes",
+    "slug": "set-matrix-zeroes",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 16,
+    "brute": {
+      "idea": "Copy the matrix and mark zeros",
+      "time": "O(mn) space"
+    },
+    "optimal": {
+      "idea": "Use first row and column as markers",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 18,
+    "lc": 118,
+    "title": "Pascal's Triangle",
+    "slug": "pascals-triangle",
+    "difficulty": "Easy",
+    "chapter": "ch-01",
+    "buildsOn": 17,
+    "brute": {
+      "idea": "Compute each value with the combination formula",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Build each row from the previous row",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 19,
+    "lc": 54,
+    "title": "Spiral Matrix",
+    "slug": "spiral-matrix",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 18,
+    "brute": {
+      "idea": "Visited matrix",
+      "time": "O(mn) space"
+    },
+    "optimal": {
+      "idea": "Shrink four boundaries",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 20,
+    "lc": 48,
+    "title": "Rotate Image",
+    "slug": "rotate-image",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 19,
+    "brute": {
+      "idea": "Copy into a new matrix",
+      "time": "O(n\u00b2) space"
+    },
+    "optimal": {
+      "idea": "Transpose, then reverse each row",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 21,
+    "lc": 189,
+    "title": "Rotate Array",
+    "slug": "rotate-array",
+    "difficulty": "Medium",
+    "chapter": "ch-01",
+    "buildsOn": 20,
+    "brute": {
+      "idea": "Shift by one, k times",
+      "time": "O(nk)"
+    },
+    "optimal": {
+      "idea": "Reverse the whole array, then the two parts",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 22,
+    "lc": 125,
+    "title": "Valid Palindrome",
+    "slug": "valid-palindrome",
+    "difficulty": "Easy",
+    "chapter": "ch-02",
+    "buildsOn": 21,
+    "brute": {
+      "idea": "Build a cleaned reverse and compare",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Two pointers moving inward",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 23,
+    "lc": 680,
+    "title": "Valid Palindrome II",
+    "slug": "valid-palindrome-ii",
+    "difficulty": "Easy",
+    "chapter": "ch-02",
+    "buildsOn": 22,
+    "brute": {
+      "idea": "Try deleting each character",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Two pointers; on a mismatch skip either side",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 24,
+    "lc": 167,
+    "title": "Two Sum II - Input Array Is Sorted",
+    "slug": "two-sum-ii-input-array-is-sorted",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 2,
+    "brute": {
+      "idea": "Check every pair",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Two pointers from both ends",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 25,
+    "lc": 15,
+    "title": "3Sum",
+    "slug": "3sum",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 24,
+    "brute": {
+      "idea": "Three nested loops plus a set",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Sort, fix one, two pointers",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 26,
+    "lc": 16,
+    "title": "3Sum Closest",
+    "slug": "3sum-closest",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 25,
+    "brute": {
+      "idea": "Three nested loops",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Sort, fix one, two pointers tracking the closest",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 27,
+    "lc": 18,
+    "title": "4Sum",
+    "slug": "4sum",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 25,
+    "brute": {
+      "idea": "Four nested loops",
+      "time": "O(n\u2074)"
+    },
+    "optimal": {
+      "idea": "Sort, fix two, two pointers",
+      "time": "O(n\u00b3)"
+    }
+  },
+  {
+    "seq": 28,
+    "lc": 11,
+    "title": "Container With Most Water",
+    "slug": "container-with-most-water",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 24,
+    "brute": {
+      "idea": "Try every pair",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Move the pointer at the shorter line",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 29,
+    "lc": 42,
+    "title": "Trapping Rain Water",
+    "slug": "trapping-rain-water",
+    "difficulty": "Hard",
+    "chapter": "ch-02",
+    "buildsOn": 28,
+    "brute": {
+      "idea": "For each bar scan for left and right max",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Two pointers with running maximums",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 30,
+    "lc": 26,
+    "title": "Remove Duplicates from Sorted Array",
+    "slug": "remove-duplicates-from-sorted-array",
+    "difficulty": "Easy",
+    "chapter": "ch-02",
+    "buildsOn": 24,
+    "brute": {
+      "idea": "Copy into a set or list",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Slow and fast pointers in place",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 31,
+    "lc": 283,
+    "title": "Move Zeroes",
+    "slug": "move-zeroes",
+    "difficulty": "Easy",
+    "chapter": "ch-02",
+    "buildsOn": 30,
+    "brute": {
+      "idea": "Copy non-zeros to a new array",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Slow and fast pointer swap",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 32,
+    "lc": 75,
+    "title": "Sort Colors",
+    "slug": "sort-colors",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 31,
+    "brute": {
+      "idea": "Sort the array",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Dutch national flag with three pointers",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 33,
+    "lc": 844,
+    "title": "Backspace String Compare",
+    "slug": "backspace-string-compare",
+    "difficulty": "Easy",
+    "chapter": "ch-02",
+    "buildsOn": 22,
+    "brute": {
+      "idea": "Build both strings with a stack",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Two pointers from the end",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 34,
+    "lc": 977,
+    "title": "Squares of a Sorted Array",
+    "slug": "squares-of-a-sorted-array",
+    "difficulty": "Easy",
+    "chapter": "ch-02",
+    "buildsOn": 24,
+    "brute": {
+      "idea": "Square, then sort",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Two pointers filling from the back",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 35,
+    "lc": 31,
+    "title": "Next Permutation",
+    "slug": "next-permutation",
+    "difficulty": "Medium",
+    "chapter": "ch-02",
+    "buildsOn": 32,
+    "brute": {
+      "idea": "Generate permutations in order",
+      "time": "O(n!\u00b7n)"
+    },
+    "optimal": {
+      "idea": "Find the pivot, swap with the next larger, reverse the tail",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 36,
+    "lc": 121,
+    "title": "Best Time to Buy and Sell Stock",
+    "slug": "best-time-to-buy-and-sell-stock",
+    "difficulty": "Easy",
+    "chapter": "ch-03",
+    "buildsOn": 28,
+    "brute": {
+      "idea": "Try every buy and sell pair",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Track the minimum price so far",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 37,
+    "lc": 643,
+    "title": "Maximum Average Subarray I",
+    "slug": "maximum-average-subarray-i",
+    "difficulty": "Easy",
+    "chapter": "ch-03",
+    "buildsOn": 36,
+    "brute": {
+      "idea": "Re-sum every window",
+      "time": "O(nk)"
+    },
+    "optimal": {
+      "idea": "Slide a fixed window: add one, drop one",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 38,
+    "lc": 3,
+    "title": "Longest Substring Without Repeating Characters",
+    "slug": "longest-substring-without-repeating-characters",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 37,
+    "brute": {
+      "idea": "Check every substring for repeats",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Window with a map of last seen index",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 39,
+    "lc": 424,
+    "title": "Longest Repeating Character Replacement",
+    "slug": "longest-repeating-character-replacement",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 38,
+    "brute": {
+      "idea": "Count each substring's most common letter",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Window valid while length \u2212 maxFreq \u2264 k",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 40,
+    "lc": 567,
+    "title": "Permutation in String",
+    "slug": "permutation-in-string",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 37,
+    "brute": {
+      "idea": "Generate all permutations of s1",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Fixed window with letter counts",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 41,
+    "lc": 438,
+    "title": "Find All Anagrams in a String",
+    "slug": "find-all-anagrams-in-a-string",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 40,
+    "brute": {
+      "idea": "Sort every window",
+      "time": "O(nk log k)"
+    },
+    "optimal": {
+      "idea": "Sliding count comparison",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 42,
+    "lc": 209,
+    "title": "Minimum Size Subarray Sum",
+    "slug": "minimum-size-subarray-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 37,
+    "brute": {
+      "idea": "Sum every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Grow right, shrink left while sum \u2265 target",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 43,
+    "lc": 713,
+    "title": "Subarray Product Less Than K",
+    "slug": "subarray-product-less-than-k",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 42,
+    "brute": {
+      "idea": "Multiply every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Window; add (right \u2212 left + 1) each step",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 44,
+    "lc": 904,
+    "title": "Fruit Into Baskets",
+    "slug": "fruit-into-baskets",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 39,
+    "brute": {
+      "idea": "Check every subarray for at most 2 types",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Window with a count map",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 45,
+    "lc": 1004,
+    "title": "Max Consecutive Ones III",
+    "slug": "max-consecutive-ones-iii",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 44,
+    "brute": {
+      "idea": "Count zeros in every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Window allowing at most k zeros",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 46,
+    "lc": 930,
+    "title": "Binary Subarrays With Sum",
+    "slug": "binary-subarrays-with-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-03",
+    "buildsOn": 9,
+    "brute": {
+      "idea": "Sum every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Prefix-sum map, or atMost(goal) \u2212 atMost(goal\u22121)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 47,
+    "lc": 76,
+    "title": "Minimum Window Substring",
+    "slug": "minimum-window-substring",
+    "difficulty": "Hard",
+    "chapter": "ch-03",
+    "buildsOn": 41,
+    "brute": {
+      "idea": "Check every substring",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Expand to cover, shrink to minimise",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 48,
+    "lc": 239,
+    "title": "Sliding Window Maximum",
+    "slug": "sliding-window-maximum",
+    "difficulty": "Hard",
+    "chapter": "ch-03",
+    "buildsOn": 37,
+    "brute": {
+      "idea": "Scan each window for its max",
+      "time": "O(nk)"
+    },
+    "optimal": {
+      "idea": "Monotonic deque",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 49,
+    "lc": 992,
+    "title": "Subarrays with K Different Integers",
+    "slug": "subarrays-with-k-different-integers",
+    "difficulty": "Hard",
+    "chapter": "ch-03",
+    "buildsOn": 46,
+    "brute": {
+      "idea": "Check every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "atMost(K) \u2212 atMost(K\u22121)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 50,
+    "lc": 704,
+    "title": "Binary Search",
+    "slug": "binary-search",
+    "difficulty": "Easy",
+    "chapter": "ch-04",
+    "buildsOn": 49,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Halve the range each step",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 51,
+    "lc": 35,
+    "title": "Search Insert Position",
+    "slug": "search-insert-position",
+    "difficulty": "Easy",
+    "chapter": "ch-04",
+    "buildsOn": 50,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Lower-bound binary search",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 52,
+    "lc": 278,
+    "title": "First Bad Version",
+    "slug": "first-bad-version",
+    "difficulty": "Easy",
+    "chapter": "ch-04",
+    "buildsOn": 51,
+    "brute": {
+      "idea": "Test versions one by one",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Binary search on the boundary",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 53,
+    "lc": 367,
+    "title": "Valid Perfect Square",
+    "slug": "valid-perfect-square",
+    "difficulty": "Easy",
+    "chapter": "ch-04",
+    "buildsOn": 52,
+    "brute": {
+      "idea": "Try i\u00b7i for each i",
+      "time": "O(\u221an)"
+    },
+    "optimal": {
+      "idea": "Binary search the root",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 54,
+    "lc": 69,
+    "title": "Sqrt(x)",
+    "slug": "sqrtx",
+    "difficulty": "Easy",
+    "chapter": "ch-04",
+    "buildsOn": 53,
+    "brute": {
+      "idea": "Try i\u00b7i \u2264 x upward",
+      "time": "O(\u221ax)"
+    },
+    "optimal": {
+      "idea": "Binary search the answer",
+      "time": "O(log x)"
+    }
+  },
+  {
+    "seq": 55,
+    "lc": 34,
+    "title": "Find First and Last Position of Element in Sorted Array",
+    "slug": "find-first-and-last-position-of-element-in-sorted-array",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 51,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Two binary searches (first and last)",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 56,
+    "lc": 33,
+    "title": "Search in Rotated Sorted Array",
+    "slug": "search-in-rotated-sorted-array",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 50,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Decide which half is sorted each step",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 57,
+    "lc": 81,
+    "title": "Search in Rotated Sorted Array II",
+    "slug": "search-in-rotated-sorted-array-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 56,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Same, shrink both ends on duplicates",
+      "time": "O(log n) average"
+    }
+  },
+  {
+    "seq": 58,
+    "lc": 153,
+    "title": "Find Minimum in Rotated Sorted Array",
+    "slug": "find-minimum-in-rotated-sorted-array",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 56,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Compare mid with the right end",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 59,
+    "lc": 162,
+    "title": "Find Peak Element",
+    "slug": "find-peak-element",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 58,
+    "brute": {
+      "idea": "Linear scan",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Move toward the larger neighbour",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 60,
+    "lc": 540,
+    "title": "Single Element in a Sorted Array",
+    "slug": "single-element-in-a-sorted-array",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 59,
+    "brute": {
+      "idea": "XOR everything",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Binary search on pair parity",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 61,
+    "lc": 74,
+    "title": "Search a 2D Matrix",
+    "slug": "search-a-2d-matrix",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 50,
+    "brute": {
+      "idea": "Scan every cell",
+      "time": "O(mn)"
+    },
+    "optimal": {
+      "idea": "Treat as one sorted array",
+      "time": "O(log mn)"
+    }
+  },
+  {
+    "seq": 62,
+    "lc": 240,
+    "title": "Search a 2D Matrix II",
+    "slug": "search-a-2d-matrix-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 61,
+    "brute": {
+      "idea": "Scan every cell",
+      "time": "O(mn)"
+    },
+    "optimal": {
+      "idea": "Staircase walk from top-right",
+      "time": "O(m+n)"
+    }
+  },
+  {
+    "seq": 63,
+    "lc": 875,
+    "title": "Koko Eating Bananas",
+    "slug": "koko-eating-bananas",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 54,
+    "brute": {
+      "idea": "Try every speed from 1 to max",
+      "time": "O(n\u00b7max)"
+    },
+    "optimal": {
+      "idea": "Binary search on speed",
+      "time": "O(n log max)"
+    }
+  },
+  {
+    "seq": 64,
+    "lc": 1011,
+    "title": "Capacity To Ship Packages Within D Days",
+    "slug": "capacity-to-ship-packages-within-d-days",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 63,
+    "brute": {
+      "idea": "Try every capacity",
+      "time": "O(n\u00b7sum)"
+    },
+    "optimal": {
+      "idea": "Binary search on capacity with a greedy check",
+      "time": "O(n log sum)"
+    }
+  },
+  {
+    "seq": 65,
+    "lc": 1482,
+    "title": "Minimum Number of Days to Make m Bouquets",
+    "slug": "minimum-number-of-days-to-make-m-bouquets",
+    "difficulty": "Medium",
+    "chapter": "ch-04",
+    "buildsOn": 64,
+    "brute": {
+      "idea": "Try every day",
+      "time": "O(n\u00b7max)"
+    },
+    "optimal": {
+      "idea": "Binary search on days with a count check",
+      "time": "O(n log max)"
+    }
+  },
+  {
+    "seq": 66,
+    "lc": 410,
+    "title": "Split Array Largest Sum",
+    "slug": "split-array-largest-sum",
+    "difficulty": "Hard",
+    "chapter": "ch-04",
+    "buildsOn": 64,
+    "brute": {
+      "idea": "Try every split with recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Binary search on the largest sum",
+      "time": "O(n log sum)"
+    }
+  },
+  {
+    "seq": 67,
+    "lc": 4,
+    "title": "Median of Two Sorted Arrays",
+    "slug": "median-of-two-sorted-arrays",
+    "difficulty": "Hard",
+    "chapter": "ch-04",
+    "buildsOn": 66,
+    "brute": {
+      "idea": "Merge and pick the middle",
+      "time": "O(m+n)"
+    },
+    "optimal": {
+      "idea": "Binary search the partition on the shorter array",
+      "time": "O(log min(m,n))"
+    }
+  },
+  {
+    "seq": 68,
+    "lc": 20,
+    "title": "Valid Parentheses",
+    "slug": "valid-parentheses",
+    "difficulty": "Easy",
+    "chapter": "ch-05",
+    "buildsOn": 33,
+    "brute": {
+      "idea": "Repeatedly delete matching pairs",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Stack of open brackets",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 69,
+    "lc": 155,
+    "title": "Min Stack",
+    "slug": "min-stack",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 68,
+    "brute": {
+      "idea": "Scan the stack for the minimum",
+      "time": "O(n) getMin"
+    },
+    "optimal": {
+      "idea": "Store (value, current min) pairs",
+      "time": "O(1)"
+    }
+  },
+  {
+    "seq": 70,
+    "lc": 150,
+    "title": "Evaluate Reverse Polish Notation",
+    "slug": "evaluate-reverse-polish-notation",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 68,
+    "brute": {
+      "idea": "Repeatedly find an operator and collapse",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Operand stack",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 71,
+    "lc": 227,
+    "title": "Basic Calculator II",
+    "slug": "basic-calculator-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 70,
+    "brute": {
+      "idea": "Two passes: multiply and divide first, then add and subtract",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "One pass with a stack",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 72,
+    "lc": 496,
+    "title": "Next Greater Element I",
+    "slug": "next-greater-element-i",
+    "difficulty": "Easy",
+    "chapter": "ch-05",
+    "buildsOn": 68,
+    "brute": {
+      "idea": "Scan right for each element",
+      "time": "O(nm)"
+    },
+    "optimal": {
+      "idea": "Monotonic stack plus a map",
+      "time": "O(n+m)"
+    }
+  },
+  {
+    "seq": 73,
+    "lc": 503,
+    "title": "Next Greater Element II",
+    "slug": "next-greater-element-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 72,
+    "brute": {
+      "idea": "Circular scan for each element",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Monotonic stack over 2n indices",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 74,
+    "lc": 739,
+    "title": "Daily Temperatures",
+    "slug": "daily-temperatures",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 72,
+    "brute": {
+      "idea": "Scan ahead for each day",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing stack",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 75,
+    "lc": 901,
+    "title": "Online Stock Span",
+    "slug": "online-stock-span",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 74,
+    "brute": {
+      "idea": "Walk back for each price",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Stack of (price, span)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 76,
+    "lc": 84,
+    "title": "Largest Rectangle in Histogram",
+    "slug": "largest-rectangle-in-histogram",
+    "difficulty": "Hard",
+    "chapter": "ch-05",
+    "buildsOn": 74,
+    "brute": {
+      "idea": "Expand around every bar",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Monotonic increasing stack",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 77,
+    "lc": 85,
+    "title": "Maximal Rectangle",
+    "slug": "maximal-rectangle",
+    "difficulty": "Hard",
+    "chapter": "ch-05",
+    "buildsOn": 76,
+    "brute": {
+      "idea": "Check every rectangle",
+      "time": "O(m\u00b2n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Histogram per row",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 78,
+    "lc": 402,
+    "title": "Remove K Digits",
+    "slug": "remove-k-digits",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 74,
+    "brute": {
+      "idea": "Try all removals",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Greedy monotonic stack",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 79,
+    "lc": 853,
+    "title": "Car Fleet",
+    "slug": "car-fleet",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 74,
+    "brute": {
+      "idea": "Simulate time steps",
+      "time": "O(n\u00b7T)"
+    },
+    "optimal": {
+      "idea": "Sort by position, stack of arrival times",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 80,
+    "lc": 394,
+    "title": "Decode String",
+    "slug": "decode-string",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 70,
+    "brute": {
+      "idea": "Expand the innermost brackets repeatedly",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Two stacks (counts and strings)",
+      "time": "O(n\u00b7len)"
+    }
+  },
+  {
+    "seq": 81,
+    "lc": 735,
+    "title": "Asteroid Collision",
+    "slug": "asteroid-collision",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 80,
+    "brute": {
+      "idea": "Simulate repeated passes",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Stack of survivors",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 82,
+    "lc": 71,
+    "title": "Simplify Path",
+    "slug": "simplify-path",
+    "difficulty": "Medium",
+    "chapter": "ch-05",
+    "buildsOn": 81,
+    "brute": {
+      "idea": "Manual string surgery",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Split by slash and use a stack",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 83,
+    "lc": 206,
+    "title": "Reverse Linked List",
+    "slug": "reverse-linked-list",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 82,
+    "brute": {
+      "idea": "Copy to an array and rebuild",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Flip pointers with prev and curr",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 84,
+    "lc": 21,
+    "title": "Merge Two Sorted Lists",
+    "slug": "merge-two-sorted-lists",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 83,
+    "brute": {
+      "idea": "Dump into an array and sort",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Two pointers with a dummy head",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 85,
+    "lc": 876,
+    "title": "Middle of the Linked List",
+    "slug": "middle-of-the-linked-list",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 83,
+    "brute": {
+      "idea": "Count nodes, then walk n/2",
+      "time": "two passes"
+    },
+    "optimal": {
+      "idea": "Slow and fast pointers",
+      "time": "one pass"
+    }
+  },
+  {
+    "seq": 86,
+    "lc": 141,
+    "title": "Linked List Cycle",
+    "slug": "linked-list-cycle",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 85,
+    "brute": {
+      "idea": "HashSet of visited nodes",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Floyd slow and fast",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 87,
+    "lc": 142,
+    "title": "Linked List Cycle II",
+    "slug": "linked-list-cycle-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 86,
+    "brute": {
+      "idea": "HashSet of visited nodes",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Floyd, then restart one pointer at the head",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 88,
+    "lc": 160,
+    "title": "Intersection of Two Linked Lists",
+    "slug": "intersection-of-two-linked-lists",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 86,
+    "brute": {
+      "idea": "HashSet of nodes from list A",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Two pointers that switch heads",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 89,
+    "lc": 19,
+    "title": "Remove Nth Node From End of List",
+    "slug": "remove-nth-node-from-end-of-list",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 85,
+    "brute": {
+      "idea": "Count the length, then remove",
+      "time": "two passes"
+    },
+    "optimal": {
+      "idea": "Fast pointer n steps ahead, one pass",
+      "time": "one pass"
+    }
+  },
+  {
+    "seq": 90,
+    "lc": 83,
+    "title": "Remove Duplicates from Sorted List",
+    "slug": "remove-duplicates-from-sorted-list",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 84,
+    "brute": {
+      "idea": "HashSet of seen values",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Skip equal next nodes",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 91,
+    "lc": 82,
+    "title": "Remove Duplicates from Sorted List II",
+    "slug": "remove-duplicates-from-sorted-list-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 90,
+    "brute": {
+      "idea": "Count map, then rebuild",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Dummy head, skip whole duplicate runs",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 92,
+    "lc": 234,
+    "title": "Palindrome Linked List",
+    "slug": "palindrome-linked-list",
+    "difficulty": "Easy",
+    "chapter": "ch-06",
+    "buildsOn": 85,
+    "brute": {
+      "idea": "Copy to an array, compare the ends",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Reverse the second half in place",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 93,
+    "lc": 2,
+    "title": "Add Two Numbers",
+    "slug": "add-two-numbers",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 84,
+    "brute": {
+      "idea": "Convert to integers (overflows)",
+      "time": "overflow risk"
+    },
+    "optimal": {
+      "idea": "Digit by digit with a carry",
+      "time": "O(max(m,n))"
+    }
+  },
+  {
+    "seq": 94,
+    "lc": 143,
+    "title": "Reorder List",
+    "slug": "reorder-list",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 92,
+    "brute": {
+      "idea": "Array with two indices",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Find the middle, reverse, merge",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 95,
+    "lc": 148,
+    "title": "Sort List",
+    "slug": "sort-list",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 84,
+    "brute": {
+      "idea": "Copy to an array and sort",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Merge sort on the list",
+      "time": "O(log n) space"
+    }
+  },
+  {
+    "seq": 96,
+    "lc": 138,
+    "title": "Copy List with Random Pointer",
+    "slug": "copy-list-with-random-pointer",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 83,
+    "brute": {
+      "idea": "HashMap from old node to new node",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Interleave copies, then split",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 97,
+    "lc": 25,
+    "title": "Reverse Nodes in k-Group",
+    "slug": "reverse-nodes-in-k-group",
+    "difficulty": "Hard",
+    "chapter": "ch-06",
+    "buildsOn": 83,
+    "brute": {
+      "idea": "Array, reverse chunks",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Reverse each group in place",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 98,
+    "lc": 23,
+    "title": "Merge k Sorted Lists",
+    "slug": "merge-k-sorted-lists",
+    "difficulty": "Hard",
+    "chapter": "ch-06",
+    "buildsOn": 84,
+    "brute": {
+      "idea": "Collect all values and sort",
+      "time": "O(N log N)"
+    },
+    "optimal": {
+      "idea": "Min-heap or divide and conquer",
+      "time": "O(N log k)"
+    }
+  },
+  {
+    "seq": 99,
+    "lc": 146,
+    "title": "LRU Cache",
+    "slug": "lru-cache",
+    "difficulty": "Medium",
+    "chapter": "ch-06",
+    "buildsOn": 96,
+    "brute": {
+      "idea": "Scan a list on every access",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "HashMap plus doubly linked list",
+      "time": "O(1)"
+    }
+  },
+  {
+    "seq": 100,
+    "lc": 509,
+    "title": "Fibonacci Number",
+    "slug": "fibonacci-number",
+    "difficulty": "Easy",
+    "chapter": "ch-07",
+    "buildsOn": 99,
+    "brute": {
+      "idea": "Plain recursion",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Memoisation or two variables",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 101,
+    "lc": 50,
+    "title": "Pow(x, n)",
+    "slug": "powx-n",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 100,
+    "brute": {
+      "idea": "Multiply n times",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Fast exponentiation (square and halve)",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 102,
+    "lc": 78,
+    "title": "Subsets",
+    "slug": "subsets",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 101,
+    "brute": {
+      "idea": "Enumerate all bitmasks",
+      "time": "O(n\u00b72\u207f)"
+    },
+    "optimal": {
+      "idea": "Backtracking: take or leave each item",
+      "time": "O(n\u00b72\u207f)"
+    }
+  },
+  {
+    "seq": 103,
+    "lc": 90,
+    "title": "Subsets II",
+    "slug": "subsets-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 102,
+    "brute": {
+      "idea": "Generate all, dedupe with a set",
+      "time": "O(n\u00b72\u207f), less memory"
+    },
+    "optimal": {
+      "idea": "Sort; skip equal values at the same level",
+      "time": "O(n\u00b72\u207f), less memory"
+    }
+  },
+  {
+    "seq": 104,
+    "lc": 39,
+    "title": "Combination Sum",
+    "slug": "combination-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 102,
+    "brute": {
+      "idea": "Try all subsets, filter by sum",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Backtrack with start index and remaining sum",
+      "time": "pruned"
+    }
+  },
+  {
+    "seq": 105,
+    "lc": 40,
+    "title": "Combination Sum II",
+    "slug": "combination-sum-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 103,
+    "brute": {
+      "idea": "All subsets, filter and dedupe",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Sort; use each once; skip duplicates",
+      "time": "pruned"
+    }
+  },
+  {
+    "seq": 106,
+    "lc": 216,
+    "title": "Combination Sum III",
+    "slug": "combination-sum-iii",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 104,
+    "brute": {
+      "idea": "All subsets of 1 to 9",
+      "time": "O(2\u2079)"
+    },
+    "optimal": {
+      "idea": "Backtrack with k and n limits",
+      "time": "pruned"
+    }
+  },
+  {
+    "seq": 107,
+    "lc": 77,
+    "title": "Combinations",
+    "slug": "combinations",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 102,
+    "brute": {
+      "idea": "All subsets, keep size k",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Backtrack with start index; stop at size k",
+      "time": "O(C(n,k)\u00b7k)"
+    }
+  },
+  {
+    "seq": 108,
+    "lc": 46,
+    "title": "Permutations",
+    "slug": "permutations",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 107,
+    "brute": {
+      "idea": "All n\u207f sequences, keep valid",
+      "time": "O(n\u207f)"
+    },
+    "optimal": {
+      "idea": "used array or in-place swap",
+      "time": "O(n\u00b7n!)"
+    }
+  },
+  {
+    "seq": 109,
+    "lc": 47,
+    "title": "Permutations II",
+    "slug": "permutations-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 108,
+    "brute": {
+      "idea": "Use a set to remove duplicates",
+      "time": "O(n\u00b7n!), less memory"
+    },
+    "optimal": {
+      "idea": "Sort; skip an equal value if the previous is unused",
+      "time": "O(n\u00b7n!), less memory"
+    }
+  },
+  {
+    "seq": 110,
+    "lc": 784,
+    "title": "Letter Case Permutation",
+    "slug": "letter-case-permutation",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 102,
+    "brute": {
+      "idea": "Iterative expansion",
+      "time": "O(n\u00b72\u02e1) both"
+    },
+    "optimal": {
+      "idea": "Backtrack: lower or upper at each letter",
+      "time": "O(n\u00b72\u02e1) both"
+    }
+  },
+  {
+    "seq": 111,
+    "lc": 17,
+    "title": "Letter Combinations of a Phone Number",
+    "slug": "letter-combinations-of-a-phone-number",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 107,
+    "brute": {
+      "idea": "Nested loops (depth fixed)",
+      "time": "O(4\u207f\u00b7n) both"
+    },
+    "optimal": {
+      "idea": "Backtrack by digit index",
+      "time": "O(4\u207f\u00b7n) both"
+    }
+  },
+  {
+    "seq": 112,
+    "lc": 22,
+    "title": "Generate Parentheses",
+    "slug": "generate-parentheses",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 111,
+    "brute": {
+      "idea": "All 2\u00b2\u207f strings, keep valid",
+      "time": "O(2\u00b2\u207f\u00b7n)"
+    },
+    "optimal": {
+      "idea": "Backtrack with open and close counts",
+      "time": "Catalan number"
+    }
+  },
+  {
+    "seq": 113,
+    "lc": 131,
+    "title": "Palindrome Partitioning",
+    "slug": "palindrome-partitioning",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 102,
+    "brute": {
+      "idea": "All partitions, then check",
+      "time": "O(n\u00b72\u207f), pruned"
+    },
+    "optimal": {
+      "idea": "Backtrack; cut only at palindromes",
+      "time": "O(n\u00b72\u207f), pruned"
+    }
+  },
+  {
+    "seq": 114,
+    "lc": 93,
+    "title": "Restore IP Addresses",
+    "slug": "restore-ip-addresses",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 113,
+    "brute": {
+      "idea": "Three nested cut loops",
+      "time": "bounded by 3\u2074"
+    },
+    "optimal": {
+      "idea": "Backtrack segments of 1 to 3 digits",
+      "time": "bounded by 3\u2074"
+    }
+  },
+  {
+    "seq": 115,
+    "lc": 79,
+    "title": "Word Search",
+    "slug": "word-search",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 114,
+    "brute": {
+      "idea": "Try all paths without pruning",
+      "time": "O(mn\u00b74\u02e1)"
+    },
+    "optimal": {
+      "idea": "DFS with visited marking and early stop",
+      "time": "pruned"
+    }
+  },
+  {
+    "seq": 116,
+    "lc": 51,
+    "title": "N-Queens",
+    "slug": "n-queens",
+    "difficulty": "Hard",
+    "chapter": "ch-07",
+    "buildsOn": 108,
+    "brute": {
+      "idea": "Try every placement of n queens",
+      "time": "O(n\u00b2\u207f)"
+    },
+    "optimal": {
+      "idea": "Row by row with column and diagonal sets",
+      "time": "O(n!)"
+    }
+  },
+  {
+    "seq": 117,
+    "lc": 52,
+    "title": "N-Queens II",
+    "slug": "n-queens-ii",
+    "difficulty": "Hard",
+    "chapter": "ch-07",
+    "buildsOn": 116,
+    "brute": {
+      "idea": "Same, building boards",
+      "time": "O(n!) both"
+    },
+    "optimal": {
+      "idea": "Same, only count solutions",
+      "time": "O(n!) both"
+    }
+  },
+  {
+    "seq": 118,
+    "lc": 37,
+    "title": "Sudoku Solver",
+    "slug": "sudoku-solver",
+    "difficulty": "Hard",
+    "chapter": "ch-07",
+    "buildsOn": 116,
+    "brute": {
+      "idea": "Try all digits everywhere",
+      "time": "9\u2078\u00b9"
+    },
+    "optimal": {
+      "idea": "Backtrack with row, column and box masks",
+      "time": "pruned"
+    }
+  },
+  {
+    "seq": 119,
+    "lc": 494,
+    "title": "Target Sum",
+    "slug": "target-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 102,
+    "brute": {
+      "idea": "Recursion: choose plus or minus",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Memoisation, or subset-sum DP on (sum+target)/2",
+      "time": "O(n\u00b7sum)"
+    }
+  },
+  {
+    "seq": 120,
+    "lc": 698,
+    "title": "Partition to K Equal Sum Subsets",
+    "slug": "partition-to-k-equal-sum-subsets",
+    "difficulty": "Medium",
+    "chapter": "ch-07",
+    "buildsOn": 119,
+    "brute": {
+      "idea": "Try all assignments to k buckets",
+      "time": "O(k\u207f)"
+    },
+    "optimal": {
+      "idea": "Backtrack with sorted input, or bitmask memo",
+      "time": "O(n\u00b72\u207f)"
+    }
+  },
+  {
+    "seq": 121,
+    "lc": 104,
+    "title": "Maximum Depth of Binary Tree",
+    "slug": "maximum-depth-of-binary-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 120,
+    "brute": {
+      "idea": "BFS counting levels",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Recursion: 1 + max(left, right)",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 122,
+    "lc": 111,
+    "title": "Minimum Depth of Binary Tree",
+    "slug": "minimum-depth-of-binary-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "Full recursion",
+      "time": "O(n), earlier exit"
+    },
+    "optimal": {
+      "idea": "BFS, stop at the first leaf",
+      "time": "O(n), earlier exit"
+    }
+  },
+  {
+    "seq": 123,
+    "lc": 226,
+    "title": "Invert Binary Tree",
+    "slug": "invert-binary-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "BFS swapping children",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Recursive swap",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 124,
+    "lc": 100,
+    "title": "Same Tree",
+    "slug": "same-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 123,
+    "brute": {
+      "idea": "Serialise both and compare",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Recurse on both trees together",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 125,
+    "lc": 101,
+    "title": "Symmetric Tree",
+    "slug": "symmetric-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 124,
+    "brute": {
+      "idea": "Invert one copy and compare",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Mirror recursion (left.left with right.right)",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 126,
+    "lc": 110,
+    "title": "Balanced Binary Tree",
+    "slug": "balanced-binary-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "Compute height at every node",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Bottom-up, return \u22121 if unbalanced",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 127,
+    "lc": 543,
+    "title": "Diameter of Binary Tree",
+    "slug": "diameter-of-binary-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 126,
+    "brute": {
+      "idea": "Heights of both sides at every node",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "One DFS with a global best",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 128,
+    "lc": 572,
+    "title": "Subtree of Another Tree",
+    "slug": "subtree-of-another-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 124,
+    "brute": {
+      "idea": "isSame check at every node",
+      "time": "O(mn)"
+    },
+    "optimal": {
+      "idea": "Serialise both and string match",
+      "time": "O(m+n)"
+    }
+  },
+  {
+    "seq": 129,
+    "lc": 112,
+    "title": "Path Sum",
+    "slug": "path-sum",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "List all root-to-leaf paths, then sum",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "DFS subtracting from the target",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 130,
+    "lc": 113,
+    "title": "Path Sum II",
+    "slug": "path-sum-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 129,
+    "brute": {
+      "idea": "Collect every path, then filter",
+      "time": "O(n\u00b2) worst case both"
+    },
+    "optimal": {
+      "idea": "Backtracking with a path list",
+      "time": "O(n\u00b2) worst case both"
+    }
+  },
+  {
+    "seq": 131,
+    "lc": 257,
+    "title": "Binary Tree Paths",
+    "slug": "binary-tree-paths",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 129,
+    "brute": {
+      "idea": "Build every path string separately",
+      "time": "O(n\u00b7h) both"
+    },
+    "optimal": {
+      "idea": "DFS with the path built on the way",
+      "time": "O(n\u00b7h) both"
+    }
+  },
+  {
+    "seq": 132,
+    "lc": 437,
+    "title": "Path Sum III",
+    "slug": "path-sum-iii",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 130,
+    "brute": {
+      "idea": "Start a DFS from every node",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Prefix-sum HashMap along the path",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 133,
+    "lc": 1448,
+    "title": "Count Good Nodes in Binary Tree",
+    "slug": "count-good-nodes-in-binary-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 129,
+    "brute": {
+      "idea": "Check each node against its whole path",
+      "time": "O(n\u00b7h)"
+    },
+    "optimal": {
+      "idea": "Pass the max so far downward",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 134,
+    "lc": 124,
+    "title": "Binary Tree Maximum Path Sum",
+    "slug": "binary-tree-maximum-path-sum",
+    "difficulty": "Hard",
+    "chapter": "ch-08",
+    "buildsOn": 127,
+    "brute": {
+      "idea": "Every node as the top, recompute gains",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "One DFS returning the best downward gain",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 135,
+    "lc": 102,
+    "title": "Binary Tree Level Order Traversal",
+    "slug": "binary-tree-level-order-traversal",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "DFS with a depth map",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "BFS by queue size",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 136,
+    "lc": 199,
+    "title": "Binary Tree Right Side View",
+    "slug": "binary-tree-right-side-view",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 135,
+    "brute": {
+      "idea": "Level order, keep the last of each level",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "BFS, or DFS visiting right first",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 137,
+    "lc": 103,
+    "title": "Binary Tree Zigzag Level Order Traversal",
+    "slug": "binary-tree-zigzag-level-order-traversal",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 135,
+    "brute": {
+      "idea": "Level order, reverse alternate levels",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Deque with a flipping direction",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 138,
+    "lc": 94,
+    "title": "Binary Tree Inorder Traversal",
+    "slug": "binary-tree-inorder-traversal",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(h) space"
+    },
+    "optimal": {
+      "idea": "Iterative stack, or Morris traversal",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 139,
+    "lc": 144,
+    "title": "Binary Tree Preorder Traversal",
+    "slug": "binary-tree-preorder-traversal",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 138,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Iterative stack",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 140,
+    "lc": 105,
+    "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 139,
+    "brute": {
+      "idea": "Linear search for the root in inorder each time",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "HashMap from value to inorder index",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 141,
+    "lc": 236,
+    "title": "Lowest Common Ancestor of a Binary Tree",
+    "slug": "lowest-common-ancestor-of-a-binary-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 129,
+    "brute": {
+      "idea": "Store both root paths and compare",
+      "time": "O(n) both, less memory"
+    },
+    "optimal": {
+      "idea": "Single DFS returning found nodes",
+      "time": "O(n) both, less memory"
+    }
+  },
+  {
+    "seq": 142,
+    "lc": 114,
+    "title": "Flatten Binary Tree to Linked List",
+    "slug": "flatten-binary-tree-to-linked-list",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 139,
+    "brute": {
+      "idea": "Preorder list, then rebuild",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Rewire using the rightmost node of the left subtree",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 143,
+    "lc": 297,
+    "title": "Serialize and Deserialize Binary Tree",
+    "slug": "serialize-and-deserialize-binary-tree",
+    "difficulty": "Hard",
+    "chapter": "ch-08",
+    "buildsOn": 140,
+    "brute": {
+      "idea": "Level order with null markers",
+      "time": "O(n) both"
+    },
+    "optimal": {
+      "idea": "Preorder with null markers",
+      "time": "O(n) both"
+    }
+  },
+  {
+    "seq": 144,
+    "lc": 863,
+    "title": "All Nodes Distance K in Binary Tree",
+    "slug": "all-nodes-distance-k-in-binary-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 141,
+    "brute": {
+      "idea": "Search from every node",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Parent map plus BFS from the target",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 145,
+    "lc": 662,
+    "title": "Maximum Width of Binary Tree",
+    "slug": "maximum-width-of-binary-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 135,
+    "brute": {
+      "idea": "Level order including null nodes",
+      "time": "O(2\u02b0)"
+    },
+    "optimal": {
+      "idea": "Index nodes like a heap; width = last \u2212 first + 1",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 146,
+    "lc": 222,
+    "title": "Count Complete Tree Nodes",
+    "slug": "count-complete-tree-nodes",
+    "difficulty": "Easy",
+    "chapter": "ch-08",
+    "buildsOn": 121,
+    "brute": {
+      "idea": "Visit all nodes",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Compare left and right heights",
+      "time": "O(log\u00b2 n)"
+    }
+  },
+  {
+    "seq": 147,
+    "lc": 337,
+    "title": "House Robber III",
+    "slug": "house-robber-iii",
+    "difficulty": "Medium",
+    "chapter": "ch-08",
+    "buildsOn": 132,
+    "brute": {
+      "idea": "Recursion with repeated subproblems",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Return a (rob, skip) pair per node",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 148,
+    "lc": 700,
+    "title": "Search in a Binary Search Tree",
+    "slug": "search-in-a-binary-search-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-09",
+    "buildsOn": 147,
+    "brute": {
+      "idea": "Search the whole tree",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Go left or right using the order",
+      "time": "O(h)"
+    }
+  },
+  {
+    "seq": 149,
+    "lc": 98,
+    "title": "Validate Binary Search Tree",
+    "slug": "validate-binary-search-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 148,
+    "brute": {
+      "idea": "Compare each node with its whole subtree",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Pass (low, high) bounds, or check inorder order",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 150,
+    "lc": 701,
+    "title": "Insert into a Binary Search Tree",
+    "slug": "insert-into-a-binary-search-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 148,
+    "brute": {
+      "idea": "Rebuild from the sorted values",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Walk down and attach a new leaf",
+      "time": "O(h)"
+    }
+  },
+  {
+    "seq": 151,
+    "lc": 450,
+    "title": "Delete Node in a BST",
+    "slug": "delete-node-in-a-bst",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 150,
+    "brute": {
+      "idea": "Rebuild without the key",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Replace with the successor or predecessor",
+      "time": "O(h)"
+    }
+  },
+  {
+    "seq": 152,
+    "lc": 230,
+    "title": "Kth Smallest Element in a BST",
+    "slug": "kth-smallest-element-in-a-bst",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 138,
+    "brute": {
+      "idea": "Inorder into a list, take index k\u22121",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Inorder with early stop",
+      "time": "O(h) space"
+    }
+  },
+  {
+    "seq": 153,
+    "lc": 235,
+    "title": "Lowest Common Ancestor of a Binary Search Tree",
+    "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 141,
+    "brute": {
+      "idea": "Generic LCA",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Walk using the BST order",
+      "time": "O(h)"
+    }
+  },
+  {
+    "seq": 154,
+    "lc": 108,
+    "title": "Convert Sorted Array to Binary Search Tree",
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "difficulty": "Easy",
+    "chapter": "ch-09",
+    "buildsOn": 150,
+    "brute": {
+      "idea": "Insert one by one (skewed tree)",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Pick the middle as root recursively",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 155,
+    "lc": 173,
+    "title": "Binary Search Tree Iterator",
+    "slug": "binary-search-tree-iterator",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 152,
+    "brute": {
+      "idea": "Flatten the whole tree up front",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Controlled inorder stack",
+      "time": "O(h) space"
+    }
+  },
+  {
+    "seq": 156,
+    "lc": 99,
+    "title": "Recover Binary Search Tree",
+    "slug": "recover-binary-search-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-09",
+    "buildsOn": 149,
+    "brute": {
+      "idea": "Inorder list, sort, rewrite",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Find the two out-of-order nodes in one inorder pass",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 157,
+    "lc": 703,
+    "title": "Kth Largest Element in a Stream",
+    "slug": "kth-largest-element-in-a-stream",
+    "difficulty": "Easy",
+    "chapter": "ch-10",
+    "buildsOn": 152,
+    "brute": {
+      "idea": "Sort after every add",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Min-heap of size k",
+      "time": "O(log k) per add"
+    }
+  },
+  {
+    "seq": 158,
+    "lc": 215,
+    "title": "Kth Largest Element in an Array",
+    "slug": "kth-largest-element-in-an-array",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 157,
+    "brute": {
+      "idea": "Sort",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Heap of size k, or quickselect",
+      "time": "O(n log k)"
+    }
+  },
+  {
+    "seq": 159,
+    "lc": 1046,
+    "title": "Last Stone Weight",
+    "slug": "last-stone-weight",
+    "difficulty": "Easy",
+    "chapter": "ch-10",
+    "buildsOn": 157,
+    "brute": {
+      "idea": "Re-sort every round",
+      "time": "O(n\u00b2 log n)"
+    },
+    "optimal": {
+      "idea": "Max-heap",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 160,
+    "lc": 973,
+    "title": "K Closest Points to Origin",
+    "slug": "k-closest-points-to-origin",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 158,
+    "brute": {
+      "idea": "Sort all distances",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Max-heap of size k, or quickselect",
+      "time": "O(n log k)"
+    }
+  },
+  {
+    "seq": 161,
+    "lc": 692,
+    "title": "Top K Frequent Words",
+    "slug": "top-k-frequent-words",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 5,
+    "brute": {
+      "idea": "Count, then full sort",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Heap with a frequency and alphabet comparator",
+      "time": "O(n log k)"
+    }
+  },
+  {
+    "seq": 162,
+    "lc": 451,
+    "title": "Sort Characters By Frequency",
+    "slug": "sort-characters-by-frequency",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 161,
+    "brute": {
+      "idea": "Sort characters, then regroup",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Count with buckets or a heap",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 163,
+    "lc": 621,
+    "title": "Task Scheduler",
+    "slug": "task-scheduler",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 159,
+    "brute": {
+      "idea": "Simulate slot by slot",
+      "time": "O(n\u00b7idle)"
+    },
+    "optimal": {
+      "idea": "Greedy formula, or max-heap",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 164,
+    "lc": 767,
+    "title": "Reorganize String",
+    "slug": "reorganize-string",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 163,
+    "brute": {
+      "idea": "Try all permutations",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Max-heap, alternate the top two",
+      "time": "O(n log k)"
+    }
+  },
+  {
+    "seq": 165,
+    "lc": 1054,
+    "title": "Distant Barcodes",
+    "slug": "distant-barcodes",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 164,
+    "brute": {
+      "idea": "Try all permutations",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Heap, or fill even then odd slots by frequency",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 166,
+    "lc": 295,
+    "title": "Find Median from Data Stream",
+    "slug": "find-median-from-data-stream",
+    "difficulty": "Hard",
+    "chapter": "ch-10",
+    "buildsOn": 158,
+    "brute": {
+      "idea": "Keep a sorted list by insertion",
+      "time": "O(n) per add"
+    },
+    "optimal": {
+      "idea": "Two heaps (max-heap low half, min-heap high half)",
+      "time": "O(log n)"
+    }
+  },
+  {
+    "seq": 167,
+    "lc": 378,
+    "title": "Kth Smallest Element in a Sorted Matrix",
+    "slug": "kth-smallest-element-in-a-sorted-matrix",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 158,
+    "brute": {
+      "idea": "Flatten and sort",
+      "time": "O(n\u00b2 log n)"
+    },
+    "optimal": {
+      "idea": "Min-heap by rows, or binary search on value",
+      "time": "O(k log n)"
+    }
+  },
+  {
+    "seq": 168,
+    "lc": 373,
+    "title": "Find K Pairs with Smallest Sums",
+    "slug": "find-k-pairs-with-smallest-sums",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 167,
+    "brute": {
+      "idea": "All pairs, then sort",
+      "time": "O(mn log mn)"
+    },
+    "optimal": {
+      "idea": "Min-heap expanding neighbours",
+      "time": "O(k log k)"
+    }
+  },
+  {
+    "seq": 169,
+    "lc": 355,
+    "title": "Design Twitter",
+    "slug": "design-twitter",
+    "difficulty": "Medium",
+    "chapter": "ch-10",
+    "buildsOn": 98,
+    "brute": {
+      "idea": "Collect all tweets and sort",
+      "time": "O(T log T)"
+    },
+    "optimal": {
+      "idea": "Merge feeds with a heap of latest tweets",
+      "time": "O(F + 10 log F)"
+    }
+  },
+  {
+    "seq": 170,
+    "lc": 502,
+    "title": "IPO",
+    "slug": "ipo",
+    "difficulty": "Hard",
+    "chapter": "ch-10",
+    "buildsOn": 166,
+    "brute": {
+      "idea": "Rescan projects every round",
+      "time": "O(kn)"
+    },
+    "optimal": {
+      "idea": "Sort by capital plus a max-heap of profits",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 171,
+    "lc": 455,
+    "title": "Assign Cookies",
+    "slug": "assign-cookies",
+    "difficulty": "Easy",
+    "chapter": "ch-11",
+    "buildsOn": 170,
+    "brute": {
+      "idea": "Try all pairings",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Sort both, match greedily",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 172,
+    "lc": 860,
+    "title": "Lemonade Change",
+    "slug": "lemonade-change",
+    "difficulty": "Easy",
+    "chapter": "ch-11",
+    "buildsOn": 171,
+    "brute": {
+      "idea": "Track every change combination",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Greedy: give a 10 plus a 5 first",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 173,
+    "lc": 561,
+    "title": "Array Partition",
+    "slug": "array-partition",
+    "difficulty": "Easy",
+    "chapter": "ch-11",
+    "buildsOn": 171,
+    "brute": {
+      "idea": "Try all pairings",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Sort, sum every other element",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 174,
+    "lc": 976,
+    "title": "Largest Perimeter Triangle",
+    "slug": "largest-perimeter-triangle",
+    "difficulty": "Easy",
+    "chapter": "ch-11",
+    "buildsOn": 173,
+    "brute": {
+      "idea": "Check all triples",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Sort descending, first valid triple",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 175,
+    "lc": 122,
+    "title": "Best Time to Buy and Sell Stock II",
+    "slug": "best-time-to-buy-and-sell-stock-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 36,
+    "brute": {
+      "idea": "Recursion over buy and sell",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Add every upward step",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 176,
+    "lc": 53,
+    "title": "Maximum Subarray",
+    "slug": "maximum-subarray",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 175,
+    "brute": {
+      "idea": "Sum every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Kadane's algorithm",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 177,
+    "lc": 918,
+    "title": "Maximum Sum Circular Subarray",
+    "slug": "maximum-sum-circular-subarray",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 176,
+    "brute": {
+      "idea": "Try every circular start",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "max(Kadane, total \u2212 minimum Kadane)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 178,
+    "lc": 55,
+    "title": "Jump Game",
+    "slug": "jump-game",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 176,
+    "brute": {
+      "idea": "Recursion over all jumps",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Track the farthest reachable index",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 179,
+    "lc": 45,
+    "title": "Jump Game II",
+    "slug": "jump-game-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 178,
+    "brute": {
+      "idea": "DP over all jumps",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Greedy window (BFS levels)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 180,
+    "lc": 134,
+    "title": "Gas Station",
+    "slug": "gas-station",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 179,
+    "brute": {
+      "idea": "Try each start",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "One pass with total and tank",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 181,
+    "lc": 135,
+    "title": "Candy",
+    "slug": "candy",
+    "difficulty": "Hard",
+    "chapter": "ch-11",
+    "buildsOn": 180,
+    "brute": {
+      "idea": "Repeatedly fix violations",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Left pass, then right pass",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 182,
+    "lc": 763,
+    "title": "Partition Labels",
+    "slug": "partition-labels",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 181,
+    "brute": {
+      "idea": "Try every cut",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Last-occurrence map, extend the end",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 183,
+    "lc": 316,
+    "title": "Remove Duplicate Letters",
+    "slug": "remove-duplicate-letters",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 182,
+    "brute": {
+      "idea": "Try all subsequences",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Greedy stack with last index",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 184,
+    "lc": 330,
+    "title": "Patching Array",
+    "slug": "patching-array",
+    "difficulty": "Hard",
+    "chapter": "ch-11",
+    "buildsOn": 183,
+    "brute": {
+      "idea": "Try all patch sets",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Greedy: extend the reachable range",
+      "time": "O(n + log target)"
+    }
+  },
+  {
+    "seq": 185,
+    "lc": 1029,
+    "title": "Two City Scheduling",
+    "slug": "two-city-scheduling",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 181,
+    "brute": {
+      "idea": "Try all assignments",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Sort by cost difference",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 186,
+    "lc": 406,
+    "title": "Queue Reconstruction by Height",
+    "slug": "queue-reconstruction-by-height",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 185,
+    "brute": {
+      "idea": "Try all orderings",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Sort height descending, insert at index k",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 187,
+    "lc": 678,
+    "title": "Valid Parenthesis String",
+    "slug": "valid-parenthesis-string",
+    "difficulty": "Medium",
+    "chapter": "ch-11",
+    "buildsOn": 68,
+    "brute": {
+      "idea": "Recursion over the star choices",
+      "time": "O(3\u207f)"
+    },
+    "optimal": {
+      "idea": "Track low and high open counts",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 188,
+    "lc": 56,
+    "title": "Merge Intervals",
+    "slug": "merge-intervals",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 187,
+    "brute": {
+      "idea": "Merge pairs repeatedly",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Sort by start, then sweep",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 189,
+    "lc": 57,
+    "title": "Insert Interval",
+    "slug": "insert-interval",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 188,
+    "brute": {
+      "idea": "Append, then re-merge everything",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "Three phases: before, overlap, after",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 190,
+    "lc": 435,
+    "title": "Non-overlapping Intervals",
+    "slug": "non-overlapping-intervals",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 188,
+    "brute": {
+      "idea": "Recursion over keep or drop",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Sort by end, keep greedily",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 191,
+    "lc": 452,
+    "title": "Minimum Number of Arrows to Burst Balloons",
+    "slug": "minimum-number-of-arrows-to-burst-balloons",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 190,
+    "brute": {
+      "idea": "Try arrow positions",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Sort by end, shoot at the end",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 192,
+    "lc": 986,
+    "title": "Interval List Intersections",
+    "slug": "interval-list-intersections",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 188,
+    "brute": {
+      "idea": "Compare all pairs",
+      "time": "O(mn)"
+    },
+    "optimal": {
+      "idea": "Two pointers on the sorted lists",
+      "time": "O(m+n)"
+    }
+  },
+  {
+    "seq": 193,
+    "lc": 1288,
+    "title": "Remove Covered Intervals",
+    "slug": "remove-covered-intervals",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 188,
+    "brute": {
+      "idea": "Compare all pairs",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Sort by start ascending and end descending; track the max end",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 194,
+    "lc": 729,
+    "title": "My Calendar I",
+    "slug": "my-calendar-i",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 188,
+    "brute": {
+      "idea": "List and check all bookings",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "TreeMap floor and ceiling check",
+      "time": "O(log n) per booking"
+    }
+  },
+  {
+    "seq": 195,
+    "lc": 1094,
+    "title": "Car Pooling",
+    "slug": "car-pooling",
+    "difficulty": "Medium",
+    "chapter": "ch-12",
+    "buildsOn": 194,
+    "brute": {
+      "idea": "Simulate every kilometre",
+      "time": "O(n\u00b7L)"
+    },
+    "optimal": {
+      "idea": "Difference array or sweep line",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 196,
+    "lc": 733,
+    "title": "Flood Fill",
+    "slug": "flood-fill",
+    "difficulty": "Easy",
+    "chapter": "ch-13",
+    "buildsOn": 115,
+    "brute": {
+      "idea": "Repeated passes until nothing changes",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "DFS or BFS from the start cell",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 197,
+    "lc": 200,
+    "title": "Number of Islands",
+    "slug": "number-of-islands",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 196,
+    "brute": {
+      "idea": "Repeated scans to merge land",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "DFS or BFS flooding each unseen land cell",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 198,
+    "lc": 695,
+    "title": "Max Area of Island",
+    "slug": "max-area-of-island",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 197,
+    "brute": {
+      "idea": "Re-scan for each island",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "DFS returning the area",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 199,
+    "lc": 463,
+    "title": "Island Perimeter",
+    "slug": "island-perimeter",
+    "difficulty": "Easy",
+    "chapter": "ch-13",
+    "buildsOn": 197,
+    "brute": {
+      "idea": "Count neighbours using a copied grid",
+      "time": "O(mn) both"
+    },
+    "optimal": {
+      "idea": "Count 4 minus shared edges",
+      "time": "O(mn) both"
+    }
+  },
+  {
+    "seq": 200,
+    "lc": 130,
+    "title": "Surrounded Regions",
+    "slug": "surrounded-regions",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 197,
+    "brute": {
+      "idea": "Flood each region, test if it touches the border",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "Flood from the border, flip the rest",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 201,
+    "lc": 417,
+    "title": "Pacific Atlantic Water Flow",
+    "slug": "pacific-atlantic-water-flow",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 200,
+    "brute": {
+      "idea": "DFS from every cell to both oceans",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "Reverse flow from each ocean's border",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 202,
+    "lc": 1020,
+    "title": "Number of Enclaves",
+    "slug": "number-of-enclaves",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 200,
+    "brute": {
+      "idea": "Test each region for a border touch",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "Flood border land, count the rest",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 203,
+    "lc": 994,
+    "title": "Rotting Oranges",
+    "slug": "rotting-oranges",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 197,
+    "brute": {
+      "idea": "Re-scan the grid every minute",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "Multi-source BFS",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 204,
+    "lc": 542,
+    "title": "01 Matrix",
+    "slug": "01-matrix",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 203,
+    "brute": {
+      "idea": "BFS from every cell",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "Multi-source BFS from all zeros",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 205,
+    "lc": 1091,
+    "title": "Shortest Path in Binary Matrix",
+    "slug": "shortest-path-in-binary-matrix",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 204,
+    "brute": {
+      "idea": "DFS over all paths",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "BFS with 8 directions",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 206,
+    "lc": 127,
+    "title": "Word Ladder",
+    "slug": "word-ladder",
+    "difficulty": "Hard",
+    "chapter": "ch-13",
+    "buildsOn": 205,
+    "brute": {
+      "idea": "DFS over all transformation paths",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "BFS with wildcard buckets",
+      "time": "O(N\u00b7L\u00b2)"
+    }
+  },
+  {
+    "seq": 207,
+    "lc": 133,
+    "title": "Clone Graph",
+    "slug": "clone-graph",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 197,
+    "brute": {
+      "idea": "Naive copy (loops forever on cycles)",
+      "time": "not workable"
+    },
+    "optimal": {
+      "idea": "DFS or BFS with an old-to-new map",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 208,
+    "lc": 785,
+    "title": "Is Graph Bipartite?",
+    "slug": "is-graph-bipartite",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 207,
+    "brute": {
+      "idea": "Try all two-colourings",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "BFS or DFS two-colouring",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 209,
+    "lc": 886,
+    "title": "Possible Bipartition",
+    "slug": "possible-bipartition",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 208,
+    "brute": {
+      "idea": "Try all splits",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Build the graph, then two-colour",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 210,
+    "lc": 841,
+    "title": "Keys and Rooms",
+    "slug": "keys-and-rooms",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 207,
+    "brute": {
+      "idea": "Repeated scans for new keys",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "DFS or BFS from room 0",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 211,
+    "lc": 547,
+    "title": "Number of Provinces",
+    "slug": "number-of-provinces",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 197,
+    "brute": {
+      "idea": "Merge by repeated scanning",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "DFS, BFS or Union-Find",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 212,
+    "lc": 1971,
+    "title": "Find if Path Exists in Graph",
+    "slug": "find-if-path-exists-in-graph",
+    "difficulty": "Easy",
+    "chapter": "ch-13",
+    "buildsOn": 210,
+    "brute": {
+      "idea": "DFS over all paths",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "BFS or DFS with visited, or Union-Find",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 213,
+    "lc": 797,
+    "title": "All Paths From Source to Target",
+    "slug": "all-paths-from-source-to-target",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 212,
+    "brute": {
+      "idea": "Generate all paths, then filter",
+      "time": "O(2\u207f\u00b7n) both"
+    },
+    "optimal": {
+      "idea": "DFS backtracking on a DAG",
+      "time": "O(2\u207f\u00b7n) both"
+    }
+  },
+  {
+    "seq": 214,
+    "lc": 934,
+    "title": "Shortest Bridge",
+    "slug": "shortest-bridge",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 204,
+    "brute": {
+      "idea": "BFS from each land cell",
+      "time": "O((mn)\u00b2)"
+    },
+    "optimal": {
+      "idea": "DFS the first island, then multi-source BFS",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 215,
+    "lc": 399,
+    "title": "Evaluate Division",
+    "slug": "evaluate-division",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 207,
+    "brute": {
+      "idea": "Try all equation chains",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Weighted graph DFS or BFS, or Union-Find",
+      "time": "O(Q\u00b7(V+E))"
+    }
+  },
+  {
+    "seq": 216,
+    "lc": 752,
+    "title": "Open the Lock",
+    "slug": "open-the-lock",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 206,
+    "brute": {
+      "idea": "DFS over all combinations",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "BFS over the 10\u2074 states, skip dead ends",
+      "time": "O(10\u2074)"
+    }
+  },
+  {
+    "seq": 217,
+    "lc": 310,
+    "title": "Minimum Height Trees",
+    "slug": "minimum-height-trees",
+    "difficulty": "Medium",
+    "chapter": "ch-13",
+    "buildsOn": 212,
+    "brute": {
+      "idea": "BFS from every node",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Peel leaves layer by layer",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 218,
+    "lc": 207,
+    "title": "Course Schedule",
+    "slug": "course-schedule",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 217,
+    "brute": {
+      "idea": "DFS from each node to find cycles",
+      "time": "O(V\u00b7(V+E))"
+    },
+    "optimal": {
+      "idea": "Kahn's topological sort",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 219,
+    "lc": 210,
+    "title": "Course Schedule II",
+    "slug": "course-schedule-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 218,
+    "brute": {
+      "idea": "Repeated scans for zero in-degree",
+      "time": "O(V\u00b2)"
+    },
+    "optimal": {
+      "idea": "Kahn's order",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 220,
+    "lc": 802,
+    "title": "Find Eventual Safe States",
+    "slug": "find-eventual-safe-states",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 218,
+    "brute": {
+      "idea": "DFS from each node",
+      "time": "O(V\u00b7(V+E))"
+    },
+    "optimal": {
+      "idea": "Reverse graph topological sort, or colour DFS",
+      "time": "O(V+E)"
+    }
+  },
+  {
+    "seq": 221,
+    "lc": 329,
+    "title": "Longest Increasing Path in a Matrix",
+    "slug": "longest-increasing-path-in-a-matrix",
+    "difficulty": "Hard",
+    "chapter": "ch-14",
+    "buildsOn": 220,
+    "brute": {
+      "idea": "DFS from each cell",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DFS with memo, or topological sort",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 222,
+    "lc": 684,
+    "title": "Redundant Connection",
+    "slug": "redundant-connection",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 211,
+    "brute": {
+      "idea": "DFS cycle check for each edge",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Union-Find: the edge joining one set",
+      "time": "O(n\u00b7\u03b1(n))"
+    }
+  },
+  {
+    "seq": 223,
+    "lc": 721,
+    "title": "Accounts Merge",
+    "slug": "accounts-merge",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 222,
+    "brute": {
+      "idea": "Merge lists repeatedly",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Union-Find on emails",
+      "time": "O(N\u00b7\u03b1(N))"
+    }
+  },
+  {
+    "seq": 224,
+    "lc": 990,
+    "title": "Satisfiability of Equality Equations",
+    "slug": "satisfiability-of-equality-equations",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 222,
+    "brute": {
+      "idea": "Try all letter assignments",
+      "time": "O(26\u207f)"
+    },
+    "optimal": {
+      "idea": "Union the equalities, then check the inequalities",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 225,
+    "lc": 1319,
+    "title": "Number of Operations to Make Network Connected",
+    "slug": "number-of-operations-to-make-network-connected",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 222,
+    "brute": {
+      "idea": "Try all cable moves",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Count components minus 1 (needs n\u22121 cables)",
+      "time": "O(n + c)"
+    }
+  },
+  {
+    "seq": 226,
+    "lc": 947,
+    "title": "Most Stones Removed with Same Row or Column",
+    "slug": "most-stones-removed-with-same-row-or-column",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 225,
+    "brute": {
+      "idea": "Simulate removal orders",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Union rows and columns; answer = n \u2212 components",
+      "time": "O(n\u00b7\u03b1(n))"
+    }
+  },
+  {
+    "seq": 227,
+    "lc": 743,
+    "title": "Network Delay Time",
+    "slug": "network-delay-time",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 217,
+    "brute": {
+      "idea": "Repeated relaxation (Bellman-Ford)",
+      "time": "O(VE)"
+    },
+    "optimal": {
+      "idea": "Dijkstra with a min-heap",
+      "time": "O(E log V)"
+    }
+  },
+  {
+    "seq": 228,
+    "lc": 787,
+    "title": "Cheapest Flights Within K Stops",
+    "slug": "cheapest-flights-within-k-stops",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 227,
+    "brute": {
+      "idea": "DFS over all routes",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Bellman-Ford with k+1 rounds",
+      "time": "O(k\u00b7E)"
+    }
+  },
+  {
+    "seq": 229,
+    "lc": 1631,
+    "title": "Path With Minimum Effort",
+    "slug": "path-with-minimum-effort",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 227,
+    "brute": {
+      "idea": "DFS over all paths",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Dijkstra on the max edge, or binary search plus BFS",
+      "time": "O(mn log mn)"
+    }
+  },
+  {
+    "seq": 230,
+    "lc": 778,
+    "title": "Swim in Rising Water",
+    "slug": "swim-in-rising-water",
+    "difficulty": "Hard",
+    "chapter": "ch-14",
+    "buildsOn": 229,
+    "brute": {
+      "idea": "DFS over all paths",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Dijkstra, or binary search plus BFS",
+      "time": "O(n\u00b2 log n)"
+    }
+  },
+  {
+    "seq": 231,
+    "lc": 1514,
+    "title": "Path with Maximum Probability",
+    "slug": "path-with-maximum-probability",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 227,
+    "brute": {
+      "idea": "DFS over all paths",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Dijkstra with a max-heap on the product",
+      "time": "O(E log V)"
+    }
+  },
+  {
+    "seq": 232,
+    "lc": 1584,
+    "title": "Min Cost to Connect All Points",
+    "slug": "min-cost-to-connect-all-points",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 222,
+    "brute": {
+      "idea": "Try all edge subsets",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Kruskal (Union-Find) or Prim",
+      "time": "O(n\u00b2 log n)"
+    }
+  },
+  {
+    "seq": 233,
+    "lc": 332,
+    "title": "Reconstruct Itinerary",
+    "slug": "reconstruct-itinerary",
+    "difficulty": "Hard",
+    "chapter": "ch-14",
+    "buildsOn": 213,
+    "brute": {
+      "idea": "Try all orderings",
+      "time": "O(E!)"
+    },
+    "optimal": {
+      "idea": "Hierholzer's algorithm with sorted edges",
+      "time": "O(E log E)"
+    }
+  },
+  {
+    "seq": 234,
+    "lc": 1334,
+    "title": "Find the City With the Smallest Number of Neighbors at a Threshold Distance",
+    "slug": "find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance",
+    "difficulty": "Medium",
+    "chapter": "ch-14",
+    "buildsOn": 227,
+    "brute": {
+      "idea": "Dijkstra from every city",
+      "time": "O(V\u00b7E log V)"
+    },
+    "optimal": {
+      "idea": "Floyd\u2013Warshall",
+      "time": "O(V\u00b3)"
+    }
+  },
+  {
+    "seq": 235,
+    "lc": 70,
+    "title": "Climbing Stairs",
+    "slug": "climbing-stairs",
+    "difficulty": "Easy",
+    "chapter": "ch-15",
+    "buildsOn": 100,
+    "brute": {
+      "idea": "Plain recursion",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "DP with two variables",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 236,
+    "lc": 746,
+    "title": "Min Cost Climbing Stairs",
+    "slug": "min-cost-climbing-stairs",
+    "difficulty": "Easy",
+    "chapter": "ch-15",
+    "buildsOn": 235,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "DP: minimum of the previous two",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 237,
+    "lc": 1137,
+    "title": "N-th Tribonacci Number",
+    "slug": "n-th-tribonacci-number",
+    "difficulty": "Easy",
+    "chapter": "ch-15",
+    "buildsOn": 235,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(3\u207f)"
+    },
+    "optimal": {
+      "idea": "Three rolling variables",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 238,
+    "lc": 198,
+    "title": "House Robber",
+    "slug": "house-robber",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 236,
+    "brute": {
+      "idea": "Recursion: take or skip",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "dp\\[i\\] = max(dp\\[i\u22121\\], dp\\[i\u22122\\] + a\\[i\\])",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 239,
+    "lc": 213,
+    "title": "House Robber II",
+    "slug": "house-robber-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 238,
+    "brute": {
+      "idea": "Recursion on a circle",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Run House Robber twice (skip first, skip last)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 240,
+    "lc": 740,
+    "title": "Delete and Earn",
+    "slug": "delete-and-earn",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 238,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Bucket by value, then House Robber",
+      "time": "O(n + max)"
+    }
+  },
+  {
+    "seq": 241,
+    "lc": 91,
+    "title": "Decode Ways",
+    "slug": "decode-ways",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 235,
+    "brute": {
+      "idea": "Recursion over 1 or 2 digit cuts",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "DP on prefixes",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 242,
+    "lc": 322,
+    "title": "Coin Change",
+    "slug": "coin-change",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 235,
+    "brute": {
+      "idea": "Recursion over all coins",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP over amounts",
+      "time": "O(S\u00b7c)"
+    }
+  },
+  {
+    "seq": 243,
+    "lc": 518,
+    "title": "Coin Change II",
+    "slug": "coin-change-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 242,
+    "brute": {
+      "idea": "Recursion counting ways",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP with coins in the outer loop",
+      "time": "O(S\u00b7c)"
+    }
+  },
+  {
+    "seq": 244,
+    "lc": 377,
+    "title": "Combination Sum IV",
+    "slug": "combination-sum-iv",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 243,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP with amounts in the outer loop",
+      "time": "O(T\u00b7n)"
+    }
+  },
+  {
+    "seq": 245,
+    "lc": 279,
+    "title": "Perfect Squares",
+    "slug": "perfect-squares",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 242,
+    "brute": {
+      "idea": "Recursion over squares",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP like coin change",
+      "time": "O(n\u221an)"
+    }
+  },
+  {
+    "seq": 246,
+    "lc": 139,
+    "title": "Word Break",
+    "slug": "word-break",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 245,
+    "brute": {
+      "idea": "Recursion over prefixes",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "DP over the end index",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 247,
+    "lc": 300,
+    "title": "Longest Increasing Subsequence",
+    "slug": "longest-increasing-subsequence",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 246,
+    "brute": {
+      "idea": "Try all subsequences",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "O(n\u00b2) DP, or tails array with binary search",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 248,
+    "lc": 673,
+    "title": "Number of Longest Increasing Subsequence",
+    "slug": "number-of-longest-increasing-subsequence",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 247,
+    "brute": {
+      "idea": "Enumerate all subsequences",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "DP with length and count arrays",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 249,
+    "lc": 354,
+    "title": "Russian Doll Envelopes",
+    "slug": "russian-doll-envelopes",
+    "difficulty": "Hard",
+    "chapter": "ch-15",
+    "buildsOn": 247,
+    "brute": {
+      "idea": "Recursion over nesting",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Sort (width ascending, height descending), then LIS",
+      "time": "O(n log n)"
+    }
+  },
+  {
+    "seq": 250,
+    "lc": 152,
+    "title": "Maximum Product Subarray",
+    "slug": "maximum-product-subarray",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 176,
+    "brute": {
+      "idea": "Multiply every subarray",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Track the running max and min",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 251,
+    "lc": 416,
+    "title": "Partition Equal Subset Sum",
+    "slug": "partition-equal-subset-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 119,
+    "brute": {
+      "idea": "Try all subsets",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "0/1 knapsack DP, or a bitset",
+      "time": "O(n\u00b7sum)"
+    }
+  },
+  {
+    "seq": 252,
+    "lc": 1049,
+    "title": "Last Stone Weight II",
+    "slug": "last-stone-weight-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 251,
+    "brute": {
+      "idea": "Try all sign choices",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Subset sum closest to half",
+      "time": "O(n\u00b7sum)"
+    }
+  },
+  {
+    "seq": 253,
+    "lc": 343,
+    "title": "Integer Break",
+    "slug": "integer-break",
+    "difficulty": "Medium",
+    "chapter": "ch-15",
+    "buildsOn": 245,
+    "brute": {
+      "idea": "Recursion over splits",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP, or the greedy rule of using 3s",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 254,
+    "lc": 62,
+    "title": "Unique Paths",
+    "slug": "unique-paths",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 253,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP, 1D rolling array, or combinatorics",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 255,
+    "lc": 63,
+    "title": "Unique Paths II",
+    "slug": "unique-paths-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 254,
+    "brute": {
+      "idea": "Recursion with obstacles",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP with zero at obstacles",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 256,
+    "lc": 64,
+    "title": "Minimum Path Sum",
+    "slug": "minimum-path-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 254,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP: min(top, left) + cell",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 257,
+    "lc": 120,
+    "title": "Triangle",
+    "slug": "triangle",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 256,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Bottom-up DP in O(n) space",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 258,
+    "lc": 931,
+    "title": "Minimum Falling Path Sum",
+    "slug": "minimum-falling-path-sum",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 257,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(3\u207f)"
+    },
+    "optimal": {
+      "idea": "DP row by row",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 259,
+    "lc": 221,
+    "title": "Maximal Square",
+    "slug": "maximal-square",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 256,
+    "brute": {
+      "idea": "Check every square",
+      "time": "O(mn\u00b7min(m,n)\u00b2)"
+    },
+    "optimal": {
+      "idea": "dp = 1 + min(top, left, diagonal)",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 260,
+    "lc": 174,
+    "title": "Dungeon Game",
+    "slug": "dungeon-game",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 256,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP from the bottom-right",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 261,
+    "lc": 1143,
+    "title": "Longest Common Subsequence",
+    "slug": "longest-common-subsequence",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 247,
+    "brute": {
+      "idea": "Recursion on both strings",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 262,
+    "lc": 1035,
+    "title": "Uncrossed Lines",
+    "slug": "uncrossed-lines",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 261,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "Same as LCS on the arrays",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 263,
+    "lc": 583,
+    "title": "Delete Operation for Two Strings",
+    "slug": "delete-operation-for-two-strings",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 261,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "m + n \u2212 2\u00b7LCS",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 264,
+    "lc": 72,
+    "title": "Edit Distance",
+    "slug": "edit-distance",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 261,
+    "brute": {
+      "idea": "Recursion with 3 choices",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP (insert, delete, replace)",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 265,
+    "lc": 115,
+    "title": "Distinct Subsequences",
+    "slug": "distinct-subsequences",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 264,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP on prefixes",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 266,
+    "lc": 97,
+    "title": "Interleaving String",
+    "slug": "interleaving-string",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 264,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP on (i, j)",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 267,
+    "lc": 5,
+    "title": "Longest Palindromic Substring",
+    "slug": "longest-palindromic-substring",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 23,
+    "brute": {
+      "idea": "Check every substring",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Expand around centres, or DP",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 268,
+    "lc": 647,
+    "title": "Palindromic Substrings",
+    "slug": "palindromic-substrings",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 267,
+    "brute": {
+      "idea": "Check every substring",
+      "time": "O(n\u00b3)"
+    },
+    "optimal": {
+      "idea": "Expand around centres",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 269,
+    "lc": 516,
+    "title": "Longest Palindromic Subsequence",
+    "slug": "longest-palindromic-subsequence",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 261,
+    "brute": {
+      "idea": "Try all subsequences",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "LCS of the string and its reverse, or interval DP",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 270,
+    "lc": 132,
+    "title": "Palindrome Partitioning II",
+    "slug": "palindrome-partitioning-ii",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 113,
+    "brute": {
+      "idea": "Backtrack over all cuts",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Palindrome table plus cut DP",
+      "time": "O(n\u00b2)"
+    }
+  },
+  {
+    "seq": 271,
+    "lc": 10,
+    "title": "Regular Expression Matching",
+    "slug": "regular-expression-matching",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 264,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP on (i, j)",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 272,
+    "lc": 44,
+    "title": "Wildcard Matching",
+    "slug": "wildcard-matching",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 271,
+    "brute": {
+      "idea": "Recursion",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "2D DP, or greedy two pointers",
+      "time": "O(mn)"
+    }
+  },
+  {
+    "seq": 273,
+    "lc": 312,
+    "title": "Burst Balloons",
+    "slug": "burst-balloons",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 269,
+    "brute": {
+      "idea": "Try all burst orders",
+      "time": "O(n!)"
+    },
+    "optimal": {
+      "idea": "Interval DP (choose the last balloon to burst)",
+      "time": "O(n\u00b3)"
+    }
+  },
+  {
+    "seq": 274,
+    "lc": 309,
+    "title": "Best Time to Buy and Sell Stock with Cooldown",
+    "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 175,
+    "brute": {
+      "idea": "Recursion on states",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "State machine DP",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 275,
+    "lc": 714,
+    "title": "Best Time to Buy and Sell Stock with Transaction Fee",
+    "slug": "best-time-to-buy-and-sell-stock-with-transaction-fee",
+    "difficulty": "Medium",
+    "chapter": "ch-16",
+    "buildsOn": 274,
+    "brute": {
+      "idea": "Recursion",
+      "time": "O(2\u207f)"
+    },
+    "optimal": {
+      "idea": "Two-state DP (hold and free)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 276,
+    "lc": 123,
+    "title": "Best Time to Buy and Sell Stock III",
+    "slug": "best-time-to-buy-and-sell-stock-iii",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 275,
+    "brute": {
+      "idea": "Try every two-transaction split",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Four-state DP",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 277,
+    "lc": 188,
+    "title": "Best Time to Buy and Sell Stock IV",
+    "slug": "best-time-to-buy-and-sell-stock-iv",
+    "difficulty": "Hard",
+    "chapter": "ch-16",
+    "buildsOn": 276,
+    "brute": {
+      "idea": "Recursion over k transactions",
+      "time": "exponential"
+    },
+    "optimal": {
+      "idea": "DP with states per transaction",
+      "time": "O(nk)"
+    }
+  },
+  {
+    "seq": 278,
+    "lc": 14,
+    "title": "Longest Common Prefix",
+    "slug": "longest-common-prefix",
+    "difficulty": "Easy",
+    "chapter": "ch-17",
+    "buildsOn": 277,
+    "brute": {
+      "idea": "Compare character by character across all words",
+      "time": "O(S) both"
+    },
+    "optimal": {
+      "idea": "Vertical scan, or a trie",
+      "time": "O(S) both"
+    }
+  },
+  {
+    "seq": 279,
+    "lc": 208,
+    "title": "Implement Trie (Prefix Tree)",
+    "slug": "implement-trie-prefix-tree",
+    "difficulty": "Medium",
+    "chapter": "ch-17",
+    "buildsOn": 278,
+    "brute": {
+      "idea": "List of words, scanned every time",
+      "time": "O(n\u00b7L)"
+    },
+    "optimal": {
+      "idea": "Node with a children map and an end flag",
+      "time": "O(L)"
+    }
+  },
+  {
+    "seq": 280,
+    "lc": 211,
+    "title": "Design Add and Search Words Data Structure",
+    "slug": "design-add-and-search-words-data-structure",
+    "difficulty": "Medium",
+    "chapter": "ch-17",
+    "buildsOn": 279,
+    "brute": {
+      "idea": "Scan all words with wildcard matching",
+      "time": "O(n\u00b7L)"
+    },
+    "optimal": {
+      "idea": "Trie plus DFS at each dot",
+      "time": "O(L\u00b726^dots) worst case"
+    }
+  },
+  {
+    "seq": 281,
+    "lc": 648,
+    "title": "Replace Words",
+    "slug": "replace-words",
+    "difficulty": "Medium",
+    "chapter": "ch-17",
+    "buildsOn": 279,
+    "brute": {
+      "idea": "Check every root for each word",
+      "time": "O(R\u00b7W)"
+    },
+    "optimal": {
+      "idea": "Trie of the roots",
+      "time": "O(total chars)"
+    }
+  },
+  {
+    "seq": 282,
+    "lc": 1268,
+    "title": "Search Suggestions System",
+    "slug": "search-suggestions-system",
+    "difficulty": "Medium",
+    "chapter": "ch-17",
+    "buildsOn": 279,
+    "brute": {
+      "idea": "Filter all products for each prefix",
+      "time": "O(n\u00b7L)"
+    },
+    "optimal": {
+      "idea": "Sort plus binary search, or a trie",
+      "time": "O(L log n)"
+    }
+  },
+  {
+    "seq": 283,
+    "lc": 677,
+    "title": "Map Sum Pairs",
+    "slug": "map-sum-pairs",
+    "difficulty": "Medium",
+    "chapter": "ch-17",
+    "buildsOn": 279,
+    "brute": {
+      "idea": "Scan all keys for the prefix",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "Trie storing prefix sums",
+      "time": "O(L)"
+    }
+  },
+  {
+    "seq": 284,
+    "lc": 212,
+    "title": "Word Search II",
+    "slug": "word-search-ii",
+    "difficulty": "Hard",
+    "chapter": "ch-17",
+    "buildsOn": 115,
+    "brute": {
+      "idea": "Run Word Search once per word",
+      "time": "O(W\u00b7mn\u00b74\u02e1)"
+    },
+    "optimal": {
+      "idea": "Trie plus one DFS over the grid",
+      "time": "O(mn\u00b74\u02e1)"
+    }
+  },
+  {
+    "seq": 285,
+    "lc": 421,
+    "title": "Maximum XOR of Two Numbers in an Array",
+    "slug": "maximum-xor-of-two-numbers-in-an-array",
+    "difficulty": "Medium",
+    "chapter": "ch-17",
+    "buildsOn": 279,
+    "brute": {
+      "idea": "Check every pair",
+      "time": "O(n\u00b2)"
+    },
+    "optimal": {
+      "idea": "Binary trie, pick the opposite bit",
+      "time": "O(32n)"
+    }
+  },
+  {
+    "seq": 286,
+    "lc": 460,
+    "title": "LFU Cache",
+    "slug": "lfu-cache",
+    "difficulty": "Hard",
+    "chapter": "ch-17",
+    "buildsOn": 99,
+    "brute": {
+      "idea": "Scan for the least frequent key",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "HashMaps plus frequency lists",
+      "time": "O(1)"
+    }
+  },
+  {
+    "seq": 287,
+    "lc": 136,
+    "title": "Single Number",
+    "slug": "single-number",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 286,
+    "brute": {
+      "idea": "HashMap counts",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "XOR everything",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 288,
+    "lc": 137,
+    "title": "Single Number II",
+    "slug": "single-number-ii",
+    "difficulty": "Medium",
+    "chapter": "ch-18",
+    "buildsOn": 287,
+    "brute": {
+      "idea": "HashMap counts",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Count each bit modulo 3",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 289,
+    "lc": 260,
+    "title": "Single Number III",
+    "slug": "single-number-iii",
+    "difficulty": "Medium",
+    "chapter": "ch-18",
+    "buildsOn": 288,
+    "brute": {
+      "idea": "HashMap counts",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "XOR, then split by a set bit",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 290,
+    "lc": 191,
+    "title": "Number of 1 Bits",
+    "slug": "number-of-1-bits",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 287,
+    "brute": {
+      "idea": "Check all 32 bits",
+      "time": "O(32)"
+    },
+    "optimal": {
+      "idea": "n & (n\u22121) clears the lowest set bit",
+      "time": "O(number of set bits)"
+    }
+  },
+  {
+    "seq": 291,
+    "lc": 338,
+    "title": "Counting Bits",
+    "slug": "counting-bits",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 290,
+    "brute": {
+      "idea": "Count bits for each number",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "dp\\[i\\] = dp\\[i >> 1\\] + (i & 1)",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 292,
+    "lc": 231,
+    "title": "Power of Two",
+    "slug": "power-of-two",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 290,
+    "brute": {
+      "idea": "Divide by 2 repeatedly",
+      "time": "O(log n)"
+    },
+    "optimal": {
+      "idea": "n > 0 and (n & (n\u22121)) == 0",
+      "time": "O(1)"
+    }
+  },
+  {
+    "seq": 293,
+    "lc": 268,
+    "title": "Missing Number",
+    "slug": "missing-number",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 287,
+    "brute": {
+      "idea": "Sort and scan, or a set",
+      "time": "O(n log n)"
+    },
+    "optimal": {
+      "idea": "XOR, or the sum formula",
+      "time": "O(n)"
+    }
+  },
+  {
+    "seq": 294,
+    "lc": 190,
+    "title": "Reverse Bits",
+    "slug": "reverse-bits",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 290,
+    "brute": {
+      "idea": "Build a string, reverse it, parse it",
+      "time": "O(32) both"
+    },
+    "optimal": {
+      "idea": "Shift the bits one by one",
+      "time": "O(32) both"
+    }
+  },
+  {
+    "seq": 295,
+    "lc": 371,
+    "title": "Sum of Two Integers",
+    "slug": "sum-of-two-integers",
+    "difficulty": "Medium",
+    "chapter": "ch-18",
+    "buildsOn": 294,
+    "brute": {
+      "idea": "Loop incrementing (no plus allowed)",
+      "time": "O(n)"
+    },
+    "optimal": {
+      "idea": "XOR for the sum, AND shifted left for the carry",
+      "time": "O(1)"
+    }
+  },
+  {
+    "seq": 296,
+    "lc": 7,
+    "title": "Reverse Integer",
+    "slug": "reverse-integer",
+    "difficulty": "Medium",
+    "chapter": "ch-18",
+    "buildsOn": 295,
+    "brute": {
+      "idea": "Convert to a string and reverse",
+      "time": "O(d) both"
+    },
+    "optimal": {
+      "idea": "Pop and push digits with an overflow check",
+      "time": "O(d) both"
+    }
+  },
+  {
+    "seq": 297,
+    "lc": 9,
+    "title": "Palindrome Number",
+    "slug": "palindrome-number",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 296,
+    "brute": {
+      "idea": "Convert to a string",
+      "time": "O(d) space"
+    },
+    "optimal": {
+      "idea": "Reverse half of the number",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 298,
+    "lc": 202,
+    "title": "Happy Number",
+    "slug": "happy-number",
+    "difficulty": "Easy",
+    "chapter": "ch-18",
+    "buildsOn": 297,
+    "brute": {
+      "idea": "HashSet to detect a loop",
+      "time": "O(n) space"
+    },
+    "optimal": {
+      "idea": "Floyd cycle detection",
+      "time": "O(1) space"
+    }
+  },
+  {
+    "seq": 299,
+    "lc": 204,
+    "title": "Count Primes",
+    "slug": "count-primes",
+    "difficulty": "Medium",
+    "chapter": "ch-18",
+    "buildsOn": 298,
+    "brute": {
+      "idea": "Trial division for each number",
+      "time": "O(n\u221an)"
+    },
+    "optimal": {
+      "idea": "Sieve of Eratosthenes",
+      "time": "O(n log log n)"
+    }
+  },
+  {
+    "seq": 300,
+    "lc": 172,
+    "title": "Factorial Trailing Zeroes",
+    "slug": "factorial-trailing-zeroes",
+    "difficulty": "Medium",
+    "chapter": "ch-18",
+    "buildsOn": 299,
+    "brute": {
+      "idea": "Compute n! and count the zeros",
+      "time": "huge"
+    },
+    "optimal": {
+      "idea": "Sum n/5 + n/25 + n/125 and so on",
+      "time": "O(log n)"
+    }
+  }
+]

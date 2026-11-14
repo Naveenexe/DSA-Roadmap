@@ -1,0 +1,605 @@
+[
+  {
+    "seq": 68,
+    "whyNext": "Opens Chapter 5 (Stack and Monotonic Stack): LIFO structure matches open brackets with their corresponding closing brackets.",
+    "brute": {
+      "idea": "Repeatedly find and replace matched pairs '()', '[]', '{}' with empty string until string is empty or unchanged.",
+      "steps": [
+        "While s contains '()', '[]', or '{}', replace them with empty string.",
+        "Return true if string becomes empty, else false."
+      ],
+      "whySlow": "String allocations and substring replacements take O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isValid(String s) {\n        int prev = -1;\n        while (s.length() != prev) {\n            prev = s.length();\n            s = s.replace(\"()\", \"\").replace(\"[]\", \"\").replace(\"{}\", \"\");\n        }\n        return s.isEmpty();\n    }\n}",
+        "python": "class Solution:\n    def isValid(self, s: str) -> bool:\n        while \"()\" in s or \"[]\" in s or \"{}\" in s:\n            s = s.replace(\"()\", \"\").replace(\"[]\", \"\").replace(\"{}\", \"\")\n        return s == ''"
+      }
+    },
+    "optimal": {
+      "idea": "Use a stack: push expected closing bracket when opening bracket seen; pop and verify match when closing bracket seen.",
+      "steps": [
+        "Initialize a char stack.",
+        "For char c in s:",
+        "If c is '(', push ')'. If '[', push ']'. If '{', push '}'.",
+        "Else if stack is empty or stack.pop() != c, return false.",
+        "Return stack.isEmpty()."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isValid(String s) {\n        Deque<Character> stack = new ArrayDeque<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') stack.push(')');\n            else if (c == '[') stack.push(']');\n            else if (c == '{') stack.push('}');\n            else if (stack.isEmpty() || stack.pop() != c) return false;\n        }\n        return stack.isEmpty();\n    }\n}",
+        "python": "class Solution:\n    def isValid(self, s: str) -> bool:\n        stack = []\n        mapping = {')': '(', ']': '[', '}': '{'}\n        for c in s:\n            if c in mapping:\n                if not stack or stack.pop() != mapping[c]:\n                    return False\n            else:\n                stack.append(c)\n        return not stack"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize a char stack. Then for char c in s:."
+    ]
+  },
+  {
+    "seq": 69,
+    "whyNext": "Builds on stack design: pair each pushed value with the current minimum to answer getMin() in O(1) time.",
+    "brute": {
+      "idea": "Store elements in a standard list or stack and scan all elements linearly during getMin().",
+      "steps": [
+        "push, pop, top operate on standard list.",
+        "getMin() iterates through all elements to find the minimum."
+      ],
+      "whySlow": "getMin takes linear O(n) time on every call.",
+      "time": "O(n) getMin",
+      "space": "O(n)",
+      "code": {
+        "java": "class MinStack {\n    private List<Integer> list = new ArrayList<>();\n    public MinStack() {}\n    public void push(int val) { list.add(val); }\n    public void pop() { list.remove(list.size() - 1); }\n    public int top() { return list.get(list.size() - 1); }\n    public int getMin() {\n        int min = list.get(0);\n        for (int x : list) min = Math.min(min, x);\n        return min;\n    }\n}",
+        "python": "class MinStack:\n    def __init__(self):\n        self.stack = []\n    def push(self, val: int) -> None:\n        self.stack.append(val)\n    def pop(self) -> None:\n        self.stack.pop()\n    def top(self) -> int:\n        return self.stack[-1]\n    def getMin(self) -> int:\n        return min(self.stack)"
+      }
+    },
+    "optimal": {
+      "idea": "Two stacks or paired values: maintain a minStack that records the running minimum at every stack depth.",
+      "steps": [
+        "Maintain primary stack and minStack.",
+        "push(val): stack.push(val); minStack.push(min(val, minStack.peek())).",
+        "pop(): pop from both stacks.",
+        "top(): stack.peek().",
+        "getMin(): minStack.peek()."
+      ],
+      "time": "O(1)",
+      "space": "O(n)",
+      "code": {
+        "java": "class MinStack {\n    private Deque<Integer> stack = new ArrayDeque<>();\n    private Deque<Integer> minStack = new ArrayDeque<>();\n    public MinStack() {}\n    public void push(int val) {\n        stack.push(val);\n        int curMin = minStack.isEmpty() ? val : Math.min(val, minStack.peek());\n        minStack.push(curMin);\n    }\n    public void pop() {\n        stack.pop();\n        minStack.pop();\n    }\n    public int top() { return stack.peek(); }\n    public int getMin() { return minStack.peek(); }\n}",
+        "python": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.min_stack = []\n    def push(self, val: int) -> None:\n        self.stack.append(val)\n        m = val if not self.min_stack else min(val, self.min_stack[-1])\n        self.min_stack.append(m)\n    def pop(self) -> None:\n        self.stack.pop()\n        self.min_stack.pop()\n    def top(self) -> int:\n        return self.stack[-1]\n    def getMin(self) -> int:\n        return self.min_stack[-1]"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O 1 time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Maintain primary stack and minStack. Then push val : stack.push val minstack.push min val, minstack.peek ."
+    ]
+  },
+  {
+    "seq": 70,
+    "whyNext": "Builds on stack evaluation: push numbers onto stack; upon operator, pop two operands, evaluate, and push result back.",
+    "brute": {
+      "idea": "Iteratively scan list to find the first operator, replace the operator and previous two numbers with their evaluated result.",
+      "steps": [
+        "While tokens length > 1:",
+        "Find first operator at index i.",
+        "Evaluate tokens[i-2] op tokens[i-1].",
+        "Replace 3 tokens with result."
+      ],
+      "whySlow": "Repeated array shifts and rescanning takes quadratic O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int evalRPN(String[] tokens) {\n        List<String> list = new ArrayList<>(Arrays.asList(tokens));\n        while (list.size() > 1) {\n            int i = 0;\n            while (i < list.size() && !\"+-*/\".contains(list.get(i))) i++;\n            int a = Integer.parseInt(list.get(i - 2));\n            int b = Integer.parseInt(list.get(i - 1));\n            String op = list.get(i);\n            int res = 0;\n            if (op.equals(\"+\")) res = a + b;\n            else if (op.equals(\"-\")) res = a - b;\n            else if (op.equals(\"*\")) res = a * b;\n            else res = a / b;\n            list.set(i - 2, String.valueOf(res));\n            list.remove(i);\n            list.remove(i - 1);\n        }\n        return Integer.parseInt(list.get(0));\n    }\n}",
+        "python": "class Solution:\n    def evalRPN(self, tokens: list[str]) -> int:\n        t = list(tokens)\n        while len(t) > 1:\n            i = 0\n            while i < len(t) and t[i] not in \"+-*/\": i += 1\n            a, b, op = int(t[i-2]), int(t[i-1]), t[i]\n            if op == '+': res = a + b\n            elif op == '-': res = a - b\n            elif op == '*': res = a * b\n            else: res = int(a / b)\n            t = t[:i-2] + [str(res)] + t[i+1:]\n        return int(t[0])"
+      }
+    },
+    "optimal": {
+      "idea": "Operand stack: push numbers; when encountering an operator, pop b then a, evaluate a op b, and push result back.",
+      "steps": [
+        "Initialize integer stack.",
+        "For each token t:",
+        "If operator: b = pop(), a = pop(), push result of a op b.",
+        "Else: push Integer.parseInt(t).",
+        "Return stack.pop()."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int evalRPN(String[] tokens) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (String t : tokens) {\n            if (t.equals(\"+\")) stack.push(stack.pop() + stack.pop());\n            else if (t.equals(\"*\")) stack.push(stack.pop() * stack.pop());\n            else if (t.equals(\"-\")) { int b = stack.pop(), a = stack.pop(); stack.push(a - b); }\n            else if (t.equals(\"/\")) { int b = stack.pop(), a = stack.pop(); stack.push(a / b); }\n            else stack.push(Integer.parseInt(t));\n        }\n        return stack.pop();\n    }\n}",
+        "python": "class Solution:\n    def evalRPN(self, tokens: list[str]) -> int:\n        stack = []\n        for t in tokens:\n            if t == '+': stack.append(stack.pop() + stack.pop())\n            elif t == '*': stack.append(stack.pop() * stack.pop())\n            elif t == '-': b, a = stack.pop(), stack.pop(); stack.append(a - b)\n            elif t == '/': b, a = stack.pop(), stack.pop(); stack.append(int(a / b))\n            else: stack.append(int(t))\n        return stack[0]"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize integer stack. Then for each token t:."
+    ]
+  },
+  {
+    "seq": 71,
+    "whyNext": "Builds on Evaluate RPN: operator precedence in infix expressions handled by applying * and / immediately to stack top, deferring + and -.",
+    "brute": {
+      "idea": "Two passes: first pass evaluates all multiplication and division, second pass evaluates addition and subtraction.",
+      "steps": [
+        "Tokenize string into numbers and operators.",
+        "First pass: process * and / into intermediate list.",
+        "Second pass: process + and -."
+      ],
+      "whySlow": "Multi-pass intermediate list creation uses extra passes and allocations.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int calculate(String s) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        int num = 0;\n        char sign = '+';\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (Character.isDigit(c)) num = num * 10 + (c - '0');\n            if ((!Character.isDigit(c) && c != ' ') || i == s.length() - 1) {\n                if (sign == '+') stack.push(num);\n                else if (sign == '-') stack.push(-num);\n                else if (sign == '*') stack.push(stack.pop() * num);\n                else if (sign == '/') stack.push(stack.pop() / num);\n                sign = c;\n                num = 0;\n            }\n        }\n        int res = 0;\n        for (int x : stack) res += x;\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def calculate(self, s: str) -> int:\n        stack = []\n        num, sign = 0, '+'\n        for i, c in enumerate(s):\n            if c.isdigit(): num = num * 10 + int(c)\n            if (not c.isdigit() and c != ' ') or i == len(s) - 1:\n                if sign == '+': stack.append(num)\n                elif sign == '-': stack.append(-num)\n                elif sign == '*': stack.append(stack.pop() * num)\n                elif sign == '/': stack.append(int(stack.pop() / num))\n                sign = c\n                num = 0\n        return sum(stack)"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass using stack: maintain current number and previous operator. Immediate multiplication/division on stack top; sum stack at end.",
+      "steps": [
+        "Maintain current number and last operator (default '+').",
+        "When reaching an operator or end of string:",
+        "If last was '+', push num; if '-', push -num; if '*', push pop() * num; if '/', push pop() / num.",
+        "Update operator and reset num.",
+        "Sum all numbers remaining in stack."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int calculate(String s) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        int num = 0;\n        char sign = '+';\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (Character.isDigit(c)) num = num * 10 + (c - '0');\n            if ((!Character.isDigit(c) && c != ' ') || i == s.length() - 1) {\n                if (sign == '+') stack.push(num);\n                else if (sign == '-') stack.push(-num);\n                else if (sign == '*') stack.push(stack.pop() * num);\n                else if (sign == '/') stack.push(stack.pop() / num);\n                sign = c;\n                num = 0;\n            }\n        }\n        int sum = 0;\n        while (!stack.isEmpty()) sum += stack.pop();\n        return sum;\n    }\n}",
+        "python": "class Solution:\n    def calculate(self, s: str) -> int:\n        stack = []\n        num = 0\n        sign = '+'\n        for i, c in enumerate(s):\n            if c.isdigit():\n                num = num * 10 + int(c)\n            if (not c.isdigit() and c != ' ') or i == len(s) - 1:\n                if sign == '+': stack.append(num)\n                elif sign == '-': stack.append(-num)\n                elif sign == '*': stack.append(stack.pop() * num)\n                elif sign == '/': stack.append(int(stack.pop() / num))\n                sign = c\n                num = 0\n        return sum(stack)"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Maintain current number and last operator default '+' . Then when reaching an operator or end of string:."
+    ]
+  },
+  {
+    "seq": 72,
+    "whyNext": "Introduces monotonic stack: decreasing stack pops smaller elements when a larger element appears, recording their next greater value.",
+    "brute": {
+      "idea": "For each element in nums1, locate it in nums2 and scan right for the first greater element.",
+      "steps": [
+        "For each x in nums1:",
+        "Find index of x in nums2.",
+        "Scan right in nums2 for first element > x.",
+        "If found record it, else record -1."
+      ],
+      "whySlow": "Scanning nums2 for every query takes O(n * m) time.",
+      "time": "O(nm)",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int[] nextGreaterElement(int[] nums1, int[] nums2) {\n        int[] res = new int[nums1.length];\n        for (int i = 0; i < nums1.length; i++) {\n            int idx = -1;\n            for (int j = 0; j < nums2.length; j++) {\n                if (nums2[j] == nums1[i]) { idx = j; break; }\n            }\n            int next = -1;\n            for (int j = idx + 1; j < nums2.length; j++) {\n                if (nums2[j] > nums1[i]) { next = nums2[j]; break; }\n            }\n            res[i] = next;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def nextGreaterElement(self, nums1: list[int], nums2: list[int]) -> list[int]:\n        res = []\n        for x in nums1:\n            idx = nums2.index(x)\n            next_g = -1\n            for j in range(idx + 1, len(nums2)):\n                if nums2[j] > x:\n                    next_g = nums2[j]\n                    break\n            res.append(next_g)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing stack on nums2: while stack top < current number, map[stack.pop()] = current number. Query map for nums1.",
+      "steps": [
+        "Initialize stack and HashMap.",
+        "For each x in nums2:",
+        "While stack not empty and stack.peek() < x: map.put(stack.pop(), x).",
+        "stack.push(x).",
+        "For each x in nums1: res[i] = map.getOrDefault(x, -1)."
+      ],
+      "time": "O(n+m)",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int[] nextGreaterElement(int[] nums1, int[] nums2) {\n        Map<Integer, Integer> map = new HashMap<>();\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int x : nums2) {\n            while (!stack.isEmpty() && stack.peek() < x) map.put(stack.pop(), x);\n            stack.push(x);\n        }\n        int[] res = new int[nums1.length];\n        for (int i = 0; i < nums1.length; i++) res[i] = map.getOrDefault(nums1[i], -1);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def nextGreaterElement(self, nums1: list[int], nums2: list[int]) -> list[int]:\n        stack = []\n        next_map = {}\n        for x in nums2:\n            while stack and stack[-1] < x:\n                next_map[stack.pop()] = x\n            stack.append(x)\n        return [next_map.get(x, -1) for x in nums1]"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n+m time and O m auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize stack and HashMap. Then for each x in nums2:."
+    ]
+  },
+  {
+    "seq": 73,
+    "whyNext": "Builds on Next Greater Element: circular array simulated by running monotonic stack over 2n indices with index modulo n.",
+    "brute": {
+      "idea": "For each element i, circular scan up to n - 1 elements ahead (using (i + j) % n) to find the first greater value.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from 1 to n - 1: if nums[(i + j) % n] > nums[i], record and break."
+      ],
+      "whySlow": "Scanning circularly for every element takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] nextGreaterElements(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        Arrays.fill(res, -1);\n        for (int i = 0; i < n; i++) {\n            for (int j = 1; j < n; j++) {\n                int next = nums[(i + j) % n];\n                if (next > nums[i]) { res[i] = next; break; }\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def nextGreaterElements(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        res = [-1] * n\n        for i in range(n):\n            for j in range(1, n):\n                if nums[(i + j) % n] > nums[i]:\n                    res[i] = nums[(i + j) % n]\n                    break\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing stack of indices over a virtual 2n array: process i from 2n - 1 down to 0, pop <= nums[i % n], assign stack top.",
+      "steps": [
+        "Initialize result array with -1 and stack of indices.",
+        "Loop i from 2n - 1 down to 0:",
+        "While stack not empty and nums[stack.peek()] <= nums[i % n]: stack.pop().",
+        "If !stack.isEmpty(): res[i % n] = nums[stack.peek()].",
+        "stack.push(i % n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] nextGreaterElements(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        Arrays.fill(res, -1);\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int i = 2 * n - 1; i >= 0; i--) {\n            while (!stack.isEmpty() && nums[stack.peek()] <= nums[i % n]) stack.pop();\n            if (!stack.isEmpty()) res[i % n] = nums[stack.peek()];\n            stack.push(i % n);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def nextGreaterElements(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        res = [-1] * n\n        stack = []\n        for i in range(2 * n - 1, -1, -1):\n            while stack and nums[stack[-1]] <= nums[i % n]:\n                stack.pop()\n            if stack:\n                res[i % n] = nums[stack[-1]]\n            stack.append(i % n)\n        return res"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize result array with -1 and stack of indices. Then loop i from 2n - 1 down to 0:."
+    ]
+  },
+  {
+    "seq": 74,
+    "whyNext": "Builds on Next Greater Element: monotonic decreasing stack stores indices; when a warmer day arrives, span is (current_index - popped_index).",
+    "brute": {
+      "idea": "For each day i, scan forward until encountering a day with temperature > temperatures[i].",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "If temperatures[j] > temperatures[i], res[i] = j - i, break."
+      ],
+      "whySlow": "Scanning forward for every day takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                if (temperatures[j] > temperatures[i]) { res[i] = j - i; break; }\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def dailyTemperatures(self, temperatures: list[int]) -> list[int]:\n        n = len(temperatures)\n        res = [0] * n\n        for i in range(n):\n            for j in range(i + 1, n):\n                if temperatures[j] > temperatures[i]:\n                    res[i] = j - i\n                    break\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing stack of day indices: while current temperature > temperatures[stack.peek()], pop prevDay and set res[prevDay] = currentDay - prevDay.",
+      "steps": [
+        "Initialize res array and integer stack of day indices.",
+        "For each day i from 0 to n - 1:",
+        "While stack not empty and temperatures[i] > temperatures[stack.peek()]:",
+        "prev = stack.pop(); res[prev] = i - prev.",
+        "stack.push(i)."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] res = new int[n];\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int i = 0; i < n; i++) {\n            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {\n                int prev = stack.pop();\n                res[prev] = i - prev;\n            }\n            stack.push(i);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def dailyTemperatures(self, temperatures: list[int]) -> list[int]:\n        res = [0] * len(temperatures)\n        stack = []\n        for i, t in enumerate(temperatures):\n            while stack and t > temperatures[stack[-1]]:\n                prev = stack.pop()\n                res[prev] = i - prev\n            stack.append(i)\n        return res"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize res array and integer stack of day indices. Then for each day i from 0 to n - 1:."
+    ]
+  },
+  {
+    "seq": 75,
+    "whyNext": "Builds on Daily Temperatures span calculation: maintain stack of (price, span) pairs, collapsing consecutive smaller prices.",
+    "brute": {
+      "idea": "Store all daily prices in a list; on each next(price) call, walk backwards to count consecutive prices <= price.",
+      "steps": [
+        "Add price to history list.",
+        "Scan backwards from end, counting days while price >= history[i].",
+        "Return count."
+      ],
+      "whySlow": "Scanning backwards on each day takes O(n) per call, totaling O(n\u00b2).",
+      "time": "O(n\u00b2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class StockSpanner {\n    private List<Integer> prices = new ArrayList<>();\n    public StockSpanner() {}\n    public int next(int price) {\n        prices.add(price);\n        int span = 0;\n        for (int i = prices.size() - 1; i >= 0; i--) {\n            if (prices.get(i) <= price) span++;\n            else break;\n        }\n        return span;\n    }\n}",
+        "python": "class StockSpanner:\n    def __init__(self):\n        self.prices = []\n    def next(self, price: int) -> int:\n        self.prices.append(price)\n        span = 0\n        for p in reversed(self.prices):\n            if p <= price: span += 1\n            else: break\n        return span"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing stack of (price, span) pairs: while top price <= current price, add its span to current span and pop it.",
+      "steps": [
+        "Initialize stack storing (price, span).",
+        "On next(price): initialize span = 1.",
+        "While stack not empty and stack.peek().price <= price: span += stack.pop().span.",
+        "stack.push((price, span)).",
+        "Return span."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class StockSpanner {\n    private Deque<int[]> stack = new ArrayDeque<>();\n    public StockSpanner() {}\n    public int next(int price) {\n        int span = 1;\n        while (!stack.isEmpty() && stack.peek()[0] <= price) {\n            span += stack.pop()[1];\n        }\n        stack.push(new int[]{price, span});\n        return span;\n    }\n}",
+        "python": "class StockSpanner:\n    def __init__(self):\n        self.stack = []\n    def next(self, price: int) -> int:\n        span = 1\n        while self.stack and self.stack[-1][0] <= price:\n            span += self.stack.pop()[1]\n        self.stack.append((price, span))\n        return span"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize stack storing price, span . Then on next price : initialize span = 1."
+    ]
+  },
+  {
+    "seq": 76,
+    "whyNext": "Builds on Daily Temperatures monotonic stack: stack stores increasing bar indices; when shorter bar arrives, pop and compute area with popped bar as bottleneck.",
+    "brute": {
+      "idea": "For every bar i, expand outward left and right while neighbor heights >= heights[i] to compute rectangle area.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Expand left while heights[l] >= heights[i].",
+        "Expand right while heights[r] >= heights[i].",
+        "area = heights[i] * (r - l + 1); track max."
+      ],
+      "whySlow": "Expanding from every bar takes quadratic O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int largestRectangleArea(int[] heights) {\n        int max = 0, n = heights.length;\n        for (int i = 0; i < n; i++) {\n            int l = i, r = i;\n            while (l > 0 && heights[l - 1] >= heights[i]) l--;\n            while (r < n - 1 && heights[r + 1] >= heights[i]) r++;\n            max = Math.max(max, heights[i] * (r - l + 1));\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def largestRectangleArea(self, heights: list[int]) -> int:\n        max_a, n = 0, len(heights)\n        for i in range(n):\n            l, r = i, i\n            while l > 0 and heights[l - 1] >= heights[i]: l -= 1\n            while r < n - 1 and heights[r + 1] >= heights[i]: r += 1\n            max_a = max(max_a, heights[i] * (r - l + 1))\n        return max_a"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic increasing stack of bar indices: pop when heights[i] < stack.peek(). Width is i - stack.peek() - 1.",
+      "steps": [
+        "Initialize stack.",
+        "Loop i from 0 to n (with dummy 0 at index n):",
+        "While stack not empty and current height < heights[stack.peek()]:",
+        "h = heights[stack.pop()]; w = stack.isEmpty() ? i : i - stack.peek() - 1.",
+        "maxArea = max(maxArea, h * w).",
+        "stack.push(i)."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int largestRectangleArea(int[] heights) {\n        int n = heights.length, max = 0;\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int i = 0; i <= n; i++) {\n            int curH = (i == n) ? 0 : heights[i];\n            while (!stack.isEmpty() && curH < heights[stack.peek()]) {\n                int h = heights[stack.pop()];\n                int w = stack.isEmpty() ? i : i - stack.peek() - 1;\n                max = Math.max(max, h * w);\n            }\n            stack.push(i);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def largestRectangleArea(self, heights: list[int]) -> int:\n        stack = []\n        max_a = 0\n        h_extended = heights + [0]\n        for i, h in enumerate(h_extended):\n            while stack and h < h_extended[stack[-1]]:\n                height = h_extended[stack.pop()]\n                width = i if not stack else i - stack[-1] - 1\n                max_a = max(max_a, height * width)\n            stack.append(i)\n        return max_a"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize stack. Then loop i from 0 to n with dummy 0 at index n :."
+    ]
+  },
+  {
+    "seq": 77,
+    "whyNext": "Builds on Largest Rectangle in Histogram: convert each row of a binary matrix into a running histogram and solve in O(mn).",
+    "brute": {
+      "idea": "For every pair of top-left and bottom-right cells, verify if all cells are 1 and calculate area.",
+      "steps": [
+        "Iterate over all subgrid rectangles (r1, c1) to (r2, c2).",
+        "Check if every cell inside rectangle contains '1'.",
+        "Track maximum area."
+      ],
+      "whySlow": "Evaluating all possible rectangles takes O(m\u00b2n\u00b2) time.",
+      "time": "O(m\u00b2n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maximalRectangle(char[][] matrix) {\n        if (matrix.length == 0) return 0;\n        int m = matrix.length, n = matrix[0].length, max = 0;\n        int[] heights = new int[n];\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                heights[c] = (matrix[r][c] == '1') ? heights[c] + 1 : 0;\n            }\n            for (int i = 0; i < n; i++) {\n                int l = i, right = i;\n                while (l > 0 && heights[l - 1] >= heights[i]) l--;\n                while (right < n - 1 && heights[right + 1] >= heights[i]) right++;\n                max = Math.max(max, heights[i] * (right - l + 1));\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maximalRectangle(self, matrix: list[list[str]]) -> int:\n        if not matrix: return 0\n        m, n = len(matrix), len(matrix[0])\n        heights = [0] * n\n        max_a = 0\n        for r in range(m):\n            for c in range(n):\n                heights[c] = heights[c] + 1 if matrix[r][c] == '1' else 0\n            for i in range(n):\n                l, right = i, i\n                while l > 0 and heights[l - 1] >= heights[i]: l -= 1\n                while right < n - 1 and heights[right + 1] >= heights[i]: right += 1\n                max_a = max(max_a, heights[i] * (right - l + 1))\n        return max_a"
+      }
+    },
+    "optimal": {
+      "idea": "Maintain height histogram array per row: heights[c] = (matrix[r][c] == '1') ? heights[c] + 1 : 0. Apply Largest Rectangle in Histogram algorithm.",
+      "steps": [
+        "Initialize heights array of size n with 0.",
+        "For each row r:",
+        "Update heights[c]: increment if '1', reset to 0 if '0'.",
+        "Compute max rectangle for heights array using monotonic stack.",
+        "Update global max area."
+      ],
+      "time": "O(mn)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maximalRectangle(char[][] matrix) {\n        if (matrix.length == 0) return 0;\n        int m = matrix.length, n = matrix[0].length, max = 0;\n        int[] h = new int[n];\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) h[c] = (matrix[r][c] == '1') ? h[c] + 1 : 0;\n            max = Math.max(max, maxHistogram(h));\n        }\n        return max;\n    }\n    private int maxHistogram(int[] heights) {\n        int n = heights.length, max = 0;\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int i = 0; i <= n; i++) {\n            int cur = (i == n) ? 0 : heights[i];\n            while (!stack.isEmpty() && cur < heights[stack.peek()]) {\n                int ht = heights[stack.pop()];\n                int w = stack.isEmpty() ? i : i - stack.peek() - 1;\n                max = Math.max(max, ht * w);\n            }\n            stack.push(i);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maximalRectangle(self, matrix: list[list[str]]) -> int:\n        if not matrix: return 0\n        n = len(matrix[0])\n        heights = [0] * (n + 1)\n        max_a = 0\n        for row in matrix:\n            for i in range(n):\n                heights[i] = heights[i] + 1 if row[i] == '1' else 0\n            stack = []\n            for i, h in enumerate(heights):\n                while stack and h < heights[stack[-1]]:\n                    ht = heights[stack.pop()]\n                    w = i if not stack else i - stack[-1] - 1\n                    max_a = max(max_a, ht * w)\n                stack.append(i)\n        return max_a"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Stack and Monotonic Stack. This achieves O mn time and O n auxiliary space.",
+      "Maintain height histogram array per row: heights at index c = matrix at index r c is equal to '1' ? heights at index c + 1 : 0. Apply Largest Rectangle in Histogram algorithm. In detail: Initialize heights array of size n with 0. Then for each row r:."
+    ]
+  },
+  {
+    "seq": 78,
+    "whyNext": "Builds on monotonic stack: greedy removal of digits when a smaller subsequent digit appears, keeping the number monotonically non-decreasing.",
+    "brute": {
+      "idea": "Try all possible combinations of removing k digits from num and find the minimum resulting integer string.",
+      "steps": [
+        "Recursively remove one digit that creates the smallest prefix, repeated k times.",
+        "Strip leading zeroes."
+      ],
+      "whySlow": "Evaluating combination removals takes exponential time.",
+      "time": "exponential",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String removeKdigits(String num, int k) {\n        if (num.length() == k) return \"0\";\n        StringBuilder sb = new StringBuilder(num);\n        for (int i = 0; i < k; i++) {\n            int j = 0;\n            while (j < sb.length() - 1 && sb.charAt(j) <= sb.charAt(j + 1)) j++;\n            sb.deleteCharAt(j);\n        }\n        while (sb.length() > 1 && sb.charAt(0) == '0') sb.deleteCharAt(0);\n        return sb.length() == 0 ? \"0\" : sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def removeKdigits(self, num: str, k: int) -> str:\n        if len(num) == k: return \"0\"\n        s = list(num)\n        for _ in range(k):\n            i = 0\n            while i < len(s) - 1 and s[i] <= s[i + 1]: i += 1\n            s.pop(i)\n        res = \"\".join(s).lstrip(\"0\")\n        return res if res else '0'"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic increasing stack: while k > 0 and stack top > current digit, pop from stack and decrement k.",
+      "steps": [
+        "Iterate over digits:",
+        "While k > 0 and !stack.isEmpty() and stack.peek() > digit: stack.pop(), k--.",
+        "stack.push(digit).",
+        "If k > 0, truncate k digits from end.",
+        "Build string, strip leading zeroes; return '0' if empty."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String removeKdigits(String num, int k) {\n        Deque<Character> stack = new ArrayDeque<>();\n        for (char c : num.toCharArray()) {\n            while (k > 0 && !stack.isEmpty() && stack.peek() > c) {\n                stack.pop();\n                k--;\n            }\n            stack.push(c);\n        }\n        while (k > 0 && !stack.isEmpty()) { stack.pop(); k--; }\n        StringBuilder sb = new StringBuilder();\n        while (!stack.isEmpty()) sb.append(stack.pollLast());\n        while (sb.length() > 1 && sb.charAt(0) == '0') sb.deleteCharAt(0);\n        return sb.length() == 0 ? \"0\" : sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def removeKdigits(self, num: str, k: int) -> str:\n        stack = []\n        for c in num:\n            while k > 0 and stack and stack[-1] > c:\n                stack.pop()\n                k -= 1\n            stack.append(c)\n        if k > 0: stack = stack[:-k]\n        res = \"\".join(stack).lstrip(\"0\")\n        return res if res else '0'"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Iterate over digits:. Then while k is greater than 0 and !stack.isempty and stack.peek is greater than digit: stack.pop , k--."
+    ]
+  },
+  {
+    "seq": 79,
+    "whyNext": "Builds on monotonic stack: sort cars by position descending; stack tracks fleet arrival times, absorbing faster cars behind slower leaders.",
+    "brute": {
+      "idea": "Simulate positions of cars over discrete time steps until all cross target.",
+      "steps": [
+        "Simulate car movements step by step.",
+        "Merge cars that catch up to each other into fleets.",
+        "Count fleets."
+      ],
+      "whySlow": "Simulation takes O(n * T) time where T depends on target distance.",
+      "time": "O(n\u00b7T)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int carFleet(int target, int[] position, int[] speed) {\n        int n = position.length;\n        double[][] cars = new double[n][2];\n        for (int i = 0; i < n; i++) {\n            cars[i][0] = position[i];\n            cars[i][1] = (double)(target - position[i]) / speed[i];\n        }\n        Arrays.sort(cars, (a, b) -> Double.compare(b[0], a[0]));\n        int fleets = 0;\n        double curTime = 0;\n        for (int i = 0; i < n; i++) {\n            if (cars[i][1] > curTime) {\n                fleets++;\n                curTime = cars[i][1];\n            }\n        }\n        return fleets;\n    }\n}",
+        "python": "class Solution:\n    def carFleet(self, target: int, position: list[int], speed: list[int]) -> int:\n        cars = sorted(zip(position, speed), reverse=True)\n        times = [(target - p) / s for p, s in cars]\n        fleets = 0\n        cur_t = 0\n        for t in times:\n            if t > cur_t:\n                fleets += 1\n                cur_t = t\n        return fleets"
+      }
+    },
+    "optimal": {
+      "idea": "Sort cars by position descending. Calculate time to target. Stack holds fleet lead arrival times; a car with time <= stack.peek() merges into fleet.",
+      "steps": [
+        "Pair (position, speed) and sort descending by position.",
+        "Compute time to target for each car: (target - pos) / speed.",
+        "For each time t: if t > lastFleetTime, increment fleet count and update lastFleetTime.",
+        "Return fleet count."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int carFleet(int target, int[] position, int[] speed) {\n        int n = position.length;\n        double[][] cars = new double[n][2];\n        for (int i = 0; i < n; i++) {\n            cars[i][0] = position[i];\n            cars[i][1] = (double) (target - position[i]) / speed[i];\n        }\n        Arrays.sort(cars, (a, b) -> Double.compare(b[0], a[0]));\n        int count = 0;\n        double last = 0;\n        for (double[] c : cars) {\n            if (c[1] > last) {\n                count++;\n                last = c[1];\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def carFleet(self, target: int, position: list[int], speed: list[int]) -> int:\n        cars = sorted(zip(position, speed), reverse=True)\n        times = [(target - p) / s for p, s in cars]\n        fleets = 0\n        last = 0\n        for t in times:\n            if t > last:\n                fleets += 1\n                last = t\n        return fleets"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n log n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Pair position, speed and sort descending by position. Then compute time to target for each car: target - pos / speed."
+    ]
+  },
+  {
+    "seq": 80,
+    "whyNext": "Builds on nested bracket matching: two stacks (count stack and string stack) handle nested bracket decoding.",
+    "brute": {
+      "idea": "Find the innermost bracket pair '[...]', decode it by repeating its string k times, and replace into original string.",
+      "steps": [
+        "While string contains '[':",
+        "Locate innermost '[' and corresponding ']'.",
+        "Repeat substring k times.",
+        "Replace bracket segment in string."
+      ],
+      "whySlow": "Repeated string concatenation and searching takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String decodeString(String s) {\n        Deque<Integer> countStack = new ArrayDeque<>();\n        Deque<StringBuilder> stringStack = new ArrayDeque<>();\n        StringBuilder cur = new StringBuilder();\n        int k = 0;\n        for (char ch : s.toCharArray()) {\n            if (Character.isDigit(ch)) k = k * 10 + (ch - '0');\n            else if (ch == '[') {\n                countStack.push(k);\n                stringStack.push(cur);\n                cur = new StringBuilder();\n                k = 0;\n            } else if (ch == ']') {\n                StringBuilder decoded = stringStack.pop();\n                int times = countStack.pop();\n                for (int i = 0; i < times; i++) decoded.append(cur);\n                cur = decoded;\n            } else cur.append(ch);\n        }\n        return cur.toString();\n    }\n}",
+        "python": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack = []\n        cur_s, cur_num = \"\", 0\n        for c in s:\n            if c.isdigit():\n                cur_num = cur_num * 10 + int(c)\n            elif c == '[':\n                stack.append((cur_s, cur_num))\n                cur_s, cur_num = \"\", 0\n            elif c == ']':\n                prev_s, num = stack.pop()\n                cur_s = prev_s + num * cur_s\n            else:\n                cur_s += c\n        return cur_s"
+      }
+    },
+    "optimal": {
+      "idea": "Two stacks: countStack stores multipliers, strStack stores previous string prefixes. When ']' reached, pop and concatenate.",
+      "steps": [
+        "Maintain currentString and currentK.",
+        "If digit: k = k * 10 + digit.",
+        "If '[': push k to countStack, push currentString to strStack; reset k = 0, currentString = ''.",
+        "If ']': pop prevStr and times, currentString = prevStr + currentString * times.",
+        "Else: currentString += c."
+      ],
+      "time": "O(n\u00b7len)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String decodeString(String s) {\n        Deque<Integer> countStack = new ArrayDeque<>();\n        Deque<StringBuilder> strStack = new ArrayDeque<>();\n        StringBuilder cur = new StringBuilder();\n        int k = 0;\n        for (char c : s.toCharArray()) {\n            if (Character.isDigit(c)) k = k * 10 + (c - '0');\n            else if (c == '[') {\n                countStack.push(k);\n                strStack.push(cur);\n                cur = new StringBuilder();\n                k = 0;\n            } else if (c == ']') {\n                StringBuilder prev = strStack.pop();\n                int times = countStack.pop();\n                while (times-- > 0) prev.append(cur);\n                cur = prev;\n            } else cur.append(c);\n        }\n        return cur.toString();\n    }\n}",
+        "python": "class Solution:\n    def decodeString(self, s: str) -> str:\n        str_stack = []\n        num_stack = []\n        cur_str, cur_num = \"\", 0\n        for c in s:\n            if c.isdigit():\n                cur_num = cur_num * 10 + int(c)\n            elif c == '[':\n                num_stack.append(cur_num)\n                str_stack.append(cur_str)\n                cur_str, cur_num = \"\", 0\n            elif c == ']':\n                prev = str_stack.pop()\n                times = num_stack.pop()\n                cur_str = prev + cur_str * times\n            else:\n                cur_str += c\n        return cur_str"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n\u00b7len time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Maintain currentString and currentK. Then if digit: k = k * 10 + digit."
+    ]
+  },
+  {
+    "seq": 81,
+    "whyNext": "Builds on stack collision handling: positive asteroids move right, negative asteroids pop smaller positive asteroids from stack.",
+    "brute": {
+      "idea": "Repeatedly simulate collisions in multiple passes over an array until no opposing adjacent asteroids remain.",
+      "steps": [
+        "Loop over array looking for asteroids[i] > 0 and asteroids[i+1] < 0.",
+        "Resolve collision by destroying smaller or both.",
+        "Repeat until no collisions remain."
+      ],
+      "whySlow": "Multiple array passes take O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] asteroidCollision(int[] asteroids) {\n        List<Integer> list = new ArrayList<>();\n        for (int a : asteroids) list.add(a);\n        boolean changed = true;\n        while (changed) {\n            changed = false;\n            for (int i = 0; i < list.size() - 1; i++) {\n                if (list.get(i) > 0 && list.get(i + 1) < 0) {\n                    changed = true;\n                    int left = list.get(i), right = -list.get(i + 1);\n                    if (left > right) list.remove(i + 1);\n                    else if (left < right) list.remove(i);\n                    else { list.remove(i + 1); list.remove(i); }\n                    break;\n                }\n            }\n        }\n        int[] res = new int[list.size()];\n        for (int i = 0; i < list.size(); i++) res[i] = list.get(i);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def asteroidCollision(self, asteroids: list[int]) -> list[int]:\n        ast = list(asteroids)\n        changed = True\n        while changed:\n            changed = False\n            for i in range(len(ast) - 1):\n                if ast[i] > 0 and ast[i + 1] < 0:\n                    changed = True\n                    if ast[i] > -ast[i + 1]: ast.pop(i + 1)\n                    elif ast[i] < -ast[i + 1]: ast.pop(i)\n                    else: ast.pop(i + 1); ast.pop(i)\n                    break\n        return ast"
+      }
+    },
+    "optimal": {
+      "idea": "Stack of surviving asteroids: incoming negative asteroid collides with positive stack top, popping smaller ones until destroyed or pushed.",
+      "steps": [
+        "Initialize stack.",
+        "For each asteroid a:",
+        "While a < 0 and stack has positive top: compare abs(a) and stack top.",
+        "If stack top < abs(a), pop and continue.",
+        "If stack top == abs(a), pop and destroy both.",
+        "If survived, push a.",
+        "Convert stack to array."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] asteroidCollision(int[] asteroids) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int a : asteroids) {\n            boolean alive = true;\n            while (alive && a < 0 && !stack.isEmpty() && stack.peek() > 0) {\n                if (stack.peek() < -a) { stack.pop(); }\n                else if (stack.peek() == -a) { stack.pop(); alive = false; }\n                else { alive = false; }\n            }\n            if (alive) stack.push(a);\n        }\n        int[] res = new int[stack.size()];\n        for (int i = res.length - 1; i >= 0; i--) res[i] = stack.pop();\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def asteroidCollision(self, asteroids: list[int]) -> list[int]:\n        stack = []\n        for a in asteroids:\n            alive = True\n            while alive and a < 0 and stack and stack[-1] > 0:\n                if stack[-1] < -a:\n                    stack.pop()\n                elif stack[-1] == -a:\n                    stack.pop()\n                    alive = False\n                else:\n                    alive = False\n            if alive:\n                stack.append(a)\n        return stack"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize stack. Then for each asteroid a:."
+    ]
+  },
+  {
+    "seq": 82,
+    "whyNext": "Completes Chapter 5: split path by '/', push valid folder names, and pop on '..' to resolve canonical file paths.",
+    "brute": {
+      "idea": "Process path using split and manual string surgery with backward traversal.",
+      "steps": [
+        "Split path by '/'.",
+        "Build folder hierarchy handling '.' and '..'.",
+        "Join folders with '/'."
+      ],
+      "whySlow": "String surgery and repeated searches takes extra string allocations.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String simplifyPath(String path) {\n        String[] parts = path.split(\"/\");\n        List<String> list = new ArrayList<>();\n        for (String p : parts) {\n            if (p.equals(\"\") || p.equals(\".\")) continue;\n            if (p.equals(\"..\")) { if (!list.isEmpty()) list.remove(list.size() - 1); }\n            else list.add(p);\n        }\n        return \"/\" + String.join(\"/\", list);\n    }\n}",
+        "python": "class Solution:\n    def simplifyPath(self, path: str) -> str:\n        parts = path.split(\"/\")\n        st = []\n        for p in parts:\n            if not p or p == \".\": continue\n            if p == \"..\":\n                if st: st.pop()\n            else: st.append(p)\n        return \"/\" + \"/\".join(st)"
+      }
+    },
+    "optimal": {
+      "idea": "Stack of directory names: split by '/', ignore empty and '.', pop on '..', push directory names, join with '/'.",
+      "steps": [
+        "Initialize Deque<String> stack.",
+        "Split path by '/'.",
+        "For segment s in tokens:",
+        "If s == '..' and !stack.isEmpty(): stack.pop().",
+        "Else if !s.isEmpty() && !s.equals('.'): stack.push(s).",
+        "Join elements into canonical path starting with '/'."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String simplifyPath(String path) {\n        Deque<String> stack = new ArrayDeque<>();\n        for (String token : path.split(\"/\")) {\n            if (token.equals(\"..\")) {\n                if (!stack.isEmpty()) stack.pollLast();\n            } else if (!token.isEmpty() && !token.equals(\".\")) {\n                stack.offerLast(token);\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (String dir : stack) sb.append(\"/\").append(dir);\n        return sb.length() == 0 ? \"/\" : sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def simplifyPath(self, path: str) -> str:\n        stack = []\n        for part in path.split('/'):\n            if part == '..':\n                if stack: stack.pop()\n            elif part and part != '.':\n                stack.append(part)\n        return '/' + '/'.join(stack)"
+      }
+    },
+    "hints": [
+      "Notice how matching pairs or nested structures require the most recently opened element to be closed or resolved first.",
+      "Apply a Stack LIFO . This achieves O n time and O n auxiliary space.",
+      "Push opening elements onto the stack, and when encountering a closing element, pop from the stack and verify that it matches. In detail: Initialize Deque is less than String is greater than stack. Then split path by '/'."
+    ]
+  }
+]

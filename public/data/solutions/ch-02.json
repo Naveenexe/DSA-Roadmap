@@ -1,0 +1,558 @@
+[
+  {
+    "seq": 22,
+    "whyNext": "Opens Chapter 2 (Two Pointers): moving inward from opposite ends to verify palindrome symmetry.",
+    "brute": {
+      "idea": "Filter alphanumeric characters, convert to lowercase, reverse the string and compare with original.",
+      "steps": [
+        "Build a string of cleaned alphanumeric characters in lowercase.",
+        "Compare cleaned string with its reverse."
+      ],
+      "whySlow": "Allocates extra memory to construct reversed strings.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPalindrome(String s) {\n        StringBuilder sb = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (Character.isLetterOrDigit(c)) sb.append(Character.toLowerCase(c));\n        }\n        String clean = sb.toString();\n        return clean.equals(sb.reverse().toString());\n    }\n}",
+        "python": "class Solution:\n    def isPalindrome(self, s: str) -> bool:\n        clean = [c.lower() for c in s if c.isalnum()]\n        return clean == clean[::-1]"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers left and right moving inward, skipping non-alphanumeric characters, and comparing case-insensitively.",
+      "steps": [
+        "Initialize left = 0, right = s.length() - 1.",
+        "Advance left until alphanumeric; decrement right until alphanumeric.",
+        "If characters differ, return false.",
+        "Increment left, decrement right until pointers cross."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPalindrome(String s) {\n        int l = 0, r = s.length() - 1;\n        while (l < r) {\n            while (l < r && !Character.isLetterOrDigit(s.charAt(l))) l++;\n            while (l < r && !Character.isLetterOrDigit(s.charAt(r))) r--;\n            if (Character.toLowerCase(s.charAt(l)) != Character.toLowerCase(s.charAt(r))) return false;\n            l++; r--;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isPalindrome(self, s: str) -> bool:\n        l, r = 0, len(s) - 1\n        while l < r:\n            while l < r and not s[l].isalnum(): l += 1\n            while l < r and not s[r].isalnum(): r -= 1\n            if s[l].lower() != s[r].lower(): return False\n            l += 1; r -= 1\n        return True"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize left = 0, right = the length of s - 1. Then advance left until alphanumeric decrement right until alphanumeric."
+    ]
+  },
+  {
+    "seq": 23,
+    "whyNext": "Builds on Valid Palindrome: when mismatch occurs, branch to check if skipping left or right character yields a palindrome.",
+    "brute": {
+      "idea": "Try deleting each character in turn and test whether the remaining string is a palindrome.",
+      "steps": [
+        "For each index i, form string without character i.",
+        "Check if modified string is a palindrome.",
+        "Return true if any variant is valid."
+      ],
+      "whySlow": "Constructing and checking n string slices takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean validPalindrome(String s) {\n        if (isPal(s, 0, s.length() - 1)) return true;\n        for (int i = 0; i < s.length(); i++) {\n            String sub = s.substring(0, i) + s.substring(i + 1);\n            if (isPal(sub, 0, sub.length() - 1)) return true;\n        }\n        return false;\n    }\n    private boolean isPal(String s, int l, int r) {\n        while (l < r) if (s.charAt(l++) != s.charAt(r--)) return false;\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def validPalindrome(self, s: str) -> bool:\n        if s == s[::-1]: return True\n        for i in range(len(s)):\n            sub = s[:i] + s[i+1:]\n            if sub == sub[::-1]: return True\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers inward; on the first mismatch, test if either s[l+1...r] or s[l...r-1] is a palindrome.",
+      "steps": [
+        "Initialize l = 0, r = s.length() - 1.",
+        "While l < r, if s[l] == s[r], advance inward.",
+        "If s[l] != s[r], return isPal(s, l + 1, r) || isPal(s, l, r - 1).",
+        "Return true."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean validPalindrome(String s) {\n        int l = 0, r = s.length() - 1;\n        while (l < r) {\n            if (s.charAt(l) != s.charAt(r)) {\n                return isPal(s, l + 1, r) || isPal(s, l, r - 1);\n            }\n            l++; r--;\n        }\n        return true;\n    }\n    private boolean isPal(String s, int l, int r) {\n        while (l < r) if (s.charAt(l++) != s.charAt(r--)) return false;\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def validPalindrome(self, s: str) -> bool:\n        l, r = 0, len(s) - 1\n        while l < r:\n            if s[l] != s[r]:\n                s1 = s[l+1:r+1]\n                s2 = s[l:r]\n                return s1 == s1[::-1] or s2 == s2[::-1]\n            l += 1; r -= 1\n        return True"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize l = 0, r = the length of s - 1. Then while l is less than r, if s at index l is equal to s at index r, advance inward."
+    ]
+  },
+  {
+    "seq": 24,
+    "whyNext": "Builds on Two Sum: since input array is sorted, replace hash map with inward two pointers for O(1) extra space.",
+    "brute": {
+      "idea": "Check every pair (i, j) with nested loops to find sum matching target.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "If numbers[i] + numbers[j] == target, return 1-based indices [i + 1, j + 1]."
+      ],
+      "whySlow": "Does not take advantage of sorted order, taking O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] twoSum(int[] numbers, int target) {\n        for (int i = 0; i < numbers.length; i++) {\n            for (int j = i + 1; j < numbers.length; j++) {\n                if (numbers[i] + numbers[j] == target) return new int[]{i + 1, j + 1};\n            }\n        }\n        return new int[]{};\n    }\n}",
+        "python": "class Solution:\n    def twoSum(self, numbers: list[int], target: int) -> list[int]:\n        for i in range(len(numbers)):\n            for j in range(i + 1, len(numbers)):\n                if numbers[i] + numbers[j] == target:\n                    return [i + 1, j + 1]\n        return []"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers from ends: if sum < target, advance left; if sum > target, decrement right.",
+      "steps": [
+        "Initialize left = 0, right = numbers.length - 1.",
+        "Compute sum = numbers[left] + numbers[right].",
+        "If sum == target, return [left + 1, right + 1].",
+        "If sum < target, left++.",
+        "Else right--."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] twoSum(int[] numbers, int target) {\n        int l = 0, r = numbers.length - 1;\n        while (l < r) {\n            int sum = numbers[l] + numbers[r];\n            if (sum == target) return new int[]{l + 1, r + 1};\n            if (sum < target) l++;\n            else r--;\n        }\n        return new int[]{};\n    }\n}",
+        "python": "class Solution:\n    def twoSum(self, numbers: list[int], target: int) -> list[int]:\n        l, r = 0, len(numbers) - 1\n        while l < r:\n            s = numbers[l] + numbers[r]\n            if s == target: return [l + 1, r + 1]\n            elif s < target: l += 1\n            else: r -= 1\n        return []"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize left = 0, right = the length of numbers - 1. Then compute sum = numbers at index left + numbers at index right."
+    ]
+  },
+  {
+    "seq": 25,
+    "whyNext": "Builds on Two Sum II: sort the array, fix one element, and use two pointers to find pairs summing to -nums[i].",
+    "brute": {
+      "idea": "Enumerate all triplets with three nested loops and deduplicate using a set.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "Loop k from j + 1 to n - 1.",
+        "If nums[i] + nums[j] + nums[k] == 0, sort triplet and add to set."
+      ],
+      "whySlow": "Three nested loops yield cubic O(n\u00b3) time complexity.",
+      "time": "O(n\u00b3)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n        Set<List<Integer>> set = new HashSet<>();\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                for (int k = j + 1; k < n; k++) {\n                    if (nums[i] + nums[j] + nums[k] == 0) {\n                        List<Integer> trip = Arrays.asList(nums[i], nums[j], nums[k]);\n                        Collections.sort(trip);\n                        set.add(trip);\n                    }\n                }\n            }\n        }\n        return new ArrayList<>(set);\n    }\n}",
+        "python": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        res = set()\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                for k in range(j + 1, n):\n                    if nums[i] + nums[j] + nums[k] == 0:\n                        res.add(tuple(sorted([nums[i], nums[j], nums[k]])))\n        return [list(t) for t in res]"
+      }
+    },
+    "optimal": {
+      "idea": "Sort nums. For each i, use Two Sum II with two pointers on the remainder of the array, skipping duplicates.",
+      "steps": [
+        "Sort nums.",
+        "Loop i from 0 to n - 3; skip duplicates if nums[i] == nums[i-1].",
+        "Set l = i + 1, r = n - 1, target = -nums[i].",
+        "If nums[l] + nums[r] == target, add triplet, advance l and r while skipping duplicates.",
+        "If sum < target l++, else r--."
+      ],
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n        Arrays.sort(nums);\n        List<List<Integer>> res = new ArrayList<>();\n        for (int i = 0; i < nums.length - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;\n            int l = i + 1, r = nums.length - 1;\n            while (l < r) {\n                int sum = nums[i] + nums[l] + nums[r];\n                if (sum == 0) {\n                    res.add(Arrays.asList(nums[i], nums[l], nums[r]));\n                    while (l < r && nums[l] == nums[l + 1]) l++;\n                    while (l < r && nums[r] == nums[r - 1]) r--;\n                    l++; r--;\n                } else if (sum < 0) l++;\n                else r--;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        nums.sort()\n        res = []\n        for i in range(len(nums) - 2):\n            if i > 0 and nums[i] == nums[i - 1]:\n                continue\n            l, r = i + 1, len(nums) - 1\n            while l < r:\n                s = nums[i] + nums[l] + nums[r]\n                if s == 0:\n                    res.append([nums[i], nums[l], nums[r]])\n                    while l < r and nums[l] == nums[l + 1]: l += 1\n                    while l < r and nums[r] == nums[r - 1]: r -= 1\n                    l += 1; r -= 1\n                elif s < 0: l += 1\n                else: r -= 1\n        return res"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n\u00b2 time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Sort nums. Then loop i from 0 to n - 3 skip duplicates if nums at index i is equal to nums i-1 ."
+    ]
+  },
+  {
+    "seq": 26,
+    "whyNext": "Builds on 3Sum: instead of searching for an exact sum of 0, track the triplet sum with the smallest absolute difference to target.",
+    "brute": {
+      "idea": "Check all triplets with three nested loops and track the sum closest to target.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "Loop k from j + 1 to n - 1.",
+        "If |nums[i]+nums[j]+nums[k] - target| < |closest - target|, update closest."
+      ],
+      "whySlow": "Evaluating all combinations takes O(n\u00b3) time.",
+      "time": "O(n\u00b3)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int threeSumClosest(int[] nums, int target) {\n        int closest = nums[0] + nums[1] + nums[2];\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                for (int k = j + 1; k < n; k++) {\n                    int sum = nums[i] + nums[j] + nums[k];\n                    if (Math.abs(sum - target) < Math.abs(closest - target)) closest = sum;\n                }\n            }\n        }\n        return closest;\n    }\n}",
+        "python": "class Solution:\n    def threeSumClosest(self, nums: list[int], target: int) -> int:\n        closest = nums[0] + nums[1] + nums[2]\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                for k in range(j + 1, n):\n                    s = nums[i] + nums[j] + nums[k]\n                    if abs(s - target) < abs(closest - target):\n                        closest = s\n        return closest"
+      }
+    },
+    "optimal": {
+      "idea": "Sort nums. For each i, use two pointers inward; update closest sum and move pointers based on whether sum is less or greater than target.",
+      "steps": [
+        "Sort nums.",
+        "Loop i from 0 to n - 3.",
+        "Use l = i + 1, r = n - 1.",
+        "Update closest sum if current sum is closer to target.",
+        "If sum < target l++, else if sum > target r--, else return target."
+      ],
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int threeSumClosest(int[] nums, int target) {\n        Arrays.sort(nums);\n        int closest = nums[0] + nums[1] + nums[2];\n        for (int i = 0; i < nums.length - 2; i++) {\n            int l = i + 1, r = nums.length - 1;\n            while (l < r) {\n                int sum = nums[i] + nums[l] + nums[r];\n                if (Math.abs(sum - target) < Math.abs(closest - target)) closest = sum;\n                if (sum < target) l++;\n                else if (sum > target) r--;\n                else return target;\n            }\n        }\n        return closest;\n    }\n}",
+        "python": "class Solution:\n    def threeSumClosest(self, nums: list[int], target: int) -> int:\n        nums.sort()\n        closest = nums[0] + nums[1] + nums[2]\n        for i in range(len(nums) - 2):\n            l, r = i + 1, len(nums) - 1\n            while l < r:\n                s = nums[i] + nums[l] + nums[r]\n                if abs(s - target) < abs(closest - target):\n                    closest = s\n                if s < target: l += 1\n                elif s > target: r -= 1\n                else: return target\n        return closest"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n\u00b2 time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Sort nums. Then loop i from 0 to n - 3."
+    ]
+  },
+  {
+    "seq": 27,
+    "whyNext": "Generalizes 3Sum: fix two elements with nested loops, then use two pointers inward to find pairs summing to the remaining target.",
+    "brute": {
+      "idea": "Check all quadruplets with four nested loops and deduplicate using a set.",
+      "steps": [
+        "Loop i, j, k, l through all four indices.",
+        "If sum == target, sort quadruplet and add to set.",
+        "Return set elements as list."
+      ],
+      "whySlow": "Checking all 4-element combinations takes O(n\u2074) time.",
+      "time": "O(n\u2074)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> fourSum(int[] nums, int target) {\n        Set<List<Integer>> set = new HashSet<>();\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                for (int k = j + 1; k < n; k++) {\n                    for (int l = k + 1; l < n; l++) {\n                        long sum = (long) nums[i] + nums[j] + nums[k] + nums[l];\n                        if (sum == target) {\n                            List<Integer> q = Arrays.asList(nums[i], nums[j], nums[k], nums[l]);\n                            Collections.sort(q);\n                            set.add(q);\n                        }\n                    }\n                }\n            }\n        }\n        return new ArrayList<>(set);\n    }\n}",
+        "python": "class Solution:\n    def fourSum(self, nums: list[int], target: int) -> list[list[int]]:\n        res = set()\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                for k in range(j + 1, n):\n                    for l in range(k + 1, n):\n                        if nums[i] + nums[j] + nums[k] + nums[l] == target:\n                            res.add(tuple(sorted([nums[i], nums[j], nums[k], nums[l]])))\n        return [list(t) for t in res]"
+      }
+    },
+    "optimal": {
+      "idea": "Sort nums. Fix indices i and j, then scan with two pointers l and r from the ends, skipping duplicates.",
+      "steps": [
+        "Sort nums.",
+        "Loop i from 0 to n - 4; skip duplicate nums[i].",
+        "Loop j from i + 1 to n - 3; skip duplicate nums[j].",
+        "Set l = j + 1, r = n - 1.",
+        "Calculate 4-sum; if matches target add to result, then adjust l and r skipping duplicates."
+      ],
+      "time": "O(n\u00b3)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> fourSum(int[] nums, int target) {\n        Arrays.sort(nums);\n        List<List<Integer>> res = new ArrayList<>();\n        int n = nums.length;\n        for (int i = 0; i < n - 3; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;\n            for (int j = i + 1; j < n - 2; j++) {\n                if (j > i + 1 && nums[j] == nums[j - 1]) continue;\n                int l = j + 1, r = n - 1;\n                while (l < r) {\n                    long sum = (long) nums[i] + nums[j] + nums[l] + nums[r];\n                    if (sum == target) {\n                        res.add(Arrays.asList(nums[i], nums[j], nums[l], nums[r]));\n                        while (l < r && nums[l] == nums[l + 1]) l++;\n                        while (l < r && nums[r] == nums[r - 1]) r--;\n                        l++; r--;\n                    } else if (sum < target) l++;\n                    else r--;\n                }\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def fourSum(self, nums: list[int], target: int) -> list[list[int]]:\n        nums.sort()\n        res = []\n        n = len(nums)\n        for i in range(n - 3):\n            if i > 0 and nums[i] == nums[i - 1]: continue\n            for j in range(i + 1, n - 2):\n                if j > i + 1 and nums[j] == nums[j - 1]: continue\n                l, r = j + 1, n - 1\n                while l < r:\n                    s = nums[i] + nums[j] + nums[l] + nums[r]\n                    if s == target:\n                        res.append([nums[i], nums[j], nums[l], nums[r]])\n                        while l < r and nums[l] == nums[l + 1]: l += 1\n                        while l < r and nums[r] == nums[r - 1]: r -= 1\n                        l += 1; r -= 1\n                    elif s < target: l += 1\n                    else: r -= 1\n        return res"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n\u00b3 time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Sort nums. Then loop i from 0 to n - 4 skip duplicate nums at index i."
+    ]
+  },
+  {
+    "seq": 28,
+    "whyNext": "Builds on Two Sum II pointer convergence: maximize area = width * min(h[l], h[r]) by advancing the shorter line.",
+    "brute": {
+      "idea": "Try every pair of lines (i, j) and compute the water capacity between them.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "area = (j - i) * min(height[i], height[j]).",
+        "Track maximum area found."
+      ],
+      "whySlow": "Testing all pairs takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxArea(int[] height) {\n        int max = 0;\n        for (int i = 0; i < height.length; i++) {\n            for (int j = i + 1; j < height.length; j++) {\n                int area = (j - i) * Math.min(height[i], height[j]);\n                max = Math.max(max, area);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxArea(self, height: list[int]) -> int:\n        max_a = 0\n        for i in range(len(height)):\n            for j in range(i + 1, len(height)):\n                a = (j - i) * min(height[i], height[j])\n                max_a = max(max_a, a)\n        return max_a"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers from outermost walls. The height is constrained by the shorter wall, so moving the shorter wall inward is the only way to potentially find a larger area.",
+      "steps": [
+        "Initialize l = 0, r = height.length - 1, maxArea = 0.",
+        "While l < r:",
+        "Compute area = (r - l) * min(height[l], height[r]).",
+        "Update maxArea.",
+        "If height[l] < height[r], l++, else r--."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxArea(int[] height) {\n        int l = 0, r = height.length - 1, max = 0;\n        while (l < r) {\n            int h = Math.min(height[l], height[r]);\n            max = Math.max(max, (r - l) * h);\n            if (height[l] < height[r]) l++;\n            else r--;\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxArea(self, height: list[int]) -> int:\n        l, r = 0, len(height) - 1\n        max_a = 0\n        while l < r:\n            h = min(height[l], height[r])\n            max_a = max(max_a, (r - l) * h)\n            if height[l] < height[r]: l += 1\n            else: r -= 1\n        return max_a"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize l = 0, r = the length of height - 1, maxArea = 0. Then while l is less than r:."
+    ]
+  },
+  {
+    "seq": 29,
+    "whyNext": "Builds on Container With Most Water: each bar traps water up to min(leftMax, rightMax) - height[i], solved via two pointers.",
+    "brute": {
+      "idea": "For every bar i, scan left to find left_max and scan right to find right_max. Trapped water = min(left_max, right_max) - height[i].",
+      "steps": [
+        "For each index i, scan from 0 to i to find left_max.",
+        "Scan from i to n - 1 to find right_max.",
+        "Add min(left_max, right_max) - height[i] to total."
+      ],
+      "whySlow": "Scanning left and right for every position takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int trap(int[] height) {\n        int total = 0, n = height.length;\n        for (int i = 0; i < n; i++) {\n            int leftMax = 0, rightMax = 0;\n            for (int j = 0; j <= i; j++) leftMax = Math.max(leftMax, height[j]);\n            for (int j = i; j < n; j++) rightMax = Math.max(rightMax, height[j]);\n            total += Math.min(leftMax, rightMax) - height[i];\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def trap(self, height: list[int]) -> int:\n        total, n = 0, len(height)\n        for i in range(n):\n            l_max = max(height[:i+1])\n            r_max = max(height[i:])\n            total += min(l_max, r_max) - height[i]\n        return total"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers from ends tracking leftMax and rightMax. Whichever side has smaller max dictates the water trapped at that pointer.",
+      "steps": [
+        "Initialize l = 0, r = n - 1, leftMax = 0, rightMax = 0, water = 0.",
+        "While l < r:",
+        "If height[l] < height[r]:",
+        "Update leftMax; water += leftMax - height[l]; l++.",
+        "Else: update rightMax; water += rightMax - height[r]; r--."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int trap(int[] height) {\n        int l = 0, r = height.length - 1, leftMax = 0, rightMax = 0, water = 0;\n        while (l < r) {\n            if (height[l] < height[r]) {\n                if (height[l] >= leftMax) leftMax = height[l];\n                else water += leftMax - height[l];\n                l++;\n            } else {\n                if (height[r] >= rightMax) rightMax = height[r];\n                else water += rightMax - height[r];\n                r--;\n            }\n        }\n        return water;\n    }\n}",
+        "python": "class Solution:\n    def trap(self, height: list[int]) -> int:\n        l, r = 0, len(height) - 1\n        l_max, r_max, water = 0, 0, 0\n        while l < r:\n            if height[l] < height[r]:\n                if height[l] >= l_max: l_max = height[l]\n                else: water += l_max - height[l]\n                l += 1\n            else:\n                if height[r] >= r_max: r_max = height[r]\n                else: water += r_max - height[r]\n                r -= 1\n        return water"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize l = 0, r = n - 1, leftMax = 0, rightMax = 0, water = 0. Then while l is less than r:."
+    ]
+  },
+  {
+    "seq": 30,
+    "whyNext": "Introduces fast and slow pointer technique: slow marks the insertion point for unique elements in a sorted array.",
+    "brute": {
+      "idea": "Collect unique elements in a set or new list, then copy them back to nums.",
+      "steps": [
+        "Collect unique values using a LinkedHashSet to preserve order.",
+        "Copy unique elements back into nums.",
+        "Return the size of the set."
+      ],
+      "whySlow": "Allocates extra O(n) memory instead of in-place modification.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int removeDuplicates(int[] nums) {\n        Set<Integer> set = new LinkedHashSet<>();\n        for (int x : nums) set.add(x);\n        int i = 0;\n        for (int x : set) nums[i++] = x;\n        return i;\n    }\n}",
+        "python": "class Solution:\n    def removeDuplicates(self, nums: list[int]) -> int:\n        unique = sorted(set(nums))\n        for i, x in enumerate(unique):\n            nums[i] = x\n        return len(unique)"
+      }
+    },
+    "optimal": {
+      "idea": "Fast and slow pointers: slow tracks the position of the last written unique element. Fast searches for the next novel element.",
+      "steps": [
+        "If nums is empty, return 0.",
+        "Initialize slow = 0.",
+        "Loop fast from 1 to n - 1:",
+        "If nums[fast] != nums[slow], slow++, nums[slow] = nums[fast].",
+        "Return slow + 1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int removeDuplicates(int[] nums) {\n        if (nums.length == 0) return 0;\n        int slow = 0;\n        for (int fast = 1; fast < nums.length; fast++) {\n            if (nums[fast] != nums[slow]) {\n                slow++;\n                nums[slow] = nums[fast];\n            }\n        }\n        return slow + 1;\n    }\n}",
+        "python": "class Solution:\n    def removeDuplicates(self, nums: list[int]) -> int:\n        if not nums: return 0\n        slow = 0\n        for fast in range(1, len(nums)):\n            if nums[fast] != nums[slow]:\n                slow += 1\n                nums[slow] = nums[fast]\n        return slow + 1"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: If nums is empty, return 0. Then initialize slow = 0."
+    ]
+  },
+  {
+    "seq": 31,
+    "whyNext": "Builds on slow/fast pointers from Remove Duplicates: slow tracks the placement of non-zero elements, zeroing the rest.",
+    "brute": {
+      "idea": "Create a new array, copy all non-zero elements over, and write back to nums with trailing zeroes.",
+      "steps": [
+        "Create temporary array of size n.",
+        "Copy all non-zero numbers to temporary array.",
+        "Copy temporary array back into nums."
+      ],
+      "whySlow": "Allocates O(n) extra space instead of swapping in place.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public void moveZeroes(int[] nums) {\n        int[] temp = new int[nums.length];\n        int idx = 0;\n        for (int x : nums) if (x != 0) temp[idx++] = x;\n        for (int i = 0; i < nums.length; i++) nums[i] = temp[i];\n    }\n}",
+        "python": "class Solution:\n    def moveZeroes(self, nums: list[int]) -> None:\n        non_zero = [x for x in nums if x != 0]\n        for i in range(len(nums)):\n            nums[i] = non_zero[i] if i < len(non_zero) else 0"
+      }
+    },
+    "optimal": {
+      "idea": "Slow and fast pointers: slow pointer points to next non-zero insertion index. When fast finds non-zero, swap nums[slow] and nums[fast].",
+      "steps": [
+        "Initialize slow = 0.",
+        "Iterate fast from 0 to n - 1.",
+        "If nums[fast] != 0, swap nums[slow] and nums[fast], then slow++."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void moveZeroes(int[] nums) {\n        int slow = 0;\n        for (int fast = 0; fast < nums.length; fast++) {\n            if (nums[fast] != 0) {\n                int temp = nums[slow];\n                nums[slow] = nums[fast];\n                nums[fast] = temp;\n                slow++;\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def moveZeroes(self, nums: list[int]) -> None:\n        slow = 0\n        for fast in range(len(nums)):\n            if nums[fast] != 0:\n                nums[slow], nums[fast] = nums[fast], nums[slow]\n                slow += 1"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize slow = 0. Then iterate fast from 0 to n - 1."
+    ]
+  },
+  {
+    "seq": 32,
+    "whyNext": "Extends two pointers to three pointers (Dutch National Flag): partition array into 0s, 1s, and 2s in a single pass.",
+    "brute": {
+      "idea": "Sort the array using standard sorting algorithm.",
+      "steps": [
+        "Sort nums array in ascending order."
+      ],
+      "whySlow": "Comparison sorting takes O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void sortColors(int[] nums) {\n        Arrays.sort(nums);\n    }\n}",
+        "python": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        nums.sort()"
+      }
+    },
+    "optimal": {
+      "idea": "Dutch National Flag algorithm: low pointer for 0s, mid pointer for 1s, high pointer for 2s.",
+      "steps": [
+        "Initialize low = 0, mid = 0, high = n - 1.",
+        "While mid <= high:",
+        "If nums[mid] == 0: swap nums[low] and nums[mid], low++, mid++.",
+        "If nums[mid] == 1: mid++.",
+        "If nums[mid] == 2: swap nums[mid] and nums[high], high--."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void sortColors(int[] nums) {\n        int low = 0, mid = 0, high = nums.length - 1;\n        while (mid <= high) {\n            if (nums[mid] == 0) {\n                int temp = nums[low]; nums[low] = nums[mid]; nums[mid] = temp;\n                low++; mid++;\n            } else if (nums[mid] == 1) {\n                mid++;\n            } else {\n                int temp = nums[mid]; nums[mid] = nums[high]; nums[high] = temp;\n                high--;\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        low, mid, high = 0, 0, len(nums) - 1\n        while mid <= high:\n            if nums[mid] == 0:\n                nums[low], nums[mid] = nums[mid], nums[low]\n                low += 1; mid += 1\n            elif nums[mid] == 1:\n                mid += 1\n            else:\n                nums[mid], nums[high] = nums[high], nums[mid]\n                high -= 1"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Two Pointers. This achieves O n time and O 1 auxiliary space.",
+      "Dutch National Flag algorithm: low pointer for 0s, mid pointer for 1s, high pointer for 2s. In detail: Initialize low = 0, mid = 0, high = n - 1. Then while mid is at most high:."
+    ]
+  },
+  {
+    "seq": 33,
+    "whyNext": "Builds on two-pointer inward scans: traverse backwards from ends, counting '#' characters to skip deleted letters.",
+    "brute": {
+      "idea": "Build the final string for both s and t using stacks to process backspaces, then compare.",
+      "steps": [
+        "Simulate backspaces using a StringBuilder stack for s.",
+        "Simulate backspaces using a StringBuilder stack for t.",
+        "Compare resulting strings."
+      ],
+      "whySlow": "Allocates O(n + m) extra memory for stacks.",
+      "time": "O(n + m)",
+      "space": "O(n + m)",
+      "code": {
+        "java": "class Solution {\n    public boolean backspaceCompare(String s, String t) {\n        return build(s).equals(build(t));\n    }\n    private String build(String str) {\n        StringBuilder sb = new StringBuilder();\n        for (char c : str.toCharArray()) {\n            if (c == '#') {\n                if (sb.length() > 0) sb.deleteCharAt(sb.length() - 1);\n            } else sb.append(c);\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def backspaceCompare(self, s: str, t: str) -> bool:\n        def build(string):\n            st = []\n            for c in string:\n                if c == '#':\n                    if st: st.pop()\n                else: st.append(c)\n            return \"\".join(st)\n        return build(s) == build(t)"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers scanning backwards from the end of both strings, tracking backspace counts to skip characters in O(1) space.",
+      "steps": [
+        "Initialize i = s.length - 1, j = t.length - 1.",
+        "While i >= 0 or j >= 0:",
+        "Find next valid character in s by skipping when '#' encountered.",
+        "Find next valid character in t by skipping when '#' encountered.",
+        "Compare characters; return false if mismatch.",
+        "Decrement i and j."
+      ],
+      "time": "O(n + m)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean backspaceCompare(String s, String t) {\n        int i = s.length() - 1, j = t.length() - 1;\n        int skipS = 0, skipT = 0;\n        while (i >= 0 || j >= 0) {\n            while (i >= 0) {\n                if (s.charAt(i) == '#') { skipS++; i--; }\n                else if (skipS > 0) { skipS--; i--; }\n                else break;\n            }\n            while (j >= 0) {\n                if (t.charAt(j) == '#') { skipT++; j--; }\n                else if (skipT > 0) { skipT--; j--; }\n                else break;\n            }\n            if (i >= 0 && j >= 0 && s.charAt(i) != t.charAt(j)) return false;\n            if ((i >= 0) != (j >= 0)) return false;\n            i--; j--;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def backspaceCompare(self, s: str, t: str) -> bool:\n        i, j = len(s) - 1, len(t) - 1\n        skip_s, skip_t = 0, 0\n        while i >= 0 or j >= 0:\n            while i >= 0:\n                if s[i] == '#': skip_s += 1; i -= 1\n                elif skip_s > 0: skip_s -= 1; i -= 1\n                else: break\n            while j >= 0:\n                if t[j] == '#': skip_t += 1; j -= 1\n                elif skip_t > 0: skip_t -= 1; j -= 1\n                else: break\n            if i >= 0 and j >= 0 and s[i] != t[j]: return False\n            if (i >= 0) != (j >= 0): return False\n            i -= 1; j -= 1\n        return True"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n + m time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize i = the length of s - 1, j = the length of t - 1. Then while i is at least 0 or j is at least 0:."
+    ]
+  },
+  {
+    "seq": 34,
+    "whyNext": "Builds on Two Sum II pointer convergence: largest squared values lie at array extremities, filled into result from back to front.",
+    "brute": {
+      "idea": "Square each number in the array and then sort the result.",
+      "steps": [
+        "Create result array of squares.",
+        "Sort result array."
+      ],
+      "whySlow": "Sorting ignores existing sorted order of input, taking O(n log n).",
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] sortedSquares(int[] nums) {\n        int[] res = new int[nums.length];\n        for (int i = 0; i < nums.length; i++) res[i] = nums[i] * nums[i];\n        Arrays.sort(res);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def sortedSquares(self, nums: list[int]) -> list[int]:\n        return sorted(x * x for x in nums)"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers at start and end. Compare squares of both ends and place the larger square at the end of result array.",
+      "steps": [
+        "Initialize l = 0, r = n - 1, idx = n - 1.",
+        "While l <= r:",
+        "If nums[l]\u00b2 > nums[r]\u00b2: res[idx] = nums[l]\u00b2, l++.",
+        "Else: res[idx] = nums[r]\u00b2, r--.",
+        "idx--."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] sortedSquares(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        int l = 0, r = n - 1, idx = n - 1;\n        while (l <= r) {\n            int sqL = nums[l] * nums[l];\n            int sqR = nums[r] * nums[r];\n            if (sqL > sqR) { res[idx--] = sqL; l++; }\n            else { res[idx--] = sqR; r--; }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def sortedSquares(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        res = [0] * n\n        l, r, idx = 0, n - 1, n - 1\n        while l <= r:\n            if abs(nums[l]) > abs(nums[r]):\n                res[idx] = nums[l] ** 2\n                l += 1\n            else:\n                res[idx] = nums[r] ** 2\n                r -= 1\n            idx -= 1\n        return res"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize l = 0, r = n - 1, idx = n - 1. Then while l is at most r:."
+    ]
+  },
+  {
+    "seq": 35,
+    "whyNext": "Completes Chapter 2: find first decreasing pivot from right, swap with next larger element, and reverse suffix.",
+    "brute": {
+      "idea": "Generate all permutations of nums in lexicographical order and pick the permutation following the current one.",
+      "steps": [
+        "Generate all permutations.",
+        "Find current permutation.",
+        "Return next in sequence or wrap around to first."
+      ],
+      "whySlow": "Generating all permutations takes O(n! * n) time.",
+      "time": "O(n!\u00b7n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public void nextPermutation(int[] nums) {\n        // Brute force simulation in-place\n        int n = nums.length;\n        int i = n - 2;\n        while (i >= 0 && nums[i] >= nums[i + 1]) i--;\n        if (i >= 0) {\n            int j = n - 1;\n            while (nums[j] <= nums[i]) j--;\n            int temp = nums[i]; nums[i] = nums[j]; nums[j] = temp;\n        }\n        int l = i + 1, r = n - 1;\n        while (l < r) {\n            int temp = nums[l]; nums[l] = nums[r]; nums[r] = temp;\n            l++; r--;\n        }\n    }\n}",
+        "python": "class Solution:\n    def nextPermutation(self, nums: list[int]) -> None:\n        n = len(nums)\n        i = n - 2\n        while i >= 0 and nums[i] >= nums[i + 1]: i -= 1\n        if i >= 0:\n            j = n - 1\n            while nums[j] <= nums[i]: j -= 1\n            nums[i], nums[j] = nums[j], nums[i]\n        l, r = i + 1, n - 1\n        while l < r:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1; r -= 1"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass: find first decrease from right (pivot i), swap with smallest element greater than pivot to its right, reverse suffix.",
+      "steps": [
+        "Find largest index i such that nums[i] < nums[i + 1].",
+        "If no such i exists, reverse entire array.",
+        "Find largest index j > i such that nums[j] > nums[i].",
+        "Swap nums[i] and nums[j].",
+        "Reverse subarray nums[i + 1 ... n - 1]."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void nextPermutation(int[] nums) {\n        int i = nums.length - 2;\n        while (i >= 0 && nums[i] >= nums[i + 1]) i--;\n        if (i >= 0) {\n            int j = nums.length - 1;\n            while (nums[j] <= nums[i]) j--;\n            int temp = nums[i]; nums[i] = nums[j]; nums[j] = temp;\n        }\n        reverse(nums, i + 1, nums.length - 1);\n    }\n    private void reverse(int[] nums, int l, int r) {\n        while (l < r) {\n            int temp = nums[l]; nums[l] = nums[r]; nums[r] = temp;\n            l++; r--;\n        }\n    }\n}",
+        "python": "class Solution:\n    def nextPermutation(self, nums: list[int]) -> None:\n        i = len(nums) - 2\n        while i >= 0 and nums[i] >= nums[i + 1]:\n            i -= 1\n        if i >= 0:\n            j = len(nums) - 1\n            while nums[j] <= nums[i]:\n                j -= 1\n            nums[i], nums[j] = nums[j], nums[i]\n        l, r = i + 1, len(nums) - 1\n        while l < r:\n            nums[l], nums[r] = nums[r], nums[l]\n            l += 1; r -= 1"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Two Pointers. This achieves O n time and O 1 auxiliary space.",
+      "Single pass: find first decrease from right pivot i , swap with smallest element greater than pivot to its right, reverse suffix. In detail: Find largest index i such that nums at index i is less than nums i + 1 . Then if no such i exists, reverse entire array."
+    ]
+  }
+]

@@ -1,0 +1,837 @@
+[
+  {
+    "seq": 1,
+    "whyNext": "Foundation of the roadmap: introducing hash set lookups to eliminate quadratic nested loops.",
+    "brute": {
+      "idea": "Compare every element with every subsequent element using two nested loops.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "If nums[i] == nums[j], return true.",
+        "Return false if no duplicates are found."
+      ],
+      "whySlow": "Checking all n(n-1)/2 pairs requires O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        for (int i = 0; i < nums.length; i++) {\n            for (int j = i + 1; j < nums.length; j++) {\n                if (nums[i] == nums[j]) return true;\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def containsDuplicate(self, nums: list[int]) -> bool:\n        for i in range(len(nums)):\n            for j in range(i + 1, len(nums)):\n                if nums[i] == nums[j]:\n                    return True\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Add elements one by one into a HashSet; if an element already exists, return true immediately.",
+      "steps": [
+        "Initialize an empty HashSet.",
+        "Iterate through each number in nums.",
+        "If the set already contains the number, return true.",
+        "Otherwise add the number to the set.",
+        "Return false if loop terminates."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) {\n            if (!seen.add(x)) return true;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def containsDuplicate(self, nums: list[int]) -> bool:\n        seen = set()\n        for x in nums:\n            if x in seen:\n                return True\n            seen.add(x)\n        return False"
+      }
+    },
+    "hints": [
+      "Think about whether you can detect duplicates or look up previously seen items in constant time as you iterate.",
+      "Apply a Hash Set. This achieves O n time and O n auxiliary space.",
+      "Add each item to a Hash Set as you traverse if an item is already present, you have identified a duplicate immediately. In detail: Initialize an empty HashSet. Then iterate through each number in nums."
+    ]
+  },
+  {
+    "seq": 2,
+    "whyNext": "Builds on Contains Duplicate: instead of checking membership, use a map to store and retrieve complement indices.",
+    "brute": {
+      "idea": "Check every pair in nums to find two elements that sum to target.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i + 1 to n - 1.",
+        "If nums[i] + nums[j] == target, return [i, j].",
+        "Return empty array if no pair matches."
+      ],
+      "whySlow": "Evaluating every pair takes quadratic O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        for (int i = 0; i < nums.length; i++) {\n            for (int j = i + 1; j < nums.length; j++) {\n                if (nums[i] + nums[j] == target) return new int[]{i, j};\n            }\n        }\n        return new int[]{};\n    }\n}",
+        "python": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        for i in range(len(nums)):\n            for j in range(i + 1, len(nums)):\n                if nums[i] + nums[j] == target:\n                    return [i, j]\n        return []"
+      }
+    },
+    "optimal": {
+      "idea": "Use a HashMap to store each visited number and its index, checking for target - nums[i] on each step.",
+      "steps": [
+        "Create a HashMap of value to index.",
+        "Iterate through nums with index i and value x.",
+        "Compute need = target - x.",
+        "If need is in map, return [map.get(need), i].",
+        "Otherwise put (x, i) in map."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (map.containsKey(complement)) return new int[]{map.get(complement), i};\n            map.put(nums[i], i);\n        }\n        return new int[]{};\n    }\n}",
+        "python": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        seen = {}\n        for i, x in enumerate(nums):\n            need = target - x\n            if need in seen:\n                return [seen[need], i]\n            seen[x] = i\n        return []"
+      }
+    },
+    "hints": [
+      "Instead of nested loops, can you store previous elements or counts so you can query complementary values in constant time?.",
+      "Apply a Hash Map or frequency table. This achieves O n time and O n auxiliary space.",
+      "Record each element and its occurrence or index in the map, and look up whether the required match or complement has already been recorded. In detail: Create a HashMap of value to index. Then iterate through nums with index i and value x."
+    ]
+  },
+  {
+    "seq": 3,
+    "whyNext": "Builds on hash counting from Two Sum: comparing frequencies of characters across two strings.",
+    "brute": {
+      "idea": "Sort both strings alphabetically and compare if they are equal.",
+      "steps": [
+        "Check if lengths match; return false if not.",
+        "Sort characters of string s.",
+        "Sort characters of string t.",
+        "Return whether the sorted strings are equal."
+      ],
+      "whySlow": "Sorting strings of length n requires O(n log n) comparisons.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n        char[] sArr = s.toCharArray();\n        char[] tArr = t.toCharArray();\n        Arrays.sort(sArr);\n        Arrays.sort(tArr);\n        return Arrays.equals(sArr, tArr);\n    }\n}",
+        "python": "class Solution:\n    def isAnagram(self, s: str, t: str) -> bool:\n        return sorted(s) == sorted(t)"
+      }
+    },
+    "optimal": {
+      "idea": "Count frequencies of all 26 lowercase English characters in a fixed-size array.",
+      "steps": [
+        "If s.length != t.length, return false.",
+        "Allocate count array of size 26.",
+        "Increment counts for chars in s and decrement for chars in t.",
+        "Verify all counts are 0."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n        int[] counts = new int[26];\n        for (int i = 0; i < s.length(); i++) {\n            counts[s.charAt(i) - 'a']++;\n            counts[t.charAt(i) - 'a']--;\n        }\n        for (int c : counts) if (c != 0) return false;\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isAnagram(self, s: str, t: str) -> bool:\n        if len(s) != len(t): return False\n        counts = [0] * 26\n        for c1, c2 in zip(s, t):\n            counts[ord(c1) - ord('a')] += 1\n            counts[ord(c2) - ord('a')] -= 1\n        return all(c == 0 for c in counts)"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Count frequencies of all 26 lowercase English characters in a fixed-size array. In detail: If the length of s is not equal to the length of t, return false. Then allocate count array of size 26."
+    ]
+  },
+  {
+    "seq": 4,
+    "whyNext": "Extends Valid Anagram to a collection of strings: group words having identical sorted character keys.",
+    "brute": {
+      "idea": "Compare each string against existing groups using the anagram equality check.",
+      "steps": [
+        "Maintain a list of anagram groups.",
+        "For each word, compare with the first element of each group.",
+        "Add to group if match found; otherwise create a new group."
+      ],
+      "whySlow": "Pairwise comparisons between strings can take O(n\u00b2k) time.",
+      "time": "O(n\u00b2k)",
+      "space": "O(nk)",
+      "code": {
+        "java": "class Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n        List<List<String>> res = new ArrayList<>();\n        for (String s : strs) {\n            boolean added = false;\n            for (List<String> g : res) {\n                if (isAna(g.get(0), s)) { g.add(s); added = true; break; }\n            }\n            if (!added) {\n                List<String> ng = new ArrayList<>();\n                ng.add(s);\n                res.add(ng);\n            }\n        }\n        return res;\n    }\n    private boolean isAna(String a, String b) {\n        if (a.length() != b.length()) return false;\n        char[] ca = a.toCharArray(), cb = b.toCharArray();\n        Arrays.sort(ca); Arrays.sort(cb);\n        return Arrays.equals(ca, cb);\n    }\n}",
+        "python": "class Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        groups = []\n        for s in strs:\n            matched = False\n            for g in groups:\n                if sorted(g[0]) == sorted(s):\n                    g.append(s)\n                    matched = True\n                    break\n            if not matched:\n                groups.append([s])\n        return groups"
+      }
+    },
+    "optimal": {
+      "idea": "Sort each string's characters to form a canonical key in a HashMap mapping to its list of anagrams.",
+      "steps": [
+        "Create a Map<String, List<String>>.",
+        "For each word, sort its letters to form the key.",
+        "Append the word to the map under key.",
+        "Return all map values as a list of lists."
+      ],
+      "time": "O(nk log k)",
+      "space": "O(nk)",
+      "code": {
+        "java": "class Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n        Map<String, List<String>> map = new HashMap<>();\n        for (String s : strs) {\n            char[] ca = s.toCharArray();\n            Arrays.sort(ca);\n            String key = String.valueOf(ca);\n            map.computeIfAbsent(key, k -> new ArrayList<>()).add(s);\n        }\n        return new ArrayList<>(map.values());\n    }\n}",
+        "python": "class Solution:\n    def groupAnagrams(self, strs: list[str]) -> list[list[str]]:\n        map_ = collections.defaultdict(list)\n        for s in strs:\n            map_[\"\".join(sorted(s))].append(s)\n        return list(map_.values())"
+      }
+    },
+    "hints": [
+      "Instead of nested loops, can you store previous elements or counts so you can query complementary values in constant time?.",
+      "Apply a Hash Map or frequency table. This achieves O nk log k time and O nk auxiliary space.",
+      "Record each element and its occurrence or index in the map, and look up whether the required match or complement has already been recorded. In detail: Create a Map is less than String, List is less than String is greater than is greater than . Then for each word, sort its letters to form the key."
+    ]
+  },
+  {
+    "seq": 5,
+    "whyNext": "Builds on frequency counting from Group Anagrams: bucket sort by frequency for linear top-k selection.",
+    "brute": {
+      "idea": "Count frequencies using a map and sort unique elements by frequency descending.",
+      "steps": [
+        "Count element occurrences in a HashMap.",
+        "Extract keys into a list.",
+        "Sort keys by descending frequency.",
+        "Return the first k keys."
+      ],
+      "whySlow": "Sorting unique elements takes O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int n : nums) map.put(n, map.getOrDefault(n, 0) + 1);\n        List<Integer> list = new ArrayList<>(map.keySet());\n        list.sort((a, b) -> map.get(b) - map.get(a));\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) res[i] = list.get(i);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n        c = collections.Counter(nums)\n        return [item[0] for item in c.most_common(k)]"
+      }
+    },
+    "optimal": {
+      "idea": "Count frequencies, place numbers into an array of buckets indexed by frequency, and collect the top k.",
+      "steps": [
+        "Count frequencies with a HashMap.",
+        "Create an array of lists of size n + 1 for buckets.",
+        "Add each number to buckets[frequency].",
+        "Traverse buckets from n down to 0, appending to result until k elements are collected."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int n : nums) map.put(n, map.getOrDefault(n, 0) + 1);\n        List<Integer>[] buckets = new List[nums.length + 1];\n        for (int key : map.keySet()) {\n            int f = map.get(key);\n            if (buckets[f] == null) buckets[f] = new ArrayList<>();\n            buckets[f].add(key);\n        }\n        int[] res = new int[k];\n        int idx = 0;\n        for (int i = buckets.length - 1; i >= 0 && idx < k; i--) {\n            if (buckets[i] != null) {\n                for (int val : buckets[i]) {\n                    res[idx++] = val;\n                    if (idx == k) break;\n                }\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def topKFrequent(self, nums: list[int], k: int) -> list[int]:\n        counts = collections.Counter(nums)\n        buckets = [[] for _ in range(len(nums) + 1)]\n        for num, freq in counts.items():\n            buckets[freq].append(num)\n        res = []\n        for i in range(len(buckets) - 1, 0, -1):\n            for num in buckets[i]:\n                res.append(num)\n                if len(res) == k:\n                    return res\n        return res"
+      }
+    },
+    "hints": [
+      "Instead of nested loops, can you store previous elements or counts so you can query complementary values in constant time?.",
+      "Apply a Hash Map or frequency table. This achieves O n time and O n auxiliary space.",
+      "Record each element and its occurrence or index in the map, and look up whether the required match or complement has already been recorded. In detail: Count frequencies with a HashMap. Then create an array of lists of size n + 1 for buckets."
+    ]
+  },
+  {
+    "seq": 6,
+    "whyNext": "Builds on frequency counting: Boyer-Moore voting finds the element occurring > n/2 times in O(1) space.",
+    "brute": {
+      "idea": "Count frequencies with a HashMap or sort the array and take the middle element.",
+      "steps": [
+        "Store frequencies of all elements in a HashMap.",
+        "Find the key whose frequency exceeds n / 2.",
+        "Return that key."
+      ],
+      "whySlow": "Requires O(n) auxiliary space to store frequency counts.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int majorityElement(int[] nums) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int n : nums) {\n            int c = map.getOrDefault(n, 0) + 1;\n            if (c > nums.length / 2) return n;\n            map.put(n, c);\n        }\n        return nums[0];\n    }\n}",
+        "python": "class Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        c = collections.Counter(nums)\n        return max(c.keys(), key=c.get)"
+      }
+    },
+    "optimal": {
+      "idea": "Boyer-Moore Voting Algorithm: maintain a candidate and a counter, canceling out different elements to retain the majority in O(1) space.",
+      "steps": [
+        "Initialize candidate = 0, count = 0.",
+        "For each number x in nums:",
+        "If count == 0, candidate = x.",
+        "Increment count if x == candidate, else decrement count.",
+        "Return candidate."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int majorityElement(int[] nums) {\n        int candidate = 0, count = 0;\n        for (int x : nums) {\n            if (count == 0) candidate = x;\n            count += (x == candidate) ? 1 : -1;\n        }\n        return candidate;\n    }\n}",
+        "python": "class Solution:\n    def majorityElement(self, nums: list[int]) -> int:\n        cand, count = 0, 0\n        for x in nums:\n            if count == 0:\n                cand = x\n            count += 1 if x == cand else -1\n        return cand"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Boyer-Moore Voting Algorithm: maintain a candidate and a counter, canceling out different elements to retain the majority in O 1 space. In detail: Initialize candidate = 0, count = 0. Then for each number x in nums:."
+    ]
+  },
+  {
+    "seq": 7,
+    "whyNext": "Generalizes Majority Element: Boyer-Moore with two candidates for elements appearing > n/3 times.",
+    "brute": {
+      "idea": "Count element frequencies in a HashMap and collect elements with count > n / 3.",
+      "steps": [
+        "Count all occurrences with a HashMap.",
+        "Iterate over map keys and keep those with count > n / 3.",
+        "Return list of matching keys."
+      ],
+      "whySlow": "Uses O(n) space for the hash map.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> majorityElement(int[] nums) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int n : nums) map.put(n, map.getOrDefault(n, 0) + 1);\n        List<Integer> res = new ArrayList<>();\n        int threshold = nums.length / 3;\n        for (int k : map.keySet()) {\n            if (map.get(k) > threshold) res.add(k);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def majorityElement(self, nums: list[int]) -> list[int]:\n        c = collections.Counter(nums)\n        return [k for k, v in c.items() if v > len(nums) // 3]"
+      }
+    },
+    "optimal": {
+      "idea": "Boyer-Moore with two candidates and counters, followed by a verification pass.",
+      "steps": [
+        "Maintain candidate1, candidate2, count1, count2.",
+        "First pass: update candidates and counts.",
+        "Second pass: count actual occurrences of both candidates.",
+        "Add candidate to result if count > n / 3."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> majorityElement(int[] nums) {\n        int cand1 = 0, cand2 = 0, count1 = 0, count2 = 0;\n        for (int n : nums) {\n            if (n == cand1) count1++;\n            else if (n == cand2) count2++;\n            else if (count1 == 0) { cand1 = n; count1 = 1; }\n            else if (count2 == 0) { cand2 = n; count2 = 1; }\n            else { count1--; count2--; }\n        }\n        count1 = 0; count2 = 0;\n        for (int n : nums) {\n            if (n == cand1) count1++;\n            else if (n == cand2) count2++;\n        }\n        List<Integer> res = new ArrayList<>();\n        if (count1 > nums.length / 3) res.add(cand1);\n        if (cand2 != cand1 && count2 > nums.length / 3) res.add(cand2);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def majorityElement(self, nums: list[int]) -> list[int]:\n        cand1, cand2, count1, count2 = None, None, 0, 0\n        for x in nums:\n            if x == cand1: count1 += 1\n            elif x == cand2: count2 += 1\n            elif count1 == 0: cand1, count1 = x, 1\n            elif count2 == 0: cand2, count2 = x, 1\n            else: count1 -= 1; count2 -= 1\n        res = []\n        for c in (cand1, cand2):\n            if c is not None and nums.count(c) > len(nums) // 3 and c not in res:\n                res.append(c)\n        return res"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Boyer-Moore with two candidates and counters, followed by a verification pass. In detail: Maintain candidate1, candidate2, count1, count2. Then first pass: update candidates and counts."
+    ]
+  },
+  {
+    "seq": 8,
+    "whyNext": "Shifts from frequency counting to prefix and suffix array calculations without division.",
+    "brute": {
+      "idea": "For each index i, iterate through all other indices j != i and multiply nums[j].",
+      "steps": [
+        "Create result array of size n.",
+        "For each i from 0 to n - 1, compute product of all nums[j] where j != i.",
+        "Store product in result[i]."
+      ],
+      "whySlow": "Multiplying n-1 numbers for all n positions takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) {\n            int prod = 1;\n            for (int j = 0; j < n; j++) {\n                if (i != j) prod *= nums[j];\n            }\n            res[i] = prod;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def productExceptSelf(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        res = [1] * n\n        for i in range(n):\n            prod = 1\n            for j in range(n):\n                if i != j:\n                    prod *= nums[j]\n            res[i] = prod\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Compute running prefix products in a left-to-right pass and multiply with running suffix products in a right-to-left pass.",
+      "steps": [
+        "Initialize result array with res[0] = 1.",
+        "Left pass: res[i] = res[i - 1] * nums[i - 1].",
+        "Right pass: maintain suffix product R = 1, multiply res[i] by R, then update R *= nums[i].",
+        "Return res."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        res[0] = 1;\n        for (int i = 1; i < n; i++) res[i] = res[i - 1] * nums[i - 1];\n        int right = 1;\n        for (int i = n - 1; i >= 0; i--) {\n            res[i] *= right;\n            right *= nums[i];\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def productExceptSelf(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        res = [1] * n\n        for i in range(1, n):\n            res[i] = res[i - 1] * nums[i - 1]\n        right = 1\n        for i in range(n - 1, -1, -1):\n            res[i] *= right\n            right *= nums[i]\n        return res"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Compute running prefix products in a left-to-right pass and multiply with running suffix products in a right-to-left pass. In detail: Initialize result array with res at index 0 = 1. Then left pass: res at index i = res i - 1 * nums i - 1 ."
+    ]
+  },
+  {
+    "seq": 9,
+    "whyNext": "Builds on prefix products to introduce prefix sums with a hash map of frequencies for range queries.",
+    "brute": {
+      "idea": "Sum every subarray using two nested loops and count those equal to k.",
+      "steps": [
+        "Loop start i from 0 to n - 1.",
+        "Maintain running sum, looping end j from i to n - 1.",
+        "Add nums[j] to sum.",
+        "If sum == k, increment count."
+      ],
+      "whySlow": "Evaluating all n\u00b2 subarrays takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int subarraySum(int[] nums, int k) {\n        int count = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int sum = 0;\n            for (int j = i; j < nums.length; j++) {\n                sum += nums[j];\n                if (sum == k) count++;\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def subarraySum(self, nums: list[int], k: int) -> int:\n        count = 0\n        for i in range(len(nums)):\n            curr = 0\n            for j in range(i, len(nums)):\n                curr += nums[j]\n                if curr == k:\n                    count += 1\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Maintain a running prefix sum and a map of prefix sum frequencies. Subarray sum is k when prefix_sum - k was seen previously.",
+      "steps": [
+        "Initialize map with {0: 1} and count = 0, current_sum = 0.",
+        "For each number x in nums:",
+        "current_sum += x.",
+        "count += map.getOrDefault(current_sum - k, 0).",
+        "Increment map frequency of current_sum."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int subarraySum(int[] nums, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        map.put(0, 1);\n        int sum = 0, count = 0;\n        for (int x : nums) {\n            sum += x;\n            count += map.getOrDefault(sum - k, 0);\n            map.put(sum, map.getOrDefault(sum, 0) + 1);\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def subarraySum(self, nums: list[int], k: int) -> int:\n        map_ = collections.defaultdict(int)\n        map_[0] = 1\n        curr, count = 0, 0\n        for x in nums:\n            curr += x\n            count += map_[curr - k]\n            map_[curr] += 1\n        return count"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O n auxiliary space.",
+      "Maintain a running prefix sum and a map of prefix sum frequencies. Subarray sum is k when prefix sum - k was seen previously. In detail: Initialize map with 0: 1 and count = 0, current sum = 0. Then for each number x in nums:."
+    ]
+  },
+  {
+    "seq": 10,
+    "whyNext": "Builds on prefix sums from Subarray Sum Equals K: treat 0 as -1, turning equal 0s and 1s into subarray sum = 0.",
+    "brute": {
+      "idea": "Test every subarray to see if the count of zeros equals the count of ones.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Loop j from i to n - 1, tracking counts of 0s and 1s.",
+        "If zeroes == ones, update max_len with j - i + 1."
+      ],
+      "whySlow": "Checking all subarrays requires O(n\u00b2) operations.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int findMaxLength(int[] nums) {\n        int maxLen = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int zeros = 0, ones = 0;\n            for (int j = i; j < nums.length; j++) {\n                if (nums[j] == 0) zeros++; else ones++;\n                if (zeros == ones) maxLen = Math.max(maxLen, j - i + 1);\n            }\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def findMaxLength(self, nums: list[int]) -> int:\n        max_len = 0\n        for i in range(len(nums)):\n            z, o = 0, 0\n            for j in range(i, len(nums)):\n                if nums[j] == 0: z += 1\n                else: o += 1\n                if z == o: max_len = max(max_len, j - i + 1)\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "Transform 0 to -1. An equal number of 0s and 1s produces a prefix sum equal to an earlier prefix sum.",
+      "steps": [
+        "Use a HashMap to store the earliest index of each prefix sum, initialized with map.put(0, -1).",
+        "Iterate through nums, adding 1 for a 1 and -1 for a 0.",
+        "If current sum exists in map, maxLen = max(maxLen, i - map.get(sum)).",
+        "Otherwise, record map.put(sum, i)."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int findMaxLength(int[] nums) {\n        Map<Integer, Integer> map = new HashMap<>();\n        map.put(0, -1);\n        int sum = 0, maxLen = 0;\n        for (int i = 0; i < nums.length; i++) {\n            sum += (nums[i] == 1 ? 1 : -1);\n            if (map.containsKey(sum)) {\n                maxLen = Math.max(maxLen, i - map.get(sum));\n            } else {\n                map.put(sum, i);\n            }\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def findMaxLength(self, nums: list[int]) -> int:\n        map_ = {0: -1}\n        curr, max_len = 0, 0\n        for i, x in enumerate(nums):\n            curr += 1 if x == 1 else -1\n            if curr in map_:\n                max_len = max(max_len, i - map_[curr])\n            else:\n                map_[curr] = i\n        return max_len"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O n auxiliary space.",
+      "Transform 0 to -1. An equal number of 0s and 1s produces a prefix sum equal to an earlier prefix sum. In detail: Use a HashMap to store the earliest index of each prefix sum, initialized with map.put 0, -1 . Then iterate through nums, adding 1 for a 1 and -1 for a 0."
+    ]
+  },
+  {
+    "seq": 11,
+    "whyNext": "Builds on prefix sums: two prefix sums with identical modulo k differ by a multiple of k.",
+    "brute": {
+      "idea": "Compute the sum of every subarray and check if it is divisible by k.",
+      "steps": [
+        "Loop i from 0 to n - 1.",
+        "Maintain sum, looping j from i to n - 1.",
+        "Add nums[j] to sum.",
+        "If sum % k == 0, increment count."
+      ],
+      "whySlow": "Evaluating every subarray takes O(n\u00b2) time.",
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int subarraysDivByK(int[] nums, int k) {\n        int count = 0;\n        for (int i = 0; i < nums.length; i++) {\n            int sum = 0;\n            for (int j = i; j < nums.length; j++) {\n                sum += nums[j];\n                if (sum % k == 0) count++;\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def subarraysDivByK(self, nums: list[int], k: int) -> int:\n        count = 0\n        for i in range(len(nums)):\n            s = 0\n            for j in range(i, len(nums)):\n                s += nums[j]\n                if s % k == 0: count += 1\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Count prefix sum remainders modulo k; any two matching remainders bound a subarray divisible by k.",
+      "steps": [
+        "Create an array count of size k, initialized with count[0] = 1.",
+        "Iterate through nums, maintaining prefix sum mod k (normalized to non-negative).",
+        "Add count[rem] to answer, then increment count[rem].",
+        "Return total answer."
+      ],
+      "time": "O(n)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public int subarraysDivByK(int[] nums, int k) {\n        int[] counts = new int[k];\n        counts[0] = 1;\n        int sum = 0, res = 0;\n        for (int x : nums) {\n            sum = (sum + x) % k;\n            if (sum < 0) sum += k;\n            res += counts[sum];\n            counts[sum]++;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def subarraysDivByK(self, nums: list[int], k: int) -> int:\n        counts = [0] * k\n        counts[0] = 1\n        curr, res = 0, 0\n        for x in nums:\n            curr = (curr + x) % k\n            res += counts[curr]\n            counts[curr] += 1\n        return res"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O k auxiliary space.",
+      "Count prefix sum remainders modulo k any two matching remainders bound a subarray divisible by k. In detail: Create an array count of size k, initialized with count at index 0 = 1. Then iterate through nums, maintaining prefix sum mod k normalized to non-negative ."
+    ]
+  },
+  {
+    "seq": 12,
+    "whyNext": "Builds on Contains Duplicate set lookup: start sequence counting only when num - 1 is absent.",
+    "brute": {
+      "idea": "Sort the array and then scan linearly to measure lengths of consecutive sequences.",
+      "steps": [
+        "If array is empty, return 0.",
+        "Sort array.",
+        "Iterate through sorted elements, counting consecutive values and updating max streak.",
+        "Return max streak."
+      ],
+      "whySlow": "Sorting requires O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestConsecutive(int[] nums) {\n        if (nums.length == 0) return 0;\n        Arrays.sort(nums);\n        int max = 1, curr = 1;\n        for (int i = 1; i < nums.length; i++) {\n            if (nums[i] == nums[i - 1]) continue;\n            if (nums[i] == nums[i - 1] + 1) curr++;\n            else { max = Math.max(max, curr); curr = 1; }\n        }\n        return Math.max(max, curr);\n    }\n}",
+        "python": "class Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        if not nums: return 0\n        nums = sorted(set(nums))\n        max_len, curr = 1, 1\n        for i in range(1, len(nums)):\n            if nums[i] == nums[i - 1] + 1: curr += 1\n            else: max_len = max(max_len, curr); curr = 1\n        return max(max_len, curr)"
+      }
+    },
+    "optimal": {
+      "idea": "Insert all numbers into a HashSet. Only start expanding a sequence when x - 1 is not in the set.",
+      "steps": [
+        "Put all numbers in a HashSet.",
+        "For each number x in set:",
+        "If x - 1 is not in set (start of a streak):",
+        "Count how many consecutive elements x+1, x+2 exist.",
+        "Update longest streak."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int longestConsecutive(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) set.add(x);\n        int longest = 0;\n        for (int x : set) {\n            if (!set.contains(x - 1)) {\n                int curr = x, streak = 1;\n                while (set.contains(curr + 1)) { curr++; streak++; }\n                longest = Math.max(longest, streak);\n            }\n        }\n        return longest;\n    }\n}",
+        "python": "class Solution:\n    def longestConsecutive(self, nums: list[int]) -> int:\n        num_set = set(nums)\n        longest = 0\n        for x in num_set:\n            if x - 1 not in num_set:\n                curr = x\n                streak = 1\n                while curr + 1 in num_set:\n                    curr += 1\n                    streak += 1\n                longest = max(longest, streak)\n        return longest"
+      }
+    },
+    "hints": [
+      "Think about whether you can detect duplicates or look up previously seen items in constant time as you iterate.",
+      "Apply a Hash Set. This achieves O n time and O n auxiliary space.",
+      "Add each item to a Hash Set as you traverse if an item is already present, you have identified a duplicate immediately. In detail: Put all numbers in a HashSet. Then for each number x in set:."
+    ]
+  },
+  {
+    "seq": 13,
+    "whyNext": "Builds on Contains Duplicate: uses array indices as hash keys with sign-negation for O(1) extra space.",
+    "brute": {
+      "idea": "Use a HashSet to keep track of seen elements and collect duplicates.",
+      "steps": [
+        "Initialize a HashSet of seen numbers.",
+        "Initialize a result list.",
+        "For each number, if already in set, add to result; otherwise add to set."
+      ],
+      "whySlow": "Uses O(n) auxiliary memory for the set.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> findDuplicates(int[] nums) {\n        Set<Integer> seen = new HashSet<>();\n        List<Integer> res = new ArrayList<>();\n        for (int x : nums) {\n            if (seen.contains(x)) res.add(x);\n            else seen.add(x);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findDuplicates(self, nums: list[int]) -> list[int]:\n        seen = set()\n        res = []\n        for x in nums:\n            if x in seen: res.append(x)\n            else: seen.add(x)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Use numbers as 1-based indices and negate the value at nums[abs(x) - 1] to mark visitation.",
+      "steps": [
+        "For each x in nums:",
+        "idx = abs(x) - 1.",
+        "If nums[idx] < 0, it has been visited before, so add abs(x) to result.",
+        "Otherwise negate nums[idx]."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> findDuplicates(int[] nums) {\n        List<Integer> res = new ArrayList<>();\n        for (int i = 0; i < nums.length; i++) {\n            int idx = Math.abs(nums[i]) - 1;\n            if (nums[idx] < 0) res.add(idx + 1);\n            else nums[idx] = -nums[idx];\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findDuplicates(self, nums: list[int]) -> list[int]:\n        res = []\n        for x in nums:\n            idx = abs(x) - 1\n            if nums[idx] < 0:\n                res.append(idx + 1)\n            else:\n                nums[idx] = -nums[idx]\n        return res"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Use numbers as 1-based indices and negate the value at nums abs x - 1 to mark visitation. In detail: For each x in nums:. Then idx = abs x - 1."
+    ]
+  },
+  {
+    "seq": 14,
+    "whyNext": "Builds on index-mapping from Find All Duplicates: applies Floyd's cycle detection without modifying the array.",
+    "brute": {
+      "idea": "Sort the array and scan adjacent elements to find the duplicate.",
+      "steps": [
+        "Sort nums.",
+        "Compare each adjacent pair nums[i] and nums[i + 1].",
+        "Return matching element."
+      ],
+      "whySlow": "Modifies input array or requires O(n log n) sorting.",
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int findDuplicate(int[] nums) {\n        Arrays.sort(nums);\n        for (int i = 1; i < nums.length; i++) {\n            if (nums[i] == nums[i - 1]) return nums[i];\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def findDuplicate(self, nums: list[int]) -> int:\n        nums.sort()\n        for i in range(1, len(nums)):\n            if nums[i] == nums[i - 1]:\n                return nums[i]\n        return -1"
+      }
+    },
+    "optimal": {
+      "idea": "Floyd's Tortoise and Hare cycle detection treating nums[i] as a pointer to index nums[i].",
+      "steps": [
+        "Initialize slow = nums[0], fast = nums[0].",
+        "Advance slow = nums[slow] and fast = nums[nums[fast]] until they meet.",
+        "Reset slow = nums[0].",
+        "Advance both slow and fast by one step until they meet at cycle entrance."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int findDuplicate(int[] nums) {\n        int slow = nums[0], fast = nums[0];\n        do {\n            slow = nums[slow];\n            fast = nums[nums[fast]];\n        } while (slow != fast);\n        slow = nums[0];\n        while (slow != fast) {\n            slow = nums[slow];\n            fast = nums[fast];\n        }\n        return slow;\n    }\n}",
+        "python": "class Solution:\n    def findDuplicate(self, nums: list[int]) -> int:\n        slow = nums[0]\n        fast = nums[0]\n        while True:\n            slow = nums[slow]\n            fast = nums[nums[fast]]\n            if slow == fast:\n                break\n        slow = nums[0]\n        while slow != fast:\n            slow = nums[slow]\n            fast = nums[fast]\n        return slow"
+      }
+    },
+    "hints": [
+      "If one pointer moves one step at a time while another moves two steps at a time, will they ever collide if a loop exists?.",
+      "Apply Floyd's Cycle Detection Fast and Slow Pointers . This achieves O n time and O 1 auxiliary space.",
+      "Advance a slow pointer by one node and a fast pointer by two nodes if they meet, a cycle exists, and the cycle start can be located by resetting one pointer to the head. In detail: Initialize slow = nums at index 0, fast = nums at index 0. Then advance slow = nums at index slow and fast = nums nums at index fast until they meet."
+    ]
+  },
+  {
+    "seq": 15,
+    "whyNext": "Builds on in-place indexing: cyclic placement places each value x at index x - 1 to find the missing positive.",
+    "brute": {
+      "idea": "Insert all numbers into a set and test 1, 2, 3... until one is missing.",
+      "steps": [
+        "Put all elements into a HashSet.",
+        "Check 1, 2, 3...",
+        "Return the first integer not present in set."
+      ],
+      "whySlow": "Requires O(n) auxiliary space.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int firstMissingPositive(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) set.add(x);\n        int i = 1;\n        while (set.contains(i)) i++;\n        return i;\n    }\n}",
+        "python": "class Solution:\n    def firstMissingPositive(self, nums: list[int]) -> int:\n        s = set(nums)\n        i = 1\n        while i in s:\n            i += 1\n        return i"
+      }
+    },
+    "optimal": {
+      "idea": "Cyclic sort: place each number x where 1 <= x <= n at its correct position nums[x - 1].",
+      "steps": [
+        "For each index i, while nums[i] is in [1, n] and nums[nums[i] - 1] != nums[i], swap nums[i] with nums[nums[i] - 1].",
+        "Scan from 0 to n - 1; if nums[i] != i + 1, return i + 1.",
+        "If all match, return n + 1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int firstMissingPositive(int[] nums) {\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            while (nums[i] > 0 && nums[i] <= n && nums[nums[i] - 1] != nums[i]) {\n                int targetIdx = nums[i] - 1;\n                int temp = nums[i];\n                nums[i] = nums[targetIdx];\n                nums[targetIdx] = temp;\n            }\n        }\n        for (int i = 0; i < n; i++) {\n            if (nums[i] != i + 1) return i + 1;\n        }\n        return n + 1;\n    }\n}",
+        "python": "class Solution:\n    def firstMissingPositive(self, nums: list[int]) -> int:\n        n = len(nums)\n        for i in range(n):\n            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:\n                idx = nums[i] - 1\n                nums[i], nums[idx] = nums[idx], nums[i]\n        for i in range(n):\n            if nums[i] != i + 1:\n                return i + 1\n        return n + 1"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Cyclic sort: place each number x where 1 is at most x is at most n at its correct position nums x - 1 . In detail: For each index i, while nums at index i is in 1, n and nums nums at index i - 1 is not equal to nums at index i, swap nums at index i with nums nums at index i - 1 . Then scan from 0 to n - 1 if nums at index i is not equal to i + 1, return i + 1."
+    ]
+  },
+  {
+    "seq": 16,
+    "whyNext": "Applies hash set duplicate detection in a 2D matrix across rows, columns, and 3x3 sub-boxes.",
+    "brute": {
+      "idea": "Perform three separate passes over the board: check all rows, then all columns, then all 9 boxes.",
+      "steps": [
+        "Pass 1: Check each row with a set for duplicates.",
+        "Pass 2: Check each column with a set for duplicates.",
+        "Pass 3: Check each 3x3 block with a set for duplicates."
+      ],
+      "whySlow": "Traverses the 9x9 board 3 times separately.",
+      "time": "O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isValidSudoku(char[][] board) {\n        for (int r = 0; r < 9; r++) {\n            Set<Character> seen = new HashSet<>();\n            for (int c = 0; c < 9; c++) {\n                if (board[r][c] != '.' && !seen.add(board[r][c])) return false;\n            }\n        }\n        for (int c = 0; c < 9; c++) {\n            Set<Character> seen = new HashSet<>();\n            for (int r = 0; r < 9; r++) {\n                if (board[r][c] != '.' && !seen.add(board[r][c])) return false;\n            }\n        }\n        for (int b = 0; b < 9; b++) {\n            Set<Character> seen = new HashSet<>();\n            for (int r = 0; r < 3; r++) {\n                for (int c = 0; c < 3; c++) {\n                    char ch = board[(b / 3) * 3 + r][(b % 3) * 3 + c];\n                    if (ch != '.' && !seen.add(ch)) return false;\n                }\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isValidSudoku(self, board: list[list[str]]) -> bool:\n        for r in range(9):\n            s = set()\n            for c in range(9):\n                if board[r][c] != '.':\n                    if board[r][c] in s: return False\n                    s.add(board[r][c])\n        for c in range(9):\n            s = set()\n            for r in range(9):\n                if board[r][c] != '.':\n                    if board[r][c] in s: return False\n                    s.add(board[r][c])\n        for b in range(9):\n            s = set()\n            for r in range(3):\n                for c in range(3):\n                    ch = board[(b // 3) * 3 + r][(b % 3) * 3 + c]\n                    if ch != '.':\n                        if ch in s: return False\n                        s.add(ch)\n        return True"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass: record digit in row, column, and box bitmasks or boolean arrays.",
+      "steps": [
+        "Initialize boolean arrays rows[9][9], cols[9][9], boxes[9][9].",
+        "Iterate over every cell (r, c).",
+        "If cell contains digit d, calculate boxIdx = (r/3)*3 + c/3.",
+        "If already recorded in row, col, or box, return false.",
+        "Record digit in all three."
+      ],
+      "time": "O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isValidSudoku(char[][] board) {\n        boolean[][] rows = new boolean[9][9];\n        boolean[][] cols = new boolean[9][9];\n        boolean[][] boxes = new boolean[9][9];\n        for (int r = 0; r < 9; r++) {\n            for (int c = 0; c < 9; c++) {\n                if (board[r][c] != '.') {\n                    int val = board[r][c] - '1';\n                    int b = (r / 3) * 3 + c / 3;\n                    if (rows[r][val] || cols[c][val] || boxes[b][val]) return false;\n                    rows[r][val] = cols[c][val] = boxes[b][val] = true;\n                }\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isValidSudoku(self, board: list[list[str]]) -> bool:\n        rows = [set() for _ in range(9)]\n        cols = [set() for _ in range(9)]\n        boxes = [set() for _ in range(9)]\n        for r in range(9):\n            for c in range(9):\n                val = board[r][c]\n                if val != '.':\n                    b = (r // 3) * 3 + c // 3\n                    if val in rows[r] or val in cols[c] or val in boxes[b]:\n                        return False\n                    rows[r].add(val)\n                    cols[c].add(val)\n                    boxes[b].add(val)\n        return True"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O 1 time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space. In detail: Initialize boolean arrays rows at index 9 9 , cols at index 9 9 , boxes at index 9 9 . Then iterate over every cell r, c ."
+    ]
+  },
+  {
+    "seq": 17,
+    "whyNext": "Builds on matrix cell coordinate tracking: uses the first row and column as marker storage for O(1) space.",
+    "brute": {
+      "idea": "Copy the matrix, then for any cell with 0 in the copy, zero out the corresponding row and column in the original.",
+      "steps": [
+        "Create a deep copy of matrix.",
+        "Scan the copy.",
+        "Whenever copy[r][c] == 0, set all cells in row r and column c of matrix to 0."
+      ],
+      "whySlow": "Requires O(mn) space for matrix clone.",
+      "time": "O(mn)",
+      "space": "O(mn)",
+      "code": {
+        "java": "class Solution {\n    public void setZeroes(int[][] matrix) {\n        int m = matrix.length, n = matrix[0].length;\n        int[][] copy = new int[m][n];\n        for (int i = 0; i < m; i++) copy[i] = matrix[i].clone();\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (copy[i][j] == 0) {\n                    for (int c = 0; c < n; c++) matrix[i][c] = 0;\n                    for (int r = 0; r < m; r++) matrix[r][j] = 0;\n                }\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def setZeroes(self, matrix: list[list[int]]) -> None:\n        m, n = len(matrix), len(matrix[0])\n        copy_ = [row[:] for row in matrix]\n        for r in range(m):\n            for c in range(n):\n                if copy_[r][c] == 0:\n                    for j in range(n): matrix[r][j] = 0\n                    for i in range(m): matrix[i][c] = 0"
+      }
+    },
+    "optimal": {
+      "idea": "Use the first row and column as markers for zeroing, tracking first row and first column state with two flags.",
+      "steps": [
+        "Record whether first row and first column contain zeros.",
+        "Use matrix[i][0] and matrix[0][j] to mark zero rows and columns.",
+        "Update inner cells from 1 to m-1 and 1 to n-1.",
+        "Zero out first row and column if indicated by their flags."
+      ],
+      "time": "O(mn)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void setZeroes(int[][] matrix) {\n        int m = matrix.length, n = matrix[0].length;\n        boolean firstRowZero = false, firstColZero = false;\n        for (int i = 0; i < m; i++) if (matrix[i][0] == 0) firstColZero = true;\n        for (int j = 0; j < n; j++) if (matrix[0][j] == 0) firstRowZero = true;\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                if (matrix[i][j] == 0) { matrix[i][0] = 0; matrix[0][j] = 0; }\n            }\n        }\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                if (matrix[i][0] == 0 || matrix[0][j] == 0) matrix[i][j] = 0;\n            }\n        }\n        if (firstColZero) for (int i = 0; i < m; i++) matrix[i][0] = 0;\n        if (firstRowZero) for (int j = 0; j < n; j++) matrix[0][j] = 0;\n    }\n}",
+        "python": "class Solution:\n    def setZeroes(self, matrix: list[list[int]]) -> None:\n        m, n = len(matrix), len(matrix[0])\n        first_row_zero = any(matrix[0][j] == 0 for j in range(n))\n        first_col_zero = any(matrix[i][0] == 0 for i in range(m))\n        for i in range(1, m):\n            for j in range(1, n):\n                if matrix[i][j] == 0:\n                    matrix[i][0] = 0\n                    matrix[0][j] = 0\n        for i in range(1, m):\n            for j in range(1, n):\n                if matrix[i][0] == 0 or matrix[0][j] == 0:\n                    matrix[i][j] = 0\n        if first_col_zero:\n            for i in range(m): matrix[i][0] = 0\n        if first_row_zero:\n            for j in range(n): matrix[0][j] = 0"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O mn time and O 1 auxiliary space.",
+      "Use the first row and column as markers for zeroing, tracking first row and first column state with two flags. In detail: Record whether first row and first column contain zeros. Then use matrix at index i 0 and matrix at index 0 j to mark zero rows and columns."
+    ]
+  },
+  {
+    "seq": 18,
+    "whyNext": "Builds on matrix cell construction: row-by-row generation where each value depends on the previous row's adjacent cells.",
+    "brute": {
+      "idea": "Compute each cell value using the mathematical combination formula C(n, k) = n! / (k!(n-k)!).",
+      "steps": [
+        "For each row r from 0 to numRows - 1:",
+        "Compute each entry c using factorial combination calculation.",
+        "Append row to triangle."
+      ],
+      "whySlow": "Computing factorials repeatedly takes O(n\u00b3) and risks integer overflow.",
+      "time": "O(n\u00b3)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> generate(int numRows) {\n        List<List<Integer>> res = new ArrayList<>();\n        for (int i = 0; i < numRows; i++) {\n            List<Integer> row = new ArrayList<>();\n            for (int j = 0; j <= i; j++) {\n                row.add((int) comb(i, j));\n            }\n            res.add(row);\n        }\n        return res;\n    }\n    private long comb(int n, int k) {\n        long res = 1;\n        for (int i = 1; i <= k; i++) res = res * (n - i + 1) / i;\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def generate(self, numRows: int) -> list[list[int]]:\n        res = []\n        for i in range(numRows):\n            row = []\n            for j in range(i + 1):\n                row.append(math.comb(i, j))\n            res.append(row)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Build each row from the previous row: row[j] = prev[j-1] + prev[j] with boundary 1s.",
+      "steps": [
+        "Initialize triangle list.",
+        "For each row i from 0 to numRows - 1:",
+        "Create row with 1 at start and end.",
+        "Inner elements equal prevRow[j-1] + prevRow[j].",
+        "Add row to triangle."
+      ],
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> generate(int numRows) {\n        List<List<Integer>> res = new ArrayList<>();\n        for (int i = 0; i < numRows; i++) {\n            List<Integer> row = new ArrayList<>();\n            for (int j = 0; j <= i; j++) {\n                if (j == 0 || j == i) row.add(1);\n                else {\n                    List<Integer> prev = res.get(i - 1);\n                    row.add(prev.get(j - 1) + prev.get(j));\n                }\n            }\n            res.add(row);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def generate(self, numRows: int) -> list[list[int]]:\n        res = []\n        for i in range(numRows):\n            row = [1] * (i + 1)\n            for j in range(1, i):\n                row[j] = res[i - 1][j - 1] + res[i - 1][j]\n            res.append(row)\n        return res"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n\u00b2 time and O 1 auxiliary space.",
+      "Build each row from the previous row: row at index j = prev j-1 + prev at index j with boundary 1s. In detail: Initialize triangle list. Then for each row i from 0 to numrows - 1:."
+    ]
+  },
+  {
+    "seq": 19,
+    "whyNext": "Builds on 2D grid iteration: traversing a matrix layer by layer while shrinking four boundary walls.",
+    "brute": {
+      "idea": "Maintain a visited 2D boolean array and attempt movement along directions, turning right when hitting a visited cell.",
+      "steps": [
+        "Initialize m x n visited matrix.",
+        "Start at (0, 0) heading right.",
+        "Step forward while valid and unvisited; turn clockwise when hitting boundary or visited cell.",
+        "Stop after visiting m * n cells."
+      ],
+      "whySlow": "Uses O(mn) extra space for visited table.",
+      "time": "O(mn)",
+      "space": "O(mn)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> spiralOrder(int[][] matrix) {\n        List<Integer> res = new ArrayList<>();\n        int m = matrix.length, n = matrix[0].length;\n        boolean[][] visited = new boolean[m][n];\n        int[] dr = {0, 1, 0, -1}, dc = {1, 0, -1, 0};\n        int r = 0, c = 0, di = 0;\n        for (int i = 0; i < m * n; i++) {\n            res.add(matrix[r][c]);\n            visited[r][c] = true;\n            int nr = r + dr[di], nc = c + dc[di];\n            if (nr >= 0 && nr < m && nc >= 0 && nc < n && !visited[nr][nc]) {\n                r = nr; c = nc;\n            } else {\n                di = (di + 1) % 4;\n                r += dr[di]; c += dc[di];\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def spiralOrder(self, matrix: list[list[int]]) -> list[int]:\n        m, n = len(matrix), len(matrix[0])\n        vis = [[False]*n for _ in range(m)]\n        dr, dc = [0, 1, 0, -1], [1, 0, -1, 0]\n        r = c = di = 0\n        res = []\n        for _ in range(m * n):\n            res.append(matrix[r][c])\n            vis[r][c] = True\n            nr, nc = r + dr[di], c + dc[di]\n            if 0 <= nr < m and 0 <= nc < n and not vis[nr][nc]:\n                r, c = nr, nc\n            else:\n                di = (di + 1) % 4\n                r += dr[di]\n                c += dc[di]\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Traverse four boundaries (top, right, bottom, left), shrinking boundaries inwards after each side.",
+      "steps": [
+        "Initialize top = 0, bottom = m - 1, left = 0, right = n - 1.",
+        "While left <= right and top <= bottom:",
+        "Traverse top row, increment top.",
+        "Traverse right column, decrement right.",
+        "If top <= bottom, traverse bottom row, decrement bottom.",
+        "If left <= right, traverse left column, increment left."
+      ],
+      "time": "O(mn)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> spiralOrder(int[][] matrix) {\n        List<Integer> res = new ArrayList<>();\n        int top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1;\n        while (left <= right && top <= bottom) {\n            for (int c = left; c <= right; c++) res.add(matrix[top][c]);\n            top++;\n            for (int r = top; r <= bottom; r++) res.add(matrix[r][right]);\n            right--;\n            if (top <= bottom) {\n                for (int c = right; c >= left; c--) res.add(matrix[bottom][c]);\n                bottom--;\n            }\n            if (left <= right) {\n                for (int r = bottom; r >= top; r--) res.add(matrix[r][left]);\n                left++;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def spiralOrder(self, matrix: list[list[int]]) -> list[int]:\n        res = []\n        top, bottom, left, right = 0, len(matrix) - 1, 0, len(matrix[0]) - 1\n        while left <= right and top <= bottom:\n            for c in range(left, right + 1): res.append(matrix[top][c])\n            top += 1\n            for r in range(top, bottom + 1): res.append(matrix[r][right])\n            right -= 1\n            if top <= bottom:\n                for c in range(right, left - 1, -1): res.append(matrix[bottom][c])\n                bottom -= 1\n            if left <= right:\n                for r in range(bottom, top - 1, -1): res.append(matrix[r][left])\n                left += 1\n        return res"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O mn time and O 1 auxiliary space.",
+      "Traverse four boundaries top, right, bottom, left , shrinking boundaries inwards after each side. In detail: Initialize top = 0, bottom = m - 1, left = 0, right = n - 1. Then while left is at most right and top is at most bottom:."
+    ]
+  },
+  {
+    "seq": 20,
+    "whyNext": "Builds on matrix cell coordinate manipulation: transpose the matrix across main diagonal, then reverse each row.",
+    "brute": {
+      "idea": "Create a new n x n matrix and copy elements such that newMatrix[j][n - 1 - i] = matrix[i][j].",
+      "steps": [
+        "Allocate new matrix rotated of size n x n.",
+        "For each (i, j), rotated[j][n - 1 - i] = matrix[i][j].",
+        "Copy back to original matrix."
+      ],
+      "whySlow": "Requires O(n\u00b2) extra memory.",
+      "time": "O(n\u00b2)",
+      "space": "O(n\u00b2)",
+      "code": {
+        "java": "class Solution {\n    public void rotate(int[][] matrix) {\n        int n = matrix.length;\n        int[][] res = new int[n][n];\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) res[j][n - 1 - i] = matrix[i][j];\n        }\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) matrix[i][j] = res[i][j];\n        }\n    }\n}",
+        "python": "class Solution:\n    def rotate(self, matrix: list[list[int]]) -> None:\n        n = len(matrix)\n        res = [[0]*n for _ in range(n)]\n        for i in range(n):\n            for j in range(n):\n                res[j][n - 1 - i] = matrix[i][j]\n        for i in range(n):\n            for j in range(n):\n                matrix[i][j] = res[i][j]"
+      }
+    },
+    "optimal": {
+      "idea": "In-place rotation: transpose matrix (swap matrix[i][j] with matrix[j][i]), then reverse each row.",
+      "steps": [
+        "Transpose: loop i from 0 to n-1, j from i+1 to n-1, swapping matrix[i][j] with matrix[j][i].",
+        "Reverse rows: for each row, swap elements from left to right."
+      ],
+      "time": "O(n\u00b2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void rotate(int[][] matrix) {\n        int n = matrix.length;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                int temp = matrix[i][j];\n                matrix[i][j] = matrix[j][i];\n                matrix[j][i] = temp;\n            }\n        }\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n / 2; j++) {\n                int temp = matrix[i][j];\n                matrix[i][j] = matrix[i][n - 1 - j];\n                matrix[i][n - 1 - j] = temp;\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def rotate(self, matrix: list[list[int]]) -> None:\n        n = len(matrix)\n        for i in range(n):\n            for j in range(i + 1, n):\n                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n        for i in range(n):\n            matrix[i].reverse()"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n\u00b2 time and O 1 auxiliary space.",
+      "In-place rotation: transpose matrix swap matrix at index i j with matrix at index j i , then reverse each row. In detail: Transpose: loop i from 0 to n-1, j from i+1 to n-1, swapping matrix at index i j with matrix at index j i . Then reverse rows: for each row, swap elements from left to right."
+    ]
+  },
+  {
+    "seq": 21,
+    "whyNext": "Completes Chapter 1: in-place array reversal trick (reverse all, reverse first k, reverse remaining n-k).",
+    "brute": {
+      "idea": "Shift all array elements by 1 position to the right, repeated k times.",
+      "steps": [
+        "k = k % n.",
+        "Repeat k times:",
+        "Save last element.",
+        "Shift all elements one step right.",
+        "Place saved element at index 0."
+      ],
+      "whySlow": "Repeated shifts take O(n * k) time.",
+      "time": "O(nk)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void rotate(int[] nums, int k) {\n        int n = nums.length;\n        k %= n;\n        for (int step = 0; step < k; step++) {\n            int last = nums[n - 1];\n            for (int i = n - 1; i > 0; i--) nums[i] = nums[i - 1];\n            nums[0] = last;\n        }\n    }\n}",
+        "python": "class Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        for _ in range(k):\n            last = nums[-1]\n            for i in range(n - 1, 0, -1):\n                nums[i] = nums[i - 1]\n            nums[0] = last"
+      }
+    },
+    "optimal": {
+      "idea": "Reverse the entire array, reverse the first k elements, then reverse the remaining n-k elements.",
+      "steps": [
+        "Normalize k = k % n.",
+        "Reverse nums[0 ... n - 1].",
+        "Reverse nums[0 ... k - 1].",
+        "Reverse nums[k ... n - 1]."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void rotate(int[] nums, int k) {\n        int n = nums.length;\n        k %= n;\n        reverse(nums, 0, n - 1);\n        reverse(nums, 0, k - 1);\n        reverse(nums, k, n - 1);\n    }\n    private void reverse(int[] nums, int l, int r) {\n        while (l < r) {\n            int temp = nums[l];\n            nums[l] = nums[r];\n            nums[r] = temp;\n            l++; r--;\n        }\n    }\n}",
+        "python": "class Solution:\n    def rotate(self, nums: list[int], k: int) -> None:\n        n = len(nums)\n        k %= n\n        def rev(l, r):\n            while l < r:\n                nums[l], nums[r] = nums[r], nums[l]\n                l += 1; r -= 1\n        rev(0, n - 1)\n        rev(0, k - 1)\n        rev(k, n - 1)"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Arrays and Hashing. This achieves O n time and O 1 auxiliary space.",
+      "Reverse the entire array, reverse the first k elements, then reverse the remaining n-k elements. In detail: Normalize k = k % n. Then reverse nums 0 ... n - 1 ."
+    ]
+  }
+]

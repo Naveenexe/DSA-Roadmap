@@ -1,0 +1,616 @@
+@import './theme.css';
+
+/* Reset & Base Elements */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.45;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* App Layout & Navbar */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.25rem 1.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.navbar {
+  height: 52px;
+  background-color: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.brand-badge {
+  background-color: var(--accent);
+  color: #1A1A1A;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.nav-item:hover {
+  color: var(--text-main);
+  background-color: var(--bg-panel-hover);
+}
+
+.nav-item.active {
+  color: var(--accent);
+  font-weight: 600;
+  background-color: var(--accent-light);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-next-up {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--accent);
+  color: #1A1A1A;
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-next-up:hover {
+  background: var(--accent-hover);
+}
+
+.lang-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.lang-badge:hover {
+  border-color: var(--border-hover);
+  color: var(--text-main);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--bg-panel-hover);
+  color: var(--text-main);
+  border-color: var(--border-hover);
+}
+
+/* LeetCode Button Utilities */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: var(--accent);
+  color: #1A1A1A;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: transparent;
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-panel-hover);
+  border-color: var(--border-hover);
+}
+
+.btn-secondary:disabled, .btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-outline-orange {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-outline-orange:hover {
+  background-color: var(--accent-light);
+}
+
+/* Inputs & Form Controls */
+.input, .select, textarea.input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus, .select:focus, textarea.input:focus {
+  border-color: var(--accent);
+}
+
+/* LeetCode Panels & Cards */
+.panel {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.card {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+/* LeetCode Difficulty Badges */
+.badge-easy {
+  color: var(--easy);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.badge-medium {
+  color: var(--medium);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.badge-hard {
+  color: var(--hard);
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.chip-easy {
+  background: var(--easy-bg);
+  color: var(--easy);
+  border: 1px solid rgba(44, 187, 93, 0.25);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chip-medium {
+  background: var(--medium-bg);
+  color: var(--medium);
+  border: 1px solid rgba(255, 192, 30, 0.25);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chip-hard {
+  background: var(--hard-bg);
+  color: var(--hard);
+  border: 1px solid rgba(239, 71, 67, 0.25);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Status Icons & Colors */
+.status-done {
+  color: var(--status-done);
+}
+
+.status-inprogress {
+  color: var(--status-inprogress);
+}
+
+.status-revisit {
+  color: var(--status-revisit);
+}
+
+.status-mistake {
+  color: var(--status-mistake);
+}
+
+/* LeetCode Table Styles */
+.lc-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-panel);
+}
+
+.lc-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.lc-table th {
+  padding: 0.65rem 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-panel);
+  white-space: nowrap;
+}
+
+.lc-table td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+
+.lc-table tr:last-child td {
+  border-bottom: none;
+}
+
+.lc-table tr:hover td {
+  background-color: var(--bg-panel-hover);
+}
+
+.lc-table tr.row-even td {
+  background-color: var(--bg-table-stripe);
+}
+
+.lc-table tr.row-even:hover td {
+  background-color: var(--bg-panel-hover);
+}
+
+/* LeetCode Question Split Layout */
+.question-split-container {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 1rem;
+  min-height: calc(100vh - 120px);
+}
+
+@media (max-width: 960px) {
+  .question-split-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.question-left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question-right-panel {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Question Flow Buttons [Hint 1] [Hint 2] [Hint 3] [Approach] [Code] */
+.flow-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-panel);
+  flex-wrap: wrap;
+}
+
+.flow-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background-color: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flow-btn:hover:not(:disabled) {
+  border-color: var(--border-hover);
+  color: var(--text-main);
+  background-color: var(--bg-panel-hover);
+}
+
+.flow-btn.active {
+  background-color: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.flow-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.flow-btn.unlocked {
+  color: var(--text-main);
+  border-color: var(--border-hover);
+}
+
+/* Code Editor Panel */
+.code-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.85rem;
+  background-color: #212121;
+  border-bottom: 1px solid var(--border);
+}
+
+.code-container {
+  background-color: var(--code-bg);
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #eff1f6;
+  flex: 1;
+}
+
+pre[class*="language-"] {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+code[class*="language-"] {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+/* Activity Heatmap */
+.heatmap-cell {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background-color: var(--border-subtle);
+  transition: opacity 0.15s;
+}
+
+.heatmap-cell:hover {
+  outline: 1px solid var(--accent);
+}
+
+.heatmap-l1 { background-color: rgba(255, 161, 22, 0.25); }
+.heatmap-l2 { background-color: rgba(255, 161, 22, 0.5); }
+.heatmap-l3 { background-color: rgba(255, 161, 22, 0.75); }
+.heatmap-l4 { background-color: #FFA116; }
+
+/* Mobile Bottom Navigation */
+.mobile-nav-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  align-items: center;
+  justify-content: space-around;
+}
+
+@media (max-width: 768px) {
+  .mobile-nav-bar {
+    display: flex;
+  }
+  body {
+    padding-bottom: 60px;
+  }
+}
+
+/* Toast alert banner */
+.toast-banner {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+}
+
+/* Modal Overlay & Content */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1rem;
+}
+
+.modal-content {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 440px;
+  padding: 1.5rem;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: var(--hard);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hard);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-danger:hover {
+  background-color: #d83a37;
+}

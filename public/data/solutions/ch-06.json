@@ -1,0 +1,679 @@
+[
+  {
+    "seq": 83,
+    "whyNext": "Opens Chapter 6 (Linked List): standard pointer reversal using prev, curr, next to reverse a singly linked list in O(1) space.",
+    "brute": {
+      "idea": "Copy linked list values into an array, reverse the array, and rebuild a new linked list.",
+      "steps": [
+        "Traverse linked list and save all node values to a list.",
+        "Rebuild a new linked list in reversed order."
+      ],
+      "whySlow": "Allocates O(n) memory to create a duplicate list.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode reverseList(ListNode head) {\n        List<Integer> vals = new ArrayList<>();\n        ListNode cur = head;\n        while (cur != null) { vals.add(cur.val); cur = cur.next; }\n        ListNode dummy = new ListNode(0);\n        cur = dummy;\n        for (int i = vals.size() - 1; i >= 0; i--) {\n            cur.next = new ListNode(vals.get(i));\n            cur = cur.next;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        vals = []\n        cur = head\n        while cur:\n            vals.append(cur.val)\n            cur = cur.next\n        dummy = ListNode(0)\n        cur = dummy\n        for v in reversed(vals):\n            cur.next = ListNode(v)\n            cur = cur.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Three pointers: prev = null, curr = head. Save next = curr.next, reverse link curr.next = prev, advance prev = curr, curr = next.",
+      "steps": [
+        "Initialize prev = null, curr = head.",
+        "While curr != null:",
+        "next = curr.next.",
+        "curr.next = prev.",
+        "prev = curr; curr = next.",
+        "Return prev."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode reverseList(ListNode head) {\n        ListNode prev = null, curr = head;\n        while (curr != null) {\n            ListNode next = curr.next;\n            curr.next = prev;\n            prev = curr;\n            curr = next;\n        }\n        return prev;\n    }\n}",
+        "python": "class Solution:\n    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        prev, curr = None, head\n        while curr:\n            nxt = curr.next\n            curr.next = prev\n            prev = curr\n            curr = nxt\n        return prev"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize prev = null, curr = head. Then while curr is not equal to null:."
+    ]
+  },
+  {
+    "seq": 84,
+    "whyNext": "Builds on linked list traversal: dummy head node simplifies boundary edge cases when splicing two sorted lists.",
+    "brute": {
+      "idea": "Collect all node values from both lists into an array, sort the array, and construct a new sorted linked list.",
+      "steps": [
+        "Collect values from list1 and list2.",
+        "Sort values.",
+        "Create linked list from sorted values."
+      ],
+      "whySlow": "Sorting ignores existing sorted list order and allocates O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {\n        List<Integer> list = new ArrayList<>();\n        while (list1 != null) { list.add(list1.val); list1 = list1.next; }\n        while (list2 != null) { list.add(list2.val); list2 = list2.next; }\n        Collections.sort(list);\n        ListNode dummy = new ListNode(0), cur = dummy;\n        for (int v : list) { cur.next = new ListNode(v); cur = cur.next; }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:\n        vals = []\n        while list1: vals.append(list1.val); list1 = list1.next\n        while list2: vals.append(list2.val); list2 = list2.next\n        vals.sort()\n        dummy = ListNode(0)\n        cur = dummy\n        for v in vals: cur.next = ListNode(v); cur = cur.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers with dummy head: compare list1.val and list2.val, link curr.next to smaller node, and attach remaining nodes.",
+      "steps": [
+        "Create dummy node; curr = dummy.",
+        "While list1 != null and list2 != null:",
+        "If list1.val <= list2.val: curr.next = list1; list1 = list1.next.",
+        "Else: curr.next = list2; list2 = list2.next.",
+        "curr = curr.next.",
+        "curr.next = (list1 != null) ? list1 : list2.",
+        "Return dummy.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {\n        ListNode dummy = new ListNode(0), cur = dummy;\n        while (list1 != null && list2 != null) {\n            if (list1.val <= list2.val) { cur.next = list1; list1 = list1.next; }\n            else { cur.next = list2; list2 = list2.next; }\n            cur = cur.next;\n        }\n        cur.next = (list1 != null) ? list1 : list2;\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy = ListNode(0)\n        cur = dummy\n        while list1 and list2:\n            if list1.val <= list2.val:\n                cur.next = list1\n                list1 = list1.next\n            else:\n                cur.next = list2\n                list2 = list2.next\n            cur = cur.next\n        cur.next = list1 if list1 else list2\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Create dummy node curr = dummy. Then while list1 is not equal to null and list2 is not equal to null:."
+    ]
+  },
+  {
+    "seq": 85,
+    "whyNext": "Introduces fast and slow pointer technique on linked lists: fast moves twice as fast as slow, so when fast reaches end, slow is at middle.",
+    "brute": {
+      "idea": "Two passes: first pass counts total nodes n, second pass advances pointer n / 2 steps to middle node.",
+      "steps": [
+        "First pass: count nodes in list.",
+        "Second pass: advance pointer count / 2 steps.",
+        "Return middle node."
+      ],
+      "whySlow": "Traverses the linked list twice.",
+      "time": "two passes",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode middleNode(ListNode head) {\n        int count = 0;\n        ListNode cur = head;\n        while (cur != null) { count++; cur = cur.next; }\n        cur = head;\n        for (int i = 0; i < count / 2; i++) cur = cur.next;\n        return cur;\n    }\n}",
+        "python": "class Solution:\n    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        count = 0\n        cur = head\n        while cur: count += 1; cur = cur.next\n        cur = head\n        for _ in range(count // 2): cur = cur.next\n        return cur"
+      }
+    },
+    "optimal": {
+      "idea": "Fast and slow pointers in single pass: slow advances 1 node per step while fast advances 2 nodes.",
+      "steps": [
+        "Initialize slow = head, fast = head.",
+        "While fast != null and fast.next != null:",
+        "slow = slow.next; fast = fast.next.next.",
+        "Return slow."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode middleNode(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n        return slow;\n    }\n}",
+        "python": "class Solution:\n    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        slow, fast = head, head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        return slow"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Initialize slow = head, fast = head. Then while fast is not equal to null and the next node after fast is not equal to null:."
+    ]
+  },
+  {
+    "seq": 86,
+    "whyNext": "Builds on slow/fast pointers: Floyd's Tortoise and Hare detects if a cycle exists (fast catches up to slow in O(1) space).",
+    "brute": {
+      "idea": "Traverse the list while inserting each visited node reference into a HashSet; if a node is seen twice, a cycle exists.",
+      "steps": [
+        "Initialize a Set of visited nodes.",
+        "While curr != null: if already in set return true, else add to set.",
+        "Return false."
+      ],
+      "whySlow": "Allocates O(n) memory to store node pointers in set.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "public class Solution {\n    public boolean hasCycle(ListNode head) {\n        Set<ListNode> seen = new HashSet<>();\n        while (head != null) {\n            if (!seen.add(head)) return true;\n            head = head.next;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def hasCycle(self, head: Optional[ListNode]) -> bool:\n        seen = set()\n        while head:\n            if head in seen: return True\n            seen.add(head)\n            head = head.next\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Floyd's Tortoise and Hare: slow moves 1 step, fast moves 2 steps. If there is a cycle, fast will inevitably lap and meet slow.",
+      "steps": [
+        "Initialize slow = head, fast = head.",
+        "While fast != null and fast.next != null:",
+        "slow = slow.next, fast = fast.next.next.",
+        "If slow == fast, return true.",
+        "Return false."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "public class Solution {\n    public boolean hasCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) return true;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def hasCycle(self, head: Optional[ListNode]) -> bool:\n        slow, fast = head, head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow == fast: return True\n        return False"
+      }
+    },
+    "hints": [
+      "If one pointer moves one step at a time while another moves two steps at a time, will they ever collide if a loop exists?.",
+      "Apply Floyd's Cycle Detection Fast and Slow Pointers . This achieves O n time and O 1 auxiliary space.",
+      "Advance a slow pointer by one node and a fast pointer by two nodes if they meet, a cycle exists, and the cycle start can be located by resetting one pointer to the head. In detail: Initialize slow = head, fast = head. Then while fast is not equal to null and the next node after fast is not equal to null:."
+    ]
+  },
+  {
+    "seq": 87,
+    "whyNext": "Builds on cycle detection: after slow and fast meet, reset one pointer to head and advance both by 1; they meet at the cycle entrance.",
+    "brute": {
+      "idea": "Use a HashSet to store visited node references and return the first node already in the set.",
+      "steps": [
+        "Traverse list with a HashSet.",
+        "Return first re-encountered node."
+      ],
+      "whySlow": "Uses O(n) memory for visited set.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "public class Solution {\n    public ListNode detectCycle(ListNode head) {\n        Set<ListNode> seen = new HashSet<>();\n        while (head != null) {\n            if (!seen.add(head)) return head;\n            head = head.next;\n        }\n        return null;\n    }\n}",
+        "python": "class Solution:\n    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        seen = set()\n        while head:\n            if head in seen: return head\n            seen.add(head)\n            head = head.next\n        return None"
+      }
+    },
+    "optimal": {
+      "idea": "Floyd cycle detection: after slow and fast meet, reset slow to head. Advance both one node per step until they meet at cycle entrance.",
+      "steps": [
+        "Find intersection using slow and fast pointers.",
+        "If fast reaches null, return null (no cycle).",
+        "Reset slow = head.",
+        "Advance slow and fast 1 step at a time until slow == fast.",
+        "Return slow."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "public class Solution {\n    public ListNode detectCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) {\n                ListNode ptr = head;\n                while (ptr != slow) {\n                    ptr = ptr.next;\n                    slow = slow.next;\n                }\n                return ptr;\n            }\n        }\n        return null;\n    }\n}",
+        "python": "class Solution:\n    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        slow, fast = head, head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n            if slow == fast:\n                ptr = head\n                while ptr != slow:\n                    ptr = ptr.next\n                    slow = slow.next\n                return ptr\n        return None"
+      }
+    },
+    "hints": [
+      "If one pointer moves one step at a time while another moves two steps at a time, will they ever collide if a loop exists?.",
+      "Apply Floyd's Cycle Detection Fast and Slow Pointers . This achieves O n time and O 1 auxiliary space.",
+      "Advance a slow pointer by one node and a fast pointer by two nodes if they meet, a cycle exists, and the cycle start can be located by resetting one pointer to the head. In detail: Find intersection using slow and fast pointers. Then if fast reaches null, return null no cycle ."
+    ]
+  },
+  {
+    "seq": 88,
+    "whyNext": "Builds on pointer traversal: two pointers switch heads when reaching null, equalizing lengths (a + b) to meet at intersection in O(1) space.",
+    "brute": {
+      "idea": "Store all node references of list A in a HashSet, then scan list B to find the first matching node.",
+      "steps": [
+        "Add all nodes of list A into set.",
+        "Scan list B; return first node found in set.",
+        "Return null if none."
+      ],
+      "whySlow": "Requires O(n) space for set of node references.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "public class Solution {\n    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {\n        Set<ListNode> seen = new HashSet<>();\n        while (headA != null) { seen.add(headA); headA = headA.next; }\n        while (headB != null) { if (seen.contains(headB)) return headB; headB = headB.next; }\n        return null;\n    }\n}",
+        "python": "class Solution:\n    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:\n        seen = set()\n        while headA: seen.add(headA); headA = headA.next\n        while headB:\n            if headB in seen: return headB\n            headB = headB.next\n        return None"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers: pointer pA walks A then B; pointer pB walks B then A. Both travel len(A) + len(B) and meet at intersection node.",
+      "steps": [
+        "pA = headA, pB = headB.",
+        "While pA != pB:",
+        "pA = (pA == null) ? headB : pA.next.",
+        "pB = (pB == null) ? headA : pB.next.",
+        "Return pA."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "public class Solution {\n    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {\n        ListNode a = headA, b = headB;\n        while (a != b) {\n            a = (a == null) ? headB : a.next;\n            b = (b == null) ? headA : b.next;\n        }\n        return a;\n    }\n}",
+        "python": "class Solution:\n    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:\n        a, b = headA, headB\n        while a != b:\n            a = headB if not a else a.next\n            b = headA if not b else b.next\n        return a"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: PA = headA, pB = headB. Then while pa is not equal to pb:."
+    ]
+  },
+  {
+    "seq": 89,
+    "whyNext": "Builds on fast/slow pointers: fast pointer moves n steps ahead, so when fast reaches the end, slow is right before the nth node from end.",
+    "brute": {
+      "idea": "First pass counts total length L, second pass stops at index L - n - 1 to unlink target node.",
+      "steps": [
+        "Count length L of linked list.",
+        "If L == n, return head.next.",
+        "Walk L - n - 1 steps; bypass next node.",
+        "Return head."
+      ],
+      "whySlow": "Requires two full passes across the list.",
+      "time": "two passes",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        int len = 0;\n        ListNode cur = head;\n        while (cur != null) { len++; cur = cur.next; }\n        if (len == n) return head.next;\n        cur = head;\n        for (int i = 0; i < len - n - 1; i++) cur = cur.next;\n        cur.next = cur.next.next;\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:\n        l = 0\n        cur = head\n        while cur: l += 1; cur = cur.next\n        if l == n: return head.next\n        cur = head\n        for _ in range(l - n - 1): cur = cur.next\n        cur.next = cur.next.next\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass with dummy head: advance fast pointer n + 1 steps ahead. Move both until fast is null; slow.next = slow.next.next.",
+      "steps": [
+        "Create dummy head pointing to head.",
+        "Advance fast pointer n + 1 steps from dummy.",
+        "Move fast and slow together until fast is null.",
+        "slow.next = slow.next.next.",
+        "Return dummy.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode fast = dummy, slow = dummy;\n        for (int i = 0; i <= n; i++) fast = fast.next;\n        while (fast != null) {\n            fast = fast.next;\n            slow = slow.next;\n        }\n        slow.next = slow.next.next;\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:\n        dummy = ListNode(0, head)\n        fast = slow = dummy\n        for _ in range(n + 1): fast = fast.next\n        while fast:\n            fast = fast.next\n            slow = slow.next\n        slow.next = slow.next.next\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O n time and O 1 auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Create dummy head pointing to head. Then advance fast pointer n + 1 steps from dummy."
+    ]
+  },
+  {
+    "seq": 90,
+    "whyNext": "Builds on sorted list traversal: skip consecutive equal node values in place (curr.next = curr.next.next).",
+    "brute": {
+      "idea": "Collect values in a LinkedHashSet to eliminate duplicates, then rebuild a new linked list.",
+      "steps": [
+        "Put all node values into LinkedHashSet.",
+        "Rebuild new list from set elements."
+      ],
+      "whySlow": "Uses O(n) memory instead of in-place node rewiring.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode deleteDuplicates(ListNode head) {\n        Set<Integer> set = new LinkedHashSet<>();\n        while (head != null) { set.add(head.val); head = head.next; }\n        ListNode dummy = new ListNode(0), cur = dummy;\n        for (int v : set) { cur.next = new ListNode(v); cur = cur.next; }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        seen = []\n        cur = head\n        while cur:\n            if not seen or seen[-1] != cur.val: seen.append(cur.val)\n            cur = cur.next\n        dummy = ListNode(0)\n        cur = dummy\n        for v in seen: cur.next = ListNode(v); cur = cur.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "In-place pointer traversal: if curr.val == curr.next.val, skip curr.next; else advance curr = curr.next.",
+      "steps": [
+        "Initialize curr = head.",
+        "While curr != null and curr.next != null:",
+        "If curr.val == curr.next.val: curr.next = curr.next.next.",
+        "Else: curr = curr.next.",
+        "Return head."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode deleteDuplicates(ListNode head) {\n        ListNode cur = head;\n        while (cur != null && cur.next != null) {\n            if (cur.val == cur.next.val) cur.next = cur.next.next;\n            else cur = cur.next;\n        }\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        cur = head\n        while cur and cur.next:\n            if cur.val == cur.next.val: cur.next = cur.next.next\n            else: cur = cur.next\n        return head"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O n time and O 1 auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Initialize curr = head. Then while curr is not equal to null and the next node after curr is not equal to null:."
+    ]
+  },
+  {
+    "seq": 91,
+    "whyNext": "Builds on Remove Duplicates: dummy head node allows completely deleting duplicate runs, leaving only distinct numbers.",
+    "brute": {
+      "idea": "Count frequencies of all numbers with a map, then build a new list containing only numbers with count == 1.",
+      "steps": [
+        "Count frequencies with HashMap.",
+        "Build new linked list containing only nodes whose values occur once."
+      ],
+      "whySlow": "Allocates extra memory for frequency map and new list.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode deleteDuplicates(ListNode head) {\n        Map<Integer, Integer> map = new LinkedHashMap<>();\n        for (ListNode c = head; c != null; c = c.next) map.put(c.val, map.getOrDefault(c.val, 0) + 1);\n        ListNode dummy = new ListNode(0), cur = dummy;\n        for (int k : map.keySet()) {\n            if (map.get(k) == 1) { cur.next = new ListNode(k); cur = cur.next; }\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        counts = collections.Counter()\n        cur = head\n        while cur: counts[cur.val] += 1; cur = cur.next\n        dummy = ListNode(0)\n        cur = dummy\n        c2 = head\n        while c2:\n            if counts[c2.val] == 1:\n                cur.next = ListNode(c2.val)\n                cur = cur.next\n            c2 = c2.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Dummy head with prev pointer: when head has duplicate run, skip all equal nodes and set prev.next = head.next.",
+      "steps": [
+        "Create dummy head pointing to head; prev = dummy.",
+        "While head != null:",
+        "If head.next != null and head.val == head.next.val:",
+        "Loop head forward while head.next != null and head.val == head.next.val.",
+        "prev.next = head.next.",
+        "Else: prev = prev.next.",
+        "head = head.next.",
+        "Return dummy.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode deleteDuplicates(ListNode head) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode prev = dummy;\n        while (head != null) {\n            if (head.next != null && head.val == head.next.val) {\n                while (head.next != null && head.val == head.next.val) head = head.next;\n                prev.next = head.next;\n            } else {\n                prev = prev.next;\n            }\n            head = head.next;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        dummy = ListNode(0, head)\n        prev = dummy\n        while head:\n            if head.next and head.val == head.next.val:\n                while head.next and head.val == head.next.val:\n                    head = head.next\n                prev.next = head.next\n            else:\n                prev = prev.next\n            head = head.next\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O n time and O 1 auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Create dummy head pointing to head prev = dummy. Then while head is not equal to null:."
+    ]
+  },
+  {
+    "seq": 92,
+    "whyNext": "Combines Middle of Linked List and Reverse Linked List: find middle, reverse second half in place, and compare two halves.",
+    "brute": {
+      "idea": "Copy all node values into an array list and check if the list is a palindrome using two pointers.",
+      "steps": [
+        "Collect node values into array.",
+        "Check array with two pointers from ends."
+      ],
+      "whySlow": "Allocates O(n) extra space.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPalindrome(ListNode head) {\n        List<Integer> list = new ArrayList<>();\n        while (head != null) { list.add(head.val); head = head.next; }\n        int l = 0, r = list.size() - 1;\n        while (l < r) if (!list.get(l++).equals(list.get(r--))) return false;\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isPalindrome(self, head: Optional[ListNode]) -> bool:\n        vals = []\n        while head: vals.append(head.val); head = head.next\n        return vals == vals[::-1]"
+      }
+    },
+    "optimal": {
+      "idea": "Find middle with slow/fast pointers, reverse second half in place, compare first and second halves, restore list.",
+      "steps": [
+        "Find middle using slow and fast pointers.",
+        "Reverse second half starting at slow.",
+        "Compare values of first half and reversed second half.",
+        "Return true if all match, else false."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPalindrome(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }\n        ListNode prev = null, cur = slow;\n        while (cur != null) {\n            ListNode next = cur.next;\n            cur.next = prev;\n            prev = cur;\n            cur = next;\n        }\n        ListNode p1 = head, p2 = prev;\n        while (p2 != null) {\n            if (p1.val != p2.val) return false;\n            p1 = p1.next; p2 = p2.next;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isPalindrome(self, head: Optional[ListNode]) -> bool:\n        slow = fast = head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        prev, cur = None, slow\n        while cur:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        p1, p2 = head, prev\n        while p2:\n            if p1.val != p2.val: return False\n            p1 = p1.next; p2 = p2.next\n        return True"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Find middle using slow and fast pointers. Then reverse second half starting at slow."
+    ]
+  },
+  {
+    "seq": 93,
+    "whyNext": "Builds on Merge Two Sorted Lists: traverse two lists simultaneously, summing digits with a carry variable.",
+    "brute": {
+      "idea": "Convert both linked lists to integers, add them, and convert the sum back to a linked list.",
+      "steps": [
+        "Extract BigInteger from l1.",
+        "Extract BigInteger from l2.",
+        "Sum them and convert back to linked list."
+      ],
+      "whySlow": "Converting to integers risks overflow and uses extra passes.",
+      "time": "O(max(m,n))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {\n        ListNode dummy = new ListNode(0), cur = dummy;\n        int carry = 0;\n        while (l1 != null || l2 != null || carry != 0) {\n            int sum = carry;\n            if (l1 != null) { sum += l1.val; l1 = l1.next; }\n            if (l2 != null) { sum += l2.val; l2 = l2.next; }\n            carry = sum / 10;\n            cur.next = new ListNode(sum % 10);\n            cur = cur.next;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy = ListNode(0)\n        cur, carry = dummy, 0\n        while l1 or l2 or carry:\n            s = carry\n            if l1: s += l1.val; l1 = l1.next\n            if l2: s += l2.val; l2 = l2.next\n            carry = s // 10\n            cur.next = ListNode(s % 10)\n            cur = cur.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass: simulate digit-by-digit addition with carry, creating a new node for sum % 10.",
+      "steps": [
+        "Create dummy head; carry = 0.",
+        "While l1 != null or l2 != null or carry > 0:",
+        "sum = carry + (l1 != null ? l1.val : 0) + (l2 != null ? l2.val : 0).",
+        "carry = sum / 10.",
+        "cur.next = new ListNode(sum % 10); cur = cur.next.",
+        "Advance l1 and l2.",
+        "Return dummy.next."
+      ],
+      "time": "O(max(m,n))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {\n        ListNode dummy = new ListNode(0), cur = dummy;\n        int carry = 0;\n        while (l1 != null || l2 != null || carry != 0) {\n            int sum = carry;\n            if (l1 != null) { sum += l1.val; l1 = l1.next; }\n            if (l2 != null) { sum += l2.val; l2 = l2.next; }\n            carry = sum / 10;\n            cur.next = new ListNode(sum % 10);\n            cur = cur.next;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy = ListNode(0)\n        cur, carry = dummy, 0\n        while l1 or l2 or carry:\n            s = carry\n            if l1: s += l1.val; l1 = l1.next\n            if l2: s += l2.val; l2 = l2.next\n            carry = s // 10\n            cur.next = ListNode(s % 10)\n            cur = cur.next\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O max m,n time and O 1 auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Create dummy head carry = 0. Then while l1 is not equal to null or l2 is not equal to null or carry is greater than 0:."
+    ]
+  },
+  {
+    "seq": 94,
+    "whyNext": "Builds on Palindrome Linked List: find middle node, reverse second half, and interleave nodes from first and second halves.",
+    "brute": {
+      "idea": "Store all nodes in an array list and rewire next pointers using two pointers from the ends.",
+      "steps": [
+        "Put all nodes into a list.",
+        "Use pointers i = 0, j = n - 1 to interleave nodes.",
+        "Set last node's next to null."
+      ],
+      "whySlow": "Allocates O(n) extra space for node list.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public void reorderList(ListNode head) {\n        if (head == null) return;\n        List<ListNode> list = new ArrayList<>();\n        for (ListNode c = head; c != null; c = c.next) list.add(c);\n        int i = 0, j = list.size() - 1;\n        while (i < j) {\n            list.get(i).next = list.get(j);\n            i++;\n            if (i == j) break;\n            list.get(j).next = list.get(i);\n            j--;\n        }\n        list.get(i).next = null;\n    }\n}",
+        "python": "class Solution:\n    def reorderList(self, head: Optional[ListNode]) -> None:\n        if not head: return\n        nodes = []\n        cur = head\n        while cur: nodes.append(cur); cur = cur.next\n        i, j = 0, len(nodes) - 1\n        while i < j:\n            nodes[i].next = nodes[j]\n            i += 1\n            if i == j: break\n            nodes[j].next = nodes[i]\n            j -= 1\n        nodes[i].next = None"
+      }
+    },
+    "optimal": {
+      "idea": "Split at middle, reverse second half, and interleave the two halves in place without extra memory.",
+      "steps": [
+        "Find middle using slow and fast pointers; split list into two halves.",
+        "Reverse second half in place.",
+        "Merge / interleave first half and reversed second half."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void reorderList(ListNode head) {\n        if (head == null || head.next == null) return;\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }\n        ListNode prev = null, cur = slow.next;\n        slow.next = null;\n        while (cur != null) {\n            ListNode next = cur.next;\n            cur.next = prev;\n            prev = cur;\n            cur = next;\n        }\n        ListNode p1 = head, p2 = prev;\n        while (p2 != null) {\n            ListNode t1 = p1.next, t2 = p2.next;\n            p1.next = p2;\n            p2.next = t1;\n            p1 = t1; p2 = t2;\n        }\n    }\n}",
+        "python": "class Solution:\n    def reorderList(self, head: Optional[ListNode]) -> None:\n        if not head or not head.next: return\n        slow, fast = head, head\n        while fast and fast.next:\n            slow = slow.next\n            fast = fast.next.next\n        prev, cur = None, slow.next\n        slow.next = None\n        while cur:\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        p1, p2 = head, prev\n        while p2:\n            t1, t2 = p1.next, p2.next\n            p1.next = p2\n            p2.next = t1\n            p1, p2 = t1, t2"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O n time and O 1 auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Find middle using slow and fast pointers split list into two halves. Then reverse second half in place."
+    ]
+  },
+  {
+    "seq": 95,
+    "whyNext": "Builds on Merge Two Sorted Lists: divide list in half using slow/fast pointers, recursively sort both, and merge.",
+    "brute": {
+      "idea": "Collect all node values into an array, sort the array, and write back into the linked list.",
+      "steps": [
+        "Collect node values into array.",
+        "Sort array.",
+        "Write sorted values back into nodes."
+      ],
+      "whySlow": "Allocates O(n) extra space instead of pointer manipulation.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode sortList(ListNode head) {\n        List<Integer> list = new ArrayList<>();\n        for (ListNode c = head; c != null; c = c.next) list.add(c.val);\n        Collections.sort(list);\n        ListNode cur = head;\n        for (int v : list) { cur.val = v; cur = cur.next; }\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        vals = []\n        cur = head\n        while cur: vals.append(cur.val); cur = cur.next\n        vals.sort()\n        cur = head\n        for v in vals: cur.val = v; cur = cur.next\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "Merge sort on linked list: find middle to split list, recursively sort both halves, and merge sorted lists.",
+      "steps": [
+        "Base case: if head == null || head.next == null, return head.",
+        "Use slow/fast pointers with prev to split list in half.",
+        "left = sortList(head), right = sortList(mid).",
+        "Return mergeTwoLists(left, right)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(log n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode sortList(ListNode head) {\n        if (head == null || head.next == null) return head;\n        ListNode prev = null, slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            prev = slow;\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n        prev.next = null;\n        ListNode l1 = sortList(head);\n        ListNode l2 = sortList(slow);\n        return merge(l1, l2);\n    }\n    private ListNode merge(ListNode l1, ListNode l2) {\n        ListNode dummy = new ListNode(0), cur = dummy;\n        while (l1 != null && l2 != null) {\n            if (l1.val < l2.val) { cur.next = l1; l1 = l1.next; }\n            else { cur.next = l2; l2 = l2.next; }\n            cur = cur.next;\n        }\n        cur.next = (l1 != null) ? l1 : l2;\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def sortList(self, head: Optional[ListNode]) -> Optional[ListNode]:\n        if not head or not head.next: return head\n        prev, slow, fast = None, head, head\n        while fast and fast.next:\n            prev = slow\n            slow = slow.next\n            fast = fast.next.next\n        prev.next = None\n        l1 = self.sortList(head)\n        l2 = self.sortList(slow)\n        dummy = ListNode(0)\n        cur = dummy\n        while l1 and l2:\n            if l1.val < l2.val: cur.next, l1 = l1, l1.next\n            else: cur.next, l2 = l2, l2.next\n            cur = cur.next\n        cur.next = l1 if l1 else l2\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O n log n time and O log n auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Base case: if head is equal to null || the next node after head is equal to null, return head. Then use slow/fast pointers with prev to split list in half."
+    ]
+  },
+  {
+    "seq": 96,
+    "whyNext": "Builds on linked list traversal: interleave cloned nodes directly after originals (A -> A' -> B -> B') to copy random pointers in O(1) space.",
+    "brute": {
+      "idea": "Use a HashMap mapping each original node to its cloned copy, then connect next and random pointers.",
+      "steps": [
+        "Pass 1: create a clone for each node and put in map: map.put(node, new Node(node.val)).",
+        "Pass 2: for each node, clone.next = map.get(node.next), clone.random = map.get(node.random).",
+        "Return map.get(head)."
+      ],
+      "whySlow": "Uses O(n) auxiliary space for the hash map.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public Node copyRandomList(Node head) {\n        if (head == null) return null;\n        Map<Node, Node> map = new HashMap<>();\n        for (Node c = head; c != null; c = c.next) map.put(c, new Node(c.val));\n        for (Node c = head; c != null; c = c.next) {\n            map.get(c).next = map.get(c.next);\n            map.get(c).random = map.get(c.random);\n        }\n        return map.get(head);\n    }\n}",
+        "python": "class Solution:\n    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':\n        if not head: return None\n        mapping = {}\n        cur = head\n        while cur:\n            mapping[cur] = Node(cur.val)\n            cur = cur.next\n        cur = head\n        while cur:\n            mapping[cur].next = mapping.get(cur.next)\n            mapping[cur].random = mapping.get(cur.random)\n            cur = cur.next\n        return mapping[head]"
+      }
+    },
+    "optimal": {
+      "idea": "In-place interleaving: insert cloned node directly after original node, copy random pointers via cur.next.random = cur.random.next, then separate lists.",
+      "steps": [
+        "Pass 1: interleave copy nodes: cur -> copy -> cur.next.",
+        "Pass 2: copy random pointers: if cur.random != null, cur.next.random = cur.random.next.",
+        "Pass 3: decouple copy nodes into a separate cloned list and restore original list."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public Node copyRandomList(Node head) {\n        if (head == null) return null;\n        Node cur = head;\n        while (cur != null) {\n            Node copy = new Node(cur.val);\n            copy.next = cur.next;\n            cur.next = copy;\n            cur = copy.next;\n        }\n        cur = head;\n        while (cur != null) {\n            if (cur.random != null) cur.next.random = cur.random.next;\n            cur = cur.next.next;\n        }\n        Node dummy = new Node(0), copyCur = dummy;\n        cur = head;\n        while (cur != null) {\n            Node copy = cur.next;\n            cur.next = copy.next;\n            copyCur.next = copy;\n            copyCur = copy;\n            cur = cur.next;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':\n        if not head: return None\n        cur = head\n        while cur:\n            copy = Node(cur.val, next=cur.next)\n            cur.next = copy\n            cur = copy.next\n        cur = head\n        while cur:\n            if cur.random: cur.next.random = cur.random.next\n            cur = cur.next.next\n        dummy = Node(0)\n        copy_cur = dummy\n        cur = head\n        while cur:\n            copy = cur.next\n            cur.next = copy.next\n            copy_cur.next = copy\n            copy_cur = copy\n            cur = cur.next\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "If the data is sorted or symmetric, can you move pointers inward from both ends to prune unviable pairs in linear time?.",
+      "Apply the Two Pointers pattern. This achieves O n time and O 1 auxiliary space.",
+      "Initialize pointers at opposing ends or one fast and one slow , evaluate the current combination, and move the appropriate pointer inward based on the target value. In detail: Pass 1: interleave copy nodes: cur - is greater than copy - is greater than the next node after cur. Then pass 2: copy random pointers: if cur.random is not equal to null, the next node after cur.random = cur.the next node after random."
+    ]
+  },
+  {
+    "seq": 97,
+    "whyNext": "Generalizes Reverse Linked List: check if k nodes remain, reverse the k-node chunk in place, and link to the next group.",
+    "brute": {
+      "idea": "Collect all nodes into a list, reverse groups of size k in the list, and rewire next pointers.",
+      "steps": [
+        "Collect all nodes in a list.",
+        "Reverse each group of k nodes.",
+        "Rebuild next pointers."
+      ],
+      "whySlow": "Allocates O(n) extra space.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        List<ListNode> list = new ArrayList<>();\n        for (ListNode c = head; c != null; c = c.next) list.add(c);\n        int n = list.size();\n        for (int i = 0; i + k <= n; i += k) {\n            Collections.reverse(list.subList(i, i + k));\n        }\n        for (int i = 0; i < n - 1; i++) list.get(i).next = list.get(i + 1);\n        if (n > 0) list.get(n - 1).next = null;\n        return n > 0 ? list.get(0) : null;\n    }\n}",
+        "python": "class Solution:\n    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:\n        nodes = []\n        cur = head\n        while cur: nodes.append(cur); cur = cur.next\n        n = len(nodes)\n        for i in range(0, n - n % k, k):\n            nodes[i:i+k] = reversed(nodes[i:i+k])\n        for i in range(n - 1): nodes[i].next = nodes[i + 1]\n        if n: nodes[-1].next = None\n        return nodes[0] if n else None"
+      }
+    },
+    "optimal": {
+      "idea": "In-place k-group reversal: count k nodes ahead; if k nodes exist, reverse the sublist and recursively/iteratively connect with remaining groups.",
+      "steps": [
+        "Count k nodes from head.",
+        "If fewer than k nodes remain, return head.",
+        "Reverse k nodes in place using prev/curr pointers.",
+        "head.next = reverseKGroup(curr, k).",
+        "Return prev."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        ListNode check = head;\n        for (int i = 0; i < k; i++) {\n            if (check == null) return head;\n            check = check.next;\n        }\n        ListNode prev = null, cur = head;\n        for (int i = 0; i < k; i++) {\n            ListNode next = cur.next;\n            cur.next = prev;\n            prev = cur;\n            cur = next;\n        }\n        head.next = reverseKGroup(cur, k);\n        return prev;\n    }\n}",
+        "python": "class Solution:\n    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:\n        check = head\n        for _ in range(k):\n            if not check: return head\n            check = check.next\n        prev, cur = None, head\n        for _ in range(k):\n            nxt = cur.next\n            cur.next = prev\n            prev = cur\n            cur = nxt\n        head.next = self.reverseKGroup(cur, k)\n        return prev"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O n time and O 1 auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Count k nodes from head. Then if fewer than k nodes remain, return head."
+    ]
+  },
+  {
+    "seq": 98,
+    "whyNext": "Generalizes Merge Two Sorted Lists to k lists: min-heap of node heads merges nodes in O(N log k).",
+    "brute": {
+      "idea": "Collect all node values from all k linked lists into an array, sort the array, and construct a new sorted linked list.",
+      "steps": [
+        "Collect all node values from all lists.",
+        "Sort values.",
+        "Build new linked list."
+      ],
+      "whySlow": "Full sorting of all N elements takes O(N log N) time.",
+      "time": "O(N log N)",
+      "space": "O(N)",
+      "code": {
+        "java": "class Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        List<Integer> list = new ArrayList<>();\n        for (ListNode l : lists) {\n            while (l != null) { list.add(l.val); l = l.next; }\n        }\n        Collections.sort(list);\n        ListNode dummy = new ListNode(0), cur = dummy;\n        for (int v : list) { cur.next = new ListNode(v); cur = cur.next; }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def mergeKLists(self, lists: list[Optional[ListNode]]) -> Optional[ListNode]:\n        vals = []\n        for l in lists:\n            while l: vals.append(l.val); l = l.next\n        vals.sort()\n        dummy = ListNode(0)\n        cur = dummy\n        for v in vals: cur.next = ListNode(v); cur = cur.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Min-heap of size k: insert heads of all non-empty lists. Repeatedly pop smallest node, append to merged list, and push its next node.",
+      "steps": [
+        "Initialize PriorityQueue with comparator (a, b) -> a.val - b.val.",
+        "Add non-null head of each list to heap.",
+        "While heap is not empty:",
+        "node = heap.poll(); cur.next = node; cur = cur.next.",
+        "If node.next != null, heap.offer(node.next).",
+        "Return dummy.next."
+      ],
+      "time": "O(N log k)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> a.val - b.val);\n        for (ListNode l : lists) if (l != null) pq.offer(l);\n        ListNode dummy = new ListNode(0), cur = dummy;\n        while (!pq.isEmpty()) {\n            ListNode node = pq.poll();\n            cur.next = node;\n            cur = cur.next;\n            if (node.next != null) pq.offer(node.next);\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def mergeKLists(self, lists: list[Optional[ListNode]]) -> Optional[ListNode]:\n        pq = []\n        for i, l in enumerate(lists):\n            if l: heapq.heappush(pq, (l.val, i, l))\n        dummy = ListNode(0)\n        cur = dummy\n        while pq:\n            val, i, node = heapq.heappop(pq)\n            cur.next = node\n            cur = cur.next\n            if node.next:\n                heapq.heappush(pq, (node.next.val, i, node.next))\n        return dummy.next"
+      }
+    },
+    "hints": [
+      "Using a dummy head node simplifies boundary edge cases such as modifying or removing the very first element of the list.",
+      "Apply pointer manipulation with a dummy node. This achieves O N log k time and O k auxiliary space.",
+      "Maintain a dummy head pointing to the list head, track previous and current pointers, and adjust the next links sequentially without losing references. In detail: Initialize PriorityQueue with comparator a, b - is greater than a.val - b.val. Then add non-null head of each list to heap."
+    ]
+  },
+  {
+    "seq": 99,
+    "whyNext": "Completes Chapter 6: composite data structure combining HashMap for O(1) key lookup and Doubly Linked List for O(1) eviction.",
+    "brute": {
+      "idea": "Maintain key-value pairs in a list or map with timestamps; on capacity overflow, scan for minimum timestamp.",
+      "steps": [
+        "Store (key, value, accessTime) in a list.",
+        "On get: update accessTime.",
+        "On put: if full, scan for least recently used element and remove it."
+      ],
+      "whySlow": "Scanning for LRU element takes O(n) time.",
+      "time": "O(n)",
+      "space": "O(capacity)",
+      "code": {
+        "java": "class LRUCache {\n    private int cap;\n    private LinkedHashMap<Integer, Integer> map;\n    public LRUCache(int capacity) {\n        this.cap = capacity;\n        this.map = new LinkedHashMap<>(capacity, 0.75f, true) {\n            protected boolean removeEldestEntry(Map.Entry eldest) {\n                return size() > cap;\n            }\n        };\n    }\n    public int get(int key) { return map.getOrDefault(key, -1); }\n    public void put(int key, int value) { map.put(key, value); }\n}",
+        "python": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.map = collections.OrderedDict()\n    def get(self, key: int) -> int:\n        if key not in self.map: return -1\n        self.map.move_to_end(key)\n        return self.map[key]\n    def put(self, key: int, value: int) -> None:\n        if key in self.map:\n            self.map.move_to_end(key)\n        self.map[key] = value\n        if len(self.map) > self.cap:\n            self.map.popitem(last=False)"
+      }
+    },
+    "optimal": {
+      "idea": "HashMap plus Doubly Linked List: HashMap maps key to DListNode. DLL keeps most recently used at head, least recently used at tail.",
+      "steps": [
+        "Define DListNode with prev and next pointers.",
+        "Maintain head and tail dummy sentinels.",
+        "get(key): if present, move node to head and return value.",
+        "put(key, val): if present update and move to head; if new add at head; if over capacity remove node before tail."
+      ],
+      "time": "O(1)",
+      "space": "O(capacity)",
+      "code": {
+        "java": "class LRUCache {\n    class DNode { int k, v; DNode prev, next; DNode(int k, int v) { this.k = k; this.v = v; } }\n    private Map<Integer, DNode> map = new HashMap<>();\n    private int cap;\n    private DNode head = new DNode(0, 0), tail = new DNode(0, 0);\n    public LRUCache(int capacity) {\n        this.cap = capacity;\n        head.next = tail; tail.prev = head;\n    }\n    public int get(int key) {\n        if (!map.containsKey(key)) return -1;\n        DNode node = map.get(key);\n        remove(node); addHead(node);\n        return node.v;\n    }\n    public void put(int key, int value) {\n        if (map.containsKey(key)) {\n            DNode node = map.get(key);\n            node.v = value;\n            remove(node); addHead(node);\n        } else {\n            if (map.size() == cap) {\n                map.remove(tail.prev.k);\n                remove(tail.prev);\n            }\n            DNode node = new DNode(key, value);\n            map.put(key, node);\n            addHead(node);\n        }\n    }\n    private void remove(DNode n) { n.prev.next = n.next; n.next.prev = n.prev; }\n    private void addHead(DNode n) { n.next = head.next; n.prev = head; head.next.prev = n; head.next = n; }\n}",
+        "python": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.map = collections.OrderedDict()\n    def get(self, key: int) -> int:\n        if key not in self.map: return -1\n        self.map.move_to_end(key)\n        return self.map[key]\n    def put(self, key: int, value: int) -> None:\n        if key in self.map:\n            self.map.move_to_end(key)\n        self.map[key] = value\n        if len(self.map) > self.cap:\n            self.map.popitem(last=False)"
+      }
+    },
+    "hints": [
+      "Instead of nested loops, can you store previous elements or counts so you can query complementary values in constant time?.",
+      "Apply a Hash Map or frequency table. This achieves O 1 time and O capacity auxiliary space.",
+      "Record each element and its occurrence or index in the map, and look up whether the required match or complement has already been recorded. In detail: Define DListNode with prev and next pointers. Then maintain head and tail dummy sentinels."
+    ]
+  }
+]

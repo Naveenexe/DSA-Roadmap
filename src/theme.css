@@ -1,0 +1,105 @@
+/* LeetCode-style Design System Tokens */
+:root {
+  /* Typography */
+  --font-sans: 'SamsungOne', 'Samsung Sharp Sans', 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+
+  /* Layout & Geometry */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+  --radius-full: 9999px;
+  --border-width: 1px;
+
+  /* Brand / Accent (LeetCode Orange) */
+  --accent: #FFA116;
+  --accent-hover: #E08E14;
+  --accent-light: rgba(255, 161, 22, 0.12);
+  --accent-subtle: rgba(255, 161, 22, 0.08);
+
+  /* Difficulty Tokens */
+  --easy: #2CBB5D;
+  --easy-bg: rgba(44, 187, 93, 0.12);
+  --medium: #FFC01E;
+  --medium-bg: rgba(255, 192, 30, 0.12);
+  --hard: #EF4743;
+  --hard-bg: rgba(239, 71, 67, 0.12);
+
+  /* Status Tokens */
+  --status-done: #2CBB5D;
+  --status-done-bg: rgba(44, 187, 93, 0.12);
+  --status-inprogress: #FFA116;
+  --status-inprogress-bg: rgba(255, 161, 22, 0.12);
+  --status-revisit: #8A9CA8;
+  --status-revisit-bg: rgba(138, 156, 168, 0.14);
+  --status-mistake: #EF4743;
+  --status-mistake-bg: rgba(239, 71, 67, 0.12);
+
+  /* -------------------------------------------------------------------------
+     Dark Theme (Default)
+     page #1A1A1A, panels #282828, borders #3E3E3E, text #EFF1F6, muted #9CA3AF
+     ------------------------------------------------------------------------- */
+  --bg-page: #1A1A1A;
+  --bg-panel: #282828;
+  --bg-panel-hover: #323232;
+  --bg-input: #202020;
+  --bg-table-stripe: #232323;
+  --border: #3E3E3E;
+  --border-subtle: #333333;
+  --border-hover: #525252;
+  --text-main: #EFF1F6;
+  --text-muted: #9CA3AF;
+  --text-sub: #D1D5DB;
+  --code-bg: #1e1e1e;
+
+  /* Global Compatibility Aliases */
+  --bg-primary: var(--bg-page);
+  --bg-secondary: var(--bg-panel);
+  --bg-card: var(--bg-panel);
+  --bg-card-hover: var(--bg-panel-hover);
+  --border-color: var(--border);
+  --text-primary: var(--text-main);
+  --text-secondary: var(--text-muted);
+  --text-inverse: #1A1A1A;
+  --easy-color: var(--easy);
+  --medium-color: var(--medium);
+  --hard-color: var(--hard);
+  --success: var(--status-done);
+  --success-bg: var(--status-done-bg);
+  --warning: var(--medium);
+  --warning-bg: var(--medium-bg);
+  --danger: var(--hard);
+  --danger-bg: var(--hard-bg);
+  --purple: var(--status-revisit);
+  --purple-bg: var(--status-revisit-bg);
+}
+
+/* ---------------------------------------------------------------------------
+   Light Theme
+   page #FFFFFF, panels #F7F8FA, borders #E5E7EB, text #262626, muted #6B7280
+   --------------------------------------------------------------------------- */
+[data-theme='light'] {
+  --bg-page: #FFFFFF;
+  --bg-panel: #F7F8FA;
+  --bg-panel-hover: #ECEEF2;
+  --bg-input: #FFFFFF;
+  --bg-table-stripe: #F9FAFB;
+  --border: #E5E7EB;
+  --border-subtle: #EBECEF;
+  --border-hover: #D1D5DB;
+  --text-main: #262626;
+  --text-muted: #6B7280;
+  --text-sub: #4B5563;
+  --code-bg: #232323;
+
+  /* Global Compatibility Aliases */
+  --bg-primary: var(--bg-page);
+  --bg-secondary: var(--bg-panel);
+  --bg-card: var(--bg-panel);
+  --bg-card-hover: var(--bg-panel-hover);
+  --border-color: var(--border);
+  --text-primary: var(--text-main);
+  --text-secondary: var(--text-muted);
+  --text-inverse: #FFFFFF;
+}
+
