@@ -1,105 +1,211 @@
-/* LeetCode-style Design System Tokens */
+/* =============================================================================
+   Chainline: DSA Roadmap Tracker 2.0 Theme Tokens (Section 4.2)
+   Three Modes: Light (Daylight), Evening (Dusk), Dark (Midnight)
+   ============================================================================= */
+
 :root {
-  /* Typography */
-  --font-sans: 'SamsungOne', 'Samsung Sharp Sans', 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+  /* Typography Stacks */
+  --font-sans: 'Plus Jakarta Sans', Manrope, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
+  --font-code: 'JetBrains Mono', Menlo, Monaco, Consolas, monospace;
 
-  /* Layout & Geometry */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 6px;
-  --radius-full: 9999px;
-  --border-width: 1px;
+  /* Geometry & Shape Tokens (Section 4.5) */
+  --radius-card: 28px;
+  --radius-inner: 20px;
+  --radius-input: 16px;
+  --radius-pill: 9999px;
+  --radius-sm: 8px;
 
-  /* Brand / Accent (LeetCode Orange) */
-  --accent: #FFA116;
-  --accent-hover: #E08E14;
-  --accent-light: rgba(255, 161, 22, 0.12);
-  --accent-subtle: rgba(255, 161, 22, 0.08);
-
-  /* Difficulty Tokens */
-  --easy: #2CBB5D;
-  --easy-bg: rgba(44, 187, 93, 0.12);
-  --medium: #FFC01E;
-  --medium-bg: rgba(255, 192, 30, 0.12);
-  --hard: #EF4743;
-  --hard-bg: rgba(239, 71, 67, 0.12);
-
-  /* Status Tokens */
-  --status-done: #2CBB5D;
-  --status-done-bg: rgba(44, 187, 93, 0.12);
-  --status-inprogress: #FFA116;
-  --status-inprogress-bg: rgba(255, 161, 22, 0.12);
-  --status-revisit: #8A9CA8;
-  --status-revisit-bg: rgba(138, 156, 168, 0.14);
-  --status-mistake: #EF4743;
-  --status-mistake-bg: rgba(239, 71, 67, 0.12);
-
-  /* -------------------------------------------------------------------------
-     Dark Theme (Default)
-     page #1A1A1A, panels #282828, borders #3E3E3E, text #EFF1F6, muted #9CA3AF
-     ------------------------------------------------------------------------- */
-  --bg-page: #1A1A1A;
-  --bg-panel: #282828;
-  --bg-panel-hover: #323232;
-  --bg-input: #202020;
-  --bg-table-stripe: #232323;
-  --border: #3E3E3E;
-  --border-subtle: #333333;
-  --border-hover: #525252;
-  --text-main: #EFF1F6;
-  --text-muted: #9CA3AF;
-  --text-sub: #D1D5DB;
-  --code-bg: #1e1e1e;
-
-  /* Global Compatibility Aliases */
-  --bg-primary: var(--bg-page);
-  --bg-secondary: var(--bg-panel);
-  --bg-card: var(--bg-panel);
-  --bg-card-hover: var(--bg-panel-hover);
-  --border-color: var(--border);
-  --text-primary: var(--text-main);
-  --text-secondary: var(--text-muted);
-  --text-inverse: #1A1A1A;
-  --easy-color: var(--easy);
-  --medium-color: var(--medium);
-  --hard-color: var(--hard);
-  --success: var(--status-done);
-  --success-bg: var(--status-done-bg);
-  --warning: var(--medium);
-  --warning-bg: var(--medium-bg);
-  --danger: var(--hard);
-  --danger-bg: var(--hard-bg);
-  --purple: var(--status-revisit);
-  --purple-bg: var(--status-revisit-bg);
+  /* Dark Code Editor Tokens (Always identical in all three modes per Section 4.2) */
+  --code-bg: #12152B;
+  --code-text: #E6E8FF;
+  --code-keyword: #9FA8FF;
+  --code-string: #A5F3D0;
+  --code-number: #FFD479;
+  --code-comment: #7A84AD;
+  --code-function: #7DD3FC;
 }
 
-/* ---------------------------------------------------------------------------
-   Light Theme
-   page #FFFFFF, panels #F7F8FA, borders #E5E7EB, text #262626, muted #6B7280
-   --------------------------------------------------------------------------- */
+/* =============================================================================
+   1. Light (Daylight) Mode - Default for new user
+   ============================================================================= */
+:root,
 [data-theme='light'] {
-  --bg-page: #FFFFFF;
-  --bg-panel: #F7F8FA;
-  --bg-panel-hover: #ECEEF2;
-  --bg-input: #FFFFFF;
-  --bg-table-stripe: #F9FAFB;
-  --border: #E5E7EB;
-  --border-subtle: #EBECEF;
-  --border-hover: #D1D5DB;
-  --text-main: #262626;
-  --text-muted: #6B7280;
-  --text-sub: #4B5563;
-  --code-bg: #232323;
+  --bg-gradient: linear-gradient(135deg, #BFE3FF 0%, #EAF3FF 100%);
+  --bg-bottom-glow: transparent;
 
-  /* Global Compatibility Aliases */
-  --bg-primary: var(--bg-page);
-  --bg-secondary: var(--bg-panel);
-  --bg-card: var(--bg-panel);
-  --bg-card-hover: var(--bg-panel-hover);
-  --border-color: var(--border);
-  --text-primary: var(--text-main);
-  --text-secondary: var(--text-muted);
-  --text-inverse: #FFFFFF;
+  /* Orbs */
+  --orb-1-color: #7DB7FF;
+  --orb-1-opacity: 0.35;
+  --orb-2-color: #7EE8D1;
+  --orb-2-opacity: 0.30;
+  --orb-3-color: #FFB3C7;
+  --orb-3-opacity: 0.25;
+
+  /* Glass Surfaces */
+  --glass-surface: rgba(255, 255, 255, 0.62);
+  --glass-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --card-shadow: 0 12px 32px rgba(60, 70, 160, 0.14);
+
+  /* Typography Colors */
+  --text-color: #1E1B4B;
+  --text-muted: #4B5575;
+
+  /* Accent & Action Tokens */
+  --accent: #1E1B4B;
+  --accent-text: #FFFFFF;
+  --accent-soft: #C7CAF8;
+  --accent-soft-text: #3730A3;
+
+  /* Progress Indicators */
+  --progress-fill: linear-gradient(90deg, #4338CA, #6366F1);
+  --progress-track: rgba(30, 27, 75, 0.12);
+
+  /* Difficulty Pills */
+  --easy-pill-bg: #BDF0D4;
+  --easy-pill-text: #14532D;
+  --medium-pill-bg: #FDE8A8;
+  --medium-pill-text: #78350F;
+  --hard-pill-bg: #FBC1C1;
+  --hard-pill-text: #7F1D1D;
+
+  /* Status Colors */
+  --revisit-color: #D97706;
+  --revisit-bg: rgba(217, 119, 6, 0.15);
+  --focus-ring: #4F46E5;
+
+  /* Activity Levels 0 to 4 */
+  --activity-0: #E3E7FB;
+  --activity-1: #C7CBF5;
+  --activity-2: #9FA6EE;
+  --activity-3: #6F77E0;
+  --activity-4: #3F3FC0;
 }
 
+/* =============================================================================
+   2. Evening (Dusk) Mode
+   ============================================================================= */
+[data-theme='evening'] {
+  --bg-gradient: linear-gradient(135deg, #1C1743 0%, #4A2F6B 100%);
+  --bg-bottom-glow: radial-gradient(ellipse at bottom, rgba(232, 121, 95, 0.28) 0%, transparent 70%);
+
+  /* Orbs */
+  --orb-1-color: #FF8A6B;
+  --orb-1-opacity: 0.35;
+  --orb-2-color: #8B6CFF;
+  --orb-2-opacity: 0.30;
+  --orb-3-color: #FFB86B;
+  --orb-3-opacity: 0.28;
+
+  /* Glass Surfaces */
+  --glass-surface: rgba(255, 255, 255, 0.10);
+  --glass-strong: rgba(255, 255, 255, 0.16);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --card-shadow: 0 16px 40px rgba(10, 5, 30, 0.45);
+
+  /* Typography Colors */
+  --text-color: #FFF3E8;
+  --text-muted: #D2C4E0;
+
+  /* Accent & Action Tokens */
+  --accent: #FFC38A;
+  --accent-text: #2A1B3D;
+  --accent-soft: rgba(255, 184, 107, 0.22);
+  --accent-soft-text: #FFD9B0;
+
+  /* Progress Indicators */
+  --progress-fill: linear-gradient(90deg, #FFB86B, #FF7E8B);
+  --progress-track: rgba(255, 255, 255, 0.14);
+
+  /* Difficulty Pills */
+  --easy-pill-bg: rgba(110, 231, 183, 0.22);
+  --easy-pill-text: #A7F3D0;
+  --medium-pill-bg: rgba(253, 224, 71, 0.20);
+  --medium-pill-text: #FDE68A;
+  --hard-pill-bg: rgba(252, 165, 165, 0.22);
+  --hard-pill-text: #FECACA;
+
+  /* Status Colors */
+  --revisit-color: #FFB86B;
+  --revisit-bg: rgba(255, 184, 107, 0.15);
+  --focus-ring: #FFC38A;
+
+  /* Activity Levels 0 to 4 */
+  --activity-0: rgba(255, 255, 255, 0.10);
+  --activity-1: #5A3F7E;
+  --activity-2: #8E5C93;
+  --activity-3: #D4806F;
+  --activity-4: #FFB86B;
+}
+
+/* =============================================================================
+   3. Dark (Midnight) Mode
+   ============================================================================= */
+[data-theme='dark'] {
+  --bg-gradient: linear-gradient(135deg, #090C18 0%, #0F1428 100%);
+  --bg-bottom-glow: transparent;
+
+  /* Orbs */
+  --orb-1-color: #4F46E5;
+  --orb-1-opacity: 0.28;
+  --orb-2-color: #14B8A6;
+  --orb-2-opacity: 0.18;
+  --orb-3-color: #7C3AED;
+  --orb-3-opacity: 0.20;
+
+  /* Glass Surfaces */
+  --glass-surface: rgba(255, 255, 255, 0.06);
+  --glass-strong: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+
+  /* Typography Colors */
+  --text-color: #E8EAF6;
+  --text-muted: #9AA3C0;
+
+  /* Accent & Action Tokens */
+  --accent: #A5A6FF;
+  --accent-text: #0A0D1A;
+  --accent-soft: rgba(139, 140, 248, 0.22);
+  --accent-soft-text: #C9CAFF;
+
+  /* Progress Indicators */
+  --progress-fill: linear-gradient(90deg, #8B8CF8, #60A5FA);
+  --progress-track: rgba(255, 255, 255, 0.10);
+
+  /* Difficulty Pills (same as Evening) */
+  --easy-pill-bg: rgba(110, 231, 183, 0.22);
+  --easy-pill-text: #A7F3D0;
+  --medium-pill-bg: rgba(253, 224, 71, 0.20);
+  --medium-pill-text: #FDE68A;
+  --hard-pill-bg: rgba(252, 165, 165, 0.22);
+  --hard-pill-text: #FECACA;
+
+  /* Status Colors */
+  --revisit-color: #FBBF24;
+  --revisit-bg: rgba(251, 191, 36, 0.15);
+  --focus-ring: #A5A6FF;
+
+  /* Activity Levels 0 to 4 */
+  --activity-0: #1B2140;
+  --activity-1: #2B3380;
+  --activity-2: #4551B8;
+  --activity-3: #6B76E8;
+  --activity-4: #A5A6FF;
+}
+
+/* =============================================================================
+   Cross-fade transition between modes (Section 4.2)
+   ============================================================================= */
+html, body {
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html, body, *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}

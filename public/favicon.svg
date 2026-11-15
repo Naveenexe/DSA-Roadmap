@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="8" fill="#1E1B4B"/>
+  <!-- Two interlocking rounded links forming a letter C -->
+  <path d="M19 7H14C9.58 7 6 10.58 6 15C6 19.42 9.58 23 14 23H19" stroke="#A5A6FF" stroke-width="3" stroke-linecap="round"/>
+  <path d="M22 10H16C13.24 10 11 12.24 11 15C11 17.76 13.24 20 16 20H22" stroke="#FFFFFF" stroke-width="2.75" stroke-linecap="round"/>
+</svg>

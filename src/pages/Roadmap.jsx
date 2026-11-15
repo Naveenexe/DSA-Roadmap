@@ -2,510 +2,579 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { 
-  ChevronDown, 
-  ChevronRight, 
-  ExternalLink, 
   Search, 
+  ExternalLink, 
   CheckCircle2, 
   Clock, 
-  Circle,
+  Circle, 
   AlertTriangle,
   Link2,
   X,
-  BookOpen
+  Filter,
+  Check,
+  ChevronDown
 } from 'lucide-react';
 
 export default function Roadmap() {
-  const { questions, chapters, progressMap } = useApp();
+  const { questions, chapters, progressMap, getNextUp } = useApp();
   const location = useLocation();
+
+  const nextUp = getNextUp();
+
+  // Active chapter state (defaults to ch-01 or from hash)
+  const [activeChapterId, setActiveChapterId] = useState('ch-01');
 
   // Filters
   const [search, setSearch] = useState('');
-  const [selectedChapter, setSelectedChapter] = useState('all');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('all'); // all, easy, medium, hard
+  const [selectedStatus, setSelectedStatus] = useState('all'); // all, todo, in_progress, done, revisit
   const [filterMistakes, setFilterMistakes] = useState(false);
 
-  // Collapsed chapters map when in "all" view
-  const [collapsedChapters, setCollapsedChapters] = useState({});
+  // Mobile bottom sheet / sidebar toggle
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
 
-  // Scroll to chapter anchor if in hash
+  // Sync hash to active chapter
   useEffect(() => {
     if (location.hash) {
-      const id = location.hash.replace('#', '');
-      setSelectedChapter(id);
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
+      const targetId = location.hash.replace('#', '');
+      const exists = chapters.find(c => c.id === targetId);
+      if (exists) {
+        setActiveChapterId(targetId);
       }
     }
-  }, [location.hash]);
+  }, [location.hash, chapters]);
 
-  const toggleChapterCollapse = (chId) => {
-    setCollapsedChapters(prev => ({
-      ...prev,
-      [chId]: !prev[chId]
-    }));
-  };
+  // Active chapter object
+  const activeChapter = useMemo(() => {
+    return chapters.find(c => c.id === activeChapterId) || chapters[0] || {
+      id: 'ch-01',
+      order: 1,
+      name: 'Arrays & Hashing',
+      seqFrom: 1,
+      seqTo: 21,
+      whyNext: 'Foundation of counting, lookup and in-place transformations.'
+    };
+  }, [chapters, activeChapterId]);
 
-  // Questions grouped by chapter
-  const questionsByChapter = useMemo(() => {
-    const map = {};
-    chapters.forEach(ch => {
-      map[ch.id] = [];
-    });
-    questions.forEach(q => {
-      if (map[q.chapter]) {
-        map[q.chapter].push(q);
-      }
-    });
-    return map;
-  }, [chapters, questions]);
+  // Questions for active chapter
+  const chapterQuestions = useMemo(() => {
+    return questions.filter(q => q.chapter === activeChapter.id);
+  }, [questions, activeChapter.id]);
 
-  // Overall stats
-  const totalSolved = useMemo(() => {
-    return Object.values(progressMap).filter(p => p.status === 'done').length;
-  }, [progressMap]);
+  // Calculations for active chapter (Section 3 #12, #18)
+  const chapterTotal = chapterQuestions.length || (activeChapter.seqTo - activeChapter.seqFrom + 1);
+  const chapterDoneCount = useMemo(() => {
+    return chapterQuestions.filter(q => progressMap[q.seq]?.status === 'done').length;
+  }, [chapterQuestions, progressMap]);
 
-  // Status icon renderer
-  const renderStatusIcon = (status, isMistake) => {
-    if (isMistake) {
-      return (
-        <span title="Flagged as mistake" style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <AlertTriangle size={15} color="var(--status-mistake)" />
-        </span>
-      );
-    }
-    if (status === 'done') {
-      return (
-        <span title="Solved" style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <CheckCircle2 size={16} color="var(--status-done)" />
-        </span>
-      );
-    }
-    if (status === 'in_progress') {
-      return (
-        <span title="In Progress" style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <Circle size={15} color="var(--status-inprogress)" fill="var(--status-inprogress)" fillOpacity={0.6} />
-        </span>
-      );
-    }
-    if (status === 'revisit') {
-      return (
-        <span title="Needs Revisit" style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <Clock size={15} color="var(--status-revisit)" />
-        </span>
-      );
-    }
-    return (
-      <span title="Todo" style={{ display: 'inline-flex', alignItems: 'center', opacity: 0.35 }}>
-        <Circle size={14} color="var(--text-muted)" />
-      </span>
-    );
-  };
-
-  // Filter questions function
-  const filterQuestionList = (list) => {
+  // Filtered questions
+  const filteredQuestions = useMemo(() => {
     const qSearch = search.trim().toLowerCase();
-    return list.filter(q => {
+    return chapterQuestions.filter(q => {
+      // Search
       if (qSearch) {
         const matchesTitle = q.title.toLowerCase().includes(qSearch);
         const matchesLc = String(q.lc).includes(qSearch);
         const matchesSeq = String(q.seq) === qSearch;
         if (!matchesTitle && !matchesLc && !matchesSeq) return false;
       }
+
+      // Difficulty
       if (selectedDifficulty !== 'all' && q.difficulty.toLowerCase() !== selectedDifficulty.toLowerCase()) {
         return false;
       }
-      const p = progressMap[q.seq];
-      const userStatus = p?.status || 'todo';
+
+      // Status
+      const userStatus = progressMap[q.seq]?.status || 'todo';
       if (selectedStatus !== 'all' && userStatus !== selectedStatus) {
         return false;
       }
-      if (filterMistakes && !p?.mistake) {
+
+      // Mistake
+      if (filterMistakes && !progressMap[q.seq]?.mistake) {
         return false;
       }
+
       return true;
     });
+  }, [chapterQuestions, search, selectedDifficulty, selectedStatus, filterMistakes, progressMap]);
+
+  // Filter chips counts (Section 5.4: Counts appear on each chip)
+  const filterCounts = useMemo(() => {
+    const counts = {
+      all: chapterQuestions.length,
+      easy: chapterQuestions.filter(q => q.difficulty === 'Easy').length,
+      medium: chapterQuestions.filter(q => q.difficulty === 'Medium').length,
+      hard: chapterQuestions.filter(q => q.difficulty === 'Hard').length,
+      revisit: chapterQuestions.filter(q => progressMap[q.seq]?.status === 'revisit').length,
+      mistakes: chapterQuestions.filter(q => progressMap[q.seq]?.mistake).length
+    };
+    return counts;
+  }, [chapterQuestions, progressMap]);
+
+  const clearFilters = () => {
+    setSearch('');
+    setSelectedDifficulty('all');
+    setSelectedStatus('all');
+    setFilterMistakes(false);
   };
 
-  // Visible chapters
-  const visibleChapters = useMemo(() => {
-    if (selectedChapter === 'all') return chapters;
-    return chapters.filter(c => c.id === selectedChapter);
-  }, [chapters, selectedChapter]);
+  const hasActiveFilters = search || selectedDifficulty !== 'all' || selectedStatus !== 'all' || filterMistakes;
+
+  // Status icon renderer per Section 4.6 & Section 3 #15
+  const renderStatusIcon = (status, seq) => {
+    const p = progressMap[seq];
+    if (status === 'done') {
+      return (
+        <span 
+          style={{ 
+            width: 24, 
+            height: 24, 
+            borderRadius: '50%', 
+            background: 'var(--accent-soft)', 
+            color: 'var(--accent-soft-text)', 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }} 
+          title="Done (Solved)"
+          aria-label="Solved"
+        >
+          <Check size={14} strokeWidth={3} />
+        </span>
+      );
+    }
+    if (status === 'in_progress') {
+      return (
+        <span 
+          style={{ 
+            width: 24, 
+            height: 24, 
+            borderRadius: '50%', 
+            border: '2px solid var(--accent)', 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            position: 'relative',
+            overflow: 'hidden'
+          }} 
+          title="In progress"
+          aria-label="In progress"
+        >
+          {/* Half filled circle */}
+          <div style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', background: 'var(--accent)' }} />
+        </span>
+      );
+    }
+    if (status === 'revisit') {
+      return (
+        <span 
+          style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            color: 'var(--revisit-color)' 
+          }} 
+          title="Needs Revisit"
+          aria-label="Revisit"
+        >
+          <Clock size={20} />
+        </span>
+      );
+    }
+    // Todo: Hollow circle
+    return (
+      <span 
+        style={{ 
+          width: 20, 
+          height: 20, 
+          borderRadius: '50%', 
+          border: '2px solid var(--progress-track)', 
+          display: 'inline-flex', 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }} 
+        title="Todo"
+        aria-label="Todo"
+      />
+    );
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Header bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>Problem List</span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-              ({totalSolved}/300 Solved)
-            </span>
-          </h1>
-          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
-            Curated 300-question algorithmic journey partitioned across 18 sequential chapters.
-          </p>
-        </div>
-
-        {/* Global Progress Bar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: '220px' }}>
-          <div style={{ flex: 1, height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
-            <div 
-              style={{ 
-                width: `${Math.round((totalSolved / 300) * 100)}%`, 
-                height: '100%', 
-                background: 'var(--accent)',
-                transition: 'width 0.3s ease'
-              }} 
-            />
-          </div>
-          <span style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--accent)' }}>
-            {Math.round((totalSolved / 300) * 100)}%
+    <div style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', gap: '24px', alignItems: 'start' }} className="roadmap-layout-grid">
+      
+      {/* 1. LEFT SIDEBAR: Sticky 280px on desktop (Section 5.4 & Section 3 #10) */}
+      <aside className="glass-card roadmap-sidebar" style={{
+        position: 'sticky',
+        top: '96px',
+        maxHeight: 'calc(100vh - 120px)',
+        overflowY: 'auto',
+        padding: '16px 12px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px'
+      }}>
+        <div style={{ padding: '4px 10px 10px 10px', borderBottom: '1px solid var(--glass-border)', marginBottom: '6px' }}>
+          <span style={{
+            fontSize: '0.75rem',
+            fontFamily: 'var(--font-mono)',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            color: 'var(--text-muted)'
+          }}>
+            18 Chapters
           </span>
         </div>
-      </div>
 
-      {/* Filter Row */}
-      <div className="panel" style={{ padding: '0.75rem 1rem', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', justifyContent: 'space-between' }}>
-        {/* Search */}
-        <div style={{ position: 'relative', flex: '1 1 240px', maxWidth: '360px' }}>
-          <Search size={15} style={{ position: 'absolute', left: '0.65rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-          <input
-            type="text"
-            placeholder="Search questions by title, LC# or seq..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="input"
-            style={{ width: '100%', paddingLeft: '2rem', height: '34px' }}
-          />
-          {search && (
-            <button 
-              onClick={() => setSearch('')}
-              style={{ position: 'absolute', right: '0.5rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
-            >
-              <X size={14} />
-            </button>
-          )}
-        </div>
+        {chapters.map(ch => {
+          const chQs = questions.filter(q => q.chapter === ch.id);
+          const totalInCh = chQs.length || (ch.seqTo - ch.seqFrom + 1);
+          const doneInCh = chQs.filter(q => progressMap[q.seq]?.status === 'done').length;
+          const ratio = totalInCh ? (doneInCh / totalInCh) : 0;
+          const isActive = ch.id === activeChapter.id;
 
-        {/* Difficulty Filters */}
-        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '0.2rem' }}>Difficulty:</span>
-          {['all', 'easy', 'medium', 'hard'].map(d => (
+          return (
             <button
-              key={d}
-              onClick={() => setSelectedDifficulty(d)}
+              key={ch.id}
+              onClick={() => {
+                setActiveChapterId(ch.id);
+                setMobileSheetOpen(false);
+              }}
               style={{
-                padding: '0.25rem 0.6rem',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid',
-                borderColor: selectedDifficulty === d ? (d === 'easy' ? 'var(--easy)' : d === 'medium' ? 'var(--medium)' : d === 'hard' ? 'var(--hard)' : 'var(--accent)') : 'var(--border)',
-                background: selectedDifficulty === d ? (d === 'easy' ? 'var(--easy-bg)' : d === 'medium' ? 'var(--medium-bg)' : d === 'hard' ? 'var(--hard-bg)' : 'var(--accent-light)') : 'transparent',
-                color: selectedDifficulty === d ? (d === 'easy' ? 'var(--easy)' : d === 'medium' ? 'var(--medium)' : d === 'hard' ? 'var(--hard)' : 'var(--accent)') : 'var(--text-muted)',
-                cursor: 'pointer'
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '5px',
+                padding: '10px 12px',
+                borderRadius: 'var(--radius-inner)',
+                background: isActive ? 'var(--accent-soft)' : 'transparent',
+                color: isActive ? 'var(--accent-soft-text)' : 'var(--text-color)',
+                textAlign: 'left',
+                transition: 'all 150ms ease'
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) e.currentTarget.style.background = 'var(--glass-surface)';
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) e.currentTarget.style.background = 'transparent';
               }}
             >
-              {d.charAt(0).toUpperCase() + d.slice(1)}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                <span style={{ fontWeight: isActive ? 700 : 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {ch.order}. {ch.name}
+                </span>
+                <span style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  color: isActive ? 'var(--accent-soft-text)' : 'var(--text-muted)'
+                }}>
+                  {doneInCh}/{totalInCh}
+                </span>
+              </div>
+
+              {/* Progress bar fill (Section 3 #10: bar fill matches counts) */}
+              <div className="progress-bar-container" style={{ height: '5px', background: isActive ? 'rgba(0,0,0,0.1)' : 'var(--progress-track)' }}>
+                <div 
+                  className="progress-bar-fill" 
+                  style={{ 
+                    width: `${Math.round(ratio * 100)}%`,
+                    background: isActive ? 'var(--accent)' : 'var(--progress-fill)'
+                  }} 
+                />
+              </div>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </aside>
 
-        {/* Status Filters */}
-        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginRight: '0.2rem' }}>Status:</span>
-          {[
-            { id: 'all', label: 'All' },
-            { id: 'todo', label: 'Todo' },
-            { id: 'in_progress', label: 'In Progress' },
-            { id: 'done', label: 'Solved' },
-            { id: 'revisit', label: 'Revisit' }
-          ].map(s => (
-            <button
-              key={s.id}
-              onClick={() => setSelectedStatus(s.id)}
-              style={{
-                padding: '0.25rem 0.6rem',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid',
-                borderColor: selectedStatus === s.id ? 'var(--accent)' : 'var(--border)',
-                background: selectedStatus === s.id ? 'var(--accent-light)' : 'transparent',
-                color: selectedStatus === s.id ? 'var(--accent)' : 'var(--text-muted)',
-                cursor: 'pointer'
-              }}
-            >
-              {s.label}
-            </button>
-          ))}
+      {/* 2. MAIN CONTENT AREA */}
+      <main style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        
+        {/* Header Glass Card (Section 5.4 & Section 3 #18) */}
+        <div className="glass-card" style={{ padding: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '16px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '4px', flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.85rem)', fontWeight: 800, color: 'var(--text-color)', letterSpacing: '-0.02em' }}>
+                  {activeChapter.order}. {activeChapter.name}
+                </h1>
+                {/* Badge "9 of 14" (Section 5.4) */}
+                <span style={{
+                  background: 'var(--accent-soft)',
+                  color: 'var(--accent-soft-text)',
+                  fontSize: '0.825rem',
+                  fontWeight: 700,
+                  padding: '3px 12px',
+                  borderRadius: 'var(--radius-pill)',
+                  fontFamily: 'var(--font-mono)'
+                }}>
+                  {chapterDoneCount} of {chapterTotal}
+                </span>
+              </div>
 
-          {/* Mistakes flag */}
-          <button
-            onClick={() => setFilterMistakes(!filterMistakes)}
-            style={{
-              padding: '0.25rem 0.6rem',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid',
-              borderColor: filterMistakes ? 'var(--status-mistake)' : 'var(--border)',
-              background: filterMistakes ? 'var(--status-mistake-bg)' : 'transparent',
-              color: filterMistakes ? 'var(--status-mistake)' : 'var(--text-muted)',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.3rem'
-            }}
-          >
-            <AlertTriangle size={13} />
-            <span>Mistakes</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Roadmap Grid: Left Chapter Sidebar + Right Problem List Table */}
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '1rem', alignItems: 'start' }}>
-        {/* Left Chapters Sidebar */}
-        <div className="panel" style={{ padding: '0.5rem', maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}>
-          <div style={{ padding: '0.5rem 0.65rem', borderBottom: '1px solid var(--border)', marginBottom: '0.35rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-              Chapters
-            </span>
-            <button
-              onClick={() => setSelectedChapter('all')}
-              style={{
-                background: 'none',
-                border: 'none',
+              {/* Mono Line: "14 QUESTIONS · 9 DONE" (Section 5.4, 4.4) */}
+              <div style={{
+                fontFamily: 'var(--font-mono)',
                 fontSize: '0.75rem',
-                color: selectedChapter === 'all' ? 'var(--accent)' : 'var(--text-muted)',
-                cursor: 'pointer',
-                fontWeight: 600
+                fontWeight: 700,
+                color: 'var(--text-muted)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase'
+              }}>
+                {chapterTotal} QUESTIONS · {chapterDoneCount} DONE
+              </div>
+
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+                {activeChapter.whyNext}
+              </p>
+            </div>
+
+            {/* Search Box (Section 5.4) */}
+            <div style={{ position: 'relative', width: '100%', maxWidth: '280px' }}>
+              <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search question or LC#..."
+                className="glass-input"
+                style={{ paddingLeft: '40px', paddingRight: '32px', height: '42px', fontSize: '0.88rem' }}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Filter Chips with real counts (Section 5.4) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexWrap: 'wrap',
+            paddingTop: '12px',
+            borderTop: '1px solid var(--glass-border)'
+          }}>
+            <button
+              onClick={() => { setSelectedDifficulty('all'); setSelectedStatus('all'); setFilterMistakes(false); }}
+              className="nav-pill"
+              style={{
+                background: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !filterMistakes)) ? 'var(--accent)' : 'var(--glass-surface)',
+                color: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !filterMistakes)) ? 'var(--accent-text)' : 'var(--text-color)',
+                fontSize: '0.8rem',
+                padding: '5px 14px'
               }}
             >
-              View All
+              All ({filterCounts.all})
+            </button>
+
+            <button
+              onClick={() => setSelectedDifficulty(selectedDifficulty === 'easy' ? 'all' : 'easy')}
+              className="nav-pill"
+              style={{
+                background: selectedDifficulty === 'easy' ? 'var(--easy-pill-bg)' : 'var(--glass-surface)',
+                color: selectedDifficulty === 'easy' ? 'var(--easy-pill-text)' : 'var(--text-color)',
+                fontSize: '0.8rem',
+                padding: '5px 14px'
+              }}
+            >
+              Easy ({filterCounts.easy})
+            </button>
+
+            <button
+              onClick={() => setSelectedDifficulty(selectedDifficulty === 'medium' ? 'all' : 'medium')}
+              className="nav-pill"
+              style={{
+                background: selectedDifficulty === 'medium' ? 'var(--medium-pill-bg)' : 'var(--glass-surface)',
+                color: selectedDifficulty === 'medium' ? 'var(--medium-pill-text)' : 'var(--text-color)',
+                fontSize: '0.8rem',
+                padding: '5px 14px'
+              }}
+            >
+              Medium ({filterCounts.medium})
+            </button>
+
+            <button
+              onClick={() => setSelectedDifficulty(selectedDifficulty === 'hard' ? 'all' : 'hard')}
+              className="nav-pill"
+              style={{
+                background: selectedDifficulty === 'hard' ? 'var(--hard-pill-bg)' : 'var(--glass-surface)',
+                color: selectedDifficulty === 'hard' ? 'var(--hard-pill-text)' : 'var(--text-color)',
+                fontSize: '0.8rem',
+                padding: '5px 14px'
+              }}
+            >
+              Hard ({filterCounts.hard})
+            </button>
+
+            <button
+              onClick={() => setSelectedStatus(selectedStatus === 'revisit' ? 'all' : 'revisit')}
+              className="nav-pill"
+              style={{
+                background: selectedStatus === 'revisit' ? 'var(--revisit-bg)' : 'var(--glass-surface)',
+                color: selectedStatus === 'revisit' ? 'var(--revisit-color)' : 'var(--text-color)',
+                fontSize: '0.8rem',
+                padding: '5px 14px'
+              }}
+            >
+              Revisit ({filterCounts.revisit})
+            </button>
+
+            <button
+              onClick={() => setFilterMistakes(!filterMistakes)}
+              className="nav-pill"
+              style={{
+                background: filterMistakes ? 'rgba(239, 68, 68, 0.15)' : 'var(--glass-surface)',
+                color: filterMistakes ? '#EF4444' : 'var(--text-color)',
+                fontSize: '0.8rem',
+                padding: '5px 14px'
+              }}
+            >
+              Mistakes ({filterCounts.mistakes})
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
-            {chapters.map(ch => {
-              const chQuestions = questionsByChapter[ch.id] || [];
-              const chSolved = chQuestions.filter(q => progressMap[q.seq]?.status === 'done').length;
-              const isSelected = selectedChapter === ch.id;
+          {/* Status Legend (Section 5.4 & Section 3 #15) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            flexWrap: 'wrap',
+            marginTop: '12px',
+            fontSize: '0.78rem',
+            color: 'var(--text-muted)'
+          }}>
+            <span style={{ fontWeight: 600 }}>Status:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--progress-track)' }} />
+              <span>Todo</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--accent)', position: 'relative', overflow: 'hidden' }}>
+                <span style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', background: 'var(--accent)' }} />
+              </span>
+              <span>In progress</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--accent-soft)', color: 'var(--accent-soft-text)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Check size={10} strokeWidth={3} />
+              </span>
+              <span>Done</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Clock size={15} color="var(--revisit-color)" />
+              <span>Revisit with due date</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. QUESTION LIST (Section 4.6 & Section 3 #13, #14) */}
+        <div>
+          {filteredQuestions.length === 0 ? (
+            <div className="glass-card empty-state-box">
+              <Filter size={36} color="var(--text-muted)" />
+              <div>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+                  Nothing matches these filters
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  Try relaxing your search terms or active difficulty chips.
+                </p>
+              </div>
+              <button onClick={clearFilters} className="btn-secondary">
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            filteredQuestions.map((q) => {
+              const p = progressMap[q.seq];
+              const status = p?.status || 'todo';
+              const isNextUp = nextUp && nextUp.seq === q.seq;
+              const buildsOnQuestion = q.buildsOn ? questions.find(item => item.seq === q.buildsOn) : null;
+              const reviewItem = p?.status === 'revisit' 
+                ? (p.dueDate || (useApp().reviews?.find(r => r.question_seq === q.seq)?.due_date)) 
+                : null;
 
               return (
-                <button
-                  key={ch.id}
-                  onClick={() => setSelectedChapter(ch.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.45rem 0.65rem',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid',
-                    borderColor: isSelected ? 'var(--accent)' : 'transparent',
-                    background: isSelected ? 'var(--accent-light)' : 'transparent',
-                    color: isSelected ? 'var(--accent)' : 'var(--text-main)',
-                    textAlign: 'left',
-                    fontSize: '0.8rem',
-                    cursor: 'pointer',
-                    transition: 'background 0.15s ease'
-                  }}
+                <div
+                  key={q.seq}
+                  className={`question-row ${isNextUp ? 'highlight-next-up' : ''}`}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)', minWidth: '18px' }}>
-                      {ch.order}.
-                    </span>
-                    <span style={{ fontWeight: isSelected ? 600 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {ch.name}
-                    </span>
+                  {/* Column 1: Status Icon (fixed 32px width) */}
+                  <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {renderStatusIcon(status, q.seq)}
                   </div>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: isSelected ? 'var(--accent)' : 'var(--text-muted)', marginLeft: '0.5rem' }}>
-                    {chSolved}/{chQuestions.length}
+
+                  {/* Column 2: Seq Number (fixed 44px width) */}
+                  <div style={{ width: 44, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    #{q.seq}
+                  </div>
+
+                  {/* Column 3: Title (one line, ellipsis; full on hover/tap per Section 3 #14) */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Link
+                      to={`/question/${q.seq}`}
+                      className="question-row-title"
+                      title={`#${q.seq} ${q.title} (LC #${q.lc})`}
+                      style={{ display: 'inline-block', maxWidth: '100%' }}
+                    >
+                      {q.title}
+                    </Link>
+                  </div>
+
+                  {/* Revisit Due Date Chip if status is revisit (Section 4.6 & FR-36) */}
+                  {status === 'revisit' && (
+                    <div className="due-chip" style={{ flexShrink: 0 }}>
+                      <Clock size={11} />
+                      <span>{reviewItem ? `Due ${reviewItem}` : 'Revisit'}</span>
+                    </div>
+                  )}
+
+                  {/* Column 4: Difficulty Pill (fixed width 84px per Section 4.6) */}
+                  <span className={`diff-pill diff-pill-${q.difficulty.toLowerCase()}`}>
+                    {q.difficulty}
                   </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Right Problem Table Area */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {visibleChapters.map(ch => {
-            const rawList = questionsByChapter[ch.id] || [];
-            const filteredList = filterQuestionList(rawList);
-            const chSolved = rawList.filter(q => progressMap[q.seq]?.status === 'done').length;
-            const isCollapsed = selectedChapter === 'all' && collapsedChapters[ch.id];
-
-            if (selectedChapter === 'all' && filteredList.length === 0 && (search || selectedDifficulty !== 'all' || selectedStatus !== 'all' || filterMistakes)) {
-              return null;
-            }
-
-            return (
-              <div key={ch.id} id={ch.id} className="lc-table-container">
-                {/* Chapter Group Header */}
-                <div 
-                  onClick={() => selectedChapter === 'all' && toggleChapterCollapse(ch.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.75rem 1rem',
-                    background: 'var(--bg-panel)',
-                    borderBottom: isCollapsed ? 'none' : '1px solid var(--border)',
-                    cursor: selectedChapter === 'all' ? 'pointer' : 'default',
-                    userSelect: 'none'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    {selectedChapter === 'all' && (
-                      <span style={{ color: 'var(--text-muted)' }}>
-                        {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-                      </span>
+                  {/* Column 5: Builds On (Fixed 180px width, ALWAYS shows Seq number per Section 3 #11) */}
+                  <div style={{ width: 180, flexShrink: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }} className="roadmap-col-builds-on">
+                    {buildsOnQuestion ? (
+                      <Link 
+                        to={`/question/${buildsOnQuestion.seq}`}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--accent)', fontWeight: 600 }}
+                        title={`Builds on #${buildsOnQuestion.seq} ${buildsOnQuestion.title}`}
+                      >
+                        <Link2 size={12} />
+                        <span>Builds on #{buildsOnQuestion.seq}</span>
+                      </Link>
+                    ) : (
+                      <span style={{ fontStyle: 'italic', opacity: 0.7 }}>Foundation</span>
                     )}
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>
-                          Chapter {ch.order}: {ch.name}
-                        </span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                          (Seq #{ch.seqFrom} - #{ch.seqTo})
-                        </span>
-                      </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                        {ch.whyNext}
-                      </p>
-                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                      {chSolved}/{rawList.length} Solved
-                    </span>
-                    <div style={{ width: 60, height: 5, background: 'var(--border)', borderRadius: 2.5, overflow: 'hidden' }}>
-                      <div 
-                        style={{ 
-                          width: `${Math.round((chSolved / (rawList.length || 1)) * 100)}%`, 
-                          height: '100%', 
-                          background: 'var(--accent)' 
-                        }} 
-                      />
-                    </div>
-                  </div>
+                  {/* Column 6: LeetCode Icon Button (40px circle per Section 4.6) */}
+                  <a
+                    href={`https://leetcode.com/problems/${q.slug}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="icon-circle-btn"
+                    style={{ flexShrink: 0 }}
+                    title={`Open ${q.title} on LeetCode`}
+                  >
+                    <ExternalLink size={15} />
+                  </a>
                 </div>
-
-                {/* Table Body (Collapsible) */}
-                {!isCollapsed && (
-                  <table className="lc-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 44, textAlign: 'center' }}>Status</th>
-                        <th style={{ width: 56 }}>#</th>
-                        <th>Title</th>
-                        <th style={{ width: 90 }}>Difficulty</th>
-                        <th style={{ width: 140 }}>Builds On</th>
-                        <th style={{ width: 60, textAlign: 'center' }}>LeetCode</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredList.length === 0 ? (
-                        <tr>
-                          <td colSpan={6} style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-muted)' }}>
-                            No questions match the current filter criteria in this chapter.
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredList.map((q, idx) => {
-                          const p = progressMap[q.seq];
-                          const status = p?.status || 'todo';
-                          const isMistake = Boolean(p?.mistake);
-                          const buildsOnQ = q.buildsOn ? questions.find(item => item.seq === q.buildsOn) : null;
-                          const isEven = idx % 2 === 1;
-
-                          return (
-                            <tr key={q.seq} className={isEven ? 'row-even' : ''}>
-                              {/* Status Column */}
-                              <td style={{ textAlign: 'center' }}>
-                                {renderStatusIcon(status, isMistake)}
-                              </td>
-
-                              {/* Seq # */}
-                              <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                                {q.seq}
-                              </td>
-
-                              {/* Title link */}
-                              <td>
-                                <Link 
-                                  to={`/question/${q.seq}`}
-                                  style={{ fontWeight: 500, color: 'var(--text-main)', transition: 'color 0.15s ease' }}
-                                  onMouseEnter={(e) => e.target.style.color = 'var(--accent)'}
-                                  onMouseLeave={(e) => e.target.style.color = 'var(--text-main)'}
-                                >
-                                  {q.title}
-                                </Link>
-                              </td>
-
-                              {/* Difficulty */}
-                              <td>
-                                <span className={`badge-${q.difficulty.toLowerCase()}`}>
-                                  {q.difficulty}
-                                </span>
-                              </td>
-
-                              {/* Builds On */}
-                              <td style={{ fontSize: '0.78rem' }}>
-                                {buildsOnQ ? (
-                                  <Link 
-                                    to={`/question/${buildsOnQ.seq}`} 
-                                    style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
-                                    title={`Builds on #${buildsOnQ.seq}: ${buildsOnQ.title}`}
-                                  >
-                                    <Link2 size={12} />
-                                    <span>#{buildsOnQ.seq}</span>
-                                    <span style={{ color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '85px' }}>
-                                      {buildsOnQ.title}
-                                    </span>
-                                  </Link>
-                                ) : (
-                                  <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                                    Foundation
-                                  </span>
-                                )}
-                              </td>
-
-                              {/* External LeetCode Link */}
-                              <td style={{ textAlign: 'center' }}>
-                                <a
-                                  href={`https://leetcode.com/problems/${q.slug}/`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title={`Open ${q.title} on LeetCode`}
-                                  style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', transition: 'color 0.15s ease' }}
-                                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent)'}
-                                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
-                                >
-                                  <ExternalLink size={14} />
-                                </a>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      )}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
-      </div>
+      </main>
+
     </div>
   );
 }

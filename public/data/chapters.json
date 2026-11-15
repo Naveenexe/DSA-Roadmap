@@ -2,7 +2,7 @@
   {
     "id": "ch-01",
     "order": 1,
-    "name": "Arrays and Hashing",
+    "name": "Arrays & Hashing",
     "seqFrom": 1,
     "seqTo": 21,
     "whyNext": "Foundation: counting, prefix sums and in-place tricks used everywhere later.",
@@ -62,7 +62,7 @@
   {
     "id": "ch-05",
     "order": 5,
-    "name": "Stack and Monotonic Stack",
+    "name": "Stack",
     "seqFrom": 68,
     "seqTo": 82,
     "whyNext": "Next greater and span ideas that later reappear in trees and DP.",
@@ -92,7 +92,7 @@
   {
     "id": "ch-07",
     "order": 7,
-    "name": "Recursion and Backtracking",
+    "name": "Backtracking",
     "seqFrom": 100,
     "seqTo": 120,
     "whyNext": "Builds the recursion habit needed for trees and DP; ends with Target Sum, the bridge into DP.",
@@ -137,7 +137,7 @@
   {
     "id": "ch-10",
     "order": 10,
-    "name": "Heap and Priority Queue",
+    "name": "Heap",
     "seqFrom": 157,
     "seqTo": 170,
     "whyNext": "Kth element and streaming problems; follows sorting and BST order ideas.",
@@ -182,7 +182,7 @@
   {
     "id": "ch-13",
     "order": 13,
-    "name": "Graphs: BFS and DFS",
+    "name": "Graphs: BFS & DFS",
     "seqFrom": 196,
     "seqTo": 217,
     "whyNext": "Trees generalised: grids, shortest paths in unweighted graphs.",
@@ -197,7 +197,7 @@
   {
     "id": "ch-14",
     "order": 14,
-    "name": "Graphs: Topological Sort, Union-Find, Shortest Paths",
+    "name": "Graphs: Advanced",
     "seqFrom": 218,
     "seqTo": 234,
     "whyNext": "Advanced graph tools on top of BFS and DFS.",
@@ -212,7 +212,7 @@
   {
     "id": "ch-15",
     "order": 15,
-    "name": "Dynamic Programming (1D)",
+    "name": "DP: 1D",
     "seqFrom": 235,
     "seqTo": 253,
     "whyNext": "Recursion with repeated work, fixed by memoisation.",
@@ -227,7 +227,7 @@
   {
     "id": "ch-16",
     "order": 16,
-    "name": "Dynamic Programming (2D and Strings)",
+    "name": "DP: 2D & Strings",
     "seqFrom": 254,
     "seqTo": 277,
     "whyNext": "Grids, two-string problems, intervals and stock states.",
@@ -242,7 +242,7 @@
   {
     "id": "ch-17",
     "order": 17,
-    "name": "Tries and Design",
+    "name": "Tries & Design",
     "seqFrom": 278,
     "seqTo": 286,
     "whyNext": "Prefix trees and cache design, building on trees, hashing and linked lists.",
@@ -257,7 +257,7 @@
   {
     "id": "ch-18",
     "order": 18,
-    "name": "Bit Manipulation and Math",
+    "name": "Bits & Math",
     "seqFrom": 287,
     "seqTo": 300,
     "whyNext": "Compact tricks to finish the path.",

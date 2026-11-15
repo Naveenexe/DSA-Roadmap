@@ -7,14 +7,20 @@ import {
   Trash2, 
   LogOut, 
   Sun, 
+  Sunset, 
   Moon, 
   Code2, 
   Target, 
   ShieldAlert,
-  Database
+  User,
+  Check,
+  Plus,
+  Minus,
+  Sparkles,
+  AlertCircle
 } from 'lucide-react';
 
-export default function Settings({ onOpenLogin }) {
+export default function Settings({ onOpenAuth }) {
   const { 
     user, 
     updateSettings, 
@@ -22,30 +28,55 @@ export default function Settings({ onOpenLogin }) {
     deleteAccount, 
     exportData, 
     importData, 
+    theme,
+    setTheme,
     showToast 
   } = useApp();
 
+  const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [dailyGoal, setDailyGoal] = useState(user?.daily_goal || 2);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
 
-  const handleGoalChange = (val) => {
-    const num = parseInt(val, 10);
-    setDailyGoal(num);
-    if (user) {
-      updateSettings({ dailyGoal: num });
+  // Delete confirmation modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [typedConfirm, setTypedConfirm] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const currentTheme = theme || 'light';
+  const currentLang = user?.language || 'java';
+
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+    setSavingProfile(true);
+    try {
+      await updateSettings({ displayName: displayName.trim() || null });
+      showToast('Profile updated successfully', 'success');
+    } catch (err) {
+      showToast('Failed to update profile', 'error');
+    } finally {
+      setSavingProfile(false);
     }
   };
 
-  const handleThemeChange = (theme) => {
-    document.documentElement.setAttribute('data-theme', theme);
+  const handleGoalStep = async (step) => {
+    const next = Math.max(1, Math.min(10, dailyGoal + step));
+    setDailyGoal(next);
     if (user) {
-      updateSettings({ theme });
+      await updateSettings({ dailyGoal: next });
     }
   };
 
-  const handleLanguageChange = (language) => {
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
     if (user) {
-      updateSettings({ language });
+      updateSettings({ theme: newTheme });
+    }
+  };
+
+  const handleLanguageChange = (lang) => {
+    if (user) {
+      updateSettings({ language: lang });
     }
   };
 
@@ -64,146 +95,409 @@ export default function Settings({ onOpenLogin }) {
     e.target.value = '';
   };
 
-  const currentTheme = user?.theme || document.documentElement.getAttribute('data-theme') || 'dark';
-  const currentLang = user?.language || 'java';
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    if (typedConfirm.trim().toLowerCase() !== user.username.toLowerCase()) {
+      showToast('Typed username does not match', 'error');
+      return;
+    }
+
+    setDeleteLoading(true);
+    try {
+      await deleteAccount();
+      setShowDeleteModal(false);
+      showToast('Your account and all data have been deleted', 'info');
+    } catch (err) {
+      showToast('Failed to delete account', 'error');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '720px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-        <SettingsIcon size={24} color="var(--accent)" />
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Settings & Preferences</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '780px', margin: '0 auto', width: '100%' }}>
+      {/* Header */}
+      <div>
+        <h1 style={{ 
+          fontSize: '1.85rem', 
+          fontWeight: 800, 
+          letterSpacing: '-0.03em', 
+          color: 'var(--text-color)',
+          lineHeight: 1.2
+        }}>
+          Settings
+        </h1>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+          Personalize your learning experience and manage your data.
+        </p>
       </div>
 
-      {/* Account Info */}
-      <div className="card">
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Account & Profile</h2>
+      {/* 1. Profile Glass Card (Section 5.7) */}
+      <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+          Profile
+        </h2>
+
         {user ? (
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid var(--border-color)' }}>
+          <form onSubmit={handleProfileSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
               <div>
-                <div style={{ fontWeight: 600 }}>Username</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{user.username}</div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={user.username}
+                  disabled
+                  className="input"
+                  style={{ opacity: 0.7, cursor: 'not-allowed', fontFamily: 'var(--font-mono)' }}
+                />
               </div>
-              <span className="chip" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>Active Session</span>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="e.g. Alex"
+                  maxLength={40}
+                  className="input"
+                />
+              </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 0' }}>
-              <div>
-                <div style={{ fontWeight: 600 }}>PIN Protection</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  {user.has_pin ? '4-digit PIN is enabled' : 'No PIN configured'}
-                </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', paddingTop: '0.5rem' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                {user.has_pin ? (
+                  <span style={{ color: '#10B981', fontWeight: 600 }}>✓ 4-digit PIN configured</span>
+                ) : (
+                  <span>No PIN configured (open access by username)</span>
+                )}
               </div>
-              <span className="chip" style={{ background: user.has_pin ? 'var(--success-bg)' : 'var(--bg-input)', color: user.has_pin ? 'var(--success)' : 'var(--text-muted)' }}>
-                {user.has_pin ? 'Protected' : 'Open'}
-              </span>
+
+              <button
+                type="submit"
+                disabled={savingProfile || displayName === (user.display_name || '')}
+                className="btn-primary"
+                style={{ padding: '0.45rem 1.15rem', fontSize: '0.825rem' }}
+              >
+                {savingProfile ? 'Saving...' : 'Save Profile'}
+              </button>
             </div>
-          </div>
+          </form>
         ) : (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0' }}>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-              You are currently using guest mode. Sign in with a username to sync your progress.
-            </p>
-            <button onClick={onOpenLogin} className="btn-primary" style={{ fontSize: '0.825rem' }}>
-              Sign In
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', padding: '0.5rem 0' }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-color)' }}>Guest Mode</div>
+              <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                Sign in with a username to sync your progress to Supabase across devices.
+              </div>
+            </div>
+            <button onClick={onOpenAuth} className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}>
+              Sign In / Create Account
             </button>
           </div>
         )}
       </div>
 
-      {/* Study Preferences */}
-      <div className="card">
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Study Preferences</h2>
+      {/* 2. Daily Goal Stepper 1 to 10 (Section 5.7) */}
+      <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+              Daily Goal
+            </h2>
+            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+              Number of questions to solve each day (1 to 10).
+            </p>
+          </div>
 
-        {/* Daily Goal */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <label style={{ fontWeight: 600, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Target size={16} color="var(--accent)" />
-              <span>Daily Target (Questions / Day)</span>
-            </label>
-            <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--accent)' }}>
+          {/* Stepper Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              onClick={() => handleGoalStep(-1)}
+              disabled={dailyGoal <= 1}
+              className="icon-circle-btn"
+              style={{ width: 38, height: 38, opacity: dailyGoal <= 1 ? 0.4 : 1 }}
+              title="Decrease daily goal"
+            >
+              <Minus size={16} />
+            </button>
+
+            <div style={{
+              width: 54,
+              height: 38,
+              borderRadius: 'var(--radius-inner)',
+              background: 'var(--glass-surface)',
+              border: '1px solid var(--glass-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '1.25rem',
+              fontWeight: 800,
+              color: 'var(--text-color)'
+            }}>
               {dailyGoal}
-            </span>
-          </div>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value={dailyGoal}
-            onChange={(e) => handleGoalChange(e.target.value)}
-            style={{ width: '100%', cursor: 'pointer' }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-            <span>1 problem</span>
-            <span>5 problems</span>
-            <span>10 problems</span>
-          </div>
-        </div>
+            </div>
 
-        {/* Preferred Code Language */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.6rem' }}>
-            Default Code Language
-          </label>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button
-              onClick={() => handleLanguageChange('java')}
-              className={currentLang === 'java' ? 'btn-primary' : 'btn-secondary'}
-              style={{ flex: 1, padding: '0.6rem' }}
+              onClick={() => handleGoalStep(1)}
+              disabled={dailyGoal >= 10}
+              className="icon-circle-btn"
+              style={{ width: 38, height: 38, opacity: dailyGoal >= 10 ? 0.4 : 1 }}
+              title="Increase daily goal"
             >
-              Java
-            </button>
-            <button
-              onClick={() => handleLanguageChange('python')}
-              className={currentLang === 'python' ? 'btn-primary' : 'btn-secondary'}
-              style={{ flex: 1, padding: '0.6rem' }}
-            >
-              Python
-            </button>
-          </div>
-        </div>
-
-        {/* Theme */}
-        <div>
-          <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.6rem' }}>
-            Interface Theme
-          </label>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button
-              onClick={() => handleThemeChange('dark')}
-              className={currentTheme === 'dark' ? 'btn-primary' : 'btn-secondary'}
-              style={{ flex: 1, padding: '0.6rem' }}
-            >
-              <Moon size={16} />
-              <span>Dark Theme (Default)</span>
-            </button>
-            <button
-              onClick={() => handleThemeChange('light')}
-              className={currentTheme === 'light' ? 'btn-primary' : 'btn-secondary'}
-              style={{ flex: 1, padding: '0.6rem' }}
-            >
-              <Sun size={16} />
-              <span>Light Theme</span>
+              <Plus size={16} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Backup & Data Sync */}
-      <div className="card">
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem' }}>Data Backup & Portability</h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-          Export your entire roadmap progress, review history, notes, and activity as a JSON backup file.
-        </p>
+      {/* 3. Language Selection (Java or Python) (Section 5.7) */}
+      <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+        <div>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+            Preferred Language
+          </h2>
+          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+            Default syntax displayed across question solutions and code views.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', maxWidth: '360px' }}>
+          <button
+            onClick={() => handleLanguageChange('java')}
+            className={currentLang === 'java' ? 'btn-primary' : 'btn-secondary'}
+            style={{ padding: '0.65rem 1rem', fontSize: '0.875rem' }}
+          >
+            Java
+          </button>
+          <button
+            onClick={() => handleLanguageChange('python')}
+            className={currentLang === 'python' ? 'btn-primary' : 'btn-secondary'}
+            style={{ padding: '0.65rem 1rem', fontSize: '0.875rem' }}
+          >
+            Python
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Mode Swatch Cards: Light, Evening, Dark (Section 5.7) */}
+      <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+            Mode
+          </h2>
+          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+            Choose an appearance theme. Changes apply across the entire app immediately.
+          </p>
+        </div>
+
+        {/* Three Swatch Cards (Section 5.7) */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '1rem'
+        }}>
+          {/* Swatch 1: Light (Daylight) */}
+          <div
+            onClick={() => handleThemeChange('light')}
+            className="glass-card-interactive"
+            style={{
+              padding: '14px',
+              borderRadius: 'var(--radius-inner)',
+              cursor: 'pointer',
+              border: '2px solid',
+              borderColor: currentTheme === 'light' ? 'var(--accent)' : 'var(--glass-border)',
+              background: 'var(--glass-surface)',
+              position: 'relative'
+            }}
+          >
+            {/* Miniature Preview Box */}
+            <div style={{
+              height: 72,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #BFE3FF 0%, #EAF3FF 100%)',
+              padding: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              marginBottom: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.7)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ width: 28, height: 6, borderRadius: 3, background: '#1E1B4B', opacity: 0.7 }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E1B4B' }} />
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.65)',
+                borderRadius: '6px',
+                padding: '4px 6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <span style={{ width: 12, height: 4, borderRadius: 2, background: '#4338CA' }} />
+                <span style={{ width: 20, height: 4, borderRadius: 2, background: '#94A3B8' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-color)' }}>Light</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Daylight</div>
+              </div>
+              {currentTheme === 'light' && (
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={12} strokeWidth={3} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Swatch 2: Evening (Dusk) */}
+          <div
+            onClick={() => handleThemeChange('evening')}
+            className="glass-card-interactive"
+            style={{
+              padding: '14px',
+              borderRadius: 'var(--radius-inner)',
+              cursor: 'pointer',
+              border: '2px solid',
+              borderColor: currentTheme === 'evening' ? 'var(--accent)' : 'var(--glass-border)',
+              background: 'var(--glass-surface)',
+              position: 'relative'
+            }}
+          >
+            {/* Miniature Preview Box */}
+            <div style={{
+              height: 72,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #1C1743 0%, #4A2F6B 100%)',
+              padding: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              marginBottom: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.15)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ width: 28, height: 6, borderRadius: 3, background: '#F3F4F6', opacity: 0.8 }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#FFC38A' }} />
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                borderRadius: '6px',
+                padding: '4px 6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <span style={{ width: 12, height: 4, borderRadius: 2, background: '#FFC38A' }} />
+                <span style={{ width: 20, height: 4, borderRadius: 2, background: 'rgba(255, 255, 255, 0.3)' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-color)' }}>Evening</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Dusk</div>
+              </div>
+              {currentTheme === 'evening' && (
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={12} strokeWidth={3} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Swatch 3: Dark (Midnight) */}
+          <div
+            onClick={() => handleThemeChange('dark')}
+            className="glass-card-interactive"
+            style={{
+              padding: '14px',
+              borderRadius: 'var(--radius-inner)',
+              cursor: 'pointer',
+              border: '2px solid',
+              borderColor: currentTheme === 'dark' ? 'var(--accent)' : 'var(--glass-border)',
+              background: 'var(--glass-surface)',
+              position: 'relative'
+            }}
+          >
+            {/* Miniature Preview Box */}
+            <div style={{
+              height: 72,
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #090C18 0%, #0F1428 100%)',
+              padding: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              marginBottom: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.12)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ width: 28, height: 6, borderRadius: 3, background: '#E8EAF6', opacity: 0.8 }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#A5A6FF' }} />
+              </div>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                borderRadius: '6px',
+                padding: '4px 6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px'
+              }}>
+                <span style={{ width: 12, height: 4, borderRadius: 2, background: '#8B8CF8' }} />
+                <span style={{ width: 20, height: 4, borderRadius: 2, background: 'rgba(255, 255, 255, 0.2)' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-color)' }}>Dark</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Midnight</div>
+              </div>
+              {currentTheme === 'dark' && (
+                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={12} strokeWidth={3} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Export and Import Progress (Section 5.7) */}
+      <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+            Data Backup & Export
+          </h2>
+          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+            Export or restore your full roadmap progress, scheduled reviews, and personal notes.
+          </p>
+        </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button onClick={exportData} className="btn-secondary" style={{ flex: '1 1 180px' }}>
+          <button
+            onClick={exportData}
+            className="btn-secondary"
+            style={{ flex: '1 1 180px', padding: '0.65rem 1rem', fontSize: '0.85rem' }}
+          >
             <Download size={16} />
             <span>Export Backup (JSON)</span>
           </button>
 
-          <label className="btn-secondary" style={{ flex: '1 1 180px', cursor: 'pointer' }}>
+          <label
+            className="btn-secondary"
+            style={{ flex: '1 1 180px', padding: '0.65rem 1rem', fontSize: '0.85rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+          >
             <Upload size={16} />
             <span>Import Backup (JSON)</span>
             <input
@@ -216,60 +510,150 @@ export default function Settings({ onOpenLogin }) {
         </div>
       </div>
 
-      {/* Account Actions */}
+      {/* 6. Account Actions: Log Out & Delete My Data (Section 5.7) */}
       {user && (
-        <div className="card" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--danger)' }}>
-            Danger Zone
-          </h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="glass-card" style={{
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.25rem',
+          border: '1px solid rgba(239, 68, 68, 0.35)'
+        }}>
+          <div>
+            <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#EF4444' }}>
+              Account Actions
+            </h2>
+            <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+              Manage session and permanent account deletion.
+            </p>
+          </div>
+
+          {/* Log Out */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <div style={{ fontWeight: 600 }}>Log Out</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Clear active session from this device</div>
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-color)' }}>Log out</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Clear the active session from this device.</div>
             </div>
-            <button onClick={logout} className="btn-secondary" style={{ fontSize: '0.85rem' }}>
-              <LogOut size={16} />
-              <span>Log Out</span>
+            <button
+              onClick={logout}
+              className="btn-secondary"
+              style={{ padding: '0.45rem 1rem', fontSize: '0.825rem' }}
+            >
+              <LogOut size={15} />
+              <span>Log out</span>
             </button>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border-color)' }}>
+          <div style={{ height: 1, background: 'var(--glass-border)' }} />
+
+          {/* Delete My Data (Outlined in danger color per Section 5.7) */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <div style={{ fontWeight: 600, color: 'var(--danger)' }}>Delete My Data</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Permanently delete account, progress, and reviews (FR-30)</div>
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#EF4444' }}>Delete my data</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Permanently delete account, progress, reviews, and activity from Supabase (FR-30, Section 9 #14).
+              </div>
             </div>
-            <button onClick={() => setShowDeleteConfirm(true)} className="btn-danger" style={{ fontSize: '0.85rem' }}>
-              <Trash2 size={16} />
-              <span>Delete My Data</span>
+            <button
+              onClick={() => {
+                setTypedConfirm('');
+                setShowDeleteModal(true);
+              }}
+              style={{
+                padding: '0.45rem 1rem',
+                fontSize: '0.825rem',
+                fontWeight: 600,
+                borderRadius: 'var(--radius-pill)',
+                border: '1px solid #EF4444',
+                background: 'rgba(239, 68, 68, 0.12)',
+                color: '#EF4444',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem'
+              }}
+            >
+              <Trash2 size={15} />
+              <span>Delete my data</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '420px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--danger)', marginBottom: '0.75rem' }}>
+      {/* Delete Confirmation Modal (Section 5.7: typed confirmation) */}
+      {showDeleteModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.65)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem'
+        }}>
+          <div className="glass-card" style={{
+            maxWidth: '460px',
+            width: '100%',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            border: '1px solid #EF4444'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#EF4444' }}>
               <ShieldAlert size={22} />
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>Confirm Deletion</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Confirm Deletion</h3>
             </div>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.25rem', lineHeight: 1.5 }}>
-              Are you sure you want to permanently erase all progress for <strong>{user?.username}</strong>? This cannot be undone.
+
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-color)', lineHeight: 1.55 }}>
+              This will permanently delete your account <strong>{user?.username}</strong>, along with all question progress, review records, and notes. This action cannot be reversed.
             </p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-              <button onClick={() => setShowDeleteConfirm(false)} className="btn-secondary">
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.45rem' }}>
+                Type your username <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-color)' }}>{user?.username}</span> to confirm:
+              </label>
+              <input
+                type="text"
+                value={typedConfirm}
+                onChange={(e) => setTypedConfirm(e.target.value)}
+                placeholder={user?.username}
+                className="input"
+                style={{ fontFamily: 'var(--font-mono)' }}
+                autoFocus
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="btn-secondary"
+                style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
+              >
                 Cancel
               </button>
-              <button 
-                onClick={async () => {
-                  setShowDeleteConfirm(false);
-                  await deleteAccount();
-                  showToast('Account data deleted successfully.');
-                }} 
-                className="btn-danger"
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase()}
+                style={{
+                  padding: '0.45rem 1.15rem',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  borderRadius: 'var(--radius-pill)',
+                  border: 'none',
+                  background: '#EF4444',
+                  color: '#FFFFFF',
+                  cursor: deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase() ? 'not-allowed' : 'pointer',
+                  opacity: deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase() ? 0.45 : 1
+                }}
               >
-                Yes, Delete Everything
+                {deleteLoading ? 'Deleting...' : 'Permanently Delete'}
               </button>
             </div>
           </div>
@@ -278,4 +662,3 @@ export default function Settings({ onOpenLogin }) {
     </div>
   );
 }
-
