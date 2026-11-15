@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import Prism from 'prismjs';
@@ -18,8 +18,19 @@ import {
   BookOpen, 
   Code2, 
   Sparkles,
-  FileText
+  FileText,
+  Circle,
+  CheckCircle2,
+  RotateCcw,
+  ChevronDown
 } from 'lucide-react';
+
+const STATUS_OPTIONS = [
+  { value: 'todo', label: 'Todo', icon: Circle, color: 'var(--text-muted)' },
+  { value: 'in_progress', label: 'In Progress', icon: Clock, color: '#F59E0B' },
+  { value: 'done', label: 'Solved (Done)', icon: CheckCircle2, color: '#10B981' },
+  { value: 'revisit', label: 'Revisit', icon: RotateCcw, color: 'var(--revisit-color)' }
+];
 
 export default function Question() {
   const { seq: seqParam } = useParams();
@@ -29,15 +40,24 @@ export default function Question() {
   const { 
     questions, 
     chapters, 
+    loadingData,
     progressMap, 
     updateProgress, 
     user, 
-    updateSettings, 
+    language,
+    updateLanguage, 
     showToast 
   } = useApp();
 
   // Active view in right panel: null (initial), 'hint-1', 'hint-2', 'hint-3', 'approach', 'code'
-  const [activePanel, setActivePanel] = useState(null);
+  const [activePanel, setActivePanel] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('panel') || null;
+    } catch (_) {
+      return null;
+    }
+  });
 
   // Approach / Code sub-tab: 'optimal' or 'brute'
   const [approachSubTab, setApproachSubTab] = useState('optimal');
@@ -50,6 +70,20 @@ export default function Question() {
   const [solutionsCache, setSolutionsCache] = useState({});
   const [loadingSolution, setLoadingSolution] = useState(false);
 
+  // Custom Glass Status Dropdown state
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const statusDropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
+        setStatusDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // Unlocked hints level for current seq: 0 = none, 1 = hint 1, 2 = hints 1&2, 3 = hints 1,2&3
   const [unlockedHintLevel, setUnlockedHintLevel] = useState(() => {
     const saved = localStorage.getItem(`unlocked_hints_${seq}`);
@@ -61,6 +95,14 @@ export default function Question() {
     const saved = localStorage.getItem(`unlocked_hints_${seq}`);
     const level = saved ? parseInt(saved, 10) : 0;
     setUnlockedHintLevel(level);
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlPanel = params.get('panel');
+      if (urlPanel) {
+        setActivePanel(urlPanel);
+        return;
+      }
+    } catch (_) {}
     setActivePanel(null); // Keep clean initial view with only buttons shown
   }, [seq]);
 
@@ -136,10 +178,7 @@ export default function Question() {
     return list.find(s => s.seq === seq);
   }, [question?.chapter, solutionsCache, seq]);
 
-  // Language: java or python
-  const language = user?.language || 'java';
-
-  // Trigger Prism highlighting on content/tab change
+  // Trigger Prism highlighting on content/tab change or language change
   useEffect(() => {
     if (activePanel === 'code') {
       setTimeout(() => Prism.highlightAll(), 0);
@@ -163,6 +202,21 @@ export default function Question() {
     }, 800);
     return () => clearTimeout(timer);
   }, [notes, seq, currentProgress?.status, currentProgress?.notes, updateProgress]);
+
+  if (loadingData || (questions.length === 0 && !question)) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', paddingTop: '0.25rem' }}>
+        <div className="question-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '1.5rem' }}>
+          <div className="question-col-5" style={{ gridColumn: 'span 5' }}>
+            <div className="glass-card skeleton" style={{ height: '520px', borderRadius: 'var(--radius-card)' }} />
+          </div>
+          <div className="question-col-7" style={{ gridColumn: 'span 7' }}>
+            <div className="glass-card skeleton" style={{ height: '520px', borderRadius: 'var(--radius-card)' }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!question) {
     return (
@@ -246,9 +300,11 @@ export default function Question() {
 
   const currentStatus = currentProgress?.status || 'todo';
   const isMistake = Boolean(currentProgress?.mistake);
+  const currentStatusObj = STATUS_OPTIONS.find(s => s.value === currentStatus) || STATUS_OPTIONS[0];
+  const CurrentStatusIcon = currentStatusObj.icon;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', paddingTop: '0.25rem' }}>
       {/* 5 / 7 Column Split Layout (Section 5.5) */}
       <div className="question-grid-container" style={{
         display: 'grid',
@@ -351,7 +407,7 @@ export default function Question() {
               </p>
             </div>
 
-            {/* Action Buttons: Open on LeetCode + Status Selector + Mistake Toggle */}
+            {/* Action Buttons: Open on LeetCode + Glass Status Selector + Mistake Toggle */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 {/* Open on LeetCode */}
@@ -361,7 +417,7 @@ export default function Question() {
                   rel="noopener noreferrer"
                   className="btn-secondary"
                   style={{ 
-                    flex: '1 1 160px', 
+                    flex: '1 1 150px', 
                     padding: '0.5rem 0.85rem', 
                     fontSize: '0.825rem',
                     justifyContent: 'center'
@@ -371,27 +427,98 @@ export default function Question() {
                   <ExternalLink size={14} />
                 </a>
 
-                {/* Status Selector */}
-                <select
-                  value={currentStatus}
-                  onChange={(e) => handleStatusChange(e.target.value)}
-                  className="select"
-                  style={{
-                    flex: '1 1 130px',
-                    padding: '0.5rem 0.75rem',
-                    fontSize: '0.825rem',
-                    fontWeight: 600
-                  }}
-                  aria-label="Question Status"
-                >
-                  <option value="todo">Todo</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="done">Solved (Done)</option>
-                  <option value="revisit">Revisit</option>
-                </select>
+                {/* Custom Glass-Style Status Dropdown (SRS 2.0 Part A #6) */}
+                <div style={{ position: 'relative', flex: '1 1 150px' }} ref={statusDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+                    className="btn-secondary"
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem 0.85rem',
+                      fontSize: '0.825rem',
+                      fontWeight: 600,
+                      justifyContent: 'space-between',
+                      borderRadius: 'var(--radius-pill)',
+                      borderColor: currentStatus === 'done' ? '#10B981' : currentStatus === 'revisit' ? 'var(--revisit-color)' : currentStatus === 'in_progress' ? '#F59E0B' : 'var(--glass-border)',
+                      background: 'var(--glass-surface)',
+                      color: 'var(--text-color)'
+                    }}
+                    aria-haspopup="listbox"
+                    aria-expanded={statusDropdownOpen}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                      <CurrentStatusIcon size={14} color={currentStatusObj.color} />
+                      <span>{currentStatusObj.label}</span>
+                    </div>
+                    <ChevronDown size={14} style={{ opacity: 0.6, transform: statusDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease' }} />
+                  </button>
+
+                  {statusDropdownOpen && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 6px)',
+                        left: 0,
+                        right: 0,
+                        zIndex: 100,
+                        background: 'var(--glass-strong)',
+                        backdropFilter: 'blur(24px)',
+                        WebkitBackdropFilter: 'blur(24px)',
+                        border: '1px solid var(--glass-border)',
+                        borderRadius: 'var(--radius-inner)',
+                        boxShadow: 'var(--card-shadow)',
+                        padding: '6px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '3px'
+                      }}
+                      role="listbox"
+                    >
+                      {STATUS_OPTIONS.map((opt) => {
+                        const Icon = opt.icon;
+                        const isSelected = opt.value === currentStatus;
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              handleStatusChange(opt.value);
+                              setStatusDropdownOpen(false);
+                            }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '8px 12px',
+                              borderRadius: 'var(--radius-sm)',
+                              border: 'none',
+                              background: isSelected ? 'var(--accent-soft)' : 'transparent',
+                              color: isSelected ? 'var(--text-color)' : 'var(--text-muted)',
+                              fontSize: '0.825rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              textAlign: 'left',
+                              transition: 'background 120ms ease'
+                            }}
+                            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--glass-surface)'; }}
+                            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <Icon size={14} color={opt.color} />
+                              <span>{opt.label}</span>
+                            </div>
+                            {isSelected && <Check size={14} color="var(--accent)" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
 
                 {/* Mistake Toggle */}
                 <button
+                  type="button"
                   onClick={handleMistakeToggle}
                   className="btn-secondary"
                   style={{
@@ -437,9 +564,9 @@ export default function Question() {
                     />
                   </div>
                   <div style={{ display: 'flex', gap: '0.35rem' }}>
-                    <button onClick={() => handleQuickRevisit(1)} className="btn-secondary" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>+1d</button>
-                    <button onClick={() => handleQuickRevisit(3)} className="btn-secondary" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>+3d</button>
-                    <button onClick={() => handleQuickRevisit(7)} className="btn-secondary" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>+7d</button>
+                    <button type="button" onClick={() => handleQuickRevisit(1)} className="btn-secondary" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>+1d</button>
+                    <button type="button" onClick={() => handleQuickRevisit(3)} className="btn-secondary" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>+3d</button>
+                    <button type="button" onClick={() => handleQuickRevisit(7)} className="btn-secondary" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>+7d</button>
                   </div>
                 </div>
               )}
@@ -502,95 +629,149 @@ export default function Question() {
           flexDirection: 'column',
           gap: '1rem'
         }}>
-          {/* Glass Card containing the Button Row and Active Panel */}
+          {/* Glass Card containing the 5 Button Row and Active Panel */}
           <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', minHeight: '520px' }}>
             
-            {/* Glass Pill Button Row: [Hint 1] [Hint 2] [Hint 3] [Approach] [Code] (Section 5.5) */}
+            {/* Glass Pill Button Row: [Hint 1] [Hint 2] [Hint 3] [Approach] [Code] + Language Switcher (SRS 2.0 Part A #1 & #3) */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
+              justifyContent: 'space-between',
+              gap: '0.65rem',
               flexWrap: 'wrap',
               borderBottom: '1px solid var(--glass-border)',
               paddingBottom: '1rem'
             }}>
-              {/* Hint 1 */}
-              <button
-                onClick={() => unlockHint(1)}
-                className={activePanel === 'hint-1' ? 'btn-primary' : 'btn-secondary'}
-                style={{
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '0.45rem 0.9rem',
-                  fontSize: '0.825rem'
-                }}
-              >
-                <Lightbulb size={14} />
-                <span>Hint 1</span>
-              </button>
+              {/* Five Buttons: Hint 1, Hint 2, Hint 3, Approach, Code */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {/* Hint 1 */}
+                <button
+                  type="button"
+                  onClick={() => unlockHint(1)}
+                  className={activePanel === 'hint-1' ? 'btn-primary' : 'btn-secondary'}
+                  style={{
+                    borderRadius: 'var(--radius-pill)',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.825rem'
+                  }}
+                >
+                  <Lightbulb size={14} />
+                  <span>Hint 1</span>
+                </button>
 
-              {/* Hint 2 (Locked until Hint 1 is opened) */}
-              <button
-                onClick={() => unlockHint(2)}
-                disabled={unlockedHintLevel < 1}
-                className={activePanel === 'hint-2' ? 'btn-primary' : 'btn-secondary'}
-                style={{
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '0.45rem 0.9rem',
-                  fontSize: '0.825rem',
-                  opacity: unlockedHintLevel < 1 ? 0.45 : 1,
-                  cursor: unlockedHintLevel < 1 ? 'not-allowed' : 'pointer'
-                }}
-                title={unlockedHintLevel < 1 ? 'Open Hint 1 first to unlock Hint 2' : 'View Hint 2'}
-              >
-                {unlockedHintLevel < 1 ? <Lock size={13} /> : <Lightbulb size={14} />}
-                <span>Hint 2</span>
-              </button>
+                {/* Hint 2 (Locked until Hint 1 is opened) */}
+                <button
+                  type="button"
+                  onClick={() => unlockHint(2)}
+                  disabled={unlockedHintLevel < 1}
+                  className={activePanel === 'hint-2' ? 'btn-primary' : 'btn-secondary'}
+                  style={{
+                    borderRadius: 'var(--radius-pill)',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.825rem',
+                    opacity: unlockedHintLevel < 1 ? 0.45 : 1,
+                    cursor: unlockedHintLevel < 1 ? 'not-allowed' : 'pointer'
+                  }}
+                  title={unlockedHintLevel < 1 ? 'Open Hint 1 first to unlock Hint 2' : 'View Hint 2'}
+                >
+                  {unlockedHintLevel < 1 ? <Lock size={13} /> : <Lightbulb size={14} />}
+                  <span>Hint 2</span>
+                </button>
 
-              {/* Hint 3 (Locked until Hint 2 is opened) */}
-              <button
-                onClick={() => unlockHint(3)}
-                disabled={unlockedHintLevel < 2}
-                className={activePanel === 'hint-3' ? 'btn-primary' : 'btn-secondary'}
-                style={{
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '0.45rem 0.9rem',
-                  fontSize: '0.825rem',
-                  opacity: unlockedHintLevel < 2 ? 0.45 : 1,
-                  cursor: unlockedHintLevel < 2 ? 'not-allowed' : 'pointer'
-                }}
-                title={unlockedHintLevel < 2 ? 'Open Hint 2 first to unlock Hint 3' : 'View Hint 3'}
-              >
-                {unlockedHintLevel < 2 ? <Lock size={13} /> : <Lightbulb size={14} />}
-                <span>Hint 3</span>
-              </button>
+                {/* Hint 3 (Locked until Hint 2 is opened) */}
+                <button
+                  type="button"
+                  onClick={() => unlockHint(3)}
+                  disabled={unlockedHintLevel < 2}
+                  className={activePanel === 'hint-3' ? 'btn-primary' : 'btn-secondary'}
+                  style={{
+                    borderRadius: 'var(--radius-pill)',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.825rem',
+                    opacity: unlockedHintLevel < 2 ? 0.45 : 1,
+                    cursor: unlockedHintLevel < 2 ? 'not-allowed' : 'pointer'
+                  }}
+                  title={unlockedHintLevel < 2 ? 'Open Hint 2 first to unlock Hint 3' : 'View Hint 3'}
+                >
+                  {unlockedHintLevel < 2 ? <Lock size={13} /> : <Lightbulb size={14} />}
+                  <span>Hint 3</span>
+                </button>
 
-              {/* Approach Button */}
-              <button
-                onClick={() => setActivePanel('approach')}
-                className={activePanel === 'approach' ? 'btn-primary' : 'btn-secondary'}
-                style={{
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '0.45rem 0.9rem',
-                  fontSize: '0.825rem'
-                }}
-              >
-                <BookOpen size={14} />
-                <span>Approach</span>
-              </button>
+                {/* Approach Button */}
+                <button
+                  type="button"
+                  onClick={() => setActivePanel('approach')}
+                  className={activePanel === 'approach' ? 'btn-primary' : 'btn-secondary'}
+                  style={{
+                    borderRadius: 'var(--radius-pill)',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.825rem'
+                  }}
+                >
+                  <BookOpen size={14} />
+                  <span>Approach</span>
+                </button>
 
-              {/* Code Button */}
-              <button
-                onClick={() => setActivePanel('code')}
-                className={activePanel === 'code' ? 'btn-primary' : 'btn-secondary'}
-                style={{
-                  borderRadius: 'var(--radius-pill)',
-                  padding: '0.45rem 0.9rem',
-                  fontSize: '0.825rem'
-                }}
-              >
-                <Code2 size={14} />
-                <span>Code</span>
-              </button>
+                {/* Code Button */}
+                <button
+                  type="button"
+                  onClick={() => setActivePanel('code')}
+                  className={activePanel === 'code' ? 'btn-primary' : 'btn-secondary'}
+                  style={{
+                    borderRadius: 'var(--radius-pill)',
+                    padding: '0.45rem 0.9rem',
+                    fontSize: '0.825rem'
+                  }}
+                >
+                  <Code2 size={14} />
+                  <span>Code</span>
+                </button>
+              </div>
+
+              {/* Language Switcher (Java | Python) always accessible (SRS 2.0 Part A #1) */}
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                background: 'var(--glass-surface)',
+                border: '1px solid var(--glass-border)',
+                padding: '2px',
+                borderRadius: 'var(--radius-pill)'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => updateLanguage('java')}
+                  style={{
+                    padding: '0.25rem 0.65rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    border: 'none',
+                    borderRadius: 'var(--radius-pill)',
+                    background: language === 'java' ? 'var(--accent)' : 'transparent',
+                    color: language === 'java' ? 'var(--accent-text)' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                    transition: 'all 150ms ease'
+                  }}
+                >
+                  Java
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateLanguage('python')}
+                  style={{
+                    padding: '0.25rem 0.65rem',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    border: 'none',
+                    borderRadius: 'var(--radius-pill)',
+                    background: language === 'python' ? 'var(--accent)' : 'transparent',
+                    color: language === 'python' ? 'var(--accent-text)' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                    transition: 'all 150ms ease'
+                  }}
+                >
+                  Python
+                </button>
+              </div>
             </div>
 
             {/* Panel Body depending on active selection */}
@@ -632,6 +813,7 @@ export default function Question() {
 
                 <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                   <button
+                    type="button"
                     onClick={() => unlockHint(1)}
                     className="btn-primary"
                     style={{ fontSize: '0.825rem', padding: '0.45rem 1rem' }}
@@ -640,6 +822,7 @@ export default function Question() {
                     <span>Reveal Hint 1</span>
                   </button>
                   <button
+                    type="button"
                     onClick={() => setActivePanel('code')}
                     className="btn-secondary"
                     style={{ fontSize: '0.825rem', padding: '0.45rem 1rem' }}
@@ -703,6 +886,7 @@ export default function Question() {
                       <span>Hint 2 is locked</span>
                     </div>
                     <button
+                      type="button"
                       onClick={() => unlockHint(2)}
                       className="btn-secondary"
                       style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
@@ -744,6 +928,7 @@ export default function Question() {
                       <span>Hint 3 is locked</span>
                     </div>
                     <button
+                      type="button"
                       onClick={() => unlockHint(3)}
                       className="btn-secondary"
                       style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
@@ -756,6 +941,7 @@ export default function Question() {
                 {/* Quick link to Approach */}
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
                   <button
+                    type="button"
                     onClick={() => setActivePanel('approach')}
                     className="btn-secondary"
                     style={{ fontSize: '0.825rem', padding: '0.45rem 0.9rem' }}
@@ -773,6 +959,7 @@ export default function Question() {
                 {/* Sub-tabs: Optimal vs Brute Force */}
                 <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.65rem' }}>
                   <button
+                    type="button"
                     onClick={() => setApproachSubTab('optimal')}
                     className={approachSubTab === 'optimal' ? 'btn-primary' : 'btn-secondary'}
                     style={{ padding: '0.4rem 0.85rem', fontSize: '0.825rem', borderRadius: 'var(--radius-pill)' }}
@@ -780,6 +967,7 @@ export default function Question() {
                     Optimal Approach
                   </button>
                   <button
+                    type="button"
                     onClick={() => setApproachSubTab('brute')}
                     className={approachSubTab === 'brute' ? 'btn-primary' : 'btn-secondary'}
                     style={{ padding: '0.4rem 0.85rem', fontSize: '0.825rem', borderRadius: 'var(--radius-pill)' }}
@@ -866,6 +1054,7 @@ export default function Question() {
                 {/* Action Link to Code */}
                 <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
                   <button
+                    type="button"
                     onClick={() => {
                       setCodeSubTab(approachSubTab);
                       setActivePanel('code');
@@ -888,6 +1077,7 @@ export default function Question() {
                   {/* Approach Sub-tabs */}
                   <div style={{ display: 'flex', gap: '0.4rem' }}>
                     <button
+                      type="button"
                       onClick={() => setCodeSubTab('optimal')}
                       className={codeSubTab === 'optimal' ? 'btn-primary' : 'btn-secondary'}
                       style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', borderRadius: 'var(--radius-pill)' }}
@@ -895,6 +1085,7 @@ export default function Question() {
                       Optimal
                     </button>
                     <button
+                      type="button"
                       onClick={() => setCodeSubTab('brute')}
                       className={codeSubTab === 'brute' ? 'btn-primary' : 'btn-secondary'}
                       style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', borderRadius: 'var(--radius-pill)' }}
@@ -907,17 +1098,18 @@ export default function Question() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <div style={{ 
                       display: 'flex', 
-                      background: 'rgba(0, 0, 0, 0.35)', 
+                      background: 'rgba(0, 0, 0, 0.45)', 
                       padding: '2px', 
                       borderRadius: 'var(--radius-pill)',
                       border: '1px solid var(--glass-border)'
                     }}>
                       <button
-                        onClick={() => updateSettings({ language: 'java' })}
+                        type="button"
+                        onClick={() => updateLanguage('java')}
                         style={{
                           padding: '0.25rem 0.65rem',
                           fontSize: '0.75rem',
-                          fontWeight: 600,
+                          fontWeight: 700,
                           border: 'none',
                           borderRadius: 'var(--radius-pill)',
                           background: language === 'java' ? 'var(--accent)' : 'transparent',
@@ -928,11 +1120,12 @@ export default function Question() {
                         Java
                       </button>
                       <button
-                        onClick={() => updateSettings({ language: 'python' })}
+                        type="button"
+                        onClick={() => updateLanguage('python')}
                         style={{
                           padding: '0.25rem 0.65rem',
                           fontSize: '0.75rem',
-                          fontWeight: 600,
+                          fontWeight: 700,
                           border: 'none',
                           borderRadius: 'var(--radius-pill)',
                           background: language === 'python' ? 'var(--accent)' : 'transparent',
@@ -945,6 +1138,7 @@ export default function Question() {
                     </div>
 
                     <button
+                      type="button"
                       onClick={handleCopy}
                       className="btn-secondary"
                       style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
@@ -1000,10 +1194,11 @@ export default function Question() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '1rem 0',
+        padding: '1.25rem 0',
         marginTop: '0.5rem'
       }}>
         <button
+          type="button"
           onClick={() => navigate(`/question/${Math.max(1, seq - 1)}`)}
           disabled={seq <= 1}
           className="btn-secondary"
@@ -1029,6 +1224,7 @@ export default function Question() {
         </Link>
 
         <button
+          type="button"
           onClick={() => navigate(`/question/${Math.min(300, seq + 1)}`)}
           disabled={seq >= 300}
           className="btn-secondary"

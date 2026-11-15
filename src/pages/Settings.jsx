@@ -30,6 +30,8 @@ export default function Settings({ onOpenAuth }) {
     importData, 
     theme,
     setTheme,
+    language,
+    updateLanguage,
     showToast 
   } = useApp();
 
@@ -43,7 +45,7 @@ export default function Settings({ onOpenAuth }) {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const currentTheme = theme || 'light';
-  const currentLang = user?.language || 'java';
+  const currentLang = language || 'java';
 
   const handleProfileSave = async (e) => {
     e.preventDefault();
@@ -75,9 +77,7 @@ export default function Settings({ onOpenAuth }) {
   };
 
   const handleLanguageChange = (lang) => {
-    if (user) {
-      updateSettings({ language: lang });
-    }
+    updateLanguage(lang);
   };
 
   const handleFileImport = (e) => {

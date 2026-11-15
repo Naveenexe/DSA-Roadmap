@@ -22,11 +22,27 @@ export function AppProvider({ children }) {
     return localStorage.getItem('chainline_session_pin_hash') || null;
   });
 
-  // Theme state: 'light', 'evening', 'dark' (Section 4.2: default for new user: light)
+  // Theme state: 'light', 'evening', 'dark' (URL param > user profile > localStorage > 'light')
   const [theme, setTheme] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlTheme = params.get('theme');
+      if (urlTheme && ['light', 'evening', 'dark'].includes(urlTheme)) return urlTheme;
+    } catch (_) {}
     if (user?.theme) return user.theme;
     const saved = localStorage.getItem('chainline_theme');
     return saved || 'light';
+  });
+
+  // Language state: 'java' or 'python' (URL param > user profile > localStorage > 'java')
+  const [language, setLanguage] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang');
+      if (urlLang && ['java', 'python'].includes(urlLang)) return urlLang;
+    } catch (_) {}
+    if (user?.language) return user.language;
+    return localStorage.getItem('chainline_language') || 'java';
   });
 
   // Apply theme to root DOM element
@@ -34,6 +50,11 @@ export function AppProvider({ children }) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('chainline_theme', theme);
   }, [theme]);
+
+  // Keep language in localStorage
+  useEffect(() => {
+    localStorage.setItem('chainline_language', language);
+  }, [language]);
 
   // State maps
   const [progressMap, setProgressMap] = useState({});
@@ -62,47 +83,28 @@ export function AppProvider({ children }) {
     loadStaticData();
   }, []);
 
-  // Sync state from server/storage
+  // Sync state directly from Supabase
   const syncUserState = useCallback(async (username, hash) => {
     if (!username) return;
     try {
-      const res = await api.login(username, null); // Will throw PIN_REQUIRED if pin needed, handled gracefully
-      if (res.user) {
-        setUser(res.user);
-        if (res.user.theme) {
-          setTheme(res.user.theme);
-        }
-      }
+      const state = await api.getState(username, hash);
       const pMap = {};
-      if (Array.isArray(res.state?.progress)) {
-        res.state.progress.forEach(p => { pMap[p.question_seq] = p; });
+      if (Array.isArray(state?.progress)) {
+        state.progress.forEach(p => { pMap[p.question_seq] = p; });
       }
       setProgressMap(pMap);
-      setReviews(res.state?.reviews || []);
-      setActivity(res.state?.activity || []);
-    } catch (_) {
-      // If error (e.g. PIN needed or offline), state was already hydrated or needs full login
+      setReviews(state?.reviews || []);
+      setActivity(state?.activity || []);
+    } catch (err) {
+      console.warn('Failed to sync user state from Supabase:', err.message);
     }
   }, []);
 
   useEffect(() => {
     if (user && user.username) {
-      // Restore cached state from local storage initially
-      try {
-        const cachedData = localStorage.getItem(`chainline_data_${user.username.toLowerCase()}`);
-        if (cachedData) {
-          const parsed = JSON.parse(cachedData);
-          const pMap = {};
-          if (Array.isArray(parsed.progress)) {
-            parsed.progress.forEach(p => { pMap[p.question_seq] = p; });
-          }
-          setProgressMap(pMap);
-          setReviews(parsed.reviews || []);
-          setActivity(parsed.activity || []);
-        }
-      } catch (_) {}
+      syncUserState(user.username, pinHash);
     }
-  }, [user?.username]);
+  }, [user?.username, pinHash, syncUserState]);
 
   // Handle Login (Section 5.2 & FR-1)
   const login = async (username, pin) => {
@@ -119,6 +121,10 @@ export function AppProvider({ children }) {
 
       if (res.user.theme) {
         setTheme(res.user.theme);
+      }
+      if (res.user.language) {
+        setLanguage(res.user.language);
+        localStorage.setItem('chainline_language', res.user.language);
       }
 
       const pMap = {};
@@ -149,6 +155,8 @@ export function AppProvider({ children }) {
       }
 
       setTheme(selectedTheme);
+      setLanguage(language || 'java');
+      localStorage.setItem('chainline_language', language || 'java');
       setProgressMap({});
       setReviews([]);
       setActivity([]);
@@ -369,12 +377,43 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Update Settings (FR-26, Section 5.7)
-  const updateSettings = async ({ displayName, dailyGoal, language, theme: newTheme }) => {
-    if (!user) {
-      if (newTheme) {
-        setTheme(newTheme);
+  // Update preferred code language ('java' | 'python') across the entire app
+  const updateLanguage = useCallback(async (newLang) => {
+    if (newLang !== 'java' && newLang !== 'python') return;
+    setLanguage(newLang);
+    localStorage.setItem('chainline_language', newLang);
+
+    if (user) {
+      const updatedUser = { ...user, language: newLang };
+      setUser(updatedUser);
+      localStorage.setItem('chainline_session_user', JSON.stringify(updatedUser));
+      try {
+        await api.saveSettings({
+          username: user.username,
+          pinHash,
+          displayName: user.display_name,
+          dailyGoal: user.daily_goal,
+          language: newLang,
+          theme: user.theme || theme
+        });
+      } catch (err) {
+        console.error('Failed to sync language to server:', err);
       }
+    }
+  }, [user, pinHash, theme]);
+
+  // Update Settings (FR-26, Section 5.7)
+  const updateSettings = async ({ displayName, dailyGoal, language: newLang, theme: newTheme }) => {
+    if (newTheme) {
+      setTheme(newTheme);
+      localStorage.setItem('chainline_theme', newTheme);
+    }
+    if (newLang) {
+      setLanguage(newLang);
+      localStorage.setItem('chainline_language', newLang);
+    }
+
+    if (!user) {
       return;
     }
 
@@ -382,15 +421,12 @@ export function AppProvider({ children }) {
       ...user,
       display_name: displayName !== undefined ? displayName : user.display_name,
       daily_goal: dailyGoal !== undefined ? dailyGoal : user.daily_goal,
-      language: language !== undefined ? language : user.language,
-      theme: newTheme !== undefined ? newTheme : user.theme
+      language: newLang !== undefined ? newLang : (user.language || language),
+      theme: newTheme !== undefined ? newTheme : (user.theme || theme)
     };
 
     setUser(updatedUser);
     localStorage.setItem('chainline_session_user', JSON.stringify(updatedUser));
-    if (newTheme) {
-      setTheme(newTheme);
-    }
 
     try {
       await api.saveSettings({
@@ -530,6 +566,9 @@ export function AppProvider({ children }) {
     pinHash,
     theme,
     setTheme,
+    language,
+    setLanguage: updateLanguage,
+    updateLanguage,
     progressMap,
     reviews,
     activity,

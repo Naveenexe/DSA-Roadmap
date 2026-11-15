@@ -46,6 +46,7 @@
   --glass-surface: rgba(255, 255, 255, 0.62);
   --glass-strong: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(255, 255, 255, 0.85);
+  --topbar-bg: rgba(255, 255, 255, 0.80);
   --card-shadow: 0 12px 32px rgba(60, 70, 160, 0.14);
 
   /* Typography Colors */
@@ -102,6 +103,7 @@
   --glass-surface: rgba(255, 255, 255, 0.10);
   --glass-strong: rgba(255, 255, 255, 0.16);
   --glass-border: rgba(255, 255, 255, 0.18);
+  --topbar-bg: rgba(28, 23, 67, 0.85);
   --card-shadow: 0 16px 40px rgba(10, 5, 30, 0.45);
 
   /* Typography Colors */
@@ -158,6 +160,7 @@
   --glass-surface: rgba(255, 255, 255, 0.06);
   --glass-strong: rgba(255, 255, 255, 0.10);
   --glass-border: rgba(255, 255, 255, 0.10);
+  --topbar-bg: rgba(14, 18, 38, 0.85);
   --card-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
 
   /* Typography Colors */

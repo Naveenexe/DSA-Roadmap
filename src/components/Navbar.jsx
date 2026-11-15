@@ -88,6 +88,37 @@ export default function Navbar({ onOpenAuth }) {
             <span>{streak} {streak === 1 ? 'day' : 'days'}</span>
           </div>
 
+          {/* Three-Mode Glass Switcher: Sun, Sunset, Moon (always visible on desktop/tablet) */}
+          <div className="topbar-mode-switch" role="group" aria-label="Theme mode switcher">
+            <button
+              type="button"
+              onClick={() => handleThemeSelect('light')}
+              className={`mode-switch-btn ${theme === 'light' ? 'active' : ''}`}
+              title="Light (Daylight)"
+              aria-label="Light mode"
+            >
+              <Sun size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleThemeSelect('evening')}
+              className={`mode-switch-btn ${theme === 'evening' ? 'active' : ''}`}
+              title="Evening (Dusk)"
+              aria-label="Evening mode"
+            >
+              <Sunset size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleThemeSelect('dark')}
+              className={`mode-switch-btn ${theme === 'dark' ? 'active' : ''}`}
+              title="Dark (Midnight)"
+              aria-label="Dark mode"
+            >
+              <Moon size={14} />
+            </button>
+          </div>
+
           {/* User Account / Avatar Menu (Section 3 #3 & FR-31) */}
           {user ? (
             <div style={{ position: 'relative' }} ref={menuRef}>
