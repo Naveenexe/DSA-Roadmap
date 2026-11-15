@@ -17,7 +17,8 @@ import {
   Plus,
   Minus,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  X
 } from 'lucide-react';
 
 export default function Settings({ onOpenAuth }) {
@@ -39,7 +40,7 @@ export default function Settings({ onOpenAuth }) {
   const [dailyGoal, setDailyGoal] = useState(user?.daily_goal || 2);
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // Delete confirmation modal
+  // Delete confirmation bottom sheet/modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [typedConfirm, setTypedConfirm] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -115,7 +116,7 @@ export default function Settings({ onOpenAuth }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '780px', margin: '0 auto', width: '100%' }}>
+    <div className="settings-page-root" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '780px', margin: '0 auto', width: '100%' }}>
       {/* Header */}
       <div>
         <h1 style={{ 
@@ -132,7 +133,7 @@ export default function Settings({ onOpenAuth }) {
         </p>
       </div>
 
-      {/* 1. Profile Glass Card (Section 5.7) */}
+      {/* 1. Profile Glass Card */}
       <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
           Profile
@@ -142,20 +143,20 @@ export default function Settings({ onOpenAuth }) {
           <form onSubmit={handleProfileSave} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                <label className="input-label" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
                   Username
                 </label>
                 <input
                   type="text"
                   value={user.username}
                   disabled
-                  className="input"
-                  style={{ opacity: 0.7, cursor: 'not-allowed', fontFamily: 'var(--font-mono)' }}
+                  className="glass-input"
+                  style={{ opacity: 0.7, cursor: 'not-allowed', fontFamily: 'var(--font-mono)', fontSize: '16px', minHeight: '44px' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
+                <label className="input-label" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.35rem' }}>
                   Display Name
                 </label>
                 <input
@@ -164,7 +165,8 @@ export default function Settings({ onOpenAuth }) {
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="e.g. Alex"
                   maxLength={40}
-                  className="input"
+                  className="glass-input"
+                  style={{ fontSize: '16px', minHeight: '44px' }}
                 />
               </div>
             </div>
@@ -182,7 +184,7 @@ export default function Settings({ onOpenAuth }) {
                 type="submit"
                 disabled={savingProfile || displayName === (user.display_name || '')}
                 className="btn-primary"
-                style={{ padding: '0.45rem 1.15rem', fontSize: '0.825rem' }}
+                style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', minHeight: '44px' }}
               >
                 {savingProfile ? 'Saving...' : 'Save Profile'}
               </button>
@@ -196,14 +198,14 @@ export default function Settings({ onOpenAuth }) {
                 Sign in with a username to sync your progress to Supabase across devices.
               </div>
             </div>
-            <button onClick={onOpenAuth} className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem' }}>
+            <button onClick={onOpenAuth} className="btn-primary" style={{ padding: '0.6rem 1.35rem', fontSize: '0.875rem', minHeight: '44px' }}>
               Sign In / Create Account
             </button>
           </div>
         )}
       </div>
 
-      {/* 2. Daily Goal Stepper 1 to 10 (Section 5.7) */}
+      {/* 2. Daily Goal Stepper 1 to 10 */}
       <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
@@ -221,15 +223,16 @@ export default function Settings({ onOpenAuth }) {
               onClick={() => handleGoalStep(-1)}
               disabled={dailyGoal <= 1}
               className="icon-circle-btn"
-              style={{ width: 38, height: 38, opacity: dailyGoal <= 1 ? 0.4 : 1 }}
+              style={{ width: 44, height: 44, minWidth: 44, minHeight: 44, opacity: dailyGoal <= 1 ? 0.4 : 1 }}
               title="Decrease daily goal"
+              aria-label="Decrease daily goal"
             >
               <Minus size={16} />
             </button>
 
             <div style={{
-              width: 54,
-              height: 38,
+              width: 56,
+              height: 44,
               borderRadius: 'var(--radius-inner)',
               background: 'var(--glass-surface)',
               border: '1px solid var(--glass-border)',
@@ -248,8 +251,9 @@ export default function Settings({ onOpenAuth }) {
               onClick={() => handleGoalStep(1)}
               disabled={dailyGoal >= 10}
               className="icon-circle-btn"
-              style={{ width: 38, height: 38, opacity: dailyGoal >= 10 ? 0.4 : 1 }}
+              style={{ width: 44, height: 44, minWidth: 44, minHeight: 44, opacity: dailyGoal >= 10 ? 0.4 : 1 }}
               title="Increase daily goal"
+              aria-label="Increase daily goal"
             >
               <Plus size={16} />
             </button>
@@ -257,7 +261,7 @@ export default function Settings({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* 3. Language Selection (Java or Python) (Section 5.7) */}
+      {/* 3. Language Selection (Java | Python is a two-part control per Part 2 #8) */}
       <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
         <div>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
@@ -268,25 +272,63 @@ export default function Settings({ onOpenAuth }) {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', maxWidth: '360px' }}>
+        {/* Two-part control for Java | Python */}
+        <div className="settings-lang-control" style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '4px',
+          background: 'var(--progress-track)',
+          padding: '4px',
+          borderRadius: 'var(--radius-pill)',
+          maxWidth: '380px',
+          width: '100%'
+        }}>
           <button
+            type="button"
             onClick={() => handleLanguageChange('java')}
-            className={currentLang === 'java' ? 'btn-primary' : 'btn-secondary'}
-            style={{ padding: '0.65rem 1rem', fontSize: '0.875rem' }}
+            style={{
+              padding: '10px 16px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: 'none',
+              background: currentLang === 'java' ? 'var(--accent)' : 'transparent',
+              color: currentLang === 'java' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           >
             Java
           </button>
           <button
+            type="button"
             onClick={() => handleLanguageChange('python')}
-            className={currentLang === 'python' ? 'btn-primary' : 'btn-secondary'}
-            style={{ padding: '0.65rem 1rem', fontSize: '0.875rem' }}
+            style={{
+              padding: '10px 16px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: 'none',
+              background: currentLang === 'python' ? 'var(--accent)' : 'transparent',
+              color: currentLang === 'python' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           >
             Python
           </button>
         </div>
       </div>
 
-      {/* 4. Mode Swatch Cards: Light, Evening, Dark (Section 5.7) */}
+      {/* 4. Mode Swatch Cards: Light, Evening, Dark in one row (Part 2 #8) */}
       <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
@@ -297,63 +339,63 @@ export default function Settings({ onOpenAuth }) {
           </p>
         </div>
 
-        {/* Three Swatch Cards (Section 5.7) */}
-        <div style={{
+        {/* Three Swatch Cards in one row */}
+        <div className="settings-mode-swatch-row" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '1rem'
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '12px'
         }}>
           {/* Swatch 1: Light (Daylight) */}
           <div
             onClick={() => handleThemeChange('light')}
-            className="glass-card-interactive"
+            className="glass-card-interactive settings-swatch-card"
             style={{
-              padding: '14px',
+              padding: '12px',
               borderRadius: 'var(--radius-inner)',
               cursor: 'pointer',
               border: '2px solid',
               borderColor: currentTheme === 'light' ? 'var(--accent)' : 'var(--glass-border)',
               background: 'var(--glass-surface)',
-              position: 'relative'
+              position: 'relative',
+              minHeight: '44px'
             }}
           >
-            {/* Miniature Preview Box */}
             <div style={{
-              height: 72,
-              borderRadius: '12px',
+              height: 64,
+              borderRadius: '10px',
               background: 'linear-gradient(135deg, #BFE3FF 0%, #EAF3FF 100%)',
-              padding: '8px',
+              padding: '6px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              marginBottom: '10px',
+              marginBottom: '8px',
               border: '1px solid rgba(255, 255, 255, 0.7)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ width: 28, height: 6, borderRadius: 3, background: '#1E1B4B', opacity: 0.7 }} />
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E1B4B' }} />
+                <span style={{ width: 22, height: 5, borderRadius: 3, background: '#1E1B4B', opacity: 0.7 }} />
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#1E1B4B' }} />
               </div>
               <div style={{
                 background: 'rgba(255, 255, 255, 0.65)',
-                borderRadius: '6px',
-                padding: '4px 6px',
+                borderRadius: '5px',
+                padding: '3px 5px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px'
               }}>
-                <span style={{ width: 12, height: 4, borderRadius: 2, background: '#4338CA' }} />
-                <span style={{ width: 20, height: 4, borderRadius: 2, background: '#94A3B8' }} />
+                <span style={{ width: 10, height: 3, borderRadius: 2, background: '#4338CA' }} />
+                <span style={{ width: 16, height: 3, borderRadius: 2, background: '#94A3B8' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-color)' }}>Light</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Daylight</div>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-color)' }}>Light</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Daylight</div>
               </div>
               {currentTheme === 'light' && (
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Check size={12} strokeWidth={3} />
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={11} strokeWidth={3} />
                 </div>
               )}
             </div>
@@ -362,54 +404,54 @@ export default function Settings({ onOpenAuth }) {
           {/* Swatch 2: Evening (Dusk) */}
           <div
             onClick={() => handleThemeChange('evening')}
-            className="glass-card-interactive"
+            className="glass-card-interactive settings-swatch-card"
             style={{
-              padding: '14px',
+              padding: '12px',
               borderRadius: 'var(--radius-inner)',
               cursor: 'pointer',
               border: '2px solid',
               borderColor: currentTheme === 'evening' ? 'var(--accent)' : 'var(--glass-border)',
               background: 'var(--glass-surface)',
-              position: 'relative'
+              position: 'relative',
+              minHeight: '44px'
             }}
           >
-            {/* Miniature Preview Box */}
             <div style={{
-              height: 72,
-              borderRadius: '12px',
+              height: 64,
+              borderRadius: '10px',
               background: 'linear-gradient(135deg, #1C1743 0%, #4A2F6B 100%)',
-              padding: '8px',
+              padding: '6px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              marginBottom: '10px',
+              marginBottom: '8px',
               border: '1px solid rgba(255, 255, 255, 0.15)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ width: 28, height: 6, borderRadius: 3, background: '#F3F4F6', opacity: 0.8 }} />
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#FFC38A' }} />
+                <span style={{ width: 22, height: 5, borderRadius: 3, background: '#F3F4F6', opacity: 0.8 }} />
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#FFC38A' }} />
               </div>
               <div style={{
                 background: 'rgba(255, 255, 255, 0.12)',
-                borderRadius: '6px',
-                padding: '4px 6px',
+                borderRadius: '5px',
+                padding: '3px 5px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px'
               }}>
-                <span style={{ width: 12, height: 4, borderRadius: 2, background: '#FFC38A' }} />
-                <span style={{ width: 20, height: 4, borderRadius: 2, background: 'rgba(255, 255, 255, 0.3)' }} />
+                <span style={{ width: 10, height: 3, borderRadius: 2, background: '#FFC38A' }} />
+                <span style={{ width: 16, height: 3, borderRadius: 2, background: '#8B6CFF' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-color)' }}>Evening</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Dusk</div>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-color)' }}>Evening</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Dusk</div>
               </div>
               {currentTheme === 'evening' && (
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Check size={12} strokeWidth={3} />
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={11} strokeWidth={3} />
                 </div>
               )}
             </div>
@@ -418,54 +460,54 @@ export default function Settings({ onOpenAuth }) {
           {/* Swatch 3: Dark (Midnight) */}
           <div
             onClick={() => handleThemeChange('dark')}
-            className="glass-card-interactive"
+            className="glass-card-interactive settings-swatch-card"
             style={{
-              padding: '14px',
+              padding: '12px',
               borderRadius: 'var(--radius-inner)',
               cursor: 'pointer',
               border: '2px solid',
               borderColor: currentTheme === 'dark' ? 'var(--accent)' : 'var(--glass-border)',
               background: 'var(--glass-surface)',
-              position: 'relative'
+              position: 'relative',
+              minHeight: '44px'
             }}
           >
-            {/* Miniature Preview Box */}
             <div style={{
-              height: 72,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #090C18 0%, #0F1428 100%)',
-              padding: '8px',
+              height: 64,
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #090C18 0%, #171B34 100%)',
+              padding: '6px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              marginBottom: '10px',
+              marginBottom: '8px',
               border: '1px solid rgba(255, 255, 255, 0.12)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ width: 28, height: 6, borderRadius: 3, background: '#E8EAF6', opacity: 0.8 }} />
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#A5A6FF' }} />
+                <span style={{ width: 22, height: 5, borderRadius: 3, background: '#E0E7FF', opacity: 0.9 }} />
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#6366F1' }} />
               </div>
               <div style={{
                 background: 'rgba(255, 255, 255, 0.08)',
-                borderRadius: '6px',
-                padding: '4px 6px',
+                borderRadius: '5px',
+                padding: '3px 5px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px'
               }}>
-                <span style={{ width: 12, height: 4, borderRadius: 2, background: '#8B8CF8' }} />
-                <span style={{ width: 20, height: 4, borderRadius: 2, background: 'rgba(255, 255, 255, 0.2)' }} />
+                <span style={{ width: 10, height: 3, borderRadius: 2, background: '#818CF8' }} />
+                <span style={{ width: 16, height: 3, borderRadius: 2, background: '#475569' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text-color)' }}>Dark</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Midnight</div>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-color)' }}>Dark</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Midnight</div>
               </div>
               {currentTheme === 'dark' && (
-                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Check size={12} strokeWidth={3} />
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--accent)', color: 'var(--accent-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Check size={11} strokeWidth={3} />
                 </div>
               )}
             </div>
@@ -473,14 +515,14 @@ export default function Settings({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* 5. Export and Import Progress (Section 5.7) */}
+      {/* 5. Data Management (Export & Import) */}
       <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
-            Data Backup & Export
+            Data Management
           </h2>
           <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
-            Export or restore your full roadmap progress, scheduled reviews, and personal notes.
+            Export or import your complete roadmap progress as a portable JSON file.
           </p>
         </div>
 
@@ -488,15 +530,15 @@ export default function Settings({ onOpenAuth }) {
           <button
             onClick={exportData}
             className="btn-secondary"
-            style={{ flex: '1 1 180px', padding: '0.65rem 1rem', fontSize: '0.85rem' }}
+            style={{ padding: '0.55rem 1.15rem', fontSize: '0.85rem', minHeight: '44px' }}
           >
             <Download size={16} />
-            <span>Export Backup (JSON)</span>
+            <span>Export Progress (JSON)</span>
           </button>
 
           <label
             className="btn-secondary"
-            style={{ flex: '1 1 180px', padding: '0.65rem 1rem', fontSize: '0.85rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+            style={{ padding: '0.55rem 1.15rem', fontSize: '0.85rem', cursor: 'pointer', minHeight: '44px' }}
           >
             <Upload size={16} />
             <span>Import Backup (JSON)</span>
@@ -510,7 +552,7 @@ export default function Settings({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* 6. Account Actions: Log Out & Delete My Data (Section 5.7) */}
+      {/* 6. Account Actions: Log Out & Delete My Data (Full-width button in danger colour per Part 2 #8) */}
       {user && (
         <div className="glass-card" style={{
           padding: '24px',
@@ -537,78 +579,77 @@ export default function Settings({ onOpenAuth }) {
             <button
               onClick={logout}
               className="btn-secondary"
-              style={{ padding: '0.45rem 1rem', fontSize: '0.825rem' }}
+              style={{ padding: '0.5rem 1.25rem', fontSize: '0.85rem', minHeight: '44px' }}
             >
-              <LogOut size={15} />
+              <LogOut size={16} />
               <span>Log out</span>
             </button>
           </div>
 
           <div style={{ height: 1, background: 'var(--glass-border)' }} />
 
-          {/* Delete My Data (Outlined in danger color per Section 5.7) */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+          {/* Delete My Data: Full-width button in danger colour (Part 2 #8) */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#EF4444' }}>Delete my data</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Permanently delete account, progress, reviews, and activity from Supabase (FR-30, Section 9 #14).
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#EF4444' }}>Delete my data</div>
+              <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                Permanently delete account, progress, reviews, and activity from Supabase.
               </div>
             </div>
+            
             <button
+              type="button"
               onClick={() => {
                 setTypedConfirm('');
                 setShowDeleteModal(true);
               }}
               style={{
-                padding: '0.45rem 1rem',
-                fontSize: '0.825rem',
-                fontWeight: 600,
+                width: '100%',
+                minHeight: '48px',
+                padding: '0.75rem 1.25rem',
+                fontSize: '0.925rem',
+                fontWeight: 700,
                 borderRadius: 'var(--radius-pill)',
                 border: '1px solid #EF4444',
-                background: 'rgba(239, 68, 68, 0.12)',
+                background: 'rgba(239, 68, 68, 0.15)',
                 color: '#EF4444',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '0.45rem'
+                justifyContent: 'center',
+                gap: '0.5rem',
+                transition: 'background 150ms ease'
               }}
             >
-              <Trash2 size={15} />
+              <Trash2 size={16} />
               <span>Delete my data</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Delete Confirmation Modal (Section 5.7: typed confirmation) */}
+      {/* Delete Confirmation: Opens as bottom sheet on mobile, modal on desktop (Part 2 #8) */}
       {showDeleteModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.65)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1rem'
-        }}>
-          <div className="glass-card" style={{
-            maxWidth: '460px',
-            width: '100%',
-            padding: '24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            border: '1px solid #EF4444'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#EF4444' }}>
-              <ShieldAlert size={22} />
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Confirm Deletion</h3>
+        <div className="bottom-sheet-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div 
+            className="delete-sheet-content glass-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{ border: '1px solid #EF4444' }}
+          >
+            <div className="bottom-sheet-handle" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#EF4444' }}>
+                <ShieldAlert size={22} />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Confirm Deletion</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="icon-circle-btn"
+                style={{ width: 36, height: 36, minWidth: 36, minHeight: 36 }}
+              >
+                <X size={16} />
+              </button>
             </div>
 
             <p style={{ fontSize: '0.875rem', color: 'var(--text-color)', lineHeight: 1.55 }}>
@@ -616,41 +657,48 @@ export default function Settings({ onOpenAuth }) {
             </p>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.45rem' }}>
-                Type your username <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-color)' }}>{user?.username}</span> to confirm:
+              <label className="input-label" style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '0.45rem' }}>
+                Type your username <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-color)', fontWeight: 700 }}>{user?.username}</span> to confirm:
               </label>
               <input
                 type="text"
                 value={typedConfirm}
                 onChange={(e) => setTypedConfirm(e.target.value)}
                 placeholder={user?.username}
-                className="input"
-                style={{ fontFamily: 'var(--font-mono)' }}
+                className="glass-input"
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '16px', minHeight: '44px' }}
                 autoFocus
               />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginTop: '0.5rem' }}>
               <button
+                type="button"
                 onClick={() => setShowDeleteModal(false)}
                 className="btn-secondary"
-                style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
+                style={{ width: '100%', minHeight: '48px', fontSize: '0.88rem', justifyContent: 'center' }}
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase()}
                 style={{
-                  padding: '0.45rem 1.15rem',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
+                  width: '100%',
+                  minHeight: '48px',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
                   borderRadius: 'var(--radius-pill)',
                   border: 'none',
                   background: '#EF4444',
                   color: '#FFFFFF',
                   cursor: deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase() ? 'not-allowed' : 'pointer',
-                  opacity: deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase() ? 0.45 : 1
+                  opacity: deleteLoading || typedConfirm.trim().toLowerCase() !== user?.username.toLowerCase() ? 0.45 : 1,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.45rem'
                 }}
               >
                 {deleteLoading ? 'Deleting...' : 'Permanently Delete'}

@@ -19,7 +19,7 @@ export default function Today() {
     reviews,
     submitReview, 
     questions, 
-    chapters,
+    chapters, 
     progressMap, 
     todaySolvedCount, 
     user, 
@@ -58,15 +58,21 @@ export default function Today() {
     return days;
   }, [reviews]);
 
-  // Daily goal ring calculation
+  // Daily goal ring calculation (Desktop: 72px radius)
   const goalPercent = Math.min(100, Math.round((todaySolvedCount / dailyGoal) * 100));
-  const ringRadius = 36;
-  const ringCircumference = 2 * Math.PI * ringRadius;
-  const ringOffset = ringCircumference - (Math.min(todaySolvedCount, dailyGoal) / dailyGoal) * ringCircumference;
+  const desktopRingRadius = 36;
+  const desktopCircumference = 2 * Math.PI * desktopRingRadius;
+  const desktopOffset = desktopCircumference - (Math.min(todaySolvedCount, dailyGoal) / dailyGoal) * desktopCircumference;
+
+  // Mobile small goal ring (24px radius)
+  const mobileRingRadius = 20;
+  const mobileCircumference = 2 * Math.PI * mobileRingRadius;
+  const mobileOffset = mobileCircumference - (Math.min(todaySolvedCount, dailyGoal) / dailyGoal) * mobileCircumference;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
-      {/* Page Heading with Counts (Section 5.6) */}
+    <div className="today-page-root" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+      
+      {/* Page Heading with Counts (Part 2 #7) */}
       <div style={{
         display: 'flex',
         alignItems: 'baseline',
@@ -96,8 +102,8 @@ export default function Today() {
             borderRadius: 'var(--radius-pill)',
             background: 'var(--glass-surface)',
             border: '1px solid var(--glass-border)',
-            fontSize: '0.825rem',
-            fontWeight: 600,
+            fontSize: '0.85rem',
+            fontWeight: 700,
             color: 'var(--text-color)'
           }}>
             <span>{dueReviews.length} due</span>
@@ -109,7 +115,7 @@ export default function Today() {
               borderRadius: 'var(--radius-pill)',
               background: 'var(--revisit-bg)',
               border: '1px solid var(--revisit-color)',
-              fontSize: '0.825rem',
+              fontSize: '0.85rem',
               fontWeight: 700,
               color: 'var(--revisit-color)'
             }}>
@@ -119,7 +125,59 @@ export default function Today() {
         </div>
       </div>
 
-      {/* Main Grid: Reviews List (Left) + Sidebar (Right) */}
+      {/* MOBILE ONLY: Daily Goal Ring + Next 7 Days Strip (Part 2 #7) */}
+      <div className="today-mobile-top-section">
+        {/* Small Goal Ring under heading */}
+        <div className="glass-card today-mobile-goal-card" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ position: 'relative', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="48" height="48">
+                <circle cx="24" cy="24" r={mobileRingRadius} stroke="var(--progress-track)" strokeWidth="4" fill="none" />
+                <circle 
+                  className="progress-ring-circle" 
+                  cx="24" cy="24" r={mobileRingRadius} 
+                  stroke="var(--accent)" strokeWidth="4" 
+                  strokeDasharray={mobileCircumference} 
+                  strokeDashoffset={mobileOffset} 
+                  strokeLinecap="round" fill="none" 
+                />
+              </svg>
+              <span style={{ position: 'absolute', fontSize: '0.75rem', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+                {todaySolvedCount}/{dailyGoal}
+              </span>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-color)' }}>
+                Today's Daily Goal
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                {todaySolvedCount >= dailyGoal ? "Goal completed!" : `${dailyGoal - todaySolvedCount} questions remaining`}
+              </div>
+            </div>
+          </div>
+          <Target size={18} color="var(--accent)" />
+        </div>
+
+        {/* Next 7 Days horizontal strip of day chips at top (Part 2 #7) */}
+        <div className="today-mobile-calendar-strip">
+          {next7Days.map((d, idx) => (
+            <div 
+              key={idx} 
+              className={`today-mobile-day-chip ${idx === 0 ? 'active' : ''}`}
+            >
+              <span className="day-chip-name">{d.dayName}</span>
+              <span className="day-chip-num">{d.dayNum}</span>
+              {d.reviewCount > 0 ? (
+                <span className="day-chip-dot" title={`${d.reviewCount} due`} />
+              ) : (
+                <span className="day-chip-empty" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Grid: Reviews List (Left on desktop) + Sidebar (Right on desktop) */}
       <div className="today-grid-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(12, 1fr)',
@@ -134,7 +192,7 @@ export default function Today() {
           gap: '1rem'
         }}>
           {dueReviews.length === 0 ? (
-            /* Empty State: "All caught up" with button to open Next up (Section 5.6) */
+            /* Empty State: "All caught up" */
             <div className="glass-card" style={{
               padding: '3.5rem 2rem',
               textAlign: 'center',
@@ -169,9 +227,10 @@ export default function Today() {
 
               {nextUp && (
                 <button
+                  type="button"
                   onClick={() => navigate(`/question/${nextUp.seq}`)}
                   className="btn-primary"
-                  style={{ marginTop: '0.5rem', padding: '0.55rem 1.25rem', fontSize: '0.875rem' }}
+                  style={{ marginTop: '0.5rem', padding: '0.65rem 1.35rem', fontSize: '0.9rem', minHeight: '44px' }}
                 >
                   <span>Open Next Up (#{nextUp.seq})</span>
                   <ArrowRight size={15} />
@@ -179,7 +238,7 @@ export default function Today() {
               )}
             </div>
           ) : (
-            /* List of Review Cards (Section 5.6: title, chapter chip, difficulty, mistake tag, due date in revisit colour, Recalled & Forgot buttons) */
+            /* List of Review Cards: Stacked one per row, Recalled & Forgot side by side at full width, 48px high (Part 2 #7) */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {dueReviews.map((rev) => {
                 const q = questions.find(item => item.seq === rev.question_seq);
@@ -192,22 +251,19 @@ export default function Today() {
                 return (
                   <div
                     key={rev.question_seq}
-                    className="glass-card"
+                    className="glass-card today-review-card"
                     style={{
-                      padding: '18px 22px',
+                      padding: '20px',
                       display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
+                      flexDirection: 'column',
                       gap: '1rem',
                       borderColor: isOverdue ? 'var(--revisit-color)' : 'var(--glass-border)'
                     }}
                   >
-                    {/* Left: Info */}
-                    <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                      {/* Meta chips: Seq, Chapter, Difficulty, Mistake */}
+                    {/* Header info row */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700 }}>
                           #{q.seq}
                         </span>
 
@@ -215,11 +271,11 @@ export default function Today() {
                           <span style={{
                             fontSize: '0.75rem',
                             fontWeight: 600,
-                            padding: '2px 8px',
+                            padding: '3px 8px',
                             borderRadius: 'var(--radius-pill)',
                             background: 'var(--glass-surface)',
                             border: '1px solid var(--glass-border)',
-                            color: 'var(--text-muted)'
+                            color: 'var(--text-color)'
                           }}>
                             {ch.name}
                           </span>
@@ -234,89 +290,89 @@ export default function Today() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '3px',
-                            fontSize: '0.72rem',
-                            fontWeight: 700,
-                            padding: '2px 8px',
+                            padding: '3px 8px',
                             borderRadius: 'var(--radius-pill)',
                             background: 'rgba(239, 68, 68, 0.15)',
+                            border: '1px solid rgba(239, 68, 68, 0.35)',
                             color: '#EF4444',
-                            border: '1px solid rgba(239, 68, 68, 0.3)'
+                            fontSize: '0.72rem',
+                            fontWeight: 700
                           }}>
-                            <AlertTriangle size={12} />
+                            <AlertTriangle size={11} />
                             <span>Mistake</span>
                           </span>
                         )}
                       </div>
 
-                      {/* Question Title */}
-                      <Link 
-                        to={`/question/${q.seq}`} 
-                        style={{ 
-                          fontSize: '1.05rem', 
-                          fontWeight: 700, 
-                          color: 'var(--text-color)', 
+                      {/* Due date badge in revisit colour */}
+                      <span className="due-chip">
+                        {isOverdue ? `Overdue (${rev.due_date})` : `Due Today (${rev.due_date})`}
+                      </span>
+                    </div>
+
+                    {/* Problem Title Link */}
+                    <div>
+                      <Link
+                        to={`/question/${q.seq}`}
+                        style={{
+                          fontSize: '1.15rem',
+                          fontWeight: 700,
+                          color: 'var(--text-color)',
                           letterSpacing: '-0.01em',
-                          textDecoration: 'none'
+                          display: 'inline-block'
                         }}
                       >
                         {q.title}
                       </Link>
-
-                      {/* Due date info (overdue in revisit colour) */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        <span style={{
-                          color: isOverdue ? 'var(--revisit-color)' : 'var(--text-muted)',
-                          fontWeight: isOverdue ? 700 : 500
-                        }}>
-                          {isOverdue ? `Overdue (${rev.due_date})` : `Due today`}
-                        </span>
-                        <span>·</span>
-                        <span>Step {rev.step + 1} of 4</span>
-                      </div>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px', lineHeight: 1.45 }}>
+                        Step {rev.step + 1} of 4 · Spaced interval: {['1 day', '3 days', '7 days', '21 days'][rev.step] || '21 days'}
+                      </p>
                     </div>
 
-                    {/* Right: Actions (Recalled & Forgot) */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      {/* Recalled Button (Success) */}
+                    {/* Recalled and Forgot buttons sit side by side at full width, 48 px high (Part 2 #7) */}
+                    <div className="today-review-actions" style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '10px',
+                      width: '100%',
+                      marginTop: '0.25rem'
+                    }}>
                       <button
-                        onClick={() => submitReview({ questionSeq: q.seq, action: 'recalled' })}
+                        type="button"
+                        onClick={() => submitReview({ questionSeq: rev.question_seq, action: 'recalled' })}
                         className="btn-primary"
                         style={{
-                          padding: '0.45rem 1rem',
-                          fontSize: '0.825rem',
-                          borderRadius: 'var(--radius-pill)'
+                          width: '100%',
+                          minHeight: '48px',
+                          fontSize: '0.9rem',
+                          background: '#10B981',
+                          borderColor: '#10B981',
+                          justifyContent: 'center',
+                          gap: '0.45rem'
                         }}
-                        title="Remembered the optimal approach without checking hints"
+                        title="Remembered the solution approach without checking hints"
                       >
-                        <CheckCircle2 size={14} />
+                        <CheckCircle2 size={16} />
                         <span>Recalled</span>
                       </button>
 
-                      {/* Forgot Button */}
                       <button
-                        onClick={() => submitReview({ questionSeq: q.seq, action: 'forgot' })}
+                        type="button"
+                        onClick={() => submitReview({ questionSeq: rev.question_seq, action: 'forgot' })}
                         className="btn-secondary"
                         style={{
-                          padding: '0.45rem 0.9rem',
-                          fontSize: '0.825rem',
-                          borderRadius: 'var(--radius-pill)',
-                          color: 'var(--revisit-color)',
-                          borderColor: 'var(--revisit-color)'
+                          width: '100%',
+                          minHeight: '48px',
+                          fontSize: '0.9rem',
+                          borderColor: '#EF4444',
+                          color: '#EF4444',
+                          justifyContent: 'center',
+                          gap: '0.45rem'
                         }}
-                        title="Forgot pattern; resets review to step 1 (due tomorrow)"
+                        title="Needed hints; reset interval to 1 day and mark mistake"
                       >
-                        <RotateCcw size={14} />
+                        <RotateCcw size={16} />
                         <span>Forgot</span>
-                      </button>
-
-                      {/* Dismiss from Queue */}
-                      <button
-                        onClick={() => submitReview({ questionSeq: q.seq, action: 'delete' })}
-                        className="icon-circle-btn"
-                        style={{ width: 34, height: 34 }}
-                        title="Remove from review queue"
-                      >
-                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
@@ -326,183 +382,110 @@ export default function Today() {
           )}
         </div>
 
-        {/* RIGHT (4 cols): Side Widgets (Desktop) or Bottom (Mobile) */}
-        <div className="today-col-right" style={{
+        {/* RIGHT SIDEBAR (4 cols on desktop): Daily Goal Ring Card + Calendar Card (Desktop only) */}
+        <aside className="today-col-right" style={{
           gridColumn: 'span 4',
           display: 'flex',
           flexDirection: 'column',
           gap: '1.25rem'
         }}>
-          {/* Widget 1: Next 7 Days Small Calendar with Dots (Section 5.6) */}
-          <div className="glass-card" style={{ padding: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <CalendarIcon size={16} color="var(--accent)" />
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                Next 7 Days
-              </h3>
+          {/* Daily Goal Card */}
+          <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-color)', marginBottom: '16px' }}>
+              Daily Progress Target
+            </h3>
+
+            <div className="progress-ring-wrap" style={{ width: 96, height: 96 }}>
+              <svg width="96" height="96">
+                <circle cx="48" cy="48" r={desktopRingRadius} stroke="var(--progress-track)" strokeWidth="8" fill="none" />
+                <circle
+                  className="progress-ring-circle"
+                  cx="48" cy="48" r={desktopRingRadius}
+                  stroke="var(--accent)"
+                  strokeWidth="8"
+                  strokeDasharray={desktopCircumference}
+                  strokeDashoffset={desktopOffset}
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+
+              <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '1.4rem', fontWeight: 800, lineHeight: 1, fontFamily: 'var(--font-sans)', fontVariantNumeric: 'tabular-nums' }}>
+                  {todaySolvedCount}
+                </span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                  of {dailyGoal}
+                </span>
+              </div>
             </div>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(7, 1fr)',
-              gap: '6px',
-              textAlign: 'center'
-            }}>
+            <div style={{ marginTop: '16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              {todaySolvedCount >= dailyGoal ? (
+                <span style={{ color: '#10B981', fontWeight: 600 }}>✓ Daily goal accomplished!</span>
+              ) : (
+                <span>{dailyGoal - todaySolvedCount} more questions to hit daily target</span>
+              )}
+            </div>
+          </div>
+
+          {/* Next 7 Days Calendar Card */}
+          <div className="glass-card" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-color)' }}>
+                Next 7 Days Schedule
+              </h3>
+              <CalendarIcon size={16} color="var(--text-muted)" />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {next7Days.map((d, idx) => (
-                <div 
-                  key={d.iso}
+                <div
+                  key={idx}
                   style={{
-                    padding: '8px 2px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
                     borderRadius: 'var(--radius-inner)',
                     background: idx === 0 ? 'var(--accent-soft)' : 'var(--glass-surface)',
                     border: '1px solid',
                     borderColor: idx === 0 ? 'var(--accent)' : 'var(--glass-border)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '4px'
+                    fontSize: '0.85rem'
                   }}
                 >
-                  <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-                    {d.dayName}
-                  </span>
-                  <span style={{
-                    fontSize: '0.95rem',
-                    fontWeight: 700,
-                    fontFamily: 'var(--font-mono)',
-                    color: idx === 0 ? 'var(--accent-soft-text)' : 'var(--text-color)'
-                  }}>
-                    {d.dayNum}
-                  </span>
-                  
-                  {/* Review Dot indicator */}
-                  <div style={{ height: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {d.reviewCount > 0 ? (
-                      <span 
-                        style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: '50%',
-                          background: idx === 0 ? 'var(--accent)' : 'var(--revisit-color)'
-                        }}
-                        title={`${d.reviewCount} review${d.reviewCount > 1 ? 's' : ''} scheduled`}
-                      />
-                    ) : null}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontWeight: idx === 0 ? 700 : 500, color: idx === 0 ? 'var(--accent-soft-text)' : 'var(--text-color)' }}>
+                      {d.dayName}
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {d.date.toLocaleString('default', { month: 'short' })} {d.dayNum}
+                    </span>
                   </div>
+
+                  {d.reviewCount > 0 ? (
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      color: 'var(--revisit-color)'
+                    }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--revisit-color)' }} />
+                      <span>{d.reviewCount} due</span>
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>—</span>
+                  )}
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Widget 2: Daily Goal Ring (Section 5.6) */}
-          <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ position: 'relative', width: 84, height: 84, flexShrink: 0 }}>
-              <svg width="84" height="84" viewBox="0 0 84 84">
-                {/* Background Track */}
-                <circle
-                  cx="42"
-                  cy="42"
-                  r={ringRadius}
-                  stroke="var(--progress-track)"
-                  strokeWidth="8"
-                  fill="none"
-                />
-                {/* Progress Arc */}
-                <circle
-                  cx="42"
-                  cy="42"
-                  r={ringRadius}
-                  stroke="var(--accent)"
-                  strokeWidth="8"
-                  strokeDasharray={ringCircumference}
-                  strokeDashoffset={ringOffset}
-                  strokeLinecap="round"
-                  fill="none"
-                  transform="rotate(-90 42 42)"
-                />
-              </svg>
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.85rem',
-                fontWeight: 700,
-                color: 'var(--text-color)'
-              }}>
-                {goalPercent}%
-              </div>
-            </div>
-
-            <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Daily Goal
-              </div>
-              <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-color)', marginTop: '2px' }}>
-                {todaySolvedCount} of {dailyGoal} solved
-              </div>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                {todaySolvedCount >= dailyGoal ? 'Goal achieved today!' : `${dailyGoal - todaySolvedCount} more to hit your goal.`}
-              </p>
-            </div>
-          </div>
-
-          {/* Widget 3: Next Up Shortcut Card (Section 5.6) */}
-          {nextUp && (
-            <div className="glass-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: 'var(--accent)'
-                }}>
-                  Next Up Shortcut
-                </span>
-                <span className={`diff-pill diff-pill-${nextUp.difficulty.toLowerCase()}`}>
-                  {nextUp.difficulty}
-                </span>
-              </div>
-
-              <div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                  Seq #{nextUp.seq} · LC #{nextUp.lc}
-                </div>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-color)', marginTop: '3px', lineHeight: 1.3 }}>
-                  {nextUp.title}
-                </h4>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.35rem' }}>
-                <button
-                  onClick={() => navigate(`/question/${nextUp.seq}`)}
-                  className="btn-primary"
-                  style={{ flex: 1, padding: '0.45rem 0.85rem', fontSize: '0.825rem' }}
-                >
-                  <span>Solve</span>
-                  <ArrowRight size={14} />
-                </button>
-                <a
-                  href={`https://leetcode.com/problems/${nextUp.slug}/`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary"
-                  style={{ padding: '0.45rem 0.75rem', fontSize: '0.825rem' }}
-                  title="Open on LeetCode"
-                >
-                  <ExternalLink size={14} />
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
+        </aside>
       </div>
+
     </div>
   );
 }

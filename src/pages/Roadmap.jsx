@@ -12,7 +12,9 @@ import {
   X,
   Filter,
   Check,
-  ChevronDown
+  ChevronDown,
+  Info,
+  Layers
 } from 'lucide-react';
 
 export default function Roadmap() {
@@ -30,8 +32,11 @@ export default function Roadmap() {
   const [selectedStatus, setSelectedStatus] = useState('all'); // all, todo, in_progress, done, revisit
   const [filterMistakes, setFilterMistakes] = useState(false);
 
-  // Mobile bottom sheet / sidebar toggle
-  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  // Mobile bottom sheet toggle for 18 chapters
+  const [chapterSheetOpen, setChapterSheetOpen] = useState(false);
+
+  // Mobile info legend toggle
+  const [showLegend, setShowLegend] = useState(false);
 
   // Sync hash to active chapter
   useEffect(() => {
@@ -61,7 +66,7 @@ export default function Roadmap() {
     return questions.filter(q => q.chapter === activeChapter.id);
   }, [questions, activeChapter.id]);
 
-  // Calculations for active chapter (Section 3 #12, #18)
+  // Calculations for active chapter
   const chapterTotal = chapterQuestions.length || (activeChapter.seqTo - activeChapter.seqFrom + 1);
   const chapterDoneCount = useMemo(() => {
     return chapterQuestions.filter(q => progressMap[q.seq]?.status === 'done').length;
@@ -99,7 +104,7 @@ export default function Roadmap() {
     });
   }, [chapterQuestions, search, selectedDifficulty, selectedStatus, filterMistakes, progressMap]);
 
-  // Filter chips counts (Section 5.4: Counts appear on each chip)
+  // Filter chips counts
   const filterCounts = useMemo(() => {
     const counts = {
       all: chapterQuestions.length,
@@ -121,9 +126,8 @@ export default function Roadmap() {
 
   const hasActiveFilters = search || selectedDifficulty !== 'all' || selectedStatus !== 'all' || filterMistakes;
 
-  // Status icon renderer per Section 4.6 & Section 3 #15
-  const renderStatusIcon = (status, seq) => {
-    const p = progressMap[seq];
+  // Status icon renderer
+  const renderStatusIcon = (status) => {
     if (status === 'done') {
       return (
         <span 
@@ -161,7 +165,6 @@ export default function Roadmap() {
           title="In progress"
           aria-label="In progress"
         >
-          {/* Half filled circle */}
           <div style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', background: 'var(--accent)' }} />
         </span>
       );
@@ -200,9 +203,32 @@ export default function Roadmap() {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', gap: '24px', alignItems: 'start' }} className="roadmap-layout-grid">
+    <div className="roadmap-layout-container" style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', gap: '24px', alignItems: 'start' }}>
       
-      {/* 1. LEFT SIDEBAR: Sticky 280px on desktop (Section 5.4 & Section 3 #10) */}
+      {/* MOBILE-ONLY TOP CHAPTER BUTTON (Opens Bottom Sheet per Part 2 #5) */}
+      <div className="mobile-chapter-selector-wrap">
+        <button
+          type="button"
+          onClick={() => setChapterSheetOpen(true)}
+          className="btn-secondary mobile-chapter-select-btn"
+          aria-label="Select chapter"
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+            <Layers size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
+            <span style={{ fontWeight: 700, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {activeChapter.order}. {activeChapter.name}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            <span className="mobile-chapter-count-badge">
+              {chapterDoneCount} of {chapterTotal}
+            </span>
+            <ChevronDown size={16} />
+          </div>
+        </button>
+      </div>
+
+      {/* 1. LEFT SIDEBAR: Sticky 280px on desktop (hidden on phones) */}
       <aside className="glass-card roadmap-sidebar" style={{
         position: 'sticky',
         top: '96px',
@@ -238,7 +264,7 @@ export default function Roadmap() {
               key={ch.id}
               onClick={() => {
                 setActiveChapterId(ch.id);
-                setMobileSheetOpen(false);
+                setChapterSheetOpen(false);
               }}
               style={{
                 width: '100%',
@@ -250,7 +276,8 @@ export default function Roadmap() {
                 background: isActive ? 'var(--accent-soft)' : 'transparent',
                 color: isActive ? 'var(--accent-soft-text)' : 'var(--text-color)',
                 textAlign: 'left',
-                transition: 'all 150ms ease'
+                transition: 'all 150ms ease',
+                minHeight: '44px'
               }}
               onMouseEnter={(e) => {
                 if (!isActive) e.currentTarget.style.background = 'var(--glass-surface)';
@@ -273,7 +300,7 @@ export default function Roadmap() {
                 </span>
               </div>
 
-              {/* Progress bar fill (Section 3 #10: bar fill matches counts) */}
+              {/* Progress bar fill */}
               <div className="progress-bar-container" style={{ height: '5px', background: isActive ? 'rgba(0,0,0,0.1)' : 'var(--progress-track)' }}>
                 <div 
                   className="progress-bar-fill" 
@@ -289,18 +316,18 @@ export default function Roadmap() {
       </aside>
 
       {/* 2. MAIN CONTENT AREA */}
-      <main style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <main style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
         
-        {/* Header Glass Card (Section 5.4 & Section 3 #18) */}
-        <div className="glass-card" style={{ padding: '24px' }}>
+        {/* Header Glass Card */}
+        <div className="glass-card roadmap-header-card" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '16px' }}>
-            <div>
+            <div style={{ flex: 1, minWidth: '220px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '4px', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.85rem)', fontWeight: 800, color: 'var(--text-color)', letterSpacing: '-0.02em' }}>
+                <h1 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.85rem)', fontWeight: 800, color: 'var(--text-color)', letterSpacing: '-0.02em' }}>
                   {activeChapter.order}. {activeChapter.name}
                 </h1>
-                {/* Badge "9 of 14" (Section 5.4) */}
-                <span style={{
+                {/* Badge "9 of 14" */}
+                <span className="desktop-chapter-badge" style={{
                   background: 'var(--accent-soft)',
                   color: 'var(--accent-soft-text)',
                   fontSize: '0.825rem',
@@ -313,7 +340,7 @@ export default function Roadmap() {
                 </span>
               </div>
 
-              {/* Mono Line: "14 QUESTIONS · 9 DONE" (Section 5.4, 4.4) */}
+              {/* Mono Line: "14 QUESTIONS · 9 DONE" */}
               <div style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '0.75rem',
@@ -330,126 +357,137 @@ export default function Roadmap() {
               </p>
             </div>
 
-            {/* Search Box (Section 5.4) */}
-            <div style={{ position: 'relative', width: '100%', maxWidth: '280px' }}>
+            {/* Search Box (Full width on phones per Part 2 #5) */}
+            <div className="roadmap-search-box-wrap" style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
               <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search question or LC#..."
-                className="glass-input"
-                style={{ paddingLeft: '40px', paddingRight: '32px', height: '42px', fontSize: '0.88rem' }}
+                className="glass-input roadmap-search-input"
+                style={{ paddingLeft: '40px', paddingRight: '32px', height: '44px', minHeight: '44px', fontSize: '16px' }}
               />
               {search && (
                 <button
+                  type="button"
                   onClick={() => setSearch('')}
-                  style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
+                  style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', minHeight: '36px', minWidth: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  aria-label="Clear search"
                 >
-                  <X size={14} />
+                  <X size={15} />
                 </button>
               )}
             </div>
           </div>
 
-          {/* Filter Chips with real counts (Section 5.4) */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            flexWrap: 'wrap',
-            paddingTop: '12px',
-            borderTop: '1px solid var(--glass-border)'
-          }}>
+          {/* Filter Chips in one row that scrolls sideways with snapping on phones (Part 2 #5) */}
+          <div className="roadmap-filter-chips-row">
             <button
+              type="button"
               onClick={() => { setSelectedDifficulty('all'); setSelectedStatus('all'); setFilterMistakes(false); }}
-              className="nav-pill"
+              className="nav-pill filter-chip"
               style={{
                 background: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !filterMistakes)) ? 'var(--accent)' : 'var(--glass-surface)',
                 color: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !filterMistakes)) ? 'var(--accent-text)' : 'var(--text-color)',
-                fontSize: '0.8rem',
-                padding: '5px 14px'
+                fontSize: '0.825rem',
+                padding: '8px 14px',
+                minHeight: '44px'
               }}
             >
               All ({filterCounts.all})
             </button>
 
             <button
+              type="button"
               onClick={() => setSelectedDifficulty(selectedDifficulty === 'easy' ? 'all' : 'easy')}
-              className="nav-pill"
+              className="nav-pill filter-chip"
               style={{
                 background: selectedDifficulty === 'easy' ? 'var(--easy-pill-bg)' : 'var(--glass-surface)',
                 color: selectedDifficulty === 'easy' ? 'var(--easy-pill-text)' : 'var(--text-color)',
-                fontSize: '0.8rem',
-                padding: '5px 14px'
+                fontSize: '0.825rem',
+                padding: '8px 14px',
+                minHeight: '44px'
               }}
             >
               Easy ({filterCounts.easy})
             </button>
 
             <button
+              type="button"
               onClick={() => setSelectedDifficulty(selectedDifficulty === 'medium' ? 'all' : 'medium')}
-              className="nav-pill"
+              className="nav-pill filter-chip"
               style={{
                 background: selectedDifficulty === 'medium' ? 'var(--medium-pill-bg)' : 'var(--glass-surface)',
                 color: selectedDifficulty === 'medium' ? 'var(--medium-pill-text)' : 'var(--text-color)',
-                fontSize: '0.8rem',
-                padding: '5px 14px'
+                fontSize: '0.825rem',
+                padding: '8px 14px',
+                minHeight: '44px'
               }}
             >
               Medium ({filterCounts.medium})
             </button>
 
             <button
+              type="button"
               onClick={() => setSelectedDifficulty(selectedDifficulty === 'hard' ? 'all' : 'hard')}
-              className="nav-pill"
+              className="nav-pill filter-chip"
               style={{
                 background: selectedDifficulty === 'hard' ? 'var(--hard-pill-bg)' : 'var(--glass-surface)',
                 color: selectedDifficulty === 'hard' ? 'var(--hard-pill-text)' : 'var(--text-color)',
-                fontSize: '0.8rem',
-                padding: '5px 14px'
+                fontSize: '0.825rem',
+                padding: '8px 14px',
+                minHeight: '44px'
               }}
             >
               Hard ({filterCounts.hard})
             </button>
 
             <button
+              type="button"
               onClick={() => setSelectedStatus(selectedStatus === 'revisit' ? 'all' : 'revisit')}
-              className="nav-pill"
+              className="nav-pill filter-chip"
               style={{
                 background: selectedStatus === 'revisit' ? 'var(--revisit-bg)' : 'var(--glass-surface)',
                 color: selectedStatus === 'revisit' ? 'var(--revisit-color)' : 'var(--text-color)',
-                fontSize: '0.8rem',
-                padding: '5px 14px'
+                fontSize: '0.825rem',
+                padding: '8px 14px',
+                minHeight: '44px'
               }}
             >
               Revisit ({filterCounts.revisit})
             </button>
 
             <button
+              type="button"
               onClick={() => setFilterMistakes(!filterMistakes)}
-              className="nav-pill"
+              className="nav-pill filter-chip"
               style={{
                 background: filterMistakes ? 'rgba(239, 68, 68, 0.15)' : 'var(--glass-surface)',
                 color: filterMistakes ? '#EF4444' : 'var(--text-color)',
-                fontSize: '0.8rem',
-                padding: '5px 14px'
+                fontSize: '0.825rem',
+                padding: '8px 14px',
+                minHeight: '44px'
               }}
             >
               Mistakes ({filterCounts.mistakes})
             </button>
+
+            {/* Mobile Info Button: Legend collapses behind small info icon (Part 2 #5) */}
+            <button
+              type="button"
+              onClick={() => setShowLegend(!showLegend)}
+              className="icon-circle-btn mobile-legend-toggle-btn"
+              title="Show Status Legend"
+              aria-label="Toggle status legend"
+              style={{ minWidth: '44px', minHeight: '44px' }}
+            >
+              <Info size={16} />
+            </button>
           </div>
 
-          {/* Status Legend (Section 5.4 & Section 3 #15) */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            flexWrap: 'wrap',
-            marginTop: '12px',
-            fontSize: '0.78rem',
-            color: 'var(--text-muted)'
-          }}>
+          {/* Status Legend (Collapses behind small info icon on mobile, visible on desktop) */}
+          <div className={`roadmap-status-legend ${showLegend ? 'legend-visible-mobile' : ''}`}>
             <span style={{ fontWeight: 600 }}>Status:</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid var(--progress-track)' }} />
@@ -474,8 +512,8 @@ export default function Roadmap() {
           </div>
         </div>
 
-        {/* 3. QUESTION LIST (Section 4.6 & Section 3 #13, #14) */}
-        <div>
+        {/* 3. QUESTION LIST (Cards on mobile at least 72px high, rows on desktop) */}
+        <div className="roadmap-question-list">
           {filteredQuestions.length === 0 ? (
             <div className="glass-card empty-state-box">
               <Filter size={36} color="var(--text-muted)" />
@@ -487,7 +525,7 @@ export default function Roadmap() {
                   Try relaxing your search terms or active difficulty chips.
                 </p>
               </div>
-              <button onClick={clearFilters} className="btn-secondary">
+              <button onClick={clearFilters} className="btn-secondary" style={{ minHeight: '44px' }}>
                 Clear filters
               </button>
             </div>
@@ -504,76 +542,189 @@ export default function Roadmap() {
               return (
                 <div
                   key={q.seq}
-                  className={`question-row ${isNextUp ? 'highlight-next-up' : ''}`}
+                  className={`question-item-card ${isNextUp ? 'highlight-next-up' : ''}`}
                 >
-                  {/* Column 1: Status Icon (fixed 32px width) */}
-                  <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {renderStatusIcon(status, q.seq)}
-                  </div>
-
-                  {/* Column 2: Seq Number (fixed 44px width) */}
-                  <div style={{ width: 44, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    #{q.seq}
-                  </div>
-
-                  {/* Column 3: Title (one line, ellipsis; full on hover/tap per Section 3 #14) */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <Link
-                      to={`/question/${q.seq}`}
-                      className="question-row-title"
-                      title={`#${q.seq} ${q.title} (LC #${q.lc})`}
-                      style={{ display: 'inline-block', maxWidth: '100%' }}
-                    >
-                      {q.title}
-                    </Link>
-                  </div>
-
-                  {/* Revisit Due Date Chip if status is revisit (Section 4.6 & FR-36) */}
-                  {status === 'revisit' && (
-                    <div className="due-chip" style={{ flexShrink: 0 }}>
-                      <Clock size={11} />
-                      <span>{reviewItem ? `Due ${reviewItem}` : 'Revisit'}</span>
+                  {/* DESKTOP ROW VIEW (>= 768px) */}
+                  <div className="question-row-desktop">
+                    <div style={{ width: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {renderStatusIcon(status)}
                     </div>
-                  )}
 
-                  {/* Column 4: Difficulty Pill (fixed width 84px per Section 4.6) */}
-                  <span className={`diff-pill diff-pill-${q.difficulty.toLowerCase()}`}>
-                    {q.difficulty}
-                  </span>
+                    <div style={{ width: 44, flexShrink: 0, fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      #{q.seq}
+                    </div>
 
-                  {/* Column 5: Builds On (Fixed 180px width, ALWAYS shows Seq number per Section 3 #11) */}
-                  <div style={{ width: 180, flexShrink: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }} className="roadmap-col-builds-on">
-                    {buildsOnQuestion ? (
-                      <Link 
-                        to={`/question/${buildsOnQuestion.seq}`}
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--accent)', fontWeight: 600 }}
-                        title={`Builds on #${buildsOnQuestion.seq} ${buildsOnQuestion.title}`}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <Link
+                        to={`/question/${q.seq}`}
+                        className="question-row-title"
+                        title={`#${q.seq} ${q.title} (LC #${q.lc})`}
+                        style={{ display: 'inline-block', maxWidth: '100%' }}
                       >
-                        <Link2 size={12} />
-                        <span>Builds on #{buildsOnQuestion.seq}</span>
+                        {q.title}
                       </Link>
-                    ) : (
-                      <span style={{ fontStyle: 'italic', opacity: 0.7 }}>Foundation</span>
+                    </div>
+
+                    {status === 'revisit' && (
+                      <div className="due-chip" style={{ flexShrink: 0 }}>
+                        <Clock size={11} />
+                        <span>{reviewItem ? `Due ${reviewItem}` : 'Revisit'}</span>
+                      </div>
                     )}
+
+                    <span className={`diff-pill diff-pill-${q.difficulty.toLowerCase()}`}>
+                      {q.difficulty}
+                    </span>
+
+                    <div style={{ width: 180, flexShrink: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }} className="roadmap-col-builds-on">
+                      {buildsOnQuestion ? (
+                        <Link 
+                          to={`/question/${buildsOnQuestion.seq}`} 
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--accent)', fontWeight: 600 }}
+                          title={`Builds on #${buildsOnQuestion.seq} ${buildsOnQuestion.title}`}
+                        >
+                          <Link2 size={12} />
+                          <span>Builds on #{buildsOnQuestion.seq}</span>
+                        </Link>
+                      ) : (
+                        <span style={{ fontStyle: 'italic', opacity: 0.7 }}>Foundation</span>
+                      )}
+                    </div>
+
+                    <a
+                      href={`https://leetcode.com/problems/${q.slug}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="icon-circle-btn"
+                      style={{ flexShrink: 0, minWidth: '40px', minHeight: '40px' }}
+                      title={`Open ${q.title} on LeetCode`}
+                    >
+                      <ExternalLink size={15} />
+                    </a>
                   </div>
 
-                  {/* Column 6: LeetCode Icon Button (40px circle per Section 4.6) */}
-                  <a
-                    href={`https://leetcode.com/problems/${q.slug}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="icon-circle-btn"
-                    style={{ flexShrink: 0 }}
-                    title={`Open ${q.title} on LeetCode`}
-                  >
-                    <ExternalLink size={15} />
-                  </a>
+                  {/* MOBILE CARD VIEW (< 768px, at least 72px high per Part 2 #5) */}
+                  <div className="question-card-mobile">
+                    {/* First line: status icon, number, title (wraps at most two lines) */}
+                    <div className="question-card-mobile-line1">
+                      <div style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center' }}>
+                        {renderStatusIcon(status)}
+                      </div>
+                      <span className="question-mobile-seq">#{q.seq}</span>
+                      <Link to={`/question/${q.seq}`} className="question-mobile-title">
+                        {q.title}
+                      </Link>
+                    </div>
+
+                    {/* Second line: difficulty pill, "builds on #n", 44px LeetCode arrow button at right end */}
+                    <div className="question-card-mobile-line2">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+                        <span className={`diff-pill diff-pill-${q.difficulty.toLowerCase()}`}>
+                          {q.difficulty}
+                        </span>
+
+                        {buildsOnQuestion ? (
+                          <Link 
+                            to={`/question/${buildsOnQuestion.seq}`}
+                            className="question-mobile-buildson"
+                          >
+                            <Link2 size={12} />
+                            <span>builds on #{buildsOnQuestion.seq}</span>
+                          </Link>
+                        ) : (
+                          <span className="question-mobile-foundation">Foundation</span>
+                        )}
+
+                        {status === 'revisit' && (
+                          <span className="due-chip">
+                            <Clock size={11} />
+                            <span>{reviewItem ? `Due ${reviewItem}` : 'Revisit'}</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <a
+                        href={`https://leetcode.com/problems/${q.slug}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mobile-lc-arrow-btn"
+                        title={`Open ${q.title} on LeetCode`}
+                        aria-label={`Open ${q.title} on LeetCode`}
+                      >
+                        <ExternalLink size={16} />
+                      </a>
+                    </div>
+                  </div>
+
                 </div>
               );
             })
           )}
         </div>
       </main>
+
+      {/* MOBILE BOTTOM SHEET FOR 18 CHAPTERS (Part 2 #5) */}
+      {chapterSheetOpen && (
+        <div className="bottom-sheet-overlay" onClick={() => setChapterSheetOpen(false)}>
+          <div className="bottom-sheet-content glass-card" onClick={(e) => e.stopPropagation()}>
+            <div className="bottom-sheet-handle" />
+            <div className="bottom-sheet-header">
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-color)' }}>
+                Select Chapter (18 Total)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setChapterSheetOpen(false)}
+                className="icon-circle-btn"
+                style={{ width: 36, height: 36, minWidth: 36, minHeight: 36 }}
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="bottom-sheet-scrollable-list">
+              {chapters.map(ch => {
+                const chQs = questions.filter(q => q.chapter === ch.id);
+                const totalInCh = chQs.length || (ch.seqTo - ch.seqFrom + 1);
+                const doneInCh = chQs.filter(q => progressMap[q.seq]?.status === 'done').length;
+                const ratio = totalInCh ? (doneInCh / totalInCh) : 0;
+                const isActive = ch.id === activeChapter.id;
+
+                return (
+                  <button
+                    key={ch.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveChapterId(ch.id);
+                      setChapterSheetOpen(false);
+                    }}
+                    className={`bottom-sheet-chapter-item ${isActive ? 'active' : ''}`}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ fontWeight: isActive ? 700 : 600, fontSize: '0.925rem', color: isActive ? 'var(--accent)' : 'var(--text-color)' }}>
+                        {ch.order}. {ch.name}
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                        {doneInCh}/{totalInCh}
+                      </span>
+                    </div>
+                    <div className="progress-bar-container" style={{ height: '6px' }}>
+                      <div 
+                        className="progress-bar-fill" 
+                        style={{ 
+                          width: `${Math.round(ratio * 100)}%`,
+                          background: isActive ? 'var(--accent)' : 'var(--progress-fill)'
+                        }} 
+                      />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

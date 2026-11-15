@@ -45,8 +45,8 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Mobile Bottom Navigation Bar (Section 4.6 & 5.1) */}
-      <MobileNav />
+      {/* Mobile Bottom Navigation Bar (Visible on every page except Sign in) */}
+      {!authModalOpen && <MobileNav />}
 
       {/* Sign In & Create Account Modal (Section 5.2 & FR-1, FR-1a) */}
       <AuthView 
