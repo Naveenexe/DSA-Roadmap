@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import ChainlineLogo from './ChainlineLogo';
@@ -14,7 +15,9 @@ import {
   Map, 
   Home as HomeIcon,
   ChevronDown,
-  LogIn
+  ChevronRight,
+  LogIn,
+  X
 } from 'lucide-react';
 
 export default function Navbar({ onOpenAuth }) {
@@ -23,16 +26,53 @@ export default function Navbar({ onOpenAuth }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu on click outside
+  // Responsive mobile tracker
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close menu on click outside (desktop dropdown) or Escape key (both)
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (!isMobile && menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+      }
+    }
+
+    if (menuOpen) {
+      // Lock scroll while avatar sheet is open on phones (Bug 2 #2)
+      if (isMobile) {
+        document.body.style.overflow = 'hidden';
+      }
+      document.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen, isMobile]);
 
   const handleThemeSelect = (newTheme) => {
     setTheme(newTheme);
@@ -40,6 +80,279 @@ export default function Navbar({ onOpenAuth }) {
       updateSettings({ theme: newTheme });
     }
   };
+
+  // Content inside Avatar Menu (Shared between desktop dropdown and mobile sheet)
+  const renderMenuContent = () => (
+    <>
+      {/* Drag handle (visible on mobile bottom sheet only) */}
+      <div className="avatar-menu-handle" />
+
+      {/* Header row with title and Close button */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '4px' }}>
+        <span style={{
+          fontSize: '0.8rem',
+          fontFamily: 'var(--font-mono)',
+          fontWeight: 700,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em'
+        }}>
+          {user ? `@${user.username}` : 'Menu'}
+        </span>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(false)}
+          className="icon-circle-btn"
+          style={{ width: 36, height: 36, minWidth: 36, minHeight: 36 }}
+          aria-label="Close menu"
+        >
+          <X size={16} />
+        </button>
+      </div>
+
+      {/* 1. Account Row (Sign In / Create account, or username and Log out) */}
+      {user ? (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+          padding: '12px 14px',
+          borderRadius: 'var(--radius-inner)',
+          background: 'var(--glass-surface)',
+          border: '1px solid var(--glass-border)',
+          minHeight: '44px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+            <div style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              background: 'var(--accent)',
+              color: 'var(--accent-text)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              flexShrink: 0
+            }}>
+              {user.display_name ? user.display_name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
+            </div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-color)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user.display_name || user.username}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                @{user.username}
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              logout();
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              background: 'rgba(239, 68, 68, 0.12)',
+              color: '#EF4444',
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              flexShrink: 0,
+              cursor: 'pointer'
+            }}
+          >
+            <LogOut size={15} />
+            <span>Log Out</span>
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => {
+            setMenuOpen(false);
+            onOpenAuth();
+          }}
+          className="btn-primary"
+          style={{
+            width: '100%',
+            minHeight: '44px',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <LogIn size={16} />
+          <span>Sign In / Create account</span>
+        </button>
+      )}
+
+      {/* 2. Theme Mode with three buttons in one row: Light, Dusk, Dark (Bug 2 #4) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Theme Mode
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={() => handleThemeSelect('light')}
+            style={{
+              padding: '10px 6px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid',
+              borderColor: theme === 'light' ? 'var(--accent)' : 'var(--glass-border)',
+              background: theme === 'light' ? 'var(--accent)' : 'var(--glass-surface)',
+              color: theme === 'light' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            <Sun size={15} />
+            <span>Light</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleThemeSelect('evening')}
+            style={{
+              padding: '10px 6px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid',
+              borderColor: theme === 'evening' ? 'var(--accent)' : 'var(--glass-border)',
+              background: theme === 'evening' ? 'var(--accent)' : 'var(--glass-surface)',
+              color: theme === 'evening' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            <Sunset size={15} />
+            <span>Dusk</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleThemeSelect('dark')}
+            style={{
+              padding: '10px 6px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid',
+              borderColor: theme === 'dark' ? 'var(--accent)' : 'var(--glass-border)',
+              background: theme === 'dark' ? 'var(--accent)' : 'var(--glass-surface)',
+              color: theme === 'dark' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            <Moon size={15} />
+            <span>Dark</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Code Language with two equal buttons: Java, Python (Bug 2 #4) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Code Language
+        </span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={() => updateLanguage('java')}
+            style={{
+              padding: '10px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid',
+              borderColor: language === 'java' ? 'var(--accent)' : 'var(--glass-border)',
+              background: language === 'java' ? 'var(--accent)' : 'var(--glass-surface)',
+              color: language === 'java' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            Java
+          </button>
+          <button
+            type="button"
+            onClick={() => updateLanguage('python')}
+            style={{
+              padding: '10px',
+              minHeight: '44px',
+              borderRadius: 'var(--radius-pill)',
+              border: '1px solid',
+              borderColor: language === 'python' ? 'var(--accent)' : 'var(--glass-border)',
+              background: language === 'python' ? 'var(--accent)' : 'var(--glass-surface)',
+              color: language === 'python' ? 'var(--accent-text)' : 'var(--text-color)',
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            Python
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Settings Link as a full-width row (Bug 2 #4) */}
+      <Link 
+        to="/settings" 
+        onClick={() => setMenuOpen(false)}
+        className="btn-secondary"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          borderRadius: 'var(--radius-pill)',
+          fontSize: '0.9rem',
+          fontWeight: 600,
+          color: 'var(--text-color)',
+          minHeight: '44px',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <SettingsIcon size={18} />
+          <span>Settings</span>
+        </div>
+        <ChevronRight size={16} style={{ opacity: 0.6 }} />
+      </Link>
+    </>
+  );
 
   return (
     <header className="topbar-wrapper">
@@ -188,232 +501,30 @@ export default function Navbar({ onOpenAuth }) {
               </>
             )}
 
-            {/* Dropdown Menu (SRS 2.0 Part 2: Avatar menu holds Light/Evening/Dark, Java/Python, Settings, Log out) */}
-            {menuOpen && (
-              <div 
-                className="glass-card avatar-dropdown-menu" 
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: 250,
-                  padding: '12px',
-                  borderRadius: 'var(--radius-inner)',
-                  zIndex: 100,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  boxShadow: '0 12px 36px rgba(0,0,0,0.25)'
-                }}
-              >
-                {/* User info if logged in, or Sign in prompt if logged out */}
-                {user ? (
-                  <div style={{ padding: '6px 8px', borderBottom: '1px solid var(--glass-border)' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-color)' }}>
-                      {user.display_name || user.username}
-                    </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      @{user.username}
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ padding: '6px 8px', borderBottom: '1px solid var(--glass-border)' }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false);
-                        onOpenAuth();
-                      }}
-                      className="btn-primary"
-                      style={{ width: '100%', minHeight: '44px', fontSize: '0.85rem' }}
-                    >
-                      <LogIn size={15} />
-                      <span>Sign In / Create</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Mode switcher (Light, Evening, Dark) */}
-                <div style={{ padding: '4px 6px' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Theme Mode
-                  </span>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px', marginTop: '6px' }}>
-                    <button
-                      type="button"
-                      onClick={() => handleThemeSelect('light')}
-                      style={{
-                        padding: '8px 4px',
-                        minHeight: '44px',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '1px solid',
-                        borderColor: theme === 'light' ? 'var(--accent)' : 'var(--glass-border)',
-                        background: theme === 'light' ? 'var(--accent)' : 'var(--glass-surface)',
-                        color: theme === 'light' ? 'var(--accent-text)' : 'var(--text-color)',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '3px'
-                      }}
-                    >
-                      <Sun size={13} />
-                      <span>Light</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleThemeSelect('evening')}
-                      style={{
-                        padding: '8px 4px',
-                        minHeight: '44px',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '1px solid',
-                        borderColor: theme === 'evening' ? 'var(--accent)' : 'var(--glass-border)',
-                        background: theme === 'evening' ? 'var(--accent)' : 'var(--glass-surface)',
-                        color: theme === 'evening' ? 'var(--accent-text)' : 'var(--text-color)',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '3px'
-                      }}
-                    >
-                      <Sunset size={13} />
-                      <span>Dusk</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleThemeSelect('dark')}
-                      style={{
-                        padding: '8px 4px',
-                        minHeight: '44px',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '1px solid',
-                        borderColor: theme === 'dark' ? 'var(--accent)' : 'var(--glass-border)',
-                        background: theme === 'dark' ? 'var(--accent)' : 'var(--glass-surface)',
-                        color: theme === 'dark' ? 'var(--accent-text)' : 'var(--text-color)',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '3px'
-                      }}
-                    >
-                      <Moon size={13} />
-                      <span>Dark</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Java | Python Switcher */}
-                <div style={{ padding: '4px 6px' }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Code Language
-                  </span>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', marginTop: '6px' }}>
-                    <button
-                      type="button"
-                      onClick={() => updateLanguage('java')}
-                      style={{
-                        padding: '8px 4px',
-                        minHeight: '44px',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '1px solid',
-                        borderColor: language === 'java' ? 'var(--accent)' : 'var(--glass-border)',
-                        background: language === 'java' ? 'var(--accent)' : 'var(--glass-surface)',
-                        color: language === 'java' ? 'var(--accent-text)' : 'var(--text-color)',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      Java
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => updateLanguage('python')}
-                      style={{
-                        padding: '8px 4px',
-                        minHeight: '44px',
-                        borderRadius: 'var(--radius-pill)',
-                        border: '1px solid',
-                        borderColor: language === 'python' ? 'var(--accent)' : 'var(--glass-border)',
-                        background: language === 'python' ? 'var(--accent)' : 'var(--glass-surface)',
-                        color: language === 'python' ? 'var(--accent-text)' : 'var(--text-color)',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      Python
-                    </button>
-                  </div>
-                </div>
-
-                {/* Settings Link */}
-                <Link 
-                  to="/settings" 
-                  onClick={() => setMenuOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '10px 12px',
-                    borderRadius: 'var(--radius-pill)',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    color: 'var(--text-color)',
-                    minHeight: '44px',
-                    transition: 'background 150ms ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-strong)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <SettingsIcon size={16} />
-                  <span>Settings</span>
-                </Link>
-
-                {/* Log Out Button if logged in */}
-                {user && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false);
-                      logout();
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      padding: '10px 12px',
-                      borderRadius: 'var(--radius-pill)',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: '#EF4444',
-                      minHeight: '44px',
-                      transition: 'background 150ms ease',
-                      width: '100%',
-                      textAlign: 'left'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <LogOut size={16} />
-                    <span>Log Out</span>
-                  </button>
-                )}
+            {/* Desktop Dropdown: rendered in place when >= 768px (z-index: 40) */}
+            {!isMobile && menuOpen && (
+              <div className="avatar-menu-container">
+                {renderMenuContent()}
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Mobile Bottom Sheet: Rendered in Portal to document.body when < 768px */}
+      {isMobile && menuOpen && createPortal(
+        <>
+          <div 
+            className="avatar-sheet-backdrop" 
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu backdrop"
+          />
+          <div className="avatar-menu-container">
+            {renderMenuContent()}
+          </div>
+        </>,
+        document.body
+      )}
     </header>
   );
 }

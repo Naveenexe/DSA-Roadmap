@@ -76,6 +76,10 @@
   --revisit-bg: rgba(217, 119, 6, 0.15);
   --focus-ring: #4F46E5;
 
+  /* Sheet & Menu background (94% opacity + 24px blur per Bug 2) */
+  --sheet-bg: rgba(235, 244, 255, 0.94);
+  --sheet-border: rgba(255, 255, 255, 0.92);
+
   /* Activity Levels 0 to 4 */
   --activity-0: #E3E7FB;
   --activity-1: #C7CBF5;
@@ -133,6 +137,10 @@
   --revisit-bg: rgba(255, 184, 107, 0.15);
   --focus-ring: #FFC38A;
 
+  /* Sheet & Menu background (94% opacity + 24px blur per Bug 2) */
+  --sheet-bg: rgba(32, 24, 66, 0.94);
+  --sheet-border: rgba(255, 255, 255, 0.20);
+
   /* Activity Levels 0 to 4 */
   --activity-0: rgba(255, 255, 255, 0.10);
   --activity-1: #5A3F7E;
@@ -189,6 +197,10 @@
   --revisit-color: #FBBF24;
   --revisit-bg: rgba(251, 191, 36, 0.15);
   --focus-ring: #A5A6FF;
+
+  /* Sheet & Menu background (94% opacity + 24px blur per Bug 2) */
+  --sheet-bg: rgba(12, 16, 34, 0.94);
+  --sheet-border: rgba(255, 255, 255, 0.16);
 
   /* Activity Levels 0 to 4 */
   --activity-0: #1B2140;

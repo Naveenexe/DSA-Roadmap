@@ -203,7 +203,7 @@ export default function Roadmap() {
   };
 
   return (
-    <div className="roadmap-layout-container" style={{ display: 'grid', gridTemplateColumns: '280px minmax(0, 1fr)', gap: '24px', alignItems: 'start' }}>
+    <div className="roadmap-layout-container">
       
       {/* MOBILE-ONLY TOP CHAPTER BUTTON (Opens Bottom Sheet per Part 2 #5) */}
       <div className="mobile-chapter-selector-wrap">
@@ -316,14 +316,14 @@ export default function Roadmap() {
       </aside>
 
       {/* 2. MAIN CONTENT AREA */}
-      <main style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: 0 }}>
+      <main className="roadmap-main-content">
         
         {/* Header Glass Card */}
-        <div className="glass-card roadmap-header-card" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '16px' }}>
-            <div style={{ flex: 1, minWidth: '220px' }}>
+        <div className="glass-card roadmap-header-card">
+          <div className="roadmap-header-top-row">
+            <div className="roadmap-header-info">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '4px', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.85rem)', fontWeight: 800, color: 'var(--text-color)', letterSpacing: '-0.02em' }}>
+                <h1 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.85rem)', fontWeight: 800, color: 'var(--text-color)', letterSpacing: '-0.02em', overflowWrap: 'anywhere' }}>
                   {activeChapter.order}. {activeChapter.name}
                 </h1>
                 {/* Badge "9 of 14" */}
@@ -352,7 +352,7 @@ export default function Roadmap() {
                 {chapterTotal} QUESTIONS · {chapterDoneCount} DONE
               </div>
 
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '6px' }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '6px', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                 {activeChapter.whyNext}
               </p>
             </div>
@@ -618,7 +618,7 @@ export default function Roadmap() {
 
                     {/* Second line: difficulty pill, "builds on #n", 44px LeetCode arrow button at right end */}
                     <div className="question-card-mobile-line2">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+                      <div className="question-mobile-meta-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: '1 1 auto', minWidth: 0 }}>
                         <span className={`diff-pill diff-pill-${q.difficulty.toLowerCase()}`}>
                           {q.difficulty}
                         </span>
