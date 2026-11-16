@@ -525,6 +525,53 @@ input, select, textarea {
   display: none;
 }
 
+/* Question Page Desktop Elements */
+.mobile-only-hint-card {
+  display: none;
+}
+
+.desktop-only-pill-nav {
+  display: block;
+}
+
+.question-pill-nav-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.pill-nav-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status Desktop Dropdown (z-index: 40) */
+.status-desktop-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--sheet-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--sheet-border, var(--glass-border));
+  border-radius: var(--radius-inner);
+  box-shadow: var(--card-shadow);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 /* Due Date Chip */
 .due-chip {
   display: inline-flex;
@@ -1465,14 +1512,42 @@ input, select, textarea {
   }
 
   /* 7. Question page on phones (Part 2 #6: exact single column order) */
+  .question-page-root {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding-top: 8px !important;
+  }
+
   .question-grid-container {
     display: flex !important;
     flex-direction: column !important;
+    align-items: stretch !important;
     gap: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .question-col-5, .question-col-7 {
     display: contents !important;
+  }
+
+  /* All cards on phones must be strictly 100% width, stretching between 16px page margins */
+  .question-header-card,
+  .question-builds-card,
+  .question-actions-card,
+  .question-hint-card,
+  .question-panel-card,
+  .question-notes-card,
+  .question-nav-footer {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    align-self: stretch !important;
   }
 
   .question-header-card {
@@ -1495,6 +1570,7 @@ input, select, textarea {
   .question-leetcode-btn {
     width: 100% !important;
     min-height: 48px !important;
+    height: 48px !important;
   }
 
   .question-status-mistake-row {
@@ -1504,47 +1580,82 @@ input, select, textarea {
     width: 100% !important;
   }
 
-  .question-pill-nav-sticky {
-    order: 4 !important;
-    position: sticky !important;
-    top: 68px !important;
-    z-index: 20 !important;
-    width: 100% !important;
-    background: var(--bg-gradient);
-    padding: 6px 0 !important;
+  /* Desktop-only pill row is hidden on phones */
+  .desktop-only-pill-nav {
+    display: none !important;
   }
 
-  .question-pill-nav-scroll {
+  /* Mobile-only Hint/Approach/Code card: Glass card with 2-row grid, no sticky, no horizontal scroll */
+  .mobile-only-hint-card {
     display: flex !important;
+    flex-direction: column !important;
+    order: 4 !important;
+    padding: 16px !important;
     gap: 8px !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory !important;
-    -webkit-overflow-scrolling: touch !important;
-    padding-bottom: 4px !important;
+    position: static !important;
+    background: var(--glass-surface) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius-card) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    box-shadow: var(--card-shadow) !important;
   }
 
-  .pill-nav-btn {
-    scroll-snap-align: start !important;
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
-    min-height: 44px !important;
-    padding: 8px 16px !important;
-    border-radius: var(--radius-pill) !important;
+  .question-hint-grid-row1 {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .question-hint-grid-row2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .question-grid-btn {
+    height: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 8px !important;
     font-size: 14px !important;
     font-weight: 700 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 6px !important;
+    border-radius: var(--radius-pill) !important;
+    cursor: pointer !important;
+    transition: all 150ms ease !important;
+    background: var(--glass-surface) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--glass-border) !important;
   }
 
+  .question-grid-btn.active {
+    background: var(--accent) !important;
+    color: var(--accent-text) !important;
+    border-color: var(--accent) !important;
+  }
+
+  .question-grid-btn.locked {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Solution Guidance / Content panel: auto height, padding 24px */
   .question-panel-card {
     order: 5 !important;
     width: 100% !important;
     min-height: auto !important;
+    height: auto !important;
+    padding: 24px !important;
   }
 
   .question-notes-card {
     order: 6 !important;
+    width: 100% !important;
   }
 
   .notes-collapsed-mobile {
@@ -1553,6 +1664,123 @@ input, select, textarea {
 
   .question-nav-footer {
     order: 7 !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Mobile Status Sheet Backdrop (z-index: 50) */
+  .mobile-status-sheet-backdrop {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    z-index: 50 !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
+
+  /* Mobile Status Bottom Sheet (z-index: 60) */
+  .status-bottom-sheet {
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    top: auto !important;
+    width: calc(100% - 32px) !important;
+    max-width: 430px !important;
+    margin: 0 auto !important;
+    max-height: 80dvh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-top-left-radius: 28px !important;
+    border-top-right-radius: 28px !important;
+    border-bottom-left-radius: 28px !important;
+    border-bottom-right-radius: 28px !important;
+    background: var(--sheet-bg) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid var(--sheet-border, var(--glass-border)) !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45) !important;
+    padding: 14px 20px 24px 20px !important;
+    z-index: 60 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    animation: slideUpSheet 250ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .status-sheet-drag-handle {
+    display: block !important;
+    width: 36px !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+    background: var(--text-muted) !important;
+    opacity: 0.4 !important;
+    margin: 0 auto 4px auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  .status-sheet-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  .status-sheet-title {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--text-muted) !important;
+  }
+
+  .status-sheet-close-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: var(--glass-surface) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-muted) !important;
+    cursor: pointer !important;
+  }
+
+  .status-sheet-options {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .status-sheet-option-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 16px !important;
+    min-height: 48px !important;
+    border-radius: var(--radius-inner) !important;
+    border: 1px solid var(--glass-border) !important;
+    background: var(--glass-surface) !important;
+    color: var(--text-color) !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 150ms ease !important;
+  }
+
+  .status-sheet-option-btn.selected {
+    background: var(--accent-soft) !important;
+    border-color: var(--accent) !important;
+    color: var(--text-color) !important;
   }
 
   /* 8. Today on phones (Part 2 #7) */

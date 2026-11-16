@@ -191,8 +191,6 @@ export function AppProvider({ children }) {
 
   // Update Progress (FR-35, Section 7.2)
   const updateProgress = async ({ questionSeq, status, mistake, notes, remind = true, dueDate = null }) => {
-    if (!user) return;
-
     const prevProgress = { ...progressMap };
     const prevReviews = [...reviews];
     const prevActivity = [...activity];
@@ -214,6 +212,8 @@ export function AppProvider({ children }) {
       ...prev,
       [questionSeq]: updatedItem
     }));
+
+    if (!user) return;
 
     if (status === 'done' && !wasAlreadyDone) {
       setActivity(prev => {

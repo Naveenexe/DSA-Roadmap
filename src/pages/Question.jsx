@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { 
@@ -20,7 +21,8 @@ import {
   Sparkles,
   FileText,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  X
 } from 'lucide-react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-java';
@@ -70,6 +72,17 @@ export default function Question() {
   const [solutionsCache, setSolutionsCache] = useState({});
   const [loadingSolution, setLoadingSolution] = useState(false);
 
+  // Mobile viewport detection
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Custom Glass Status Dropdown state
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const statusDropdownRef = useRef(null);
@@ -83,9 +96,30 @@ export default function Question() {
         setStatusDropdownOpen(false);
       }
     }
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setStatusDropdownOpen(false);
+      }
+    }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
+
+  // Lock body scroll when mobile status sheet is open
+  useEffect(() => {
+    if (statusDropdownOpen && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [statusDropdownOpen, isMobile]);
 
   // Current question data
   const question = useMemo(() => {
@@ -144,6 +178,9 @@ export default function Question() {
     setActivePanel(`hint-${hintNum}`);
   };
 
+  // Local status override for immediate responsiveness
+  const [localStatus, setLocalStatus] = useState(null);
+
   // Local form states
   const [notes, setNotes] = useState(currentProgress?.notes || '');
   const [notesSaved, setNotesSaved] = useState(true);
@@ -160,6 +197,7 @@ export default function Question() {
     } else {
       setNotes('');
     }
+    setLocalStatus(null);
     // Reset view panel or sync with URL
     try {
       const params = new URLSearchParams(window.location.search);
@@ -288,11 +326,12 @@ export default function Question() {
     }
   };
 
-  const handleStatusChange = (newStatus) => {
+  const handleStatusChange = (newStatus, customDue = null) => {
+    setLocalStatus(newStatus);
     updateProgress({
       questionSeq: seq,
       status: newStatus,
-      dueDate: newStatus === 'revisit' ? revisitDate : null
+      dueDate: newStatus === 'revisit' ? (customDue || revisitDate) : null
     });
   };
 
@@ -311,15 +350,11 @@ export default function Question() {
     d.setDate(d.getDate() + days);
     const dateStr = d.toISOString().split('T')[0];
     setRevisitDate(dateStr);
-    updateProgress({
-      questionSeq: seq,
-      status: 'revisit',
-      dueDate: dateStr
-    });
+    handleStatusChange('revisit', dateStr);
     showToast(`Scheduled revisit for ${dateStr}`, 'info');
   };
 
-  const currentStatus = currentProgress?.status || 'todo';
+  const currentStatus = localStatus || currentProgress?.status || 'todo';
   const isMistake = Boolean(currentProgress?.mistake);
   const currentStatusObj = STATUS_OPTIONS.find(s => s.value === currentStatus) || STATUS_OPTIONS[0];
   const CurrentStatusIcon = currentStatusObj.icon;
@@ -344,7 +379,7 @@ export default function Question() {
         }}>
           
           {/* SECTION A: Chapter label & Title (Order 1 on mobile, 26px title, scroll-margin) */}
-          <div className="glass-card question-header-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div className="glass-card question-header-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%', boxSizing: 'border-box' }}>
             <div style={{ 
               display: 'flex', 
               alignItems: 'center', 
@@ -389,7 +424,9 @@ export default function Question() {
             display: 'flex',
             flexDirection: 'column',
             gap: '0.65rem',
-            fontSize: '0.85rem'
+            fontSize: '0.85rem',
+            width: '100%',
+            boxSizing: 'border-box'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
@@ -427,7 +464,7 @@ export default function Question() {
           </div>
 
           {/* SECTION C: Open on LeetCode full-width + Status & Mistake row (Order 3 on mobile) */}
-          <div className="glass-card question-actions-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div className="glass-card question-actions-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%', boxSizing: 'border-box' }}>
             {/* Full-width Open on LeetCode button */}
             <a
               href={`https://leetcode.com/problems/${question.slug}/`}
@@ -447,7 +484,7 @@ export default function Question() {
             </a>
 
             {/* Row with status dropdown and Mistake button side by side */}
-            <div className="question-status-mistake-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div className="question-status-mistake-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
               {/* Glass Status Selector */}
               <div style={{ position: 'relative' }} ref={statusDropdownRef}>
                 <button
@@ -456,9 +493,10 @@ export default function Question() {
                   className="btn-secondary"
                   style={{
                     width: '100%',
-                    minHeight: '44px',
+                    minHeight: '48px',
+                    height: '48px',
                     padding: '0.5rem 0.85rem',
-                    fontSize: '0.825rem',
+                    fontSize: '0.85rem',
                     fontWeight: 600,
                     justifyContent: 'space-between',
                     borderRadius: 'var(--radius-pill)',
@@ -470,24 +508,32 @@ export default function Question() {
                   aria-expanded={statusDropdownOpen}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', overflow: 'hidden' }}>
-                    <CurrentStatusIcon size={15} color={currentStatusObj.color} style={{ flexShrink: 0 }} />
-                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{currentStatusObj.label}</span>
+                    <CurrentStatusIcon size={16} color={currentStatusObj.color} style={{ flexShrink: 0 }} />
+                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {currentStatus === 'done' ? 'Done' : currentStatusObj.label}
+                    </span>
                   </div>
-                  <ChevronDown size={14} style={{ opacity: 0.6, flexShrink: 0, transform: statusDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease' }} />
+                  {statusDropdownOpen ? (
+                    <ChevronUp size={15} style={{ opacity: 0.6, flexShrink: 0 }} />
+                  ) : (
+                    <ChevronDown size={15} style={{ opacity: 0.6, flexShrink: 0 }} />
+                  )}
                 </button>
 
-                {statusDropdownOpen && (
+                {/* Desktop dropdown */}
+                {statusDropdownOpen && !isMobile && (
                   <div
+                    className="status-desktop-dropdown"
                     style={{
                       position: 'absolute',
                       top: 'calc(100% + 6px)',
                       left: 0,
                       right: 0,
-                      zIndex: 100,
-                      background: 'var(--glass-strong)',
+                      zIndex: 40,
+                      background: 'var(--sheet-bg)',
                       backdropFilter: 'blur(24px)',
                       WebkitBackdropFilter: 'blur(24px)',
-                      border: '1px solid var(--glass-border)',
+                      border: '1px solid var(--sheet-border)',
                       borderRadius: 'var(--radius-inner)',
                       boxShadow: 'var(--card-shadow)',
                       padding: '6px',
@@ -526,7 +572,7 @@ export default function Question() {
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <Icon size={15} color={opt.color} />
-                            <span>{opt.label}</span>
+                            <span>{opt.label === 'Solved (Done)' ? 'Done' : opt.label}</span>
                           </div>
                           {isSelected && <Check size={14} color="var(--accent)" />}
                         </button>
@@ -543,12 +589,17 @@ export default function Question() {
                 className="btn-secondary"
                 style={{
                   width: '100%',
-                  minHeight: '44px',
+                  minHeight: '48px',
+                  height: '48px',
                   padding: '0.5rem 0.85rem',
-                  fontSize: '0.825rem',
+                  fontSize: '0.85rem',
                   borderColor: isMistake ? '#EF4444' : 'var(--glass-border)',
                   background: isMistake ? 'rgba(239, 68, 68, 0.15)' : 'var(--glass-surface)',
-                  color: isMistake ? '#EF4444' : 'var(--text-muted)'
+                  color: isMistake ? '#EF4444' : 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.45rem'
                 }}
                 title={isMistake ? 'Flagged as a mistake' : 'Flag this question as a mistake'}
               >
@@ -556,6 +607,95 @@ export default function Question() {
                 <span>Mistake</span>
               </button>
             </div>
+
+            {/* Mobile Status Bottom Sheet */}
+            {statusDropdownOpen && isMobile && typeof document !== 'undefined' && createPortal(
+              <div
+                className="mobile-status-sheet-backdrop"
+                onClick={() => setStatusDropdownOpen(false)}
+              >
+                <div
+                  className="status-bottom-sheet"
+                  role="dialog"
+                  aria-label="Select Status"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="status-sheet-drag-handle" />
+                  <div className="status-sheet-header">
+                    <span className="status-sheet-title">Select Status</span>
+                    <button
+                      type="button"
+                      onClick={() => setStatusDropdownOpen(false)}
+                      className="status-sheet-close-btn"
+                      aria-label="Close"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <div className="status-sheet-options">
+                    {STATUS_OPTIONS.map((opt) => {
+                      const Icon = opt.icon;
+                      const isSelected = opt.value === currentStatus;
+                      const displayLabel = opt.label === 'Solved (Done)' ? 'Done' : opt.label;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => {
+                            handleStatusChange(opt.value);
+                            if (opt.value !== 'revisit') {
+                              setStatusDropdownOpen(false);
+                            }
+                          }}
+                          className={`status-sheet-option-btn ${isSelected ? 'selected' : ''}`}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <Icon size={18} color={opt.color} />
+                            <span>{displayLabel}</span>
+                          </div>
+                          {isSelected && <Check size={16} color="var(--accent)" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* If currentStatus is revisit, render date picker inside sheet (SRS 1.0 FR-19) */}
+                  {currentStatus === 'revisit' && (
+                    <div className="status-sheet-revisit-picker">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--revisit-color)', fontWeight: 600, fontSize: '0.85rem' }}>
+                        <Clock size={16} />
+                        <span>Select Due Date:</span>
+                      </div>
+                      <input
+                        type="date"
+                        value={revisitDate}
+                        onChange={(e) => {
+                          setRevisitDate(e.target.value);
+                          updateProgress({ questionSeq: seq, status: 'revisit', dueDate: e.target.value });
+                        }}
+                        className="glass-input"
+                        style={{ width: '100%', height: '48px', fontSize: '16px', borderRadius: 'var(--radius-inner)', padding: '0 12px' }}
+                      />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                        <button type="button" onClick={() => handleQuickRevisit(1)} className="btn-secondary" style={{ height: '44px', minHeight: '44px', fontSize: '0.85rem', justifyContent: 'center' }}>+1 Day</button>
+                        <button type="button" onClick={() => handleQuickRevisit(3)} className="btn-secondary" style={{ height: '44px', minHeight: '44px', fontSize: '0.85rem', justifyContent: 'center' }}>+3 Days</button>
+                        <button type="button" onClick={() => handleQuickRevisit(7)} className="btn-secondary" style={{ height: '44px', minHeight: '44px', fontSize: '0.85rem', justifyContent: 'center' }}>+7 Days</button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStatusDropdownOpen(false)}
+                        className="btn-primary"
+                        style={{ width: '100%', height: '48px', minHeight: '48px', marginTop: '4px', fontSize: '0.9rem', fontWeight: 700, justifyContent: 'center' }}
+                      >
+                        Done
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>,
+              document.body
+            )}
 
             {/* Revisit Scheduler Options */}
             {currentStatus === 'revisit' && (
@@ -612,15 +752,15 @@ export default function Question() {
           </div>
 
           {/* SECTION G: Personal Notes in Collapsible Card (Order 6 on mobile, closed by default) */}
-          <div className="glass-card question-notes-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <div className="glass-card question-notes-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.65rem', width: '100%', boxSizing: 'border-box' }}>
             <button
               type="button"
               onClick={() => setNotesCollapsed(!notesCollapsed)}
               className="question-notes-toggle-header"
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
                 alignItems: 'center',
+                gap: '8px',
                 width: '100%',
                 background: 'none',
                 border: 'none',
@@ -629,18 +769,16 @@ export default function Question() {
                 textAlign: 'left'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                <FileText size={16} color="var(--accent)" />
-                <span>Personal Notes</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {notesSaved ? 'Saved' : 'Saving...'}
-                </span>
-                <span className="mobile-notes-chevron">
-                  {notesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                </span>
-              </div>
+              <FileText size={16} color="var(--accent)" style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)' }}>
+                Personal Notes
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 'auto', flexShrink: 0 }}>
+                {notesSaved ? 'Saved' : 'Saving...'}
+              </span>
+              <span className="mobile-notes-chevron" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-muted)', flexShrink: 0 }}>
+                {notesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+              </span>
             </button>
 
             {/* Body of Notes - collapsible on mobile */}
@@ -718,8 +856,65 @@ export default function Question() {
           gap: '1rem'
         }}>
           
-          {/* SECTION D: Five Buttons Row (Order 4 on mobile: scrolls sideways with snapping, sticky under top bar) */}
-          <div className="question-pill-nav-sticky">
+          {/* SECTION D: Five Buttons (Mobile: Glass card with 2-row grid; Desktop: Sticky Pill Bar) */}
+          <div className="glass-card question-hint-card mobile-only-hint-card">
+            {/* Row 1: Hint 1, Hint 2, Hint 3 */}
+            <div className="question-hint-grid-row1">
+              <button
+                type="button"
+                onClick={() => unlockHint(1)}
+                className={`question-grid-btn ${activePanel === 'hint-1' ? 'active' : ''}`}
+              >
+                <Lightbulb size={16} />
+                <span>Hint 1</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => unlockHint(2)}
+                disabled={unlockedHintLevel < 1}
+                className={`question-grid-btn ${activePanel === 'hint-2' ? 'active' : ''} ${unlockedHintLevel < 1 ? 'locked' : ''}`}
+                title={unlockedHintLevel < 1 ? 'Open Hint 1 first' : 'View Hint 2'}
+              >
+                {unlockedHintLevel < 1 ? <Lock size={15} /> : <Lightbulb size={16} />}
+                <span>Hint 2</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => unlockHint(3)}
+                disabled={unlockedHintLevel < 2}
+                className={`question-grid-btn ${activePanel === 'hint-3' ? 'active' : ''} ${unlockedHintLevel < 2 ? 'locked' : ''}`}
+                title={unlockedHintLevel < 2 ? 'Open Hint 2 first' : 'View Hint 3'}
+              >
+                {unlockedHintLevel < 2 ? <Lock size={15} /> : <Lightbulb size={16} />}
+                <span>Hint 3</span>
+              </button>
+            </div>
+
+            {/* Row 2: Approach, Code */}
+            <div className="question-hint-grid-row2">
+              <button
+                type="button"
+                onClick={() => setActivePanel('approach')}
+                className={`question-grid-btn ${activePanel === 'approach' ? 'active' : ''}`}
+              >
+                <BookOpen size={16} />
+                <span>Approach</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActivePanel('code')}
+                className={`question-grid-btn ${activePanel === 'code' ? 'active' : ''}`}
+              >
+                <Code2 size={16} />
+                <span>Code</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="desktop-only-pill-nav question-pill-nav-sticky">
             <div className="question-pill-nav-scroll">
               {/* Hint 1 */}
               <button
@@ -786,24 +981,22 @@ export default function Question() {
           </div>
 
           {/* SECTION E & F: Open Panel at Full Width (Order 5 on mobile) */}
-          <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', minHeight: '480px' }}>
+          <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
             
             {/* INITIAL STATE: Nothing revealed yet */}
             {activePanel === null && (
-              <div style={{
-                flex: 1,
+              <div className="guidance-empty-container" style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                padding: '3rem 1.5rem',
                 textAlign: 'center',
-                gap: '1.25rem',
-                color: 'var(--text-muted)'
+                gap: '16px',
+                width: '100%',
+                padding: '0'
               }}>
                 <div style={{
-                  width: 54,
-                  height: 54,
+                  width: 52,
+                  height: 52,
                   borderRadius: 'var(--radius-inner)',
                   background: 'var(--glass-surface)',
                   border: '1px solid var(--glass-border)',
@@ -812,34 +1005,34 @@ export default function Question() {
                   justifyContent: 'center',
                   color: 'var(--accent)'
                 }}>
-                  <Sparkles size={28} />
+                  <Sparkles size={26} />
                 </div>
                 <div style={{ maxWidth: '420px' }}>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-color)', marginBottom: '0.45rem' }}>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-color)', marginBottom: '0.35rem' }}>
                     Solution Guidance
                   </h3>
-                  <p style={{ fontSize: '0.875rem', lineHeight: 1.55 }}>
-                    Select an option above to inspect progressive hints, the algorithmic approach, or the implementation code. Hints unlock in sequence.
+                  <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.55, margin: 0 }}>
+                    Select an option above to inspect hints, approach, or code.
                   </p>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <div className="guidance-buttons-group" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '4px' }}>
                   <button
                     type="button"
                     onClick={() => unlockHint(1)}
                     className="btn-primary"
-                    style={{ fontSize: '0.85rem', padding: '0.5rem 1.1rem', minHeight: '44px' }}
+                    style={{ width: '100%', height: '48px', minHeight: '48px', fontSize: '0.9rem', fontWeight: 700, justifyContent: 'center', gap: '0.5rem' }}
                   >
-                    <Lightbulb size={14} />
+                    <Lightbulb size={16} />
                     <span>Reveal Hint 1</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setActivePanel('code')}
                     className="btn-secondary"
-                    style={{ fontSize: '0.85rem', padding: '0.5rem 1.1rem', minHeight: '44px' }}
+                    style={{ width: '100%', height: '48px', minHeight: '48px', fontSize: '0.9rem', fontWeight: 700, justifyContent: 'center', gap: '0.5rem' }}
                   >
-                    <Code2 size={14} />
+                    <Code2 size={16} />
                     <span>Go Straight to Code</span>
                   </button>
                 </div>
