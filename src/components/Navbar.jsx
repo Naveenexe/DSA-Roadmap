@@ -25,6 +25,8 @@ export default function Navbar({ onOpenAuth }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const avatarBtnRef = useRef(null);
+  const [avatarCoords, setAvatarCoords] = useState({ top: 0, right: 0 });
 
   // Responsive mobile tracker
   const [isMobile, setIsMobile] = useState(() => {
@@ -34,24 +36,54 @@ export default function Navbar({ onOpenAuth }) {
     return false;
   });
 
+  const updateAvatarCoords = () => {
+    if (!avatarBtnRef.current) return;
+    const rect = avatarBtnRef.current.getBoundingClientRect();
+    setAvatarCoords({
+      top: rect.bottom + 8,
+      right: Math.max(16, window.innerWidth - rect.right)
+    });
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
+      if (menuOpen && !isMobile) {
+        setMenuOpen(false);
+      }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [menuOpen, isMobile]);
 
-  // Close menu on click outside (desktop dropdown) or Escape key (both)
+  // Recalculate avatar menu position when opening on desktop
+  useEffect(() => {
+    if (menuOpen && !isMobile) {
+      updateAvatarCoords();
+    }
+  }, [menuOpen, isMobile]);
+
+  // Close menu on click outside (desktop dropdown) or Escape key (both) or scroll (desktop)
   useEffect(() => {
     function handleClickOutside(event) {
-      if (!isMobile && menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        !isMobile && 
+        menuRef.current && !menuRef.current.contains(event.target) &&
+        avatarBtnRef.current && !avatarBtnRef.current.contains(event.target)
+      ) {
         setMenuOpen(false);
       }
     }
 
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
+        setMenuOpen(false);
+        avatarBtnRef.current?.focus();
+      }
+    }
+
+    function handleScroll() {
+      if (!isMobile) {
         setMenuOpen(false);
       }
     }
@@ -60,6 +92,8 @@ export default function Navbar({ onOpenAuth }) {
       // Lock scroll while avatar sheet is open on phones (Bug 2 #2)
       if (isMobile) {
         document.body.style.overflow = 'hidden';
+      } else {
+        window.addEventListener('scroll', handleScroll, { passive: true, capture: true });
       }
       document.addEventListener('mousedown', handleClickOutside);
       window.addEventListener('keydown', handleKeyDown);
@@ -71,6 +105,7 @@ export default function Navbar({ onOpenAuth }) {
       document.body.style.overflow = '';
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('scroll', handleScroll, { capture: true });
     };
   }, [menuOpen, isMobile]);
 
@@ -435,7 +470,7 @@ export default function Navbar({ onOpenAuth }) {
           </div>
 
           {/* User Account / Avatar Button (Mobile & Desktop) */}
-          <div style={{ position: 'relative' }} ref={menuRef}>
+          <div style={{ position: 'relative' }} ref={avatarBtnRef}>
             {user ? (
               <button 
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -501,11 +536,34 @@ export default function Navbar({ onOpenAuth }) {
               </>
             )}
 
-            {/* Desktop Dropdown: rendered in place when >= 768px (z-index: 40) */}
-            {!isMobile && menuOpen && (
-              <div className="avatar-menu-container">
+            {/* Desktop Dropdown: rendered via Portal into document.body (Bug 1 #6) */}
+            {!isMobile && menuOpen && typeof document !== 'undefined' && createPortal(
+              <div 
+                id="avatar-desktop-dropdown-portal"
+                ref={menuRef} 
+                className="avatar-menu-container avatar-desktop-portal"
+                style={{
+                  position: 'fixed',
+                  top: `${avatarCoords.top}px`,
+                  right: `${avatarCoords.right}px`,
+                  left: 'auto',
+                  zIndex: 40,
+                  width: '280px',
+                  background: 'var(--sheet-bg)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  border: '1px solid var(--sheet-border, var(--glass-border))',
+                  borderRadius: 'var(--radius-card)',
+                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.45)',
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px'
+                }}
+              >
                 {renderMenuContent()}
-              </div>
+              </div>,
+              document.body
             )}
           </div>
         </div>
@@ -519,7 +577,7 @@ export default function Navbar({ onOpenAuth }) {
             onClick={() => setMenuOpen(false)}
             aria-label="Close menu backdrop"
           />
-          <div className="avatar-menu-container">
+          <div className="avatar-menu-container" ref={menuRef}>
             {renderMenuContent()}
           </div>
         </>,

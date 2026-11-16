@@ -85,29 +85,102 @@ export default function Question() {
 
   // Custom Glass Status Dropdown state
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
-  const statusDropdownRef = useRef(null);
+  const statusButtonRef = useRef(null);
+  const statusMenuPortalRef = useRef(null);
+  const [statusCoords, setStatusCoords] = useState({ top: 0, bottom: undefined, left: 0, width: 0, openUpward: false });
+  const [focusedStatusIndex, setFocusedStatusIndex] = useState(0);
+  const [desktopRevisitOpen, setDesktopRevisitOpen] = useState(false);
+
+  // Calculate dropdown position from button rect (desktop/tablet)
+  const updateStatusCoords = () => {
+    if (!statusButtonRef.current) return;
+    const rect = statusButtonRef.current.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const estimatedHeight = desktopRevisitOpen ? 320 : 210;
+    const openUpward = spaceBelow < estimatedHeight && spaceAbove > spaceBelow;
+    setStatusCoords({
+      left: rect.left,
+      width: rect.width,
+      top: openUpward ? undefined : rect.bottom + 8,
+      bottom: openUpward ? window.innerHeight - rect.top + 8 : undefined,
+      openUpward
+    });
+  };
 
   // Notes collapsible state (closed by default on mobile per Part 2 #6g)
   const [notesCollapsed, setNotesCollapsed] = useState(true);
 
+  // When opening dropdown on desktop, recalculate coordinates and sync focused index
   useEffect(() => {
+    if (statusDropdownOpen && !isMobile) {
+      updateStatusCoords();
+      const currentIdx = STATUS_OPTIONS.findIndex(s => s.value === (localStatus || currentProgress?.status || 'todo'));
+      setFocusedStatusIndex(currentIdx >= 0 ? currentIdx : 0);
+    }
+  }, [statusDropdownOpen, isMobile, desktopRevisitOpen]);
+
+  // Dismiss listeners: close on choosing row, clicking outside, pressing Escape, scrolling, resizing
+  useEffect(() => {
+    if (!statusDropdownOpen) return;
+
     function handleClickOutside(event) {
-      if (statusDropdownRef.current && !statusDropdownRef.current.contains(event.target)) {
+      if (
+        statusMenuPortalRef.current && !statusMenuPortalRef.current.contains(event.target) &&
+        statusButtonRef.current && !statusButtonRef.current.contains(event.target)
+      ) {
         setStatusDropdownOpen(false);
       }
     }
+
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
         setStatusDropdownOpen(false);
+        statusButtonRef.current?.focus();
+      } else if (!isMobile && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+        event.preventDefault();
+        setFocusedStatusIndex(prev => {
+          if (event.key === 'ArrowDown') {
+            return (prev + 1) % STATUS_OPTIONS.length;
+          }
+          return (prev - 1 + STATUS_OPTIONS.length) % STATUS_OPTIONS.length;
+        });
+      } else if (!isMobile && (event.key === 'Enter' || event.key === ' ')) {
+        if (!desktopRevisitOpen) {
+          event.preventDefault();
+          const targetOpt = STATUS_OPTIONS[focusedStatusIndex];
+          if (targetOpt) {
+            if (targetOpt.value === 'revisit') {
+              handleStatusChange('revisit');
+              setDesktopRevisitOpen(true);
+            } else {
+              handleStatusChange(targetOpt.value);
+              setStatusDropdownOpen(false);
+            }
+          }
+        }
       }
     }
+
+    function handleScrollOrResize() {
+      // Closes on scrolling the page or resizing the window per Bug 1 #3
+      if (!isMobile) {
+        setStatusDropdownOpen(false);
+      }
+    }
+
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true, capture: true });
+    window.addEventListener('resize', handleScrollOrResize);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('scroll', handleScrollOrResize, { capture: true });
+      window.removeEventListener('resize', handleScrollOrResize);
     };
-  }, []);
+  }, [statusDropdownOpen, isMobile, focusedStatusIndex, desktopRevisitOpen]);
 
   // Lock body scroll when mobile status sheet is open
   useEffect(() => {
@@ -486,10 +559,17 @@ export default function Question() {
             {/* Row with status dropdown and Mistake button side by side */}
             <div className="question-status-mistake-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', width: '100%' }}>
               {/* Glass Status Selector */}
-              <div style={{ position: 'relative' }} ref={statusDropdownRef}>
+              <div style={{ position: 'relative' }}>
                 <button
+                  ref={statusButtonRef}
                   type="button"
-                  onClick={() => setStatusDropdownOpen(!statusDropdownOpen)}
+                  onClick={() => {
+                    const next = !statusDropdownOpen;
+                    setStatusDropdownOpen(next);
+                    if (next) {
+                      setDesktopRevisitOpen(currentStatus === 'revisit');
+                    }
+                  }}
                   className="btn-secondary"
                   style={{
                     width: '100%',
@@ -520,65 +600,120 @@ export default function Question() {
                   )}
                 </button>
 
-                {/* Desktop dropdown */}
-                {statusDropdownOpen && !isMobile && (
+                {/* Desktop dropdown rendered via Portal into document.body (Bug 1 #1) */}
+                {statusDropdownOpen && !isMobile && typeof document !== 'undefined' && createPortal(
                   <div
-                    className="status-desktop-dropdown"
+                    id="status-desktop-dropdown-portal"
+                    ref={statusMenuPortalRef}
+                    className="status-desktop-dropdown-portal"
                     style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 6px)',
-                      left: 0,
-                      right: 0,
-                      zIndex: 40,
-                      background: 'var(--sheet-bg)',
-                      backdropFilter: 'blur(24px)',
-                      WebkitBackdropFilter: 'blur(24px)',
-                      border: '1px solid var(--sheet-border)',
-                      borderRadius: 'var(--radius-inner)',
-                      boxShadow: 'var(--card-shadow)',
-                      padding: '6px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '3px'
+                      position: 'fixed',
+                      left: `${statusCoords.left}px`,
+                      width: `${statusCoords.width}px`,
+                      top: statusCoords.top !== undefined ? `${statusCoords.top}px` : 'auto',
+                      bottom: statusCoords.bottom !== undefined ? `${statusCoords.bottom}px` : 'auto',
+                      zIndex: 40
                     }}
                     role="listbox"
+                    aria-label="Question status options"
                   >
-                    {STATUS_OPTIONS.map((opt) => {
+                    {STATUS_OPTIONS.map((opt, idx) => {
                       const Icon = opt.icon;
                       const isSelected = opt.value === currentStatus;
+                      const isFocused = idx === focusedStatusIndex;
+                      const displayLabel = opt.label === 'Solved (Done)' ? 'Done' : opt.label;
                       return (
                         <button
                           key={opt.value}
                           type="button"
+                          role="option"
+                          aria-selected={isSelected}
                           onClick={() => {
-                            handleStatusChange(opt.value);
-                            setStatusDropdownOpen(false);
+                            if (opt.value === 'revisit') {
+                              handleStatusChange('revisit');
+                              setDesktopRevisitOpen(true);
+                            } else {
+                              handleStatusChange(opt.value);
+                              setDesktopRevisitOpen(false);
+                              setStatusDropdownOpen(false);
+                            }
                           }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '10px 12px',
-                            minHeight: '44px',
-                            borderRadius: 'var(--radius-sm)',
-                            border: 'none',
-                            background: isSelected ? 'var(--accent-soft)' : 'transparent',
-                            color: isSelected ? 'var(--text-color)' : 'var(--text-muted)',
-                            fontSize: '0.85rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            textAlign: 'left'
-                          }}
+                          onMouseEnter={() => setFocusedStatusIndex(idx)}
+                          className={`status-portal-row-btn ${isSelected ? 'selected' : ''} ${isFocused ? 'focused' : ''}`}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Icon size={15} color={opt.color} />
-                            <span>{opt.label === 'Solved (Done)' ? 'Done' : opt.label}</span>
+                            <Icon size={16} color={opt.color} style={{ flexShrink: 0 }} />
+                            <span>{displayLabel}</span>
                           </div>
-                          {isSelected && <Check size={14} color="var(--accent)" />}
+                          {isSelected && <Check size={16} color="var(--accent)" style={{ flexShrink: 0 }} />}
                         </button>
                       );
                     })}
-                  </div>
+
+                    {/* Date picker for Revisit (quick picks: tomorrow, 3 days, 1 week) per Bug 1 #2 */}
+                    {(desktopRevisitOpen || currentStatus === 'revisit') && (
+                      <div className="status-portal-revisit-section">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--revisit-color)', fontWeight: 600, fontSize: '0.8rem' }}>
+                          <Clock size={14} />
+                          <span>Select due date:</span>
+                        </div>
+                        <input
+                          type="date"
+                          value={revisitDate}
+                          onChange={(e) => {
+                            setRevisitDate(e.target.value);
+                            handleStatusChange('revisit', e.target.value);
+                          }}
+                          className="glass-input"
+                          style={{ width: '100%', height: '38px', fontSize: '14px', borderRadius: 'var(--radius-inner)', padding: '0 8px' }}
+                        />
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleQuickRevisit(1);
+                              setStatusDropdownOpen(false);
+                            }}
+                            className="btn-secondary"
+                            style={{ height: '34px', minHeight: '34px', fontSize: '0.78rem', padding: '0 4px', justifyContent: 'center' }}
+                          >
+                            Tomorrow
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleQuickRevisit(3);
+                              setStatusDropdownOpen(false);
+                            }}
+                            className="btn-secondary"
+                            style={{ height: '34px', minHeight: '34px', fontSize: '0.78rem', padding: '0 4px', justifyContent: 'center' }}
+                          >
+                            3 days
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleQuickRevisit(7);
+                              setStatusDropdownOpen(false);
+                            }}
+                            className="btn-secondary"
+                            style={{ height: '34px', minHeight: '34px', fontSize: '0.78rem', padding: '0 4px', justifyContent: 'center' }}
+                          >
+                            1 week
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setStatusDropdownOpen(false)}
+                          className="btn-primary"
+                          style={{ width: '100%', height: '36px', minHeight: '36px', fontSize: '0.825rem', fontWeight: 700, justifyContent: 'center' }}
+                        >
+                          Done
+                        </button>
+                      </div>
+                    )}
+                  </div>,
+                  document.body
                 )}
               </div>
 

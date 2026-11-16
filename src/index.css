@@ -13,7 +13,7 @@ html, body {
   min-height: 100dvh;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   position: relative;
   box-sizing: border-box;
 }
@@ -82,7 +82,7 @@ body {
   flex-direction: column;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   box-sizing: border-box;
 }
 
@@ -91,7 +91,7 @@ body {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1.5rem 1.5rem 5rem 1.5rem;
+  padding: 88px 1.5rem 5rem 1.5rem;
   flex: 1;
   min-width: 0;
   box-sizing: border-box;
@@ -147,18 +147,23 @@ input, select, textarea {
   padding: 16px 20px;
 }
 
-/* Floating Glass Top Bar (Section 4.6 & Part 2 #1) */
+/* Floating Glass Top Bar (Position: Fixed/Sticky with top: 8px, z-index: 20) */
 .topbar-wrapper {
-  position: sticky;
-  top: 16px;
+  position: fixed;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  left: 0;
+  right: 0;
   z-index: 20;
   width: 100%;
   max-width: 1280px;
-  margin: 0 auto 1.5rem auto;
+  margin: 0 auto;
   padding: 0 1.5rem;
+  box-sizing: border-box;
+  pointer-events: none;
 }
 
 .topbar-pill {
+  pointer-events: auto;
   height: 64px;
   background: var(--topbar-bg, var(--glass-surface));
   backdrop-filter: blur(24px);
@@ -534,6 +539,14 @@ input, select, textarea {
   display: block;
 }
 
+.question-pill-nav-sticky {
+  position: sticky;
+  top: 88px;
+  z-index: 10;
+  padding: 6px 0;
+  border-radius: var(--radius-pill);
+}
+
 .question-pill-nav-scroll {
   display: flex;
   gap: 8px;
@@ -553,7 +566,65 @@ input, select, textarea {
   gap: 6px;
 }
 
-/* Status Desktop Dropdown (z-index: 40) */
+/* Status Desktop Dropdown Portal (Direct child of body, z-index: 40) */
+.status-desktop-dropdown-portal {
+  position: fixed;
+  z-index: 40;
+  background: var(--sheet-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--sheet-border, var(--glass-border));
+  border-radius: var(--radius-inner, 16px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  box-sizing: border-box;
+}
+
+.status-portal-row-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  min-height: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.status-portal-row-btn:hover,
+.status-portal-row-btn.focused {
+  background: var(--glass-surface-hover, rgba(255, 255, 255, 0.08));
+}
+
+.status-portal-row-btn.selected {
+  background: var(--accent-soft);
+  color: var(--text-color);
+}
+
+.status-portal-revisit-section {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-sm);
+}
+
+/* Status Desktop Dropdown (Legacy fallback) */
 .status-desktop-dropdown {
   position: absolute;
   top: calc(100% + 6px);
@@ -570,6 +641,25 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
+
+/* Anchor and Card Scroll Margins for Sticky Top Bar (88px) */
+.glass-card,
+.question-header-card,
+.question-builds-card,
+.question-actions-card,
+.question-hint-card,
+.question-panel-card,
+.question-notes-card,
+.question-nav-footer,
+.home-greeting-section,
+.home-next-up-card,
+.home-progress-ring-card,
+.home-activity-card,
+.roadmap-header-card,
+.settings-profile-card,
+h1, h2, h3, [id] {
+  scroll-margin-top: 88px;
 }
 
 /* Due Date Chip */
@@ -838,18 +928,18 @@ input, select, textarea {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
     box-sizing: border-box !important;
   }
 
-  /* Leave 96px empty space at bottom of every page so bottom bar never covers content */
+  /* Leave 96px empty space at bottom of every page so bottom bar never covers content; top space for 56px bar + 8px top */
   .main-container {
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
-    padding: 0.5rem 16px calc(96px + env(safe-area-inset-bottom, 0px)) 16px !important;
-    overflow-x: hidden !important;
+    padding: calc(76px + env(safe-area-inset-top, 0px)) 16px calc(96px + env(safe-area-inset-bottom, 0px)) 16px !important;
+    overflow-x: clip !important;
     z-index: 1;
   }
 
@@ -873,12 +963,18 @@ input, select, textarea {
 
   /* 2. Top bar: slim glass bar, 56 px high, 8 px from top */
   .topbar-wrapper {
+    position: fixed !important;
     top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
     padding: 0 16px !important;
-    margin-bottom: 12px !important;
+    z-index: 20 !important;
+    pointer-events: none !important;
   }
 
   .topbar-pill {
+    pointer-events: auto !important;
     height: 56px !important;
     padding: 0 12px !important;
   }
