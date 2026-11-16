@@ -41,6 +41,7 @@ export default function Question() {
   const navigate = useNavigate();
 
   const { 
+    user,
     questions, 
     chapters, 
     progressMap, 
@@ -51,15 +52,83 @@ export default function Question() {
     loadingData
   } = useApp();
 
+  // Storage key for revealedHints: per-user and per-question
+  const userPrefix = user?.username ? user.username.toLowerCase() : 'guest';
+  const revealedStorageKey = `chainline_revealed_hints_${userPrefix}_${seq}`;
+
+  const getSavedRevealedHints = () => {
+    try {
+      const saved = localStorage.getItem(revealedStorageKey);
+      if (saved !== null) {
+        const val = parseInt(saved, 10);
+        if (val >= 0 && val <= 3) return val;
+      }
+    } catch (_) {}
+    return 0;
+  };
+
+  // revealedHints: 0, 1, 2, or 3. Starts at 0.
+  const [revealedHints, setRevealedHints] = useState(getSavedRevealedHints);
+
   // Active view in right panel: null (initial), 'hint-1', 'hint-2', 'hint-3', 'approach', 'code'
   const [activePanel, setActivePanel] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search);
-      return params.get('panel') || null;
-    } catch (_) {
-      return null;
-    }
+      const urlPanel = params.get('panel');
+      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code'].includes(urlPanel)) {
+        return urlPanel;
+      }
+      const saved = getSavedRevealedHints();
+      if (saved > 0) {
+        return `hint-${saved}`;
+      }
+    } catch (_) {}
+    return null;
   });
+
+  // Keep revealedHints in sync with current question & user
+  useEffect(() => {
+    const saved = getSavedRevealedHints();
+    setRevealedHints(saved);
+  }, [seq, userPrefix]);
+
+  const setRevealedHintsValue = (newVal) => {
+    const clamped = Math.max(0, Math.min(3, newVal));
+    setRevealedHints(clamped);
+    try {
+      localStorage.setItem(revealedStorageKey, String(clamped));
+    } catch (_) {}
+  };
+
+  const handleHintClick = (hintNum) => {
+    // Hint 2 locked until revealedHints >= 1; Hint 3 locked until revealedHints >= 2
+    if (hintNum === 2 && revealedHints < 1) return;
+    if (hintNum === 3 && revealedHints < 2) return;
+
+    // Advance revealedHints if clicking an unrevealed hint
+    if (hintNum > revealedHints) {
+      setRevealedHintsValue(hintNum);
+    }
+
+    // Selected state (accent fill) is on the button that was clicked last
+    setActivePanel(`hint-${hintNum}`);
+
+    // Scroll to that hint card
+    setTimeout(() => {
+      const el = document.getElementById(`hint-card-${hintNum}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 60);
+  };
+
+  const handleApproachClick = () => {
+    setActivePanel('approach');
+  };
+
+  const handleCodeClick = () => {
+    setActivePanel('code');
+  };
 
   // Approach / Code sub-tab: 'brute' or 'optimal' (SRS 2.0 Part 1: Brute force first, default is brute)
   const [approachSubTab, setApproachSubTab] = useState('brute');
@@ -231,26 +300,6 @@ export default function Question() {
   // Current user progress
   const currentProgress = progressMap[seq] || null;
 
-  // Track unlocked hints in localStorage
-  const unlockedStorageKey = `chainline_unlocked_hints_${seq}`;
-  const [unlockedHintLevel, setUnlockedHintLevel] = useState(() => {
-    try {
-      const saved = localStorage.getItem(unlockedStorageKey);
-      return saved ? parseInt(saved, 10) : 0;
-    } catch (_) {
-      return 0;
-    }
-  });
-
-  const unlockHint = (hintNum) => {
-    const newLvl = Math.max(unlockedHintLevel, hintNum);
-    setUnlockedHintLevel(newLvl);
-    try {
-      localStorage.setItem(unlockedStorageKey, String(newLvl));
-    } catch (_) {}
-    setActivePanel(`hint-${hintNum}`);
-  };
-
   // Local status override for immediate responsiveness
   const [localStatus, setLocalStatus] = useState(null);
 
@@ -271,14 +320,19 @@ export default function Question() {
       setNotes('');
     }
     setLocalStatus(null);
-    // Reset view panel or sync with URL
+    // Reset view panel or sync with URL / saved hints
     try {
       const params = new URLSearchParams(window.location.search);
       const urlPanel = params.get('panel');
       if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code'].includes(urlPanel)) {
         setActivePanel(urlPanel);
       } else {
-        setActivePanel(null);
+        const saved = getSavedRevealedHints();
+        if (saved > 0) {
+          setActivePanel(`hint-${saved}`);
+        } else {
+          setActivePanel(null);
+        }
       }
     } catch (_) {
       setActivePanel(null);
@@ -287,7 +341,7 @@ export default function Question() {
     setApproachSubTab('brute');
     setCodeSubTab('brute');
     setStatusDropdownOpen(false);
-  }, [seq]);
+  }, [seq, userPrefix]);
 
   // Fetch full solutions JSON for the chapter
   useEffect(() => {
@@ -997,7 +1051,7 @@ export default function Question() {
             <div className="question-hint-grid-row1">
               <button
                 type="button"
-                onClick={() => unlockHint(1)}
+                onClick={() => handleHintClick(1)}
                 className={`question-grid-btn ${activePanel === 'hint-1' ? 'active' : ''}`}
               >
                 <Lightbulb size={16} />
@@ -1006,23 +1060,31 @@ export default function Question() {
 
               <button
                 type="button"
-                onClick={() => unlockHint(2)}
-                disabled={unlockedHintLevel < 1}
-                className={`question-grid-btn ${activePanel === 'hint-2' ? 'active' : ''} ${unlockedHintLevel < 1 ? 'locked' : ''}`}
-                title={unlockedHintLevel < 1 ? 'Open Hint 1 first' : 'View Hint 2'}
+                onClick={() => handleHintClick(2)}
+                disabled={revealedHints < 1}
+                className={`question-grid-btn ${activePanel === 'hint-2' ? 'active' : ''} ${revealedHints < 1 ? 'locked' : ''}`}
+                style={{
+                  opacity: revealedHints < 1 ? 0.45 : 1,
+                  cursor: revealedHints < 1 ? 'not-allowed' : 'pointer'
+                }}
+                title={revealedHints < 1 ? 'Open Hint 1 first' : 'Hint 2'}
               >
-                {unlockedHintLevel < 1 ? <Lock size={15} /> : <Lightbulb size={16} />}
+                {revealedHints < 1 ? <Lock size={15} /> : <Lightbulb size={16} />}
                 <span>Hint 2</span>
               </button>
 
               <button
                 type="button"
-                onClick={() => unlockHint(3)}
-                disabled={unlockedHintLevel < 2}
-                className={`question-grid-btn ${activePanel === 'hint-3' ? 'active' : ''} ${unlockedHintLevel < 2 ? 'locked' : ''}`}
-                title={unlockedHintLevel < 2 ? 'Open Hint 2 first' : 'View Hint 3'}
+                onClick={() => handleHintClick(3)}
+                disabled={revealedHints < 2}
+                className={`question-grid-btn ${activePanel === 'hint-3' ? 'active' : ''} ${revealedHints < 2 ? 'locked' : ''}`}
+                style={{
+                  opacity: revealedHints < 2 ? 0.45 : 1,
+                  cursor: revealedHints < 2 ? 'not-allowed' : 'pointer'
+                }}
+                title={revealedHints < 2 ? 'Open Hint 2 first' : 'Hint 3'}
               >
-                {unlockedHintLevel < 2 ? <Lock size={15} /> : <Lightbulb size={16} />}
+                {revealedHints < 2 ? <Lock size={15} /> : <Lightbulb size={16} />}
                 <span>Hint 3</span>
               </button>
             </div>
@@ -1031,7 +1093,7 @@ export default function Question() {
             <div className="question-hint-grid-row2">
               <button
                 type="button"
-                onClick={() => setActivePanel('approach')}
+                onClick={handleApproachClick}
                 className={`question-grid-btn ${activePanel === 'approach' ? 'active' : ''}`}
               >
                 <BookOpen size={16} />
@@ -1040,7 +1102,7 @@ export default function Question() {
 
               <button
                 type="button"
-                onClick={() => setActivePanel('code')}
+                onClick={handleCodeClick}
                 className={`question-grid-btn ${activePanel === 'code' ? 'active' : ''}`}
               >
                 <Code2 size={16} />
@@ -1054,7 +1116,7 @@ export default function Question() {
               {/* Hint 1 */}
               <button
                 type="button"
-                onClick={() => unlockHint(1)}
+                onClick={() => handleHintClick(1)}
                 className={`pill-nav-btn ${activePanel === 'hint-1' ? 'btn-primary' : 'btn-secondary'}`}
               >
                 <Lightbulb size={14} />
@@ -1064,39 +1126,39 @@ export default function Question() {
               {/* Hint 2 */}
               <button
                 type="button"
-                onClick={() => unlockHint(2)}
-                disabled={unlockedHintLevel < 1}
+                onClick={() => handleHintClick(2)}
+                disabled={revealedHints < 1}
                 className={`pill-nav-btn ${activePanel === 'hint-2' ? 'btn-primary' : 'btn-secondary'}`}
                 style={{
-                  opacity: unlockedHintLevel < 1 ? 0.45 : 1,
-                  cursor: unlockedHintLevel < 1 ? 'not-allowed' : 'pointer'
+                  opacity: revealedHints < 1 ? 0.45 : 1,
+                  cursor: revealedHints < 1 ? 'not-allowed' : 'pointer'
                 }}
-                title={unlockedHintLevel < 1 ? 'Open Hint 1 first' : 'View Hint 2'}
+                title={revealedHints < 1 ? 'Open Hint 1 first' : 'Hint 2'}
               >
-                {unlockedHintLevel < 1 ? <Lock size={13} /> : <Lightbulb size={14} />}
+                {revealedHints < 1 ? <Lock size={13} /> : <Lightbulb size={14} />}
                 <span>Hint 2</span>
               </button>
 
               {/* Hint 3 */}
               <button
                 type="button"
-                onClick={() => unlockHint(3)}
-                disabled={unlockedHintLevel < 2}
+                onClick={() => handleHintClick(3)}
+                disabled={revealedHints < 2}
                 className={`pill-nav-btn ${activePanel === 'hint-3' ? 'btn-primary' : 'btn-secondary'}`}
                 style={{
-                  opacity: unlockedHintLevel < 2 ? 0.45 : 1,
-                  cursor: unlockedHintLevel < 2 ? 'not-allowed' : 'pointer'
+                  opacity: revealedHints < 2 ? 0.45 : 1,
+                  cursor: revealedHints < 2 ? 'not-allowed' : 'pointer'
                 }}
-                title={unlockedHintLevel < 2 ? 'Open Hint 2 first' : 'View Hint 3'}
+                title={revealedHints < 2 ? 'Open Hint 2 first' : 'Hint 3'}
               >
-                {unlockedHintLevel < 2 ? <Lock size={13} /> : <Lightbulb size={14} />}
+                {revealedHints < 2 ? <Lock size={13} /> : <Lightbulb size={14} />}
                 <span>Hint 3</span>
               </button>
 
               {/* Approach Button */}
               <button
                 type="button"
-                onClick={() => setActivePanel('approach')}
+                onClick={handleApproachClick}
                 className={`pill-nav-btn ${activePanel === 'approach' ? 'btn-primary' : 'btn-secondary'}`}
               >
                 <BookOpen size={14} />
@@ -1106,7 +1168,7 @@ export default function Question() {
               {/* Code Button */}
               <button
                 type="button"
-                onClick={() => setActivePanel('code')}
+                onClick={handleCodeClick}
                 className={`pill-nav-btn ${activePanel === 'code' ? 'btn-primary' : 'btn-secondary'}`}
               >
                 <Code2 size={14} />
@@ -1119,7 +1181,7 @@ export default function Question() {
           <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
             
             {/* INITIAL STATE: Nothing revealed yet */}
-            {activePanel === null && (
+            {activePanel === null && revealedHints === 0 && (
               <div className="guidance-empty-container" style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -1154,7 +1216,7 @@ export default function Question() {
                 <div className="guidance-buttons-group" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '4px' }}>
                   <button
                     type="button"
-                    onClick={() => unlockHint(1)}
+                    onClick={() => handleHintClick(1)}
                     className="btn-primary"
                     style={{ width: '100%', height: '48px', minHeight: '48px', fontSize: '0.9rem', fontWeight: 700, justifyContent: 'center', gap: '0.5rem' }}
                   >
@@ -1163,7 +1225,7 @@ export default function Question() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setActivePanel('code')}
+                    onClick={handleCodeClick}
                     className="btn-secondary"
                     style={{ width: '100%', height: '48px', minHeight: '48px', fontSize: '0.9rem', fontWeight: 700, justifyContent: 'center', gap: '0.5rem' }}
                   >
@@ -1175,34 +1237,44 @@ export default function Question() {
             )}
 
             {/* HINTS VIEW */}
-            {(activePanel === 'hint-1' || activePanel === 'hint-2' || activePanel === 'hint-3') && (
+            {(activePanel === 'hint-1' || activePanel === 'hint-2' || activePanel === 'hint-3' || (activePanel === null && revealedHints > 0)) && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
                 {/* Hint 1 Card */}
-                <div style={{
-                  background: activePanel === 'hint-1' ? 'var(--accent-soft)' : 'var(--glass-surface)',
-                  border: '1px solid',
-                  borderColor: activePanel === 'hint-1' ? 'var(--accent)' : 'var(--glass-border)',
-                  borderRadius: 'var(--radius-inner)',
-                  padding: '1.1rem'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--text-color)', fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.45rem' }}>
-                    <Lightbulb size={16} color="var(--accent)" />
-                    <span>Hint 1: Conceptual Nudge</span>
+                {revealedHints >= 1 && (
+                  <div
+                    id="hint-card-1"
+                    style={{
+                      background: activePanel === 'hint-1' ? 'var(--accent-soft)' : 'var(--glass-surface)',
+                      border: '1px solid',
+                      borderColor: activePanel === 'hint-1' ? 'var(--accent)' : 'var(--glass-border)',
+                      borderRadius: 'var(--radius-inner)',
+                      padding: '1.1rem',
+                      transition: 'all 150ms ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--text-color)', fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.45rem' }}>
+                      <Lightbulb size={16} color="var(--accent)" />
+                      <span>Hint 1: Conceptual Nudge</span>
+                    </div>
+                    <p style={{ fontSize: '0.925rem', color: 'var(--text-color)', lineHeight: 1.55 }}>
+                      {hints[0]}
+                    </p>
                   </div>
-                  <p style={{ fontSize: '0.925rem', color: 'var(--text-color)', lineHeight: 1.55 }}>
-                    {hints[0]}
-                  </p>
-                </div>
+                )}
 
                 {/* Hint 2 Card */}
-                {unlockedHintLevel >= 2 && (
-                  <div style={{
-                    background: activePanel === 'hint-2' ? 'var(--accent-soft)' : 'var(--glass-surface)',
-                    border: '1px solid',
-                    borderColor: activePanel === 'hint-2' ? 'var(--accent)' : 'var(--glass-border)',
-                    borderRadius: 'var(--radius-inner)',
-                    padding: '1.1rem'
-                  }}>
+                {revealedHints >= 2 && (
+                  <div
+                    id="hint-card-2"
+                    style={{
+                      background: activePanel === 'hint-2' ? 'var(--accent-soft)' : 'var(--glass-surface)',
+                      border: '1px solid',
+                      borderColor: activePanel === 'hint-2' ? 'var(--accent)' : 'var(--glass-border)',
+                      borderRadius: 'var(--radius-inner)',
+                      padding: '1.1rem',
+                      transition: 'all 150ms ease'
+                    }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--text-color)', fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.45rem' }}>
                       <Lightbulb size={16} color="var(--accent)" />
                       <span>Hint 2: Pattern Identification</span>
@@ -1214,14 +1286,18 @@ export default function Question() {
                 )}
 
                 {/* Hint 3 Card */}
-                {unlockedHintLevel >= 3 && (
-                  <div style={{
-                    background: activePanel === 'hint-3' ? 'var(--accent-soft)' : 'var(--glass-surface)',
-                    border: '1px solid',
-                    borderColor: activePanel === 'hint-3' ? 'var(--accent)' : 'var(--glass-border)',
-                    borderRadius: 'var(--radius-inner)',
-                    padding: '1.1rem'
-                  }}>
+                {revealedHints >= 3 && (
+                  <div
+                    id="hint-card-3"
+                    style={{
+                      background: activePanel === 'hint-3' ? 'var(--accent-soft)' : 'var(--glass-surface)',
+                      border: '1px solid',
+                      borderColor: activePanel === 'hint-3' ? 'var(--accent)' : 'var(--glass-border)',
+                      borderRadius: 'var(--radius-inner)',
+                      padding: '1.1rem',
+                      transition: 'all 150ms ease'
+                    }}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--text-color)', fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.45rem' }}>
                       <Lightbulb size={16} color="var(--accent)" />
                       <span>Hint 3: Invariant & State Formulation</span>
@@ -1232,42 +1308,33 @@ export default function Question() {
                   </div>
                 )}
 
-                {/* Next Action in sequence */}
-                <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem', gap: '0.5rem' }}>
-                  {activePanel === 'hint-1' && (
-                    <button
-                      type="button"
-                      onClick={() => unlockHint(2)}
-                      className="btn-primary"
-                      style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', minHeight: '44px' }}
-                    >
-                      <span>Unlock Hint 2</span>
-                      <ArrowRight size={14} />
-                    </button>
-                  )}
-                  {activePanel === 'hint-2' && (
-                    <button
-                      type="button"
-                      onClick={() => unlockHint(3)}
-                      className="btn-primary"
-                      style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', minHeight: '44px' }}
-                    >
-                      <span>Unlock Hint 3</span>
-                      <ArrowRight size={14} />
-                    </button>
-                  )}
-                  {activePanel === 'hint-3' && (
-                    <button
-                      type="button"
-                      onClick={() => setActivePanel('approach')}
-                      className="btn-primary"
-                      style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', minHeight: '44px' }}
-                    >
-                      <span>View Approach</span>
-                      <ArrowRight size={14} />
-                    </button>
-                  )}
-                </div>
+                {/* Reveal Next Action Button (below hints) */}
+                {revealedHints < 3 && (
+                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', paddingTop: '1rem' }}>
+                    {revealedHints === 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleHintClick(2)}
+                        className="btn-primary"
+                        style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', minHeight: '44px', gap: '0.4rem' }}
+                      >
+                        <span>Reveal Hint 2</span>
+                        <ArrowRight size={14} />
+                      </button>
+                    )}
+                    {revealedHints === 2 && (
+                      <button
+                        type="button"
+                        onClick={() => handleHintClick(3)}
+                        className="btn-primary"
+                        style={{ fontSize: '0.85rem', padding: '0.5rem 1rem', minHeight: '44px', gap: '0.4rem' }}
+                      >
+                        <span>Reveal Hint 3</span>
+                        <ArrowRight size={14} />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
