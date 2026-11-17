@@ -22,11 +22,15 @@ import {
   FileText,
   ChevronDown,
   ChevronUp,
-  X
+  X,
+  Briefcase
 } from 'lucide-react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-python';
+import CompanyLogo from '../components/CompanyLogo';
+import SolveTimer from '../components/SolveTimer';
+import MyCodePanel from '../components/MyCodePanel';
 
 const STATUS_OPTIONS = [
   { value: 'todo', label: 'Todo', icon: Circle, color: 'var(--text-muted)' },
@@ -45,6 +49,9 @@ export default function Question() {
     questions, 
     chapters, 
     progressMap, 
+    statsMap,
+    hasSolutionMap,
+    saveQuestionStats,
     updateProgress, 
     showToast,
     language,
@@ -70,12 +77,12 @@ export default function Question() {
   // revealedHints: 0, 1, 2, or 3. Starts at 0.
   const [revealedHints, setRevealedHints] = useState(getSavedRevealedHints);
 
-  // Active view in right panel: null (initial), 'hint-1', 'hint-2', 'hint-3', 'approach', 'code'
+  // Active view in right panel: null (initial), 'hint-1', 'hint-2', 'hint-3', 'approach', 'code', 'mycode'
   const [activePanel, setActivePanel] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const urlPanel = params.get('panel');
-      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code'].includes(urlPanel)) {
+      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code', 'mycode'].includes(urlPanel)) {
         return urlPanel;
       }
       const saved = getSavedRevealedHints();
@@ -128,6 +135,10 @@ export default function Question() {
 
   const handleCodeClick = () => {
     setActivePanel('code');
+  };
+
+  const handleMyCodeClick = () => {
+    setActivePanel('mycode');
   };
 
   // Approach / Code sub-tab: 'brute' or 'optimal' (SRS 2.0 Part 1: Brute force first, default is brute)
@@ -293,7 +304,7 @@ export default function Question() {
   }, [seq, questions]);
 
   const nextQuestion = useMemo(() => {
-    if (seq >= 300) return null;
+    if (seq >= questions.length) return null;
     return questions.find(q => q.seq === seq + 1) || null;
   }, [seq, questions]);
 
@@ -324,7 +335,7 @@ export default function Question() {
     try {
       const params = new URLSearchParams(window.location.search);
       const urlPanel = params.get('panel');
-      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code'].includes(urlPanel)) {
+      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code', 'mycode'].includes(urlPanel)) {
         setActivePanel(urlPanel);
       } else {
         const saved = getSavedRevealedHints();
@@ -415,7 +426,7 @@ export default function Question() {
       <div className="glass-card" style={{ textAlign: 'center', padding: '3rem', margin: '3rem auto', maxWidth: '540px' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Question not found</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-          Sequence #{seq} does not exist in the 300 roadmap.
+          Sequence #{seq} does not exist in the roadmap.
         </p>
         <Link to="/roadmap" className="btn-primary" style={{ display: 'inline-flex', minHeight: '44px' }}>
           Back to Roadmap
@@ -453,6 +464,8 @@ export default function Question() {
     }
   };
 
+  const [slowPromptOpen, setSlowPromptOpen] = useState(false);
+
   const handleStatusChange = (newStatus, customDue = null) => {
     setLocalStatus(newStatus);
     updateProgress({
@@ -460,6 +473,34 @@ export default function Question() {
       status: newStatus,
       dueDate: newStatus === 'revisit' ? (customDue || revisitDate) : null
     });
+
+    if (newStatus === 'done') {
+      const sec = statsMap[seq]?.seconds || 0;
+      const diff = (question?.difficulty || 'Medium').toLowerCase();
+      let threshold = 2400; // 40m Med
+      if (diff === 'easy') threshold = 1200; // 20m Easy
+      if (diff === 'hard') threshold = 3600; // 60m Hard
+
+      if (sec > threshold) {
+        setSlowPromptOpen(true);
+      }
+    }
+  };
+
+  const handleSlowYes = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    const dateStr = d.toISOString().split('T')[0];
+    setRevisitDate(dateStr);
+    handleStatusChange('revisit', dateStr);
+    saveQuestionStats(seq, { slow: true });
+    setSlowPromptOpen(false);
+    showToast('Scheduled revisit for tomorrow', 'info');
+  };
+
+  const handleSlowNo = () => {
+    saveQuestionStats(seq, { slow: true });
+    setSlowPromptOpen(false);
   };
 
   const handleMistakeToggle = () => {
@@ -589,6 +630,28 @@ export default function Question() {
               {richSolution?.whyNext || `Directly reinforces algorithmic techniques from #${buildsOnQuestion ? buildsOnQuestion.seq : 'core concepts'}.`}
             </p>
           </div>
+
+          {/* SECTION B.2: Asked at row (only when tagged questions have companies per SRS 3.0 Section 4.4) */}
+          {question.companies && question.companies.length > 0 && (
+            <div className="glass-card question-asked-at-card" style={{
+              padding: '12px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '12px',
+              width: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <span style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+                Asked at:
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                {question.companies.map((slug) => (
+                  <CompanyLogo key={slug} slug={slug} size={isMobile ? 28 : 36} />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* SECTION C: Open on LeetCode full-width + Status & Mistake row (Order 3 on mobile) */}
           <div className="glass-card question-actions-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.85rem', width: '100%', boxSizing: 'border-box' }}>
@@ -940,6 +1003,13 @@ export default function Question() {
             )}
           </div>
 
+          {/* SECTION C.2: Solve Timer Row (SRS 3.0 Section 6.1) */}
+          <SolveTimer 
+            seq={seq} 
+            difficulty={question.difficulty} 
+            isDone={currentStatus === 'done'}
+          />
+
           {/* SECTION G: Personal Notes in Collapsible Card (Order 6 on mobile, closed by default) */}
           <div className="glass-card question-notes-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.65rem', width: '100%', boxSizing: 'border-box' }}>
             <button
@@ -1089,7 +1159,7 @@ export default function Question() {
               </button>
             </div>
 
-            {/* Row 2: Approach, Code */}
+            {/* Row 2: Approach, Code, My code (SRS 3.0 Section 10: Grid 3 + 3) */}
             <div className="question-hint-grid-row2">
               <button
                 type="button"
@@ -1107,6 +1177,27 @@ export default function Question() {
               >
                 <Code2 size={16} />
                 <span>Code</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleMyCodeClick}
+                className={`question-grid-btn ${activePanel === 'mycode' ? 'active' : ''}`}
+                style={{ position: 'relative' }}
+              >
+                <Code2 size={16} />
+                <span>My code</span>
+                {hasSolutionMap[seq] && (
+                  <span style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: 'var(--accent)',
+                    position: 'absolute',
+                    top: 6,
+                    right: 8
+                  }} />
+                )}
               </button>
             </div>
           </div>
@@ -1174,11 +1265,36 @@ export default function Question() {
                 <Code2 size={14} />
                 <span>Code</span>
               </button>
+
+              {/* My Code Button (SRS 3.0 Section 7 & 10) */}
+              <button
+                type="button"
+                onClick={handleMyCodeClick}
+                className={`pill-nav-btn ${activePanel === 'mycode' ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ position: 'relative' }}
+              >
+                <Code2 size={14} />
+                <span>My code</span>
+                {hasSolutionMap[seq] && (
+                  <span style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: 'var(--accent)',
+                    position: 'absolute',
+                    top: 6,
+                    right: 6
+                  }} />
+                )}
+              </button>
             </div>
           </div>
 
           {/* SECTION E & F: Open Panel at Full Width (Order 5 on mobile) */}
-          <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
+          {activePanel === 'mycode' ? (
+            <MyCodePanel seq={seq} richSolution={richSolution} />
+          ) : (
+            <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
             
             {/* INITIAL STATE: Nothing revealed yet */}
             {activePanel === null && revealedHints === 0 && (
@@ -1661,10 +1777,64 @@ export default function Question() {
             )}
 
           </div>
+        )}
 
         </div>
 
       </div>
+
+      {/* Slow Rule Prompt Toast (SRS 3.0 Section 6.3) */}
+      {slowPromptOpen && (
+        <div 
+          className="slow-rule-toast" 
+          style={{
+            position: 'fixed',
+            bottom: isMobile ? '80px' : '24px',
+            right: isMobile ? '16px' : '24px',
+            left: isMobile ? '16px' : 'auto',
+            maxWidth: isMobile ? 'calc(100% - 32px)' : '400px',
+            background: 'var(--glass-surface-solid)',
+            border: '1px solid var(--accent)',
+            borderRadius: 'var(--radius-card)',
+            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.45)',
+            padding: '16px 20px',
+            zIndex: 60,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Clock size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.925rem', fontWeight: 700, color: 'var(--text-color)' }}>
+              That took a while. Add it to Revisit?
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleSlowNo}
+              className="btn-secondary"
+              style={{ minHeight: '38px', height: '38px', padding: '0 16px', fontSize: '0.85rem' }}
+            >
+              No
+            </button>
+            <button
+              type="button"
+              onClick={handleSlowYes}
+              className="btn-primary"
+              style={{ minHeight: '38px', height: '38px', padding: '0 16px', fontSize: '0.85rem' }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Legal disclaimer footer (SRS 3.0 Section 4.2 item 3) */}
+      <footer style={{ textAlign: 'center', padding: '1.5rem 0', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+        Company names and logos belong to their owners. Chainline is not affiliated with them.
+      </footer>
 
     </div>
   );

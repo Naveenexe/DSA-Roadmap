@@ -17,7 +17,8 @@ import {
 import { getFriendlyErrorMessage } from '../services/api';
 
 export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
-  const { login, register, theme, setTheme } = useApp();
+  const { login, register, theme, setTheme, questions } = useApp();
+  const totalQuestions = questions?.length || 500;
   const [tab, setTab] = useState(initialTab); // 'signin' or 'signup'
 
   // Form states
@@ -160,10 +161,10 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
 
           <div>
             <h1 className="auth-hero-heading">
-              Solve 300, <span style={{ fontStyle: 'italic', fontWeight: 800 }}>in order.</span>
+              Solve {totalQuestions}, <span style={{ fontStyle: 'italic', fontWeight: 800 }}>in order.</span>
             </h1>
             <p className="auth-hero-tagline">
-              A curated chain of 300 LeetCode questions, each building directly on the last.
+              A curated chain of {totalQuestions} LeetCode questions, each building directly on the last.
             </p>
           </div>
 
@@ -191,7 +192,7 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
               </div>
               <div>
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                  84 of 300 Questions Solved
+                  {Math.round(totalQuestions * 0.28)} of {totalQuestions} Questions Solved
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   Contiguous algorithmic chain from Foundation to Advanced

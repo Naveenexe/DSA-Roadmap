@@ -1,0 +1,534 @@
+[
+  {
+    "seq": 301,
+    "whyNext": "Builds directly on #1: transitions from simpler approach to optimal pattern for Contains Duplicate II.",
+    "brute": {
+      "idea": "Compare every pair within distance k",
+      "steps": [
+        "Identify problem requirements for Contains Duplicate II.",
+        "Explore all states or exhaustive candidates (Compare every pair within distance k).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(nk).",
+      "time": "O(nk)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(nk)\nclass Solution {\n    // Compare every pair within distance k\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(nk)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare every pair within distance k\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window set or a map of last index",
+      "steps": [
+        "Leverage structural invariants of Contains Duplicate II.",
+        "Apply optimal pattern: Sliding window set or a map of last index.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Sliding window set or a map of last index\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Sliding window set or a map of last index\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Contains Duplicate II. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Sliding window set or a map of last index.",
+      "Detailed formulation: Sliding window set or a map of last index. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 302,
+    "whyNext": "Builds directly on #301: transitions from simpler approach to optimal pattern for Intersection of Two Arrays.",
+    "brute": {
+      "idea": "Compare every pair",
+      "steps": [
+        "Identify problem requirements for Intersection of Two Arrays.",
+        "Explore all states or exhaustive candidates (Compare every pair).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
+      "time": "O(mn)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Compare every pair\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare every pair\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two sets intersection",
+      "steps": [
+        "Leverage structural invariants of Intersection of Two Arrays.",
+        "Apply optimal pattern: Two sets intersection.",
+        "Achieve optimal time complexity of O(m+n)."
+      ],
+      "time": "O(m+n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(m+n)\nclass Solution {\n    // Two sets intersection\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Two sets intersection\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Intersection of Two Arrays. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Two sets intersection.",
+      "Detailed formulation: Two sets intersection. Implement this in O(m+n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 303,
+    "whyNext": "Builds directly on #302: transitions from simpler approach to optimal pattern for Intersection of Two Arrays II.",
+    "brute": {
+      "idea": "Compare and remove matches",
+      "steps": [
+        "Identify problem requirements for Intersection of Two Arrays II.",
+        "Explore all states or exhaustive candidates (Compare and remove matches).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
+      "time": "O(mn)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Compare and remove matches\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare and remove matches\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count map, or sort with two pointers",
+      "steps": [
+        "Leverage structural invariants of Intersection of Two Arrays II.",
+        "Apply optimal pattern: Count map, or sort with two pointers.",
+        "Achieve optimal time complexity of O(m+n)."
+      ],
+      "time": "O(m+n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(m+n)\nclass Solution {\n    // Count map, or sort with two pointers\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Count map, or sort with two pointers\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Intersection of Two Arrays II. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Count map, or sort with two pointers.",
+      "Detailed formulation: Count map, or sort with two pointers. Implement this in O(m+n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 304,
+    "whyNext": "Builds directly on #303: transitions from simpler approach to optimal pattern for Unique Number of Occurrences.",
+    "brute": {
+      "idea": "Count each value by scanning",
+      "steps": [
+        "Identify problem requirements for Unique Number of Occurrences.",
+        "Explore all states or exhaustive candidates (Count each value by scanning).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Count each value by scanning\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Count each value by scanning\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count map plus a set of the counts",
+      "steps": [
+        "Leverage structural invariants of Unique Number of Occurrences.",
+        "Apply optimal pattern: Count map plus a set of the counts.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Count map plus a set of the counts\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Count map plus a set of the counts\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Unique Number of Occurrences. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Count map plus a set of the counts.",
+      "Detailed formulation: Count map plus a set of the counts. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 305,
+    "whyNext": "Builds directly on #13: transitions from simpler approach to optimal pattern for Find All Numbers Disappeared in an Array.",
+    "brute": {
+      "idea": "Set of seen numbers",
+      "steps": [
+        "Identify problem requirements for Find All Numbers Disappeared in an Array.",
+        "Explore all states or exhaustive candidates (Set of seen numbers).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Set of seen numbers\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Set of seen numbers\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Mark seen by negating nums[abs(x)-1]",
+      "steps": [
+        "Leverage structural invariants of Find All Numbers Disappeared in an Array.",
+        "Apply optimal pattern: Mark seen by negating nums[abs(x)-1].",
+        "Achieve optimal time complexity of O(1) space."
+      ],
+      "time": "O(1) space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) space\nclass Solution {\n    // Mark seen by negating nums[abs(x)-1]\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Mark seen by negating nums[abs(x)-1]\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Find All Numbers Disappeared in an Array. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Mark seen by negating nums[abs(x)-1].",
+      "Detailed formulation: Mark seen by negating nums[abs(x)-1]. Implement this in O(1) space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 306,
+    "whyNext": "Builds directly on #305: transitions from simpler approach to optimal pattern for Set Mismatch.",
+    "brute": {
+      "idea": "Count map for occurrences",
+      "steps": [
+        "Identify problem requirements for Set Mismatch.",
+        "Explore all states or exhaustive candidates (Count map for occurrences).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Count map for occurrences\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Count map for occurrences\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Negation marking or sum formulas",
+      "steps": [
+        "Leverage structural invariants of Set Mismatch.",
+        "Apply optimal pattern: Negation marking or sum formulas.",
+        "Achieve optimal time complexity of O(1) space."
+      ],
+      "time": "O(1) space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) space\nclass Solution {\n    // Negation marking or sum formulas\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Negation marking or sum formulas\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Set Mismatch. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Negation marking or sum formulas.",
+      "Detailed formulation: Negation marking or sum formulas. Implement this in O(1) space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 307,
+    "whyNext": "Builds directly on #306: transitions from simpler approach to optimal pattern for Max Consecutive Ones.",
+    "brute": {
+      "idea": "Check every subarray start",
+      "steps": [
+        "Identify problem requirements for Max Consecutive Ones.",
+        "Explore all states or exhaustive candidates (Check every subarray start).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Check every subarray start\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every subarray start\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "One pass with a running count",
+      "steps": [
+        "Leverage structural invariants of Max Consecutive Ones.",
+        "Apply optimal pattern: One pass with a running count.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // One pass with a running count\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # One pass with a running count\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Max Consecutive Ones. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: One pass with a running count.",
+      "Detailed formulation: One pass with a running count. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 308,
+    "whyNext": "Builds directly on #307: transitions from simpler approach to optimal pattern for Non-decreasing Array.",
+    "brute": {
+      "idea": "Try changing each element",
+      "steps": [
+        "Identify problem requirements for Non-decreasing Array.",
+        "Explore all states or exhaustive candidates (Try changing each element).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Try changing each element\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try changing each element\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "One pass, fix at first drop",
+      "steps": [
+        "Leverage structural invariants of Non-decreasing Array.",
+        "Apply optimal pattern: One pass, fix at first drop.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // One pass, fix at first drop\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # One pass, fix at first drop\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Non-decreasing Array. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: One pass, fix at first drop.",
+      "Detailed formulation: One pass, fix at first drop. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 309,
+    "whyNext": "Builds directly on #308: transitions from simpler approach to optimal pattern for Shortest Unsorted Continuous Subarray.",
+    "brute": {
+      "idea": "Sort a copy and compare boundaries",
+      "steps": [
+        "Identify problem requirements for Shortest Unsorted Continuous Subarray.",
+        "Explore all states or exhaustive candidates (Sort a copy and compare boundaries).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n log n).",
+      "time": "O(n log n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort a copy and compare boundaries\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Sort a copy and compare boundaries\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Scan with running max and min for the two ends",
+      "steps": [
+        "Leverage structural invariants of Shortest Unsorted Continuous Subarray.",
+        "Apply optimal pattern: Scan with running max and min for the two ends.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Scan with running max and min for the two ends\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Scan with running max and min for the two ends\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Shortest Unsorted Continuous Subarray. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Scan with running max and min for the two ends.",
+      "Detailed formulation: Scan with running max and min for the two ends. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 310,
+    "whyNext": "Builds directly on #9: transitions from simpler approach to optimal pattern for Running Sum of 1d Array.",
+    "brute": {
+      "idea": "Re-sum for each index",
+      "steps": [
+        "Identify problem requirements for Running Sum of 1d Array.",
+        "Explore all states or exhaustive candidates (Re-sum for each index).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Re-sum for each index\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Re-sum for each index\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Prefix sum in place",
+      "steps": [
+        "Leverage structural invariants of Running Sum of 1d Array.",
+        "Apply optimal pattern: Prefix sum in place.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Prefix sum in place\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Prefix sum in place\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Running Sum of 1d Array. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Prefix sum in place.",
+      "Detailed formulation: Prefix sum in place. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 311,
+    "whyNext": "Builds directly on #310: transitions from simpler approach to optimal pattern for Range Sum Query - Immutable.",
+    "brute": {
+      "idea": "Sum range on every query",
+      "steps": [
+        "Identify problem requirements for Range Sum Query - Immutable.",
+        "Explore all states or exhaustive candidates (Sum range on every query).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) per query.",
+      "time": "O(n) per query",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) per query\nclass Solution {\n    // Sum range on every query\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) per query\nclass Solution:\n    def solveBrute(self, *args):\n        # Sum range on every query\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Prefix sums array answering in O(1)",
+      "steps": [
+        "Leverage structural invariants of Range Sum Query - Immutable.",
+        "Apply optimal pattern: Prefix sums array answering in O(1).",
+        "Achieve optimal time complexity of O(1) per query."
+      ],
+      "time": "O(1) per query",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) per query\nclass Solution {\n    // Prefix sums array answering in O(1)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) per query\nclass Solution:\n    def solve(self, *args):\n        # Prefix sums array answering in O(1)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Range Sum Query - Immutable. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Prefix sums array answering in O(1).",
+      "Detailed formulation: Prefix sums array answering in O(1). Implement this in O(1) per query without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 312,
+    "whyNext": "Builds directly on #311: transitions from simpler approach to optimal pattern for Range Sum Query 2D - Immutable.",
+    "brute": {
+      "idea": "Sum rectangle on every query",
+      "steps": [
+        "Identify problem requirements for Range Sum Query 2D - Immutable.",
+        "Explore all states or exhaustive candidates (Sum rectangle on every query).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn) per query.",
+      "time": "O(mn) per query",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn) per query\nclass Solution {\n    // Sum rectangle on every query\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn) per query\nclass Solution:\n    def solveBrute(self, *args):\n        # Sum rectangle on every query\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "2D prefix sums inclusion-exclusion",
+      "steps": [
+        "Leverage structural invariants of Range Sum Query 2D - Immutable.",
+        "Apply optimal pattern: 2D prefix sums inclusion-exclusion.",
+        "Achieve optimal time complexity of O(1) per query."
+      ],
+      "time": "O(1) per query",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) per query\nclass Solution {\n    // 2D prefix sums inclusion-exclusion\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) per query\nclass Solution:\n    def solve(self, *args):\n        # 2D prefix sums inclusion-exclusion\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Range Sum Query 2D - Immutable. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: 2D prefix sums inclusion-exclusion.",
+      "Detailed formulation: 2D prefix sums inclusion-exclusion. Implement this in O(1) per query without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 313,
+    "whyNext": "Builds directly on #310: transitions from simpler approach to optimal pattern for Find Pivot Index.",
+    "brute": {
+      "idea": "Sum both sides for each index",
+      "steps": [
+        "Identify problem requirements for Find Pivot Index.",
+        "Explore all states or exhaustive candidates (Sum both sides for each index).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Sum both sides for each index\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Sum both sides for each index\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Total sum and running left sum",
+      "steps": [
+        "Leverage structural invariants of Find Pivot Index.",
+        "Apply optimal pattern: Total sum and running left sum.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Total sum and running left sum\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Total sum and running left sum\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Find Pivot Index. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Total sum and running left sum.",
+      "Detailed formulation: Total sum and running left sum. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 314,
+    "whyNext": "Builds directly on #11: transitions from simpler approach to optimal pattern for Continuous Subarray Sum.",
+    "brute": {
+      "idea": "Check every subarray",
+      "steps": [
+        "Identify problem requirements for Continuous Subarray Sum.",
+        "Explore all states or exhaustive candidates (Check every subarray).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Check every subarray\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every subarray\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Prefix remainder map with first seen index",
+      "steps": [
+        "Leverage structural invariants of Continuous Subarray Sum.",
+        "Apply optimal pattern: Prefix remainder map with first seen index.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Prefix remainder map with first seen index\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Prefix remainder map with first seen index\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Continuous Subarray Sum. Can you prune redundant work?",
+      "Apply the standard CH-19 pattern: Prefix remainder map with first seen index.",
+      "Detailed formulation: Prefix remainder map with first seen index. Implement this in O(n) without nested full re-scans."
+    ]
+  }
+]

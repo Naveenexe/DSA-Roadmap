@@ -1,0 +1,534 @@
+[
+  {
+    "seq": 329,
+    "whyNext": "Builds directly on #22: transitions from simpler approach to optimal pattern for Reverse String.",
+    "brute": {
+      "idea": "Copy into new reversed array",
+      "steps": [
+        "Identify problem requirements for Reverse String.",
+        "Explore all states or exhaustive candidates (Copy into new reversed array).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Copy into new reversed array\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Copy into new reversed array\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers converging inward with swaps",
+      "steps": [
+        "Leverage structural invariants of Reverse String.",
+        "Apply optimal pattern: Two pointers converging inward with swaps.",
+        "Achieve optimal time complexity of O(1) space."
+      ],
+      "time": "O(1) space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) space\nclass Solution {\n    // Two pointers converging inward with swaps\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Two pointers converging inward with swaps\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Reverse String. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Two pointers converging inward with swaps.",
+      "Detailed formulation: Two pointers converging inward with swaps. Implement this in O(1) space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 330,
+    "whyNext": "Builds directly on #329: transitions from simpler approach to optimal pattern for Reverse Vowels of a String.",
+    "brute": {
+      "idea": "Collect vowels to array and refill in reverse",
+      "steps": [
+        "Identify problem requirements for Reverse Vowels of a String.",
+        "Explore all states or exhaustive candidates (Collect vowels to array and refill in reverse).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Collect vowels to array and refill in reverse\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Collect vowels to array and refill in reverse\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers inward skipping consonants",
+      "steps": [
+        "Leverage structural invariants of Reverse Vowels of a String.",
+        "Apply optimal pattern: Two pointers inward skipping consonants.",
+        "Achieve optimal time complexity of O(1) extra."
+      ],
+      "time": "O(1) extra",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) extra\nclass Solution {\n    // Two pointers inward skipping consonants\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) extra\nclass Solution:\n    def solve(self, *args):\n        # Two pointers inward skipping consonants\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Reverse Vowels of a String. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Two pointers inward skipping consonants.",
+      "Detailed formulation: Two pointers inward skipping consonants. Implement this in O(1) extra without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 331,
+    "whyNext": "Builds directly on #30: transitions from simpler approach to optimal pattern for Remove Element.",
+    "brute": {
+      "idea": "Copy matching elements to a new array",
+      "steps": [
+        "Identify problem requirements for Remove Element.",
+        "Explore all states or exhaustive candidates (Copy matching elements to a new array).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Copy matching elements to a new array\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Copy matching elements to a new array\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Fast and slow runner pointers in place",
+      "steps": [
+        "Leverage structural invariants of Remove Element.",
+        "Apply optimal pattern: Fast and slow runner pointers in place.",
+        "Achieve optimal time complexity of O(1) space."
+      ],
+      "time": "O(1) space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) space\nclass Solution {\n    // Fast and slow runner pointers in place\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Fast and slow runner pointers in place\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Remove Element. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Fast and slow runner pointers in place.",
+      "Detailed formulation: Fast and slow runner pointers in place. Implement this in O(1) space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 332,
+    "whyNext": "Builds directly on #84: transitions from simpler approach to optimal pattern for Merge Sorted Array.",
+    "brute": {
+      "idea": "Copy all elements and sort",
+      "steps": [
+        "Identify problem requirements for Merge Sorted Array.",
+        "Explore all states or exhaustive candidates (Copy all elements and sort).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O((m+n) log(m+n)).",
+      "time": "O((m+n) log(m+n))",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O((m+n) log(m+n))\nclass Solution {\n    // Copy all elements and sort\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O((m+n) log(m+n))\nclass Solution:\n    def solveBrute(self, *args):\n        # Copy all elements and sort\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Three pointers placing largest elements from back",
+      "steps": [
+        "Leverage structural invariants of Merge Sorted Array.",
+        "Apply optimal pattern: Three pointers placing largest elements from back.",
+        "Achieve optimal time complexity of O(m+n)."
+      ],
+      "time": "O(m+n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(m+n)\nclass Solution {\n    // Three pointers placing largest elements from back\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Three pointers placing largest elements from back\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Merge Sorted Array. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Three pointers placing largest elements from back.",
+      "Detailed formulation: Three pointers placing largest elements from back. Implement this in O(m+n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 333,
+    "whyNext": "Builds directly on #331: transitions from simpler approach to optimal pattern for Is Subsequence.",
+    "brute": {
+      "idea": "Generate all subsequences",
+      "steps": [
+        "Identify problem requirements for Is Subsequence.",
+        "Explore all states or exhaustive candidates (Generate all subsequences).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Generate all subsequences\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all subsequences\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers advancing when characters match",
+      "steps": [
+        "Leverage structural invariants of Is Subsequence.",
+        "Apply optimal pattern: Two pointers advancing when characters match.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Two pointers advancing when characters match\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Two pointers advancing when characters match\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Is Subsequence. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Two pointers advancing when characters match.",
+      "Detailed formulation: Two pointers advancing when characters match. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 334,
+    "whyNext": "Builds directly on #24: transitions from simpler approach to optimal pattern for Max Number of K-Sum Pairs.",
+    "brute": {
+      "idea": "Check every pair and remove",
+      "steps": [
+        "Identify problem requirements for Max Number of K-Sum Pairs.",
+        "Explore all states or exhaustive candidates (Check every pair and remove).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Check every pair and remove\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every pair and remove\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sort and two pointers, or hash count map",
+      "steps": [
+        "Leverage structural invariants of Max Number of K-Sum Pairs.",
+        "Apply optimal pattern: Sort and two pointers, or hash count map.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort and two pointers, or hash count map\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Sort and two pointers, or hash count map\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Max Number of K-Sum Pairs. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Sort and two pointers, or hash count map.",
+      "Detailed formulation: Sort and two pointers, or hash count map. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 335,
+    "whyNext": "Builds directly on #334: transitions from simpler approach to optimal pattern for Boats to Save People.",
+    "brute": {
+      "idea": "Try all combinations of pairings",
+      "steps": [
+        "Identify problem requirements for Boats to Save People.",
+        "Explore all states or exhaustive candidates (Try all combinations of pairings).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all combinations of pairings\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all combinations of pairings\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sort, pair heaviest with lightest if weight allows",
+      "steps": [
+        "Leverage structural invariants of Boats to Save People.",
+        "Apply optimal pattern: Sort, pair heaviest with lightest if weight allows.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort, pair heaviest with lightest if weight allows\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Sort, pair heaviest with lightest if weight allows\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Boats to Save People. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Sort, pair heaviest with lightest if weight allows.",
+      "Detailed formulation: Sort, pair heaviest with lightest if weight allows. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 336,
+    "whyNext": "Builds directly on #24: transitions from simpler approach to optimal pattern for Sum of Square Numbers.",
+    "brute": {
+      "idea": "Try every pair a and b up to c",
+      "steps": [
+        "Identify problem requirements for Sum of Square Numbers.",
+        "Explore all states or exhaustive candidates (Try every pair a and b up to c).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(c).",
+      "time": "O(c)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(c)\nclass Solution {\n    // Try every pair a and b up to c\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(c)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try every pair a and b up to c\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers from 0 and sqrt(c)",
+      "steps": [
+        "Leverage structural invariants of Sum of Square Numbers.",
+        "Apply optimal pattern: Two pointers from 0 and sqrt(c).",
+        "Achieve optimal time complexity of O(√c)."
+      ],
+      "time": "O(√c)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(√c)\nclass Solution {\n    // Two pointers from 0 and sqrt(c)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(√c)\nclass Solution:\n    def solve(self, *args):\n        # Two pointers from 0 and sqrt(c)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Sum of Square Numbers. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Two pointers from 0 and sqrt(c).",
+      "Detailed formulation: Two pointers from 0 and sqrt(c). Implement this in O(√c) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 337,
+    "whyNext": "Builds directly on #37: transitions from simpler approach to optimal pattern for Maximum Number of Vowels in a Substring of Given Length.",
+    "brute": {
+      "idea": "Count vowels in every window from scratch",
+      "steps": [
+        "Identify problem requirements for Maximum Number of Vowels in a Substring of Given Length.",
+        "Explore all states or exhaustive candidates (Count vowels in every window from scratch).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(nk).",
+      "time": "O(nk)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(nk)\nclass Solution {\n    // Count vowels in every window from scratch\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(nk)\nclass Solution:\n    def solveBrute(self, *args):\n        # Count vowels in every window from scratch\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Fixed-size sliding window maintaining vowel count",
+      "steps": [
+        "Leverage structural invariants of Maximum Number of Vowels in a Substring of Given Length.",
+        "Apply optimal pattern: Fixed-size sliding window maintaining vowel count.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Fixed-size sliding window maintaining vowel count\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Fixed-size sliding window maintaining vowel count\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Number of Vowels in a Substring of Given Length. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Fixed-size sliding window maintaining vowel count.",
+      "Detailed formulation: Fixed-size sliding window maintaining vowel count. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 338,
+    "whyNext": "Builds directly on #337: transitions from simpler approach to optimal pattern for Maximum Points You Can Obtain from Cards.",
+    "brute": {
+      "idea": "Recursion trying left and right picks",
+      "steps": [
+        "Identify problem requirements for Maximum Points You Can Obtain from Cards.",
+        "Explore all states or exhaustive candidates (Recursion trying left and right picks).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ᵏ).",
+      "time": "O(2ᵏ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ᵏ)\nclass Solution {\n    // Recursion trying left and right picks\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ᵏ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Recursion trying left and right picks\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Find minimum subarray sum of length n - k",
+      "steps": [
+        "Leverage structural invariants of Maximum Points You Can Obtain from Cards.",
+        "Apply optimal pattern: Find minimum subarray sum of length n - k.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Find minimum subarray sum of length n - k\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Find minimum subarray sum of length n - k\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Points You Can Obtain from Cards. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Find minimum subarray sum of length n - k.",
+      "Detailed formulation: Find minimum subarray sum of length n - k. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 339,
+    "whyNext": "Builds directly on #45: transitions from simpler approach to optimal pattern for Longest Subarray of 1's After Deleting One Element.",
+    "brute": {
+      "idea": "Try deleting each element and scan",
+      "steps": [
+        "Identify problem requirements for Longest Subarray of 1's After Deleting One Element.",
+        "Explore all states or exhaustive candidates (Try deleting each element and scan).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Try deleting each element and scan\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try deleting each element and scan\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window with at most one zero allowed",
+      "steps": [
+        "Leverage structural invariants of Longest Subarray of 1's After Deleting One Element.",
+        "Apply optimal pattern: Sliding window with at most one zero allowed.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Sliding window with at most one zero allowed\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Sliding window with at most one zero allowed\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Longest Subarray of 1's After Deleting One Element. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Sliding window with at most one zero allowed.",
+      "Detailed formulation: Sliding window with at most one zero allowed. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 340,
+    "whyNext": "Builds directly on #38: transitions from simpler approach to optimal pattern for Maximum Erasure Value.",
+    "brute": {
+      "idea": "Check every subarray for duplicates",
+      "steps": [
+        "Identify problem requirements for Maximum Erasure Value.",
+        "Explore all states or exhaustive candidates (Check every subarray for duplicates).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Check every subarray for duplicates\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every subarray for duplicates\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window set with running sum",
+      "steps": [
+        "Leverage structural invariants of Maximum Erasure Value.",
+        "Apply optimal pattern: Sliding window set with running sum.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Sliding window set with running sum\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Sliding window set with running sum\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Erasure Value. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Sliding window set with running sum.",
+      "Detailed formulation: Sliding window set with running sum. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 341,
+    "whyNext": "Builds directly on #42: transitions from simpler approach to optimal pattern for Minimum Operations to Reduce X to Zero.",
+    "brute": {
+      "idea": "Recursion picking from left or right",
+      "steps": [
+        "Identify problem requirements for Minimum Operations to Reduce X to Zero.",
+        "Explore all states or exhaustive candidates (Recursion picking from left or right).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Recursion picking from left or right\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Recursion picking from left or right\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Longest middle subarray with sum equal to total - x",
+      "steps": [
+        "Leverage structural invariants of Minimum Operations to Reduce X to Zero.",
+        "Apply optimal pattern: Longest middle subarray with sum equal to total - x.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Longest middle subarray with sum equal to total - x\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Longest middle subarray with sum equal to total - x\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Minimum Operations to Reduce X to Zero. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Longest middle subarray with sum equal to total - x.",
+      "Detailed formulation: Longest middle subarray with sum equal to total - x. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 342,
+    "whyNext": "Builds directly on #341: transitions from simpler approach to optimal pattern for Frequency of the Most Frequent Element.",
+    "brute": {
+      "idea": "Try making each element target",
+      "steps": [
+        "Identify problem requirements for Frequency of the Most Frequent Element.",
+        "Explore all states or exhaustive candidates (Try making each element target).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Try making each element target\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try making each element target\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sort and sliding window where cost <= k",
+      "steps": [
+        "Leverage structural invariants of Frequency of the Most Frequent Element.",
+        "Apply optimal pattern: Sort and sliding window where cost <= k.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort and sliding window where cost <= k\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Sort and sliding window where cost <= k\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Frequency of the Most Frequent Element. Can you prune redundant work?",
+      "Apply the standard CH-21 pattern: Sort and sliding window where cost <= k.",
+      "Detailed formulation: Sort and sliding window where cost <= k. Implement this in O(n log n) without nested full re-scans."
+    ]
+  }
+]

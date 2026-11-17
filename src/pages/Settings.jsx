@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   Settings as SettingsIcon, 
@@ -18,7 +18,9 @@ import {
   Minus,
   Sparkles,
   AlertCircle,
-  X
+  X,
+  Calendar,
+  Briefcase
 } from 'lucide-react';
 
 export default function Settings({ onOpenAuth }) {
@@ -33,12 +35,65 @@ export default function Settings({ onOpenAuth }) {
     setTheme,
     language,
     updateLanguage,
-    showToast 
+    showToast,
+    interviewPlan,
+    updateInterviewPlan,
+    clearInterviewPlan,
+    companies
   } = useApp();
 
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [dailyGoal, setDailyGoal] = useState(user?.daily_goal || 2);
   const [savingProfile, setSavingProfile] = useState(false);
+
+  // Interview Plan state (SRS 3.0 Section 8.1)
+  const [planDate, setPlanDate] = useState(interviewPlan?.date || '');
+  const [planCompany, setPlanCompany] = useState(interviewPlan?.company || '');
+  const [savingPlan, setSavingPlan] = useState(false);
+
+  useEffect(() => {
+    setPlanDate(interviewPlan?.date || '');
+    setPlanCompany(interviewPlan?.company || '');
+  }, [interviewPlan]);
+
+  const todayDateStr = new Date().toISOString().split('T')[0];
+
+  const isPlanPast = useMemo(() => {
+    if (!interviewPlan?.date) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const target = new Date(interviewPlan.date + 'T00:00:00');
+    target.setHours(0, 0, 0, 0);
+    return target < today;
+  }, [interviewPlan]);
+
+  const handleSavePlan = async (e) => {
+    e.preventDefault();
+    if (!planDate) {
+      showToast('Please select a target interview date', 'error');
+      return;
+    }
+    setSavingPlan(true);
+    try {
+      await updateInterviewPlan(planDate, planCompany || null);
+      showToast('Interview plan saved', 'success');
+    } catch (_) {
+      showToast('Failed to save interview plan', 'error');
+    } finally {
+      setSavingPlan(false);
+    }
+  };
+
+  const handleClearPlan = async () => {
+    try {
+      await clearInterviewPlan();
+      setPlanDate('');
+      setPlanCompany('');
+      showToast('Interview plan cleared', 'info');
+    } catch (_) {
+      showToast('Failed to clear plan', 'error');
+    }
+  };
 
   // Delete confirmation bottom sheet/modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -259,6 +314,123 @@ export default function Settings({ onOpenAuth }) {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* 2b. Interview Date Plan (SRS 3.0 Section 8.1) */}
+      <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Calendar size={20} color="var(--accent)" />
+            <div>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)', margin: 0 }}>
+                Interview Plan
+              </h2>
+              <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+                Set your target interview date and optional target company.
+              </p>
+            </div>
+          </div>
+          {interviewPlan?.date && (
+            <span style={{
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              padding: '4px 10px',
+              borderRadius: 'var(--radius-pill)',
+              background: isPlanPast ? 'rgba(239, 68, 68, 0.15)' : 'var(--accent-soft)',
+              color: isPlanPast ? '#EF4444' : 'var(--accent)'
+            }}>
+              {isPlanPast ? 'Date Passed' : 'Plan Active'}
+            </span>
+          )}
+        </div>
+
+        {isPlanPast && (
+          <div style={{
+            padding: '12px 16px',
+            borderRadius: 'var(--radius-inner)',
+            background: 'rgba(239, 68, 68, 0.12)',
+            border: '1px solid rgba(239, 68, 68, 0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '8px'
+          }}>
+            <div style={{ fontSize: '0.85rem', color: '#EF4444', fontWeight: 600 }}>
+              Your interview date has passed.
+            </div>
+            <button
+              type="button"
+              onClick={handleClearPlan}
+              className="btn-secondary"
+              style={{ padding: '4px 12px', minHeight: '36px', height: '36px', fontSize: '0.8rem' }}
+            >
+              Clear plan
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={handleSavePlan} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+            {/* Target Date */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-color)' }}>
+                Interview Date (today or later)
+              </label>
+              <input
+                type="date"
+                min={todayDateStr}
+                value={planDate}
+                onChange={(e) => setPlanDate(e.target.value)}
+                className="glass-input"
+                style={{ width: '100%', height: '44px', fontSize: '15px', borderRadius: 'var(--radius-inner)', padding: '0 12px' }}
+                required
+              />
+            </div>
+
+            {/* Target Company (Optional) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-color)' }}>
+                Target Company (optional)
+              </label>
+              <select
+                value={planCompany}
+                onChange={(e) => setPlanCompany(e.target.value)}
+                className="glass-input"
+                style={{ width: '100%', height: '44px', fontSize: '15px', borderRadius: 'var(--radius-inner)', padding: '0 12px' }}
+              >
+                <option value="">All companies (General roadmap)</option>
+                {companies.map(c => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              type="submit"
+              disabled={savingPlan || !planDate}
+              className="btn-primary"
+              style={{ minHeight: '44px', padding: '0 20px', fontSize: '0.875rem' }}
+            >
+              {savingPlan ? 'Saving...' : 'Save Plan'}
+            </button>
+
+            {interviewPlan?.date && (
+              <button
+                type="button"
+                onClick={handleClearPlan}
+                className="btn-secondary"
+                style={{ minHeight: '44px', padding: '0 16px', fontSize: '0.875rem' }}
+              >
+                Clear Plan
+              </button>
+            )}
+          </div>
+        </form>
       </div>
 
       {/* 3. Language Selection (Java | Python is a two-part control per Part 2 #8) */}

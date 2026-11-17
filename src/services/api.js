@@ -35,6 +35,12 @@ export function getFriendlyErrorMessage(errCodeOrMsg) {
   if (str.includes('BAD_USERNAME')) {
     return 'Use 3 to 20 letters, numbers or underscores.';
   }
+  if (str.includes('BAD_LANGUAGE')) {
+    return 'Choose Java or Python.';
+  }
+  if (str.includes('CODE_TOO_LONG')) {
+    return 'Your code is longer than 20,000 characters.';
+  }
   return str;
 }
 
@@ -191,6 +197,62 @@ export const api = {
     return await callRpc('delete_user', {
       p_username: cleanUser,
       p_pin_hash: pinHash || null
+    });
+  },
+
+  // SRS 3.0 Section 9.2: get_extras
+  async getExtras(username, pinHash) {
+    const cleanUser = username.trim().toLowerCase();
+    return await callRpc('get_extras', {
+      p_username: cleanUser,
+      p_pin_hash: pinHash || null
+    });
+  },
+
+  // SRS 3.0 Section 9.2: save_stats
+  async saveStats({ username, pinHash, seq, addSeconds = 0, newAttempt = false, forgot = false, slow = false }) {
+    const cleanUser = username.trim().toLowerCase();
+    return await callRpc('save_stats', {
+      p_username: cleanUser,
+      p_pin_hash: pinHash || null,
+      p_seq: Number(seq),
+      p_add_seconds: Number(addSeconds) || 0,
+      p_new_attempt: Boolean(newAttempt),
+      p_forgot: Boolean(forgot),
+      p_slow: Boolean(slow)
+    });
+  },
+
+  // SRS 3.0 Section 9.2: save_user_solution
+  async saveUserSolution({ username, pinHash, seq, language, code }) {
+    const cleanUser = username.trim().toLowerCase();
+    return await callRpc('save_user_solution', {
+      p_username: cleanUser,
+      p_pin_hash: pinHash || null,
+      p_seq: Number(seq),
+      p_language: language,
+      p_code: code || ''
+    });
+  },
+
+  // SRS 3.0 Section 9.2: get_user_solutions
+  async getUserSolutions({ username, pinHash, seq }) {
+    const cleanUser = username.trim().toLowerCase();
+    return await callRpc('get_user_solutions', {
+      p_username: cleanUser,
+      p_pin_hash: pinHash || null,
+      p_seq: Number(seq)
+    });
+  },
+
+  // SRS 3.0 Section 9.2: save_interview
+  async saveInterview({ username, pinHash, date, company }) {
+    const cleanUser = username.trim().toLowerCase();
+    return await callRpc('save_interview', {
+      p_username: cleanUser,
+      p_pin_hash: pinHash || null,
+      p_date: date || null,
+      p_company: company || null
     });
   }
 };

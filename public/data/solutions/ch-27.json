@@ -1,0 +1,610 @@
+[
+  {
+    "seq": 413,
+    "whyNext": "Builds directly on #148: transitions from simpler approach to optimal pattern for Least Number of Unique Integers after K Removals.",
+    "brute": {
+      "idea": "Try removing all combinations of k elements",
+      "steps": [
+        "Identify problem requirements for Least Number of Unique Integers after K Removals.",
+        "Explore all states or exhaustive candidates (Try removing all combinations of k elements).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try removing all combinations of k elements\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try removing all combinations of k elements\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count frequencies, sort frequencies, greedily remove lowest counts first",
+      "steps": [
+        "Leverage structural invariants of Least Number of Unique Integers after K Removals.",
+        "Apply optimal pattern: Count frequencies, sort frequencies, greedily remove lowest counts first.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Count frequencies, sort frequencies, greedily remove lowest counts first\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Count frequencies, sort frequencies, greedily remove lowest counts first\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Least Number of Unique Integers after K Removals. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Count frequencies, sort frequencies, greedily remove lowest counts first.",
+      "Detailed formulation: Count frequencies, sort frequencies, greedily remove lowest counts first. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 414,
+    "whyNext": "Builds directly on #154: transitions from simpler approach to optimal pattern for Largest Number.",
+    "brute": {
+      "idea": "Generate all permutations of numbers",
+      "steps": [
+        "Identify problem requirements for Largest Number.",
+        "Explore all states or exhaustive candidates (Generate all permutations of numbers).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
+      "time": "O(n!)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!)\nclass Solution {\n    // Generate all permutations of numbers\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all permutations of numbers\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Custom comparator sorting on (b+a).compareTo(a+b)",
+      "steps": [
+        "Leverage structural invariants of Largest Number.",
+        "Apply optimal pattern: Custom comparator sorting on (b+a).compareTo(a+b).",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Custom comparator sorting on (b+a).compareTo(a+b)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Custom comparator sorting on (b+a).compareTo(a+b)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Largest Number. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Custom comparator sorting on (b+a).compareTo(a+b).",
+      "Detailed formulation: Custom comparator sorting on (b+a).compareTo(a+b). Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 415,
+    "whyNext": "Builds directly on #414: transitions from simpler approach to optimal pattern for Maximize Sum Of Array After K Negations.",
+    "brute": {
+      "idea": "Try all combinations of negations",
+      "steps": [
+        "Identify problem requirements for Maximize Sum Of Array After K Negations.",
+        "Explore all states or exhaustive candidates (Try all combinations of negations).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all combinations of negations\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all combinations of negations\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sort or min-heap: negate smallest negatives, then flip smallest abs value",
+      "steps": [
+        "Leverage structural invariants of Maximize Sum Of Array After K Negations.",
+        "Apply optimal pattern: Sort or min-heap: negate smallest negatives, then flip smallest abs value.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort or min-heap: negate smallest negatives, then flip smallest abs value\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Sort or min-heap: negate smallest negatives, then flip smallest abs value\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximize Sum Of Array After K Negations. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Sort or min-heap: negate smallest negatives, then flip smallest abs value.",
+      "Detailed formulation: Sort or min-heap: negate smallest negatives, then flip smallest abs value. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 416,
+    "whyNext": "Builds directly on #415: transitions from simpler approach to optimal pattern for Maximum Units on a Truck.",
+    "brute": {
+      "idea": "Try all subsets of box combinations",
+      "steps": [
+        "Identify problem requirements for Maximum Units on a Truck.",
+        "Explore all states or exhaustive candidates (Try all subsets of box combinations).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all subsets of box combinations\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all subsets of box combinations\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sort boxes descending by units per box, greedily take until full",
+      "steps": [
+        "Leverage structural invariants of Maximum Units on a Truck.",
+        "Apply optimal pattern: Sort boxes descending by units per box, greedily take until full.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort boxes descending by units per box, greedily take until full\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Sort boxes descending by units per box, greedily take until full\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Units on a Truck. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Sort boxes descending by units per box, greedily take until full.",
+      "Detailed formulation: Sort boxes descending by units per box, greedily take until full. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 417,
+    "whyNext": "Builds directly on #416: transitions from simpler approach to optimal pattern for Minimum Number of Refueling Stops.",
+    "brute": {
+      "idea": "Try all subsets of stations",
+      "steps": [
+        "Identify problem requirements for Minimum Number of Refueling Stops.",
+        "Explore all states or exhaustive candidates (Try all subsets of stations).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Try all subsets of stations\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all subsets of stations\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Max-heap of passed gas stations, refuel greedily when empty",
+      "steps": [
+        "Leverage structural invariants of Minimum Number of Refueling Stops.",
+        "Apply optimal pattern: Max-heap of passed gas stations, refuel greedily when empty.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Max-heap of passed gas stations, refuel greedily when empty\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Max-heap of passed gas stations, refuel greedily when empty\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Minimum Number of Refueling Stops. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Max-heap of passed gas stations, refuel greedily when empty.",
+      "Detailed formulation: Max-heap of passed gas stations, refuel greedily when empty. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 418,
+    "whyNext": "Builds directly on #417: transitions from simpler approach to optimal pattern for Furthest Building You Can Reach.",
+    "brute": {
+      "idea": "Backtrack trying bricks or ladders",
+      "steps": [
+        "Identify problem requirements for Furthest Building You Can Reach.",
+        "Explore all states or exhaustive candidates (Backtrack trying bricks or ladders).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Backtrack trying bricks or ladders\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Backtrack trying bricks or ladders\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Min-heap of largest climbs using ladders, rest with bricks",
+      "steps": [
+        "Leverage structural invariants of Furthest Building You Can Reach.",
+        "Apply optimal pattern: Min-heap of largest climbs using ladders, rest with bricks.",
+        "Achieve optimal time complexity of O(n log k)."
+      ],
+      "time": "O(n log k)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log k)\nclass Solution {\n    // Min-heap of largest climbs using ladders, rest with bricks\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log k)\nclass Solution:\n    def solve(self, *args):\n        # Min-heap of largest climbs using ladders, rest with bricks\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Furthest Building You Can Reach. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Min-heap of largest climbs using ladders, rest with bricks.",
+      "Detailed formulation: Min-heap of largest climbs using ladders, rest with bricks. Implement this in O(n log k) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 419,
+    "whyNext": "Builds directly on #158: transitions from simpler approach to optimal pattern for Maximum Length of Pair Chain.",
+    "brute": {
+      "idea": "Check every subset of chains",
+      "steps": [
+        "Identify problem requirements for Maximum Length of Pair Chain.",
+        "Explore all states or exhaustive candidates (Check every subset of chains).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Check every subset of chains\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every subset of chains\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy sorting by interval end time",
+      "steps": [
+        "Leverage structural invariants of Maximum Length of Pair Chain.",
+        "Apply optimal pattern: Greedy sorting by interval end time.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Greedy sorting by interval end time\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Greedy sorting by interval end time\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Length of Pair Chain. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Greedy sorting by interval end time.",
+      "Detailed formulation: Greedy sorting by interval end time. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 420,
+    "whyNext": "Builds directly on #414: transitions from simpler approach to optimal pattern for Monotone Increasing Digits.",
+    "brute": {
+      "idea": "Count down from n checking monotonicity",
+      "steps": [
+        "Identify problem requirements for Monotone Increasing Digits.",
+        "Explore all states or exhaustive candidates (Count down from n checking monotonicity).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n·d).",
+      "time": "O(n·d)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n·d)\nclass Solution {\n    // Count down from n checking monotonicity\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n·d)\nclass Solution:\n    def solveBrute(self, *args):\n        # Count down from n checking monotonicity\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Scan right-to-left: decrement inversion point, fill 9s",
+      "steps": [
+        "Leverage structural invariants of Monotone Increasing Digits.",
+        "Apply optimal pattern: Scan right-to-left: decrement inversion point, fill 9s.",
+        "Achieve optimal time complexity of O(d)."
+      ],
+      "time": "O(d)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(d)\nclass Solution {\n    // Scan right-to-left: decrement inversion point, fill 9s\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(d)\nclass Solution:\n    def solve(self, *args):\n        # Scan right-to-left: decrement inversion point, fill 9s\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Monotone Increasing Digits. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Scan right-to-left: decrement inversion point, fill 9s.",
+      "Detailed formulation: Scan right-to-left: decrement inversion point, fill 9s. Implement this in O(d) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 421,
+    "whyNext": "Builds directly on #413: transitions from simpler approach to optimal pattern for Longest Happy String.",
+    "brute": {
+      "idea": "Try all combinations of letters",
+      "steps": [
+        "Identify problem requirements for Longest Happy String.",
+        "Explore all states or exhaustive candidates (Try all combinations of letters).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all combinations of letters\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all combinations of letters\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Max-heap of counts, greedily append most frequent unless 2 in row",
+      "steps": [
+        "Leverage structural invariants of Longest Happy String.",
+        "Apply optimal pattern: Max-heap of counts, greedily append most frequent unless 2 in row.",
+        "Achieve optimal time complexity of O(a+b+c)."
+      ],
+      "time": "O(a+b+c)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(a+b+c)\nclass Solution {\n    // Max-heap of counts, greedily append most frequent unless 2 in row\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(a+b+c)\nclass Solution:\n    def solve(self, *args):\n        # Max-heap of counts, greedily append most frequent unless 2 in row\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Longest Happy String. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Max-heap of counts, greedily append most frequent unless 2 in row.",
+      "Detailed formulation: Max-heap of counts, greedily append most frequent unless 2 in row. Implement this in O(a+b+c) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 422,
+    "whyNext": "Builds directly on #419: transitions from simpler approach to optimal pattern for Can Place Flowers.",
+    "brute": {
+      "idea": "Try all valid placement patterns",
+      "steps": [
+        "Identify problem requirements for Can Place Flowers.",
+        "Explore all states or exhaustive candidates (Try all valid placement patterns).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all valid placement patterns\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all valid placement patterns\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass: greedily plant at i if left, self, and right are zero",
+      "steps": [
+        "Leverage structural invariants of Can Place Flowers.",
+        "Apply optimal pattern: Single pass: greedily plant at i if left, self, and right are zero.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Single pass: greedily plant at i if left, self, and right are zero\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Single pass: greedily plant at i if left, self, and right are zero\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Can Place Flowers. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Single pass: greedily plant at i if left, self, and right are zero.",
+      "Detailed formulation: Single pass: greedily plant at i if left, self, and right are zero. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 423,
+    "whyNext": "Builds directly on #421: transitions from simpler approach to optimal pattern for Maximum Score From Removing Stones.",
+    "brute": {
+      "idea": "Simulate with max-heap step by step",
+      "steps": [
+        "Identify problem requirements for Maximum Score From Removing Stones.",
+        "Explore all states or exhaustive candidates (Simulate with max-heap step by step).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(total).",
+      "time": "O(total)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(total)\nclass Solution {\n    // Simulate with max-heap step by step\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(total)\nclass Solution:\n    def solveBrute(self, *args):\n        # Simulate with max-heap step by step\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Math: min(sum/2, sum - max)",
+      "steps": [
+        "Leverage structural invariants of Maximum Score From Removing Stones.",
+        "Apply optimal pattern: Math: min(sum/2, sum - max).",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Math: min(sum/2, sum - max)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Math: min(sum/2, sum - max)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Score From Removing Stones. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Math: min(sum/2, sum - max).",
+      "Detailed formulation: Math: min(sum/2, sum - max). Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 424,
+    "whyNext": "Builds directly on #418: transitions from simpler approach to optimal pattern for Single-Threaded CPU.",
+    "brute": {
+      "idea": "Scan available tasks at each time unit",
+      "steps": [
+        "Identify problem requirements for Single-Threaded CPU.",
+        "Explore all states or exhaustive candidates (Scan available tasks at each time unit).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Scan available tasks at each time unit\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Scan available tasks at each time unit\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sort tasks by enqueue time, min-heap by processing time",
+      "steps": [
+        "Leverage structural invariants of Single-Threaded CPU.",
+        "Apply optimal pattern: Sort tasks by enqueue time, min-heap by processing time.",
+        "Achieve optimal time complexity of O(n log n)."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort tasks by enqueue time, min-heap by processing time\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n)\nclass Solution:\n    def solve(self, *args):\n        # Sort tasks by enqueue time, min-heap by processing time\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Single-Threaded CPU. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Sort tasks by enqueue time, min-heap by processing time.",
+      "Detailed formulation: Sort tasks by enqueue time, min-heap by processing time. Implement this in O(n log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 425,
+    "whyNext": "Builds directly on #423: transitions from simpler approach to optimal pattern for Remove Stones to Minimize the Total.",
+    "brute": {
+      "idea": "Sort array repeatedly k times",
+      "steps": [
+        "Identify problem requirements for Remove Stones to Minimize the Total.",
+        "Explore all states or exhaustive candidates (Sort array repeatedly k times).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(k n log n).",
+      "time": "O(k n log n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(k n log n)\nclass Solution {\n    // Sort array repeatedly k times\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(k n log n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Sort array repeatedly k times\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Max-heap: pop largest, floor divide by 2, push back",
+      "steps": [
+        "Leverage structural invariants of Remove Stones to Minimize the Total.",
+        "Apply optimal pattern: Max-heap: pop largest, floor divide by 2, push back.",
+        "Achieve optimal time complexity of O(k log n)."
+      ],
+      "time": "O(k log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(k log n)\nclass Solution {\n    // Max-heap: pop largest, floor divide by 2, push back\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(k log n)\nclass Solution:\n    def solve(self, *args):\n        # Max-heap: pop largest, floor divide by 2, push back\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Remove Stones to Minimize the Total. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Max-heap: pop largest, floor divide by 2, push back.",
+      "Detailed formulation: Max-heap: pop largest, floor divide by 2, push back. Implement this in O(k log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 426,
+    "whyNext": "Builds directly on #425: transitions from simpler approach to optimal pattern for Maximum Product After K Increments.",
+    "brute": {
+      "idea": "Try incrementing each position",
+      "steps": [
+        "Identify problem requirements for Maximum Product After K Increments.",
+        "Explore all states or exhaustive candidates (Try incrementing each position).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try incrementing each position\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try incrementing each position\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Min-heap: increment smallest element k times",
+      "steps": [
+        "Leverage structural invariants of Maximum Product After K Increments.",
+        "Apply optimal pattern: Min-heap: increment smallest element k times.",
+        "Achieve optimal time complexity of O(k log n)."
+      ],
+      "time": "O(k log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(k log n)\nclass Solution {\n    // Min-heap: increment smallest element k times\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(k log n)\nclass Solution:\n    def solve(self, *args):\n        # Min-heap: increment smallest element k times\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Product After K Increments. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Min-heap: increment smallest element k times.",
+      "Detailed formulation: Min-heap: increment smallest element k times. Implement this in O(k log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 427,
+    "whyNext": "Builds directly on #419: transitions from simpler approach to optimal pattern for Video Stitching.",
+    "brute": {
+      "idea": "Try all subsets of clips",
+      "steps": [
+        "Identify problem requirements for Video Stitching.",
+        "Explore all states or exhaustive candidates (Try all subsets of clips).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Try all subsets of clips\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all subsets of clips\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy jump game: track farthest reachable end",
+      "steps": [
+        "Leverage structural invariants of Video Stitching.",
+        "Apply optimal pattern: Greedy jump game: track farthest reachable end.",
+        "Achieve optimal time complexity of O(time + n)."
+      ],
+      "time": "O(time + n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(time + n)\nclass Solution {\n    // Greedy jump game: track farthest reachable end\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(time + n)\nclass Solution:\n    def solve(self, *args):\n        # Greedy jump game: track farthest reachable end\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Video Stitching. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Greedy jump game: track farthest reachable end.",
+      "Detailed formulation: Greedy jump game: track farthest reachable end. Implement this in O(time + n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 428,
+    "whyNext": "Builds directly on #427: transitions from simpler approach to optimal pattern for Minimum Number of Taps to Open to Water a Garden.",
+    "brute": {
+      "idea": "All combinations of taps",
+      "steps": [
+        "Identify problem requirements for Minimum Number of Taps to Open to Water a Garden.",
+        "Explore all states or exhaustive candidates (All combinations of taps).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // All combinations of taps\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # All combinations of taps\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Convert to interval jump game, track max reach",
+      "steps": [
+        "Leverage structural invariants of Minimum Number of Taps to Open to Water a Garden.",
+        "Apply optimal pattern: Convert to interval jump game, track max reach.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Convert to interval jump game, track max reach\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Convert to interval jump game, track max reach\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Minimum Number of Taps to Open to Water a Garden. Can you prune redundant work?",
+      "Apply the standard CH-27 pattern: Convert to interval jump game, track max reach.",
+      "Detailed formulation: Convert to interval jump game, track max reach. Implement this in O(n) without nested full re-scans."
+    ]
+  }
+]

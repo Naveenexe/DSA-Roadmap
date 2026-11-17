@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { api, getNextReviewDate, getFriendlyErrorMessage } from '../services/api';
+import { FEATURES } from '../config/features';
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [questions, setQuestions] = useState([]);
   const [chapters, setChapters] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
   // User session
@@ -62,20 +64,81 @@ export function AppProvider({ children }) {
   const [activity, setActivity] = useState([]);
   const [toast, setToast] = useState(null);
 
-  // Load static questions and chapters
+  // SRS 3.0: Stats, Solutions, and Interview Plan
+  const [statsMap, setStatsMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('chainline_guest_stats');
+      return saved ? JSON.parse(saved) : {};
+    } catch (_) {
+      return {};
+    }
+  });
+
+  const [solutionsMap, setSolutionsMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('chainline_guest_solutions');
+      return saved ? JSON.parse(saved) : {};
+    } catch (_) {
+      return {};
+    }
+  });
+
+  const [hasSolutionMap, setHasSolutionMap] = useState(() => {
+    try {
+      const saved = localStorage.getItem('chainline_guest_solutions');
+      if (!saved) return {};
+      const parsed = JSON.parse(saved);
+      const map = {};
+      Object.entries(parsed).forEach(([seq, sol]) => {
+        if ((sol?.java && sol.java.trim()) || (sol?.python && sol.python.trim())) {
+          map[seq] = true;
+        }
+      });
+      return map;
+    } catch (_) {
+      return {};
+    }
+  });
+
+  const [interviewPlan, setInterviewPlan] = useState(() => {
+    try {
+      const saved = localStorage.getItem('chainline_guest_interview');
+      return saved ? JSON.parse(saved) : { date: null, company: null };
+    } catch (_) {
+      return { date: null, company: null };
+    }
+  });
+
+  // Load static questions, chapters and companies
   useEffect(() => {
     async function loadStaticData() {
       try {
-        const [chRes, qRes] = await Promise.all([
+        const [chRes, qRes, compRes] = await Promise.all([
           fetch('/data/chapters.json'),
-          fetch('/data/questions.json')
+          fetch('/data/questions.json'),
+          fetch('/data/companies.json').catch(() => null)
         ]);
         const chData = await chRes.json();
         const qData = await qRes.json();
-        setChapters(chData);
-        setQuestions(qData);
+        let compData = { companies: [] };
+        if (compRes && compRes.ok) {
+          try {
+            compData = await compRes.json();
+          } catch (_) {}
+        }
+
+        let finalChapters = chData;
+        let finalQuestions = qData;
+        if (!FEATURES.part2Questions) {
+          finalChapters = chData.filter(c => c.order <= 18);
+          finalQuestions = qData.filter(q => q.seq <= 300);
+        }
+
+        setChapters(finalChapters);
+        setQuestions(finalQuestions);
+        setCompanies(compData?.companies || []);
       } catch (err) {
-        console.error('Failed to load static question/chapter data:', err);
+        console.error('Failed to load static question/chapter/company data:', err);
       } finally {
         setLoadingData(false);
       }
@@ -87,7 +150,14 @@ export function AppProvider({ children }) {
   const syncUserState = useCallback(async (username, hash) => {
     if (!username) return;
     try {
-      const state = await api.getState(username, hash);
+      const [state, extras] = await Promise.all([
+        api.getState(username, hash),
+        api.getExtras(username, hash).catch(err => {
+          console.warn('Failed to load extras:', err.message);
+          return null;
+        })
+      ]);
+
       const pMap = {};
       if (Array.isArray(state?.progress)) {
         state.progress.forEach(p => { pMap[p.question_seq] = p; });
@@ -95,6 +165,35 @@ export function AppProvider({ children }) {
       setProgressMap(pMap);
       setReviews(state?.reviews || []);
       setActivity(state?.activity || []);
+
+      if (extras) {
+        if (extras.interview_date !== undefined || extras.interview_company !== undefined) {
+          setInterviewPlan({
+            date: extras.interview_date || null,
+            company: extras.interview_company || null
+          });
+        }
+        if (Array.isArray(extras.stats)) {
+          const sMap = {};
+          extras.stats.forEach(s => {
+            sMap[s.question_seq] = {
+              seconds: s.seconds || 0,
+              attempts: s.attempts || 0,
+              forgotCount: s.forgot_count || 0,
+              slow: Boolean(s.slow),
+              lastAt: s.last_at || null
+            };
+          });
+          setStatsMap(sMap);
+        }
+        if (Array.isArray(extras.solutions)) {
+          const hMap = {};
+          extras.solutions.forEach(seq => {
+            hMap[seq] = true;
+          });
+          setHasSolutionMap(hMap);
+        }
+      }
     } catch (err) {
       console.warn('Failed to sync user state from Supabase:', err.message);
     }
@@ -134,6 +233,7 @@ export function AppProvider({ children }) {
       setProgressMap(pMap);
       setReviews(res.state?.reviews || []);
       setActivity(res.state?.activity || []);
+      syncUserState(res.user.username, res.pinHash);
       return res.user;
     } catch (err) {
       throw err;
@@ -160,6 +260,10 @@ export function AppProvider({ children }) {
       setProgressMap({});
       setReviews([]);
       setActivity([]);
+      setStatsMap({});
+      setSolutionsMap({});
+      setHasSolutionMap({});
+      setInterviewPlan({ date: null, company: null });
       return res.user;
     } catch (err) {
       throw err;
@@ -173,6 +277,10 @@ export function AppProvider({ children }) {
     setProgressMap({});
     setReviews([]);
     setActivity([]);
+    setStatsMap({});
+    setSolutionsMap({});
+    setHasSolutionMap({});
+    setInterviewPlan({ date: null, company: null });
     localStorage.removeItem('chainline_session_user');
     localStorage.removeItem('chainline_session_pin_hash');
   };
@@ -370,6 +478,8 @@ export function AppProvider({ children }) {
             day: new Date().toISOString().split('T')[0]
           })
         ]);
+        // SRS 3.0 Section 9.3: save_stats is called in addition with p_forgot set to true
+        saveQuestionStats(questionSeq, { forgot: true });
         showToast(`Reset to Step 1: due tomorrow. Flagged as mistake.`, 'info');
       } catch (err) {
         console.error(err);
@@ -513,9 +623,146 @@ export function AppProvider({ children }) {
     return null;
   }, [questions, progressMap]);
 
+  // SRS 3.0: Save question stats
+  const saveQuestionStats = useCallback(async (seq, { addSeconds = 0, newAttempt = false, forgot = false, slow = false } = {}) => {
+    const qSeq = Number(seq);
+    setStatsMap(prev => {
+      const existing = prev[qSeq] || { seconds: 0, attempts: 0, forgotCount: 0, slow: false };
+      const updated = {
+        seconds: (existing.seconds || 0) + (Number(addSeconds) || 0),
+        attempts: (existing.attempts || 0) + (newAttempt ? 1 : 0),
+        forgotCount: (existing.forgotCount || 0) + (forgot ? 1 : 0),
+        slow: existing.slow || Boolean(slow),
+        lastAt: new Date().toISOString()
+      };
+      const nextMap = { ...prev, [qSeq]: updated };
+      if (!user) {
+        try {
+          localStorage.setItem('chainline_guest_stats', JSON.stringify(nextMap));
+        } catch (_) {}
+      }
+      return nextMap;
+    });
+
+    if (user && user.username) {
+      try {
+        await api.saveStats({
+          username: user.username,
+          pinHash,
+          seq: qSeq,
+          addSeconds,
+          newAttempt,
+          forgot,
+          slow
+        });
+      } catch (err) {
+        console.warn('Failed to sync stats to server:', err.message);
+      }
+    }
+  }, [user, pinHash]);
+
+  // SRS 3.0: Save user code solution
+  const saveUserSolution = useCallback(async (seq, lang, code) => {
+    const qSeq = Number(seq);
+    if (code && code.length > 20000) {
+      showToast(getFriendlyErrorMessage('CODE_TOO_LONG'), 'error');
+      throw new Error('CODE_TOO_LONG');
+    }
+    if (lang !== 'java' && lang !== 'python') {
+      showToast(getFriendlyErrorMessage('BAD_LANGUAGE'), 'error');
+      throw new Error('BAD_LANGUAGE');
+    }
+
+    setSolutionsMap(prev => {
+      const existing = prev[qSeq] || {};
+      const updated = { ...existing, [lang]: code };
+      const nextMap = { ...prev, [qSeq]: updated };
+      if (!user) {
+        try {
+          localStorage.setItem('chainline_guest_solutions', JSON.stringify(nextMap));
+        } catch (_) {}
+      }
+      return nextMap;
+    });
+
+    setHasSolutionMap(prev => ({
+      ...prev,
+      [qSeq]: Boolean((code && code.trim()) || (solutionsMap[qSeq]?.[lang === 'java' ? 'python' : 'java']?.trim()))
+    }));
+
+    if (user && user.username) {
+      try {
+        await api.saveUserSolution({
+          username: user.username,
+          pinHash,
+          seq: qSeq,
+          language: lang,
+          code
+        });
+      } catch (err) {
+        console.warn('Failed to save user solution to server:', err.message);
+        throw err;
+      }
+    }
+  }, [user, pinHash, solutionsMap]);
+
+  // SRS 3.0: Load user code solution (cached or from API)
+  const loadUserSolution = useCallback(async (seq, lang) => {
+    const qSeq = Number(seq);
+    if (solutionsMap[qSeq] && solutionsMap[qSeq][lang] !== undefined) {
+      return solutionsMap[qSeq][lang];
+    }
+    if (user && user.username) {
+      try {
+        const rows = await api.getUserSolutions({ username: user.username, pinHash, seq: qSeq });
+        if (Array.isArray(rows)) {
+          const loaded = {};
+          rows.forEach(r => {
+            loaded[r.language] = r.code;
+          });
+          setSolutionsMap(prev => ({
+            ...prev,
+            [qSeq]: { ...(prev[qSeq] || {}), ...loaded }
+          }));
+          return loaded[lang] || '';
+        }
+      } catch (err) {
+        console.warn('Failed to load user solution from server:', err.message);
+      }
+    }
+    return '';
+  }, [user, pinHash, solutionsMap]);
+
+  // SRS 3.0: Interview date & company plan
+  const updateInterviewPlan = useCallback(async (date, company) => {
+    const plan = { date: date || null, company: company ? company.trim() : null };
+    setInterviewPlan(plan);
+    if (!user) {
+      try {
+        localStorage.setItem('chainline_guest_interview', JSON.stringify(plan));
+      } catch (_) {}
+    } else {
+      try {
+        await api.saveInterview({
+          username: user.username,
+          pinHash,
+          date: plan.date,
+          company: plan.company
+        });
+      } catch (err) {
+        console.warn('Failed to save interview plan to server:', err.message);
+      }
+    }
+  }, [user, pinHash]);
+
+  const clearInterviewPlan = useCallback(async () => {
+    await updateInterviewPlan(null, null);
+  }, [updateInterviewPlan]);
+
   // Export & Import progress
   const exportData = () => {
     const data = {
+      version: 3,
       user: {
         username: user?.username,
         display_name: user?.display_name,
@@ -526,6 +773,9 @@ export function AppProvider({ children }) {
       progress: Object.values(progressMap),
       reviews,
       activity,
+      stats: Object.entries(statsMap).map(([seq, s]) => ({ question_seq: Number(seq), ...s })),
+      solutions: solutionsMap,
+      interview: interviewPlan,
       exported_at: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -552,6 +802,35 @@ export function AppProvider({ children }) {
       if (parsed.activity && Array.isArray(parsed.activity)) {
         setActivity(parsed.activity);
       }
+      if (parsed.stats && Array.isArray(parsed.stats)) {
+        const sMap = {};
+        parsed.stats.forEach(s => {
+          sMap[s.question_seq] = {
+            seconds: s.seconds || 0,
+            attempts: s.attempts || 0,
+            forgotCount: s.forgotCount || s.forgot_count || 0,
+            slow: Boolean(s.slow),
+            lastAt: s.lastAt || s.last_at || null
+          };
+        });
+        setStatsMap(sMap);
+      }
+      if (parsed.solutions && typeof parsed.solutions === 'object') {
+        setSolutionsMap(parsed.solutions);
+        const hMap = {};
+        Object.entries(parsed.solutions).forEach(([seq, sol]) => {
+          if ((sol?.java && sol.java.trim()) || (sol?.python && sol.python.trim())) {
+            hMap[seq] = true;
+          }
+        });
+        setHasSolutionMap(hMap);
+      }
+      if (parsed.interview && typeof parsed.interview === 'object') {
+        setInterviewPlan({
+          date: parsed.interview.date || null,
+          company: parsed.interview.company || null
+        });
+      }
       showToast('Progress imported successfully', 'info');
     } catch (e) {
       showToast('Failed to import JSON: invalid format', 'error');
@@ -561,6 +840,7 @@ export function AppProvider({ children }) {
   const value = {
     questions,
     chapters,
+    companies,
     loadingData,
     user,
     pinHash,
@@ -576,6 +856,15 @@ export function AppProvider({ children }) {
     todaySolvedCount,
     dueReviews,
     upcomingReviews,
+    statsMap,
+    solutionsMap,
+    hasSolutionMap,
+    interviewPlan,
+    saveQuestionStats,
+    saveUserSolution,
+    loadUserSolution,
+    updateInterviewPlan,
+    clearInterviewPlan,
     toast,
     showToast,
     login,

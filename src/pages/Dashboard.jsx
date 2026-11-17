@@ -10,6 +10,10 @@ import {
   ChevronRight,
   BookOpen
 } from 'lucide-react';
+import ActivityCard from '../components/ActivityCard';
+import NeedsAttentionCard from '../components/NeedsAttentionCard';
+import ChaptersProgressionCard from '../components/ChaptersProgressionCard';
+import InterviewHomeCard from '../components/InterviewHomeCard';
 
 export default function Dashboard({ onOpenAuth }) {
   const { 
@@ -20,8 +24,7 @@ export default function Dashboard({ onOpenAuth }) {
     streak, 
     todaySolvedCount, 
     getNextUp, 
-    dueReviews, 
-    activity 
+    dueReviews 
   } = useApp();
 
   const navigate = useNavigate();
@@ -37,8 +40,8 @@ export default function Dashboard({ onOpenAuth }) {
 
   const displayName = user?.display_name || user?.username || 'learner';
 
-  // Real Counts & Stats
-  const totalQuestions = 300;
+  // Dynamic count from questions data (never hardcoded 300)
+  const totalQuestions = questions.length || 500;
   const doneCount = useMemo(() => {
     return Object.values(progressMap).filter(p => p.status === 'done').length;
   }, [progressMap]);
@@ -71,77 +74,29 @@ export default function Dashboard({ onOpenAuth }) {
   const desktopStroke = 14;
   const desktopRadius = (desktopRingSize - desktopStroke) / 2;
   const desktopCircumference = 2 * Math.PI * desktopRadius;
-  const progressRatio = Math.min(1, Math.max(0, doneCount / totalQuestions));
+  const progressRatio = totalQuestions > 0 ? Math.min(1, Math.max(0, doneCount / totalQuestions)) : 0;
   const desktopDashoffset = desktopCircumference - (progressRatio * desktopCircumference);
 
-  // Mobile Progress Ring parameters (160px per Part 2 #4)
+  // Mobile Progress Ring parameters (160px)
   const mobileRingSize = 160;
   const mobileStroke = 12;
   const mobileRadius = (mobileRingSize - mobileStroke) / 2;
   const mobileCircumference = 2 * Math.PI * mobileRadius;
   const mobileDashoffset = mobileCircumference - (progressRatio * mobileCircumference);
 
-  // 12 by 7 Activity Matrix (84 cells: 12 weeks = 84 days)
-  const activityMatrix = useMemo(() => {
-    const actMap = {};
-    activity.forEach(a => {
-      actMap[a.day] = a.solved_count;
-    });
-
-    const days = [];
-    const today = new Date();
-    // 83 days ago up to today = 84 days
-    for (let i = 83; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      const count = actMap[dateStr] || 0;
-      let level = 0;
-      if (count >= 5) level = 4;
-      else if (count >= 3) level = 3;
-      else if (count === 2) level = 2;
-      else if (count === 1) level = 1;
-
-      days.push({
-        date: dateStr,
-        dayOfWeek: d.getDay(),
-        count,
-        level
-      });
-    }
-    return days;
-  }, [activity]);
-
-  // Month labels for activity grid
-  const monthLabels = useMemo(() => {
-    const labels = [];
-    const today = new Date();
-    let lastMonth = '';
-    for (let w = 0; w < 12; w++) {
-      const d = new Date();
-      d.setDate(today.getDate() - (11 - w) * 7);
-      const mName = d.toLocaleString('default', { month: 'short' });
-      if (mName !== lastMonth) {
-        labels.push({ weekIndex: w, name: mName });
-        lastMonth = mName;
-      }
-    }
-    return labels;
-  }, []);
-
   const dailyGoal = user?.daily_goal || 2;
 
   return (
     <div className="home-dashboard-root" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* 1. GREETING (Order 1 on mobile, 28px on mobile) */}
+      {/* 1. GREETING (Order 1 on mobile) */}
       <div className="home-greeting-section" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 className="home-greeting-title">
             {greeting}, <span style={{ fontStyle: 'italic', fontWeight: 800 }}>{displayName}</span>
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-            Chainline DSA roadmap · Solve 300 curated questions in order.
+            Chainline DSA roadmap · Solve {totalQuestions} curated questions in order.
           </p>
         </div>
 
@@ -152,8 +107,8 @@ export default function Dashboard({ onOpenAuth }) {
         )}
       </div>
 
-      {/* TOP GRID: Next Up + Overall Ring */}
-      <div className="home-top-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(0, 1fr)', gap: '24px' }}>
+      {/* TOP GRID: Next Up + Overall Ring + Interview Plan / Company Prep */}
+      <div className="home-top-grid">
         
         {/* Next Up Card (Order 2 on mobile) */}
         {nextUp ? (
@@ -209,7 +164,7 @@ export default function Dashboard({ onOpenAuth }) {
               </p>
             </div>
 
-            {/* Buttons: Stacked full width on phones (Start on top, Open on LeetCode below) */}
+            {/* Buttons: Stacked full width on phones */}
             <div className="home-next-up-actions" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
               <button 
                 onClick={() => navigate(`/question/${nextUp.seq}`)} 
@@ -233,7 +188,7 @@ export default function Dashboard({ onOpenAuth }) {
         ) : (
           <div className="glass-card empty-state-box home-next-up-card">
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-color)' }}>
-              All 300 Questions Complete!
+              All {totalQuestions} Questions Complete!
             </h3>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '340px' }}>
               You have reached the end of the chain. Keep reviewing due items to lock in long-term mastery.
@@ -276,12 +231,12 @@ export default function Dashboard({ onOpenAuth }) {
                 {doneCount}
               </span>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '2px' }}>
-                of 300 done
+                of {totalQuestions} done
               </span>
             </div>
           </div>
 
-          {/* Mobile Ring (160px centered per Part 2 #4) */}
+          {/* Mobile Ring (160px centered) */}
           <div className="progress-ring-wrap mobile-ring" style={{ width: mobileRingSize, height: mobileRingSize, margin: '0 auto' }}>
             <svg width={mobileRingSize} height={mobileRingSize}>
               <circle
@@ -311,7 +266,7 @@ export default function Dashboard({ onOpenAuth }) {
                 {doneCount}
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600, marginTop: '2px' }}>
-                of 300 done
+                of {totalQuestions} done
               </span>
             </div>
           </div>
@@ -338,9 +293,14 @@ export default function Dashboard({ onOpenAuth }) {
             </div>
           </div>
         </div>
+
+        {/* Desktop-only Interview / Company Prep Card in Top Row (Right of ring) */}
+        <div className="home-top-interview-card-wrap">
+          <InterviewHomeCard />
+        </div>
       </div>
 
-      {/* 3 STAT CARDS (Order 4 on mobile: 3 cards in one row, each about a third width, number on top and label under it) */}
+      {/* 3 STAT CARDS (Order 4 on mobile) */}
       <div className="home-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
         
         {/* Stat 1: Today's Goal */}
@@ -362,7 +322,7 @@ export default function Dashboard({ onOpenAuth }) {
         </div>
 
         {/* Stat 2: Due Reviews */}
-        <Link to="/today" className="glass-card glass-card-interactive home-stat-card" style={{ padding: '20px', display: 'block' }}>
+        <Link to="/today" className="glass-card glass-card-interactive home-stat-card" style={{ padding: '20px', display: 'block', textDecoration: 'none' }}>
           <div className="home-stat-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span className="home-stat-label" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>Due Reviews</span>
             <ClipboardCheck size={20} color="var(--revisit-color)" className="home-stat-icon" />
@@ -393,135 +353,23 @@ export default function Dashboard({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* BOTTOM GRID: Chapter Progression + Activity Grid */}
-      <div className="home-bottom-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '24px' }}>
+      {/* Mobile/Tablet Interview Plan / Company Prep Card (Order 5 on phone) */}
+      <div className="home-mid-interview-card-wrap">
+        <InterviewHomeCard />
+      </div>
+
+      {/* LOWER HOME (Desktop: 7fr / 5fr, ending on same baseline. Phone: Order 6, 7, 8) */}
+      <div className="home-bottom-grid">
         
-        {/* Chapter Progress Card (Order 5 on mobile: 1 column of 18 rows, each 48px) */}
-        <div className="glass-card home-chapters-card" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                18 Chapters Progression
-              </h3>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                Calculated directly from questions data
-              </p>
-            </div>
-            <Link to="/roadmap" className="btn-secondary" style={{ padding: '6px 14px', fontSize: '0.8rem', minHeight: '44px' }}>
-              Full Roadmap
-            </Link>
-          </div>
-
-          <div className="chapters-two-columns" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 20px' }}>
-            {chapters.map(ch => {
-              const chQuestions = questions.filter(q => q.chapter === ch.id);
-              const totalInCh = chQuestions.length || (ch.seqTo - ch.seqFrom + 1);
-              const solvedInCh = chQuestions.filter(q => progressMap[q.seq]?.status === 'done').length;
-              const chRatio = totalInCh ? (solvedInCh / totalInCh) : 0;
-
-              return (
-                <Link
-                  key={ch.id}
-                  to={`/roadmap#${ch.id}`}
-                  className="chapter-prog-row"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    gap: '4px',
-                    padding: '8px 12px',
-                    borderRadius: 'var(--radius-inner)',
-                    background: 'var(--glass-surface)',
-                    border: '1px solid var(--glass-border)',
-                    transition: 'all 150ms ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-strong)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'var(--glass-surface)'}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.825rem' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--text-color)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {ch.order}. {ch.name}
-                    </span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      {solvedInCh}/{totalInCh}
-                    </span>
-                  </div>
-
-                  <div className="progress-bar-container" style={{ height: '6px' }}>
-                    <div 
-                      className="progress-bar-fill" 
-                      style={{ width: `${Math.round(chRatio * 100)}%` }} 
-                    />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+        {/* Left: Chapters Card with Part 1 & Part 2 tabs (Order 6 on phone) */}
+        <div className="home-bottom-left-column">
+          <ChaptersProgressionCard />
         </div>
 
-        {/* Activity Card: 12 cols by 7 rows = 84 cells (Order 6 on mobile) */}
-        <div className="glass-card home-activity-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                Activity (Past 12 Weeks)
-              </h3>
-              <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                84 days
-              </span>
-            </div>
-
-            {/* Month labels header */}
-            <div className="activity-month-labels" style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '28px', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '6px' }}>
-              {monthLabels.map((m, idx) => (
-                <span key={idx}>{m.name}</span>
-              ))}
-            </div>
-
-            {/* Grid Container with Weekday Labels */}
-            <div className="activity-grid-wrapper" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {/* Weekday indicators */}
-              <div className="activity-weekday-labels" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)', height: '115px', padding: '2px 0' }}>
-                <span>Sun</span>
-                <span>Tue</span>
-                <span>Thu</span>
-                <span>Sat</span>
-              </div>
-
-              {/* 84 cells grid */}
-              <div className="activity-matrix">
-                {activityMatrix.map((item, idx) => {
-                  const levelVar = `var(--activity-${item.level})`;
-                  return (
-                    <div
-                      key={idx}
-                      className="activity-cell"
-                      style={{ background: levelVar }}
-                      title={`${item.date}: ${item.count} question${item.count === 1 ? '' : 's'} solved`}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Legend: Less to More with 5-level scale */}
-          <div className="activity-legend" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '16px' }}>
-            <span>Less</span>
-            {[0, 1, 2, 3, 4].map(lvl => (
-              <div 
-                key={lvl} 
-                style={{ 
-                  width: 12, 
-                  height: 12, 
-                  borderRadius: 3, 
-                  background: `var(--activity-${lvl})`,
-                  border: '1px solid var(--glass-border)'
-                }} 
-              />
-            ))}
-            <span>More</span>
-          </div>
+        {/* Right: Stacked Activity Card & Needs Attention Card (Order 7 & 8 on phone) */}
+        <div className="home-bottom-right-column">
+          <ActivityCard />
+          <NeedsAttentionCard />
         </div>
 
       </div>

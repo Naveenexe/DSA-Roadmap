@@ -268,5 +268,215 @@
       "Bitmask representation for subset states",
       "Sieve of Eratosthenes for prime enumeration"
     ]
+  },
+  {
+    "id": "ch-19",
+    "order": 19,
+    "name": "Arrays & Hashing II",
+    "seqFrom": 301,
+    "seqTo": 314,
+    "whyNext": "Advanced frequency counts, rolling sets, in-place signs, and coordinate hash lookups.",
+    "summary": "Deepens array partitioning, prefix remainder math, and duplicate detection techniques.",
+    "patterns": [
+      "Sliding window hash set / bucket indexing",
+      "Sign-inversion in-place array markers for O(1) auxiliary space",
+      "Prefix modulus frequency tracking for divisible subarrays",
+      "Two-pass running extremes for bounded sorting spans"
+    ]
+  },
+  {
+    "id": "ch-20",
+    "order": 20,
+    "name": "Strings",
+    "seqFrom": 315,
+    "seqTo": 328,
+    "whyNext": "String parsing, character frequency maps, Roman numerals, and pattern matching.",
+    "summary": "Character arrays, frequency arrays, big integer math, and classic KMP string matching.",
+    "patterns": [
+      "26-slot integer arrays for O(1) character frequency matching",
+      "Bidirectional mapping checks for isomorphic and pattern validation",
+      "Grade-school addition/multiplication digit-by-digit with carry",
+      "KMP prefix failure table for linear-time pattern searching"
+    ]
+  },
+  {
+    "id": "ch-21",
+    "order": 21,
+    "name": "Two Pointers & Sliding Window II",
+    "seqFrom": 329,
+    "seqTo": 342,
+    "whyNext": "Advanced multi-pointer scans, variable-length windows, and greedy pairing.",
+    "summary": "Refines two-pointer greedy selections, sliding subarrays with budget constraints, and dynamic window expansion.",
+    "patterns": [
+      "Inward two-pointer greedy pairing for weight limits and sums",
+      "Dynamic window with at most k flips or deletions",
+      "Sliding window sum maximization with complement target matching",
+      "Prefix-sum window cost calculation for frequency equalization"
+    ]
+  },
+  {
+    "id": "ch-22",
+    "order": 22,
+    "name": "Binary Search II",
+    "seqFrom": 343,
+    "seqTo": 354,
+    "whyNext": "Search on solution spaces, predicate monotonic checks, and time-based structures.",
+    "summary": "Binary search on answers, mountain arrays, and parameterized feasibility functions.",
+    "patterns": [
+      "Binary search on answers with monotonic feasibility verification",
+      "Upper-bound and lower-bound insertion index search",
+      "Peak slope determination in bitonic / mountain arrays",
+      "Sorted timestamp lookups for time-based key-value storage"
+    ]
+  },
+  {
+    "id": "ch-23",
+    "order": 23,
+    "name": "Stack & Queue II",
+    "seqFrom": 355,
+    "seqTo": 368,
+    "whyNext": "Monotonic stacks for next smaller/greater elements, parentheses evaluation, and expression parsing.",
+    "summary": "Advanced monotonic stack tracking, dual-stack simulation, and calculator parsing.",
+    "patterns": [
+      "Monotonic increasing/decreasing stack for boundary finding",
+      "Dual stack design for FIFO queue emulation and arithmetic signs",
+      "Index-tracking stacks for valid parenthesis string reconstruction",
+      "Double-ended monotonic deques for sliding max/min bounds"
+    ]
+  },
+  {
+    "id": "ch-24",
+    "order": 24,
+    "name": "Linked List & Design II",
+    "seqFrom": 369,
+    "seqTo": 380,
+    "whyNext": "In-place pointer rewiring, custom node structures, and O(1) data structures.",
+    "summary": "Complex pointer rearrangements, dummy head sanitization, and hybrid map-array data structures.",
+    "patterns": [
+      "Dummy head node for invariant deletion and partitioning",
+      "In-place segmented sublist reversals",
+      "Two-pointer gap tracking for k-th from end re-linking",
+      "HashMap combined with dynamic array for O(1) randomized retrieval"
+    ]
+  },
+  {
+    "id": "ch-25",
+    "order": 25,
+    "name": "Backtracking II",
+    "seqFrom": 381,
+    "seqTo": 394,
+    "whyNext": "Pruned combinatorial search, bitmask state backtracking, and expression generation.",
+    "summary": "Constraint satisfaction, grid path exploration with backtracking, and partitioned arithmetic search.",
+    "patterns": [
+      "Pruned permutation tree traversal with duplicate frequency masks",
+      "Bitmask state backtracking for unique character concatenation",
+      "Grid search with in-place cell marking and restoration",
+      "Arithmetic operator insertion with running value and product tracking"
+    ]
+  },
+  {
+    "id": "ch-26",
+    "order": 26,
+    "name": "Trees & BST II",
+    "seqFrom": 395,
+    "seqTo": 412,
+    "whyNext": "Advanced tree traversals, structural transformations, BST range properties, and node deletions.",
+    "summary": "Decomposition of trees, subtree pruning, serialized structures, and BST invariants.",
+    "patterns": [
+      "Divide and conquer subtree evaluation for node pruning and conversion",
+      "Postorder serialization for duplicate subtree detection",
+      "BST property invariants for ranged queries and node restructuring",
+      "Level-by-level BFS with node tagging and directional alternation"
+    ]
+  },
+  {
+    "id": "ch-27",
+    "order": 27,
+    "name": "Heap, Greedy & Intervals II",
+    "seqFrom": 413,
+    "seqTo": 428,
+    "whyNext": "Interval scheduling, priority queues for streams, and frequency-based greedy placement.",
+    "summary": "Dual heaps, greedy interval overlapping elimination, and character distance frequency queues.",
+    "patterns": [
+      "Priority queue for stream tracking and multi-way element merging",
+      "Greedy interval sorting by end-times for maximum non-overlapping sets",
+      "Frequency heap with wait-queue cooldowns for string reorganization",
+      "Two-pointer interval intersection clipping"
+    ]
+  },
+  {
+    "id": "ch-28",
+    "order": 28,
+    "name": "Matrix, Math & Bits II",
+    "seqFrom": 429,
+    "seqTo": 442,
+    "whyNext": "Coordinate transformations, bit manipulation arithmetic, and fast exponentiation.",
+    "summary": "2D in-place manipulations, modular arithmetic, prime sieves, and bitwise tricks.",
+    "patterns": [
+      "Matrix transposition and reflection for in-place geometry transforms",
+      "Binary exponentiation by squaring in O(log n) time",
+      "Sieve of Eratosthenes for prime enumeration",
+      "Bitwise XOR and bit counting for unique element identification"
+    ]
+  },
+  {
+    "id": "ch-29",
+    "order": 29,
+    "name": "Graphs II (BFS & DFS)",
+    "seqFrom": 443,
+    "seqTo": 458,
+    "whyNext": "Connected components, multi-source BFS on grids, bipartite graphs, and cycle detection.",
+    "summary": "Grid flood fill, graph cloning, state-space BFS shortest path, and 2-coloring bipartite checks.",
+    "patterns": [
+      "Multi-source BFS for simultaneous expansion and distance fields",
+      "Graph cloning with hash map memoization of visited nodes",
+      "2-color DFS/BFS for bipartite validation",
+      "Word transformation shortest path via bidirectional / level BFS"
+    ]
+  },
+  {
+    "id": "ch-30",
+    "order": 30,
+    "name": "Graphs III (Topo, Union-Find, Shortest Paths)",
+    "seqFrom": 459,
+    "seqTo": 472,
+    "whyNext": "Topological sorting, disjoint set union with rank and path compression, and Dijkstra's algorithm.",
+    "summary": "Kahn's in-degree algorithm, Union-Find connectivity, Dijkstra, and modified Bellman-Ford / BFS.",
+    "patterns": [
+      "Kahn's algorithm using in-degree array for topological ordering",
+      "Disjoint Set Union (DSU) with path compression and rank optimization",
+      "Dijkstra's shortest path with min-heap priority queue",
+      "Binary search combined with BFS/DSU for min-effort path capacity"
+    ]
+  },
+  {
+    "id": "ch-31",
+    "order": 31,
+    "name": "DP II (1D & Knapsack)",
+    "seqFrom": 473,
+    "seqTo": 486,
+    "whyNext": "0/1 knapsack, unbounded knapsack, state machine DP, and subset partitioning.",
+    "summary": "Optimization over value and weight budgets, state transitions, and subset sum formulations.",
+    "patterns": [
+      "0/1 Knapsack backward iteration for space optimization",
+      "Unbounded knapsack forward iteration for combinations",
+      "House robber cyclic variant with dual 1D passes",
+      "State transition arrays for sequential stock purchase and cooldown"
+    ]
+  },
+  {
+    "id": "ch-32",
+    "order": 32,
+    "name": "DP III (2D, Strings & Intervals)",
+    "seqFrom": 487,
+    "seqTo": 500,
+    "whyNext": "2D grid DP, string alignment/matching, longest common subsequence, and interval DP.",
+    "summary": "Matrix traversal optimization, edit distance table transitions, and interval burst/matrix multiplication.",
+    "patterns": [
+      "2D grid path accumulation with obstacle boundary checks",
+      "Dual string alignment DP table for edit distance and wildcard matches",
+      "Longest increasing subsequence via patience sorting / binary search in O(n log n)",
+      "Interval DP scanning sub-interval lengths for optimal split points"
+    ]
   }
 ]

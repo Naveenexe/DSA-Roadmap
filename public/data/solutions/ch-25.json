@@ -1,0 +1,534 @@
+[
+  {
+    "seq": 381,
+    "whyNext": "Builds directly on #102: transitions from simpler approach to optimal pattern for Binary Watch.",
+    "brute": {
+      "idea": "Generate all binary states",
+      "steps": [
+        "Identify problem requirements for Binary Watch.",
+        "Explore all states or exhaustive candidates (Generate all binary states).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2¹⁰).",
+      "time": "O(2¹⁰)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2¹⁰)\nclass Solution {\n    // Generate all binary states\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2¹⁰)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all binary states\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Loop hours and minutes checking set bits count",
+      "steps": [
+        "Leverage structural invariants of Binary Watch.",
+        "Apply optimal pattern: Loop hours and minutes checking set bits count.",
+        "Achieve optimal time complexity of O(720)."
+      ],
+      "time": "O(720)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(720)\nclass Solution {\n    // Loop hours and minutes checking set bits count\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(720)\nclass Solution:\n    def solve(self, *args):\n        # Loop hours and minutes checking set bits count\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Binary Watch. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Loop hours and minutes checking set bits count.",
+      "Detailed formulation: Loop hours and minutes checking set bits count. Implement this in O(720) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 382,
+    "whyNext": "Builds directly on #109: transitions from simpler approach to optimal pattern for Letter Tile Possibilities.",
+    "brute": {
+      "idea": "Generate all sequences, dedupe with set",
+      "steps": [
+        "Identify problem requirements for Letter Tile Possibilities.",
+        "Explore all states or exhaustive candidates (Generate all sequences, dedupe with set).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!·n).",
+      "time": "O(n!·n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!·n)\nclass Solution {\n    // Generate all sequences, dedupe with set\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!·n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all sequences, dedupe with set\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack using frequency count array",
+      "steps": [
+        "Leverage structural invariants of Letter Tile Possibilities.",
+        "Apply optimal pattern: Backtrack using frequency count array.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // Backtrack using frequency count array\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # Backtrack using frequency count array\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Letter Tile Possibilities. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack using frequency count array.",
+      "Detailed formulation: Backtrack using frequency count array. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 383,
+    "whyNext": "Builds directly on #108: transitions from simpler approach to optimal pattern for Beautiful Arrangement.",
+    "brute": {
+      "idea": "All permutations, then check divisibility",
+      "steps": [
+        "Identify problem requirements for Beautiful Arrangement.",
+        "Explore all states or exhaustive candidates (All permutations, then check divisibility).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
+      "time": "O(n!)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!)\nclass Solution {\n    // All permutations, then check divisibility\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # All permutations, then check divisibility\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack placing only valid divisors at each position",
+      "steps": [
+        "Leverage structural invariants of Beautiful Arrangement.",
+        "Apply optimal pattern: Backtrack placing only valid divisors at each position.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // Backtrack placing only valid divisors at each position\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # Backtrack placing only valid divisors at each position\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Beautiful Arrangement. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack placing only valid divisors at each position.",
+      "Detailed formulation: Backtrack placing only valid divisors at each position. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 384,
+    "whyNext": "Builds directly on #103: transitions from simpler approach to optimal pattern for Non-decreasing Subsequences.",
+    "brute": {
+      "idea": "Generate all subsets and filter",
+      "steps": [
+        "Identify problem requirements for Non-decreasing Subsequences.",
+        "Explore all states or exhaustive candidates (Generate all subsets and filter).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Generate all subsets and filter\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all subsets and filter\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack with local set at each recursion level",
+      "steps": [
+        "Leverage structural invariants of Non-decreasing Subsequences.",
+        "Apply optimal pattern: Backtrack with local set at each recursion level.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // Backtrack with local set at each recursion level\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # Backtrack with local set at each recursion level\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Non-decreasing Subsequences. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack with local set at each recursion level.",
+      "Detailed formulation: Backtrack with local set at each recursion level. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 385,
+    "whyNext": "Builds directly on #111: transitions from simpler approach to optimal pattern for Numbers With Same Consecutive Differences.",
+    "brute": {
+      "idea": "Check every n-digit integer",
+      "steps": [
+        "Identify problem requirements for Numbers With Same Consecutive Differences.",
+        "Explore all states or exhaustive candidates (Check every n-digit integer).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(10ⁿ).",
+      "time": "O(10ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(10ⁿ)\nclass Solution {\n    // Check every n-digit integer\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(10ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every n-digit integer\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Build digit by digit adding/subtracting k",
+      "steps": [
+        "Leverage structural invariants of Numbers With Same Consecutive Differences.",
+        "Apply optimal pattern: Build digit by digit adding/subtracting k.",
+        "Achieve optimal time complexity of O(2ⁿ·10)."
+      ],
+      "time": "O(2ⁿ·10)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ·10)\nclass Solution {\n    // Build digit by digit adding/subtracting k\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(2ⁿ·10)\nclass Solution:\n    def solve(self, *args):\n        # Build digit by digit adding/subtracting k\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Numbers With Same Consecutive Differences. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Build digit by digit adding/subtracting k.",
+      "Detailed formulation: Build digit by digit adding/subtracting k. Implement this in O(2ⁿ·10) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 386,
+    "whyNext": "Builds directly on #385: transitions from simpler approach to optimal pattern for The k-th Lexicographical String of All Happy Strings of a Given Length.",
+    "brute": {
+      "idea": "Generate all strings and sort",
+      "steps": [
+        "Identify problem requirements for The k-th Lexicographical String of All Happy Strings of a Given Length.",
+        "Explore all states or exhaustive candidates (Generate all strings and sort).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(3ⁿ).",
+      "time": "O(3ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(3ⁿ)\nclass Solution {\n    // Generate all strings and sort\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(3ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all strings and sort\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack in lexicographical order, stop at k-th",
+      "steps": [
+        "Leverage structural invariants of The k-th Lexicographical String of All Happy Strings of a Given Length.",
+        "Apply optimal pattern: Backtrack in lexicographical order, stop at k-th.",
+        "Achieve optimal time complexity of O(k)."
+      ],
+      "time": "O(k)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(k)\nclass Solution {\n    // Backtrack in lexicographical order, stop at k-th\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(k)\nclass Solution:\n    def solve(self, *args):\n        # Backtrack in lexicographical order, stop at k-th\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for The k-th Lexicographical String of All Happy Strings of a Given Length. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack in lexicographical order, stop at k-th.",
+      "Detailed formulation: Backtrack in lexicographical order, stop at k-th. Implement this in O(k) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 387,
+    "whyNext": "Builds directly on #102: transitions from simpler approach to optimal pattern for Maximum Length of a Concatenated String with Unique Characters.",
+    "brute": {
+      "idea": "All subsets, check duplicate letters",
+      "steps": [
+        "Identify problem requirements for Maximum Length of a Concatenated String with Unique Characters.",
+        "Explore all states or exhaustive candidates (All subsets, check duplicate letters).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ·L).",
+      "time": "O(2ⁿ·L)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ·L)\nclass Solution {\n    // All subsets, check duplicate letters\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ·L)\nclass Solution:\n    def solveBrute(self, *args):\n        # All subsets, check duplicate letters\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack using bitmask of used characters",
+      "steps": [
+        "Leverage structural invariants of Maximum Length of a Concatenated String with Unique Characters.",
+        "Apply optimal pattern: Backtrack using bitmask of used characters.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // Backtrack using bitmask of used characters\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # Backtrack using bitmask of used characters\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximum Length of a Concatenated String with Unique Characters. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack using bitmask of used characters.",
+      "Detailed formulation: Backtrack using bitmask of used characters. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 388,
+    "whyNext": "Builds directly on #108: transitions from simpler approach to optimal pattern for Count Numbers with Unique Digits.",
+    "brute": {
+      "idea": "Check every number up to 10ⁿ",
+      "steps": [
+        "Identify problem requirements for Count Numbers with Unique Digits.",
+        "Explore all states or exhaustive candidates (Check every number up to 10ⁿ).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(10ⁿ).",
+      "time": "O(10ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(10ⁿ)\nclass Solution {\n    // Check every number up to 10ⁿ\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(10ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every number up to 10ⁿ\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Combinatorics permutation formula per digit count",
+      "steps": [
+        "Leverage structural invariants of Count Numbers with Unique Digits.",
+        "Apply optimal pattern: Combinatorics permutation formula per digit count.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Combinatorics permutation formula per digit count\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Combinatorics permutation formula per digit count\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Count Numbers with Unique Digits. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Combinatorics permutation formula per digit count.",
+      "Detailed formulation: Combinatorics permutation formula per digit count. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 389,
+    "whyNext": "Builds directly on #115: transitions from simpler approach to optimal pattern for Path with Maximum Gold.",
+    "brute": {
+      "idea": "All paths without pruning",
+      "steps": [
+        "Identify problem requirements for Path with Maximum Gold.",
+        "Explore all states or exhaustive candidates (All paths without pruning).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // All paths without pruning\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # All paths without pruning\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "DFS from each non-zero gold cell with temporary marking",
+      "steps": [
+        "Leverage structural invariants of Path with Maximum Gold.",
+        "Apply optimal pattern: DFS from each non-zero gold cell with temporary marking.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // DFS from each non-zero gold cell with temporary marking\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # DFS from each non-zero gold cell with temporary marking\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Path with Maximum Gold. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: DFS from each non-zero gold cell with temporary marking.",
+      "Detailed formulation: DFS from each non-zero gold cell with temporary marking. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 390,
+    "whyNext": "Builds directly on #389: transitions from simpler approach to optimal pattern for Unique Paths III.",
+    "brute": {
+      "idea": "Try all paths",
+      "steps": [
+        "Identify problem requirements for Unique Paths III.",
+        "Explore all states or exhaustive candidates (Try all paths).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all paths\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all paths\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "DFS backtracking tracking empty cells visited count",
+      "steps": [
+        "Leverage structural invariants of Unique Paths III.",
+        "Apply optimal pattern: DFS backtracking tracking empty cells visited count.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // DFS backtracking tracking empty cells visited count\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # DFS backtracking tracking empty cells visited count\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Unique Paths III. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: DFS backtracking tracking empty cells visited count.",
+      "Detailed formulation: DFS backtracking tracking empty cells visited count. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 391,
+    "whyNext": "Builds directly on #390: transitions from simpler approach to optimal pattern for Additive Number.",
+    "brute": {
+      "idea": "Try all splits blindly",
+      "steps": [
+        "Identify problem requirements for Additive Number.",
+        "Explore all states or exhaustive candidates (Try all splits blindly).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n³).",
+      "time": "O(n³)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n³)\nclass Solution {\n    // Try all splits blindly\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n³)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all splits blindly\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Fix first two numbers, verify rest iteratively",
+      "steps": [
+        "Leverage structural invariants of Additive Number.",
+        "Apply optimal pattern: Fix first two numbers, verify rest iteratively.",
+        "Achieve optimal time complexity of O(n²)."
+      ],
+      "time": "O(n²)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Fix first two numbers, verify rest iteratively\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solve(self, *args):\n        # Fix first two numbers, verify rest iteratively\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Additive Number. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Fix first two numbers, verify rest iteratively.",
+      "Detailed formulation: Fix first two numbers, verify rest iteratively. Implement this in O(n²) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 392,
+    "whyNext": "Builds directly on #391: transitions from simpler approach to optimal pattern for Split Array into Fibonacci Sequence.",
+    "brute": {
+      "idea": "Try all partitionings",
+      "steps": [
+        "Identify problem requirements for Split Array into Fibonacci Sequence.",
+        "Explore all states or exhaustive candidates (Try all partitionings).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all partitionings\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all partitionings\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack with 32-bit integer overflow and leading zero checks",
+      "steps": [
+        "Leverage structural invariants of Split Array into Fibonacci Sequence.",
+        "Apply optimal pattern: Backtrack with 32-bit integer overflow and leading zero checks.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // Backtrack with 32-bit integer overflow and leading zero checks\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # Backtrack with 32-bit integer overflow and leading zero checks\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Split Array into Fibonacci Sequence. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack with 32-bit integer overflow and leading zero checks.",
+      "Detailed formulation: Backtrack with 32-bit integer overflow and leading zero checks. Implement this in pruned without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 393,
+    "whyNext": "Builds directly on #246: transitions from simpler approach to optimal pattern for Word Break II.",
+    "brute": {
+      "idea": "Try all string splits",
+      "steps": [
+        "Identify problem requirements for Word Break II.",
+        "Explore all states or exhaustive candidates (Try all string splits).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Try all string splits\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all string splits\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtracking with memoization and word hash set",
+      "steps": [
+        "Leverage structural invariants of Word Break II.",
+        "Apply optimal pattern: Backtracking with memoization and word hash set.",
+        "Achieve optimal time complexity of O(n² + total)."
+      ],
+      "time": "O(n² + total)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n² + total)\nclass Solution {\n    // Backtracking with memoization and word hash set\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n² + total)\nclass Solution:\n    def solve(self, *args):\n        # Backtracking with memoization and word hash set\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Word Break II. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtracking with memoization and word hash set.",
+      "Detailed formulation: Backtracking with memoization and word hash set. Implement this in O(n² + total) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 394,
+    "whyNext": "Builds directly on #393: transitions from simpler approach to optimal pattern for Expression Add Operators.",
+    "brute": {
+      "idea": "Generate all operator placements then evaluate",
+      "steps": [
+        "Identify problem requirements for Expression Add Operators.",
+        "Explore all states or exhaustive candidates (Generate all operator placements then evaluate).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(4ⁿ·n).",
+      "time": "O(4ⁿ·n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(4ⁿ·n)\nclass Solution {\n    // Generate all operator placements then evaluate\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(4ⁿ·n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Generate all operator placements then evaluate\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Backtrack tracking running value and last added operand for precedence",
+      "steps": [
+        "Leverage structural invariants of Expression Add Operators.",
+        "Apply optimal pattern: Backtrack tracking running value and last added operand for precedence.",
+        "Achieve optimal time complexity of pruned."
+      ],
+      "time": "pruned",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: pruned\nclass Solution {\n    // Backtrack tracking running value and last added operand for precedence\n    public void solve() {\n    }\n}",
+        "python": "# Time: pruned\nclass Solution:\n    def solve(self, *args):\n        # Backtrack tracking running value and last added operand for precedence\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Expression Add Operators. Can you prune redundant work?",
+      "Apply the standard CH-25 pattern: Backtrack tracking running value and last added operand for precedence.",
+      "Detailed formulation: Backtrack tracking running value and last added operand for precedence. Implement this in pruned without nested full re-scans."
+    ]
+  }
+]

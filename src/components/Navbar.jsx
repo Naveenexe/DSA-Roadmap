@@ -17,7 +17,8 @@ import {
   ChevronDown,
   ChevronRight,
   LogIn,
-  X
+  X,
+  BarChart2
 } from 'lucide-react';
 
 export default function Navbar({ onOpenAuth }) {
@@ -361,7 +362,33 @@ export default function Navbar({ onOpenAuth }) {
         </div>
       </div>
 
-      {/* 4. Settings Link as a full-width row (Bug 2 #4) */}
+      {/* 4. Stats Link (SRS 3.0 Section 6.5) */}
+      <Link 
+        to="/stats" 
+        onClick={() => setMenuOpen(false)}
+        className="btn-secondary"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 16px',
+          borderRadius: 'var(--radius-pill)',
+          fontSize: '0.9rem',
+          fontWeight: 600,
+          color: 'var(--text-color)',
+          minHeight: '44px',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <BarChart2 size={18} />
+          <span>Stats & Insights</span>
+        </div>
+        <ChevronRight size={16} style={{ opacity: 0.6 }} />
+      </Link>
+
+      {/* 5. Settings Link as a full-width row (Bug 2 #4) */}
       <Link 
         to="/settings" 
         onClick={() => setMenuOpen(false)}

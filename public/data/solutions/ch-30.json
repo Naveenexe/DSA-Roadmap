@@ -1,0 +1,534 @@
+[
+  {
+    "seq": 459,
+    "whyNext": "Builds directly on #195: transitions from simpler approach to optimal pattern for Loud and Rich.",
+    "brute": {
+      "idea": "DFS from each person to find richest",
+      "steps": [
+        "Identify problem requirements for Loud and Rich.",
+        "Explore all states or exhaustive candidates (DFS from each person to find richest).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // DFS from each person to find richest\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # DFS from each person to find richest\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Topological sort Kahn's algorithm or memoized DFS",
+      "steps": [
+        "Leverage structural invariants of Loud and Rich.",
+        "Apply optimal pattern: Topological sort Kahn's algorithm or memoized DFS.",
+        "Achieve optimal time complexity of O(V + E)."
+      ],
+      "time": "O(V + E)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(V + E)\nclass Solution {\n    // Topological sort Kahn's algorithm or memoized DFS\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(V + E)\nclass Solution:\n    def solve(self, *args):\n        # Topological sort Kahn's algorithm or memoized DFS\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Loud and Rich. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Topological sort Kahn's algorithm or memoized DFS.",
+      "Detailed formulation: Topological sort Kahn's algorithm or memoized DFS. Implement this in O(V + E) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 460,
+    "whyNext": "Builds directly on #459: transitions from simpler approach to optimal pattern for Largest Color Value in a Directed Graph.",
+    "brute": {
+      "idea": "DFS every path counting colors",
+      "steps": [
+        "Identify problem requirements for Largest Color Value in a Directed Graph.",
+        "Explore all states or exhaustive candidates (DFS every path counting colors).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // DFS every path counting colors\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # DFS every path counting colors\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Topological sort with DP array dp[u][color] and cycle detection",
+      "steps": [
+        "Leverage structural invariants of Largest Color Value in a Directed Graph.",
+        "Apply optimal pattern: Topological sort with DP array dp[u][color] and cycle detection.",
+        "Achieve optimal time complexity of O(26 · (V + E))."
+      ],
+      "time": "O(26 · (V + E))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(26 · (V + E))\nclass Solution {\n    // Topological sort with DP array dp[u][color] and cycle detection\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(26 · (V + E))\nclass Solution:\n    def solve(self, *args):\n        # Topological sort with DP array dp[u][color] and cycle detection\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Largest Color Value in a Directed Graph. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Topological sort with DP array dp[u][color] and cycle detection.",
+      "Detailed formulation: Topological sort with DP array dp[u][color] and cycle detection. Implement this in O(26 · (V + E)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 461,
+    "whyNext": "Builds directly on #198: transitions from simpler approach to optimal pattern for Smallest String With Swaps.",
+    "brute": {
+      "idea": "Try all swap sequences",
+      "steps": [
+        "Identify problem requirements for Smallest String With Swaps.",
+        "Explore all states or exhaustive candidates (Try all swap sequences).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all swap sequences\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all swap sequences\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Union-Find connected components, sort characters in each component",
+      "steps": [
+        "Leverage structural invariants of Smallest String With Swaps.",
+        "Apply optimal pattern: Union-Find connected components, sort characters in each component.",
+        "Achieve optimal time complexity of O(V log V + E)."
+      ],
+      "time": "O(V log V + E)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(V log V + E)\nclass Solution {\n    // Union-Find connected components, sort characters in each component\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(V log V + E)\nclass Solution:\n    def solve(self, *args):\n        # Union-Find connected components, sort characters in each component\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Smallest String With Swaps. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Union-Find connected components, sort characters in each component.",
+      "Detailed formulation: Union-Find connected components, sort characters in each component. Implement this in O(V log V + E) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 462,
+    "whyNext": "Builds directly on #461: transitions from simpler approach to optimal pattern for Maximal Network Rank.",
+    "brute": {
+      "idea": "Check all pairs counting connected roads",
+      "steps": [
+        "Identify problem requirements for Maximal Network Rank.",
+        "Explore all states or exhaustive candidates (Check all pairs counting connected roads).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(V² · E).",
+      "time": "O(V² · E)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(V² · E)\nclass Solution {\n    // Check all pairs counting connected roads\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(V² · E)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check all pairs counting connected roads\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0)",
+      "steps": [
+        "Leverage structural invariants of Maximal Network Rank.",
+        "Apply optimal pattern: Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0).",
+        "Achieve optimal time complexity of O(V²)."
+      ],
+      "time": "O(V²)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(V²)\nclass Solution {\n    // Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(V²)\nclass Solution:\n    def solve(self, *args):\n        # Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Maximal Network Rank. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0).",
+      "Detailed formulation: Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0). Implement this in O(V²) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 463,
+    "whyNext": "Builds directly on #462: transitions from simpler approach to optimal pattern for Remove Max Number of Edges to Keep Graph Fully Traversable.",
+    "brute": {
+      "idea": "Try all subsets of removable edges",
+      "steps": [
+        "Identify problem requirements for Remove Max Number of Edges to Keep Graph Fully Traversable.",
+        "Explore all states or exhaustive candidates (Try all subsets of removable edges).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Try all subsets of removable edges\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all subsets of removable edges\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges",
+      "steps": [
+        "Leverage structural invariants of Remove Max Number of Edges to Keep Graph Fully Traversable.",
+        "Apply optimal pattern: Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges.",
+        "Achieve optimal time complexity of O(E α(V))."
+      ],
+      "time": "O(E α(V))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(E α(V))\nclass Solution {\n    // Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(E α(V))\nclass Solution:\n    def solve(self, *args):\n        # Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Remove Max Number of Edges to Keep Graph Fully Traversable. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges.",
+      "Detailed formulation: Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges. Implement this in O(E α(V)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 464,
+    "whyNext": "Builds directly on #200: transitions from simpler approach to optimal pattern for Number of Ways to Arrive at Destination.",
+    "brute": {
+      "idea": "Find all paths with DFS and compare lengths",
+      "steps": [
+        "Identify problem requirements for Number of Ways to Arrive at Destination.",
+        "Explore all states or exhaustive candidates (Find all paths with DFS and compare lengths).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Find all paths with DFS and compare lengths\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Find all paths with DFS and compare lengths\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7",
+      "steps": [
+        "Leverage structural invariants of Number of Ways to Arrive at Destination.",
+        "Apply optimal pattern: Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7.",
+        "Achieve optimal time complexity of O((V + E) log V)."
+      ],
+      "time": "O((V + E) log V)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O((V + E) log V)\nclass Solution {\n    // Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7\n    public void solve() {\n    }\n}",
+        "python": "# Time: O((V + E) log V)\nclass Solution:\n    def solve(self, *args):\n        # Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Number of Ways to Arrive at Destination. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7.",
+      "Detailed formulation: Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7. Implement this in O((V + E) log V) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 465,
+    "whyNext": "Builds directly on #464: transitions from simpler approach to optimal pattern for Number of Restricted Paths From First to Last Node.",
+    "brute": {
+      "idea": "Find all paths with simple DFS",
+      "steps": [
+        "Identify problem requirements for Number of Restricted Paths From First to Last Node.",
+        "Explore all states or exhaustive candidates (Find all paths with simple DFS).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Find all paths with simple DFS\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Find all paths with simple DFS\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Dijkstra from node n, then memoized DFS / DP along descending distance",
+      "steps": [
+        "Leverage structural invariants of Number of Restricted Paths From First to Last Node.",
+        "Apply optimal pattern: Dijkstra from node n, then memoized DFS / DP along descending distance.",
+        "Achieve optimal time complexity of O(E log V)."
+      ],
+      "time": "O(E log V)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(E log V)\nclass Solution {\n    // Dijkstra from node n, then memoized DFS / DP along descending distance\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(E log V)\nclass Solution:\n    def solve(self, *args):\n        # Dijkstra from node n, then memoized DFS / DP along descending distance\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Number of Restricted Paths From First to Last Node. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Dijkstra from node n, then memoized DFS / DP along descending distance.",
+      "Detailed formulation: Dijkstra from node n, then memoized DFS / DP along descending distance. Implement this in O(E log V) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 466,
+    "whyNext": "Builds directly on #461: transitions from simpler approach to optimal pattern for Find All People With Secret.",
+    "brute": {
+      "idea": "Simulate meetings in order",
+      "steps": [
+        "Identify problem requirements for Find All People With Secret.",
+        "Explore all states or exhaustive candidates (Simulate meetings in order).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(M²).",
+      "time": "O(M²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(M²)\nclass Solution {\n    // Simulate meetings in order\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(M²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Simulate meetings in order\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Group meetings by timestamp, Union-Find reset unshared nodes",
+      "steps": [
+        "Leverage structural invariants of Find All People With Secret.",
+        "Apply optimal pattern: Group meetings by timestamp, Union-Find reset unshared nodes.",
+        "Achieve optimal time complexity of O(M log M)."
+      ],
+      "time": "O(M log M)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(M log M)\nclass Solution {\n    // Group meetings by timestamp, Union-Find reset unshared nodes\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(M log M)\nclass Solution:\n    def solve(self, *args):\n        # Group meetings by timestamp, Union-Find reset unshared nodes\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Find All People With Secret. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Group meetings by timestamp, Union-Find reset unshared nodes.",
+      "Detailed formulation: Group meetings by timestamp, Union-Find reset unshared nodes. Implement this in O(M log M) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 467,
+    "whyNext": "Builds directly on #463: transitions from simpler approach to optimal pattern for Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree.",
+    "brute": {
+      "idea": "All spanning trees comparison",
+      "steps": [
+        "Identify problem requirements for Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree.",
+        "Explore all states or exhaustive candidates (All spanning trees comparison).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // All spanning trees comparison\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # All spanning trees comparison\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Kruskal's algorithm excluding or force-including each edge",
+      "steps": [
+        "Leverage structural invariants of Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree.",
+        "Apply optimal pattern: Kruskal's algorithm excluding or force-including each edge.",
+        "Achieve optimal time complexity of O(E² α(V))."
+      ],
+      "time": "O(E² α(V))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(E² α(V))\nclass Solution {\n    // Kruskal's algorithm excluding or force-including each edge\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(E² α(V))\nclass Solution:\n    def solve(self, *args):\n        # Kruskal's algorithm excluding or force-including each edge\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Kruskal's algorithm excluding or force-including each edge.",
+      "Detailed formulation: Kruskal's algorithm excluding or force-including each edge. Implement this in O(E² α(V)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 468,
+    "whyNext": "Builds directly on #461: transitions from simpler approach to optimal pattern for Connecting Cities With Minimum Cost.",
+    "brute": {
+      "idea": "Try all subsets of connections",
+      "steps": [
+        "Identify problem requirements for Connecting Cities With Minimum Cost.",
+        "Explore all states or exhaustive candidates (Try all subsets of connections).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(2ⁿ)\nclass Solution {\n    // Try all subsets of connections\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(2ⁿ)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all subsets of connections\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Kruskal's MST algorithm with Union-Find",
+      "steps": [
+        "Leverage structural invariants of Connecting Cities With Minimum Cost.",
+        "Apply optimal pattern: Kruskal's MST algorithm with Union-Find.",
+        "Achieve optimal time complexity of O(E log E)."
+      ],
+      "time": "O(E log E)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(E log E)\nclass Solution {\n    // Kruskal's MST algorithm with Union-Find\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(E log E)\nclass Solution:\n    def solve(self, *args):\n        # Kruskal's MST algorithm with Union-Find\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Connecting Cities With Minimum Cost. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Kruskal's MST algorithm with Union-Find.",
+      "Detailed formulation: Kruskal's MST algorithm with Union-Find. Implement this in O(E log E) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 469,
+    "whyNext": "Builds directly on #468: transitions from simpler approach to optimal pattern for Optimize Water Distribution in a Village.",
+    "brute": {
+      "idea": "Try all combinations of wells and pipes",
+      "steps": [
+        "Identify problem requirements for Optimize Water Distribution in a Village.",
+        "Explore all states or exhaustive candidates (Try all combinations of wells and pipes).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of exponential.",
+      "time": "exponential",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: exponential\nclass Solution {\n    // Try all combinations of wells and pipes\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: exponential\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all combinations of wells and pipes\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges",
+      "steps": [
+        "Leverage structural invariants of Optimize Water Distribution in a Village.",
+        "Apply optimal pattern: Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges.",
+        "Achieve optimal time complexity of O(E log E)."
+      ],
+      "time": "O(E log E)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(E log E)\nclass Solution {\n    // Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(E log E)\nclass Solution:\n    def solve(self, *args):\n        # Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Optimize Water Distribution in a Village. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges.",
+      "Detailed formulation: Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges. Implement this in O(E log E) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 470,
+    "whyNext": "Builds directly on #461: transitions from simpler approach to optimal pattern for Graph Connectivity With Threshold.",
+    "brute": {
+      "idea": "Compute GCD for every query pair and traverse",
+      "steps": [
+        "Identify problem requirements for Graph Connectivity With Threshold.",
+        "Explore all states or exhaustive candidates (Compute GCD for every query pair and traverse).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(Q · V).",
+      "time": "O(Q · V)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(Q · V)\nclass Solution {\n    // Compute GCD for every query pair and traverse\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(Q · V)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compute GCD for every query pair and traverse\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Sieve multiples of numbers > threshold into Union-Find",
+      "steps": [
+        "Leverage structural invariants of Graph Connectivity With Threshold.",
+        "Apply optimal pattern: Sieve multiples of numbers > threshold into Union-Find.",
+        "Achieve optimal time complexity of O(n log n + Q α(n))."
+      ],
+      "time": "O(n log n + Q α(n))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n log n + Q α(n))\nclass Solution {\n    // Sieve multiples of numbers > threshold into Union-Find\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n log n + Q α(n))\nclass Solution:\n    def solve(self, *args):\n        # Sieve multiples of numbers > threshold into Union-Find\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Graph Connectivity With Threshold. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Sieve multiples of numbers > threshold into Union-Find.",
+      "Detailed formulation: Sieve multiples of numbers > threshold into Union-Find. Implement this in O(n log n + Q α(n)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 471,
+    "whyNext": "Builds directly on #462: transitions from simpler approach to optimal pattern for Couples Holding Hands.",
+    "brute": {
+      "idea": "Try all swap permutations",
+      "steps": [
+        "Identify problem requirements for Couples Holding Hands.",
+        "Explore all states or exhaustive candidates (Try all swap permutations).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
+      "time": "O(n!)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!)\nclass Solution {\n    // Try all swap permutations\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all swap permutations\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Union-Find on couple indices: n - count of components",
+      "steps": [
+        "Leverage structural invariants of Couples Holding Hands.",
+        "Apply optimal pattern: Union-Find on couple indices: n - count of components.",
+        "Achieve optimal time complexity of O(n α(n))."
+      ],
+      "time": "O(n α(n))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n α(n))\nclass Solution {\n    // Union-Find on couple indices: n - count of components\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n α(n))\nclass Solution:\n    def solve(self, *args):\n        # Union-Find on couple indices: n - count of components\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Couples Holding Hands. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Union-Find on couple indices: n - count of components.",
+      "Detailed formulation: Union-Find on couple indices: n - count of components. Implement this in O(n α(n)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 472,
+    "whyNext": "Builds directly on #449: transitions from simpler approach to optimal pattern for Detonate the Maximum Bombs.",
+    "brute": {
+      "idea": "Exhaustive chain reaction simulation",
+      "steps": [
+        "Identify problem requirements for Detonate the Maximum Bombs.",
+        "Explore all states or exhaustive candidates (Exhaustive chain reaction simulation).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n³).",
+      "time": "O(n³)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n³)\nclass Solution {\n    // Exhaustive chain reaction simulation\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n³)\nclass Solution:\n    def solveBrute(self, *args):\n        # Exhaustive chain reaction simulation\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Directed graph: edge if bomb i covers bomb j, run DFS from each bomb",
+      "steps": [
+        "Leverage structural invariants of Detonate the Maximum Bombs.",
+        "Apply optimal pattern: Directed graph: edge if bomb i covers bomb j, run DFS from each bomb.",
+        "Achieve optimal time complexity of O(n · (V + E))."
+      ],
+      "time": "O(n · (V + E))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n · (V + E))\nclass Solution {\n    // Directed graph: edge if bomb i covers bomb j, run DFS from each bomb\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n · (V + E))\nclass Solution:\n    def solve(self, *args):\n        # Directed graph: edge if bomb i covers bomb j, run DFS from each bomb\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Detonate the Maximum Bombs. Can you prune redundant work?",
+      "Apply the standard CH-30 pattern: Directed graph: edge if bomb i covers bomb j, run DFS from each bomb.",
+      "Detailed formulation: Directed graph: edge if bomb i covers bomb j, run DFS from each bomb. Implement this in O(n · (V + E)) without nested full re-scans."
+    ]
+  }
+]

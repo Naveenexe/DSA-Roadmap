@@ -1,0 +1,534 @@
+[
+  {
+    "seq": 315,
+    "whyNext": "Builds directly on #3: transitions from simpler approach to optimal pattern for First Unique Character in a String.",
+    "brute": {
+      "idea": "Scan whole string for each letter",
+      "steps": [
+        "Identify problem requirements for First Unique Character in a String.",
+        "Explore all states or exhaustive candidates (Scan whole string for each letter).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Scan whole string for each letter\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Scan whole string for each letter\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count letters in array, find first with count 1",
+      "steps": [
+        "Leverage structural invariants of First Unique Character in a String.",
+        "Apply optimal pattern: Count letters in array, find first with count 1.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Count letters in array, find first with count 1\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Count letters in array, find first with count 1\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for First Unique Character in a String. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Count letters in array, find first with count 1.",
+      "Detailed formulation: Count letters in array, find first with count 1. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 316,
+    "whyNext": "Builds directly on #315: transitions from simpler approach to optimal pattern for Ransom Note.",
+    "brute": {
+      "idea": "Remove matching letters one by one",
+      "steps": [
+        "Identify problem requirements for Ransom Note.",
+        "Explore all states or exhaustive candidates (Remove matching letters one by one).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
+      "time": "O(mn)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Remove matching letters one by one\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Remove matching letters one by one\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count letters in 26-slot array",
+      "steps": [
+        "Leverage structural invariants of Ransom Note.",
+        "Apply optimal pattern: Count letters in 26-slot array.",
+        "Achieve optimal time complexity of O(m+n)."
+      ],
+      "time": "O(m+n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(m+n)\nclass Solution {\n    // Count letters in 26-slot array\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Count letters in 26-slot array\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Ransom Note. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Count letters in 26-slot array.",
+      "Detailed formulation: Count letters in 26-slot array. Implement this in O(m+n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 317,
+    "whyNext": "Builds directly on #316: transitions from simpler approach to optimal pattern for Isomorphic Strings.",
+    "brute": {
+      "idea": "Try all letter mappings",
+      "steps": [
+        "Identify problem requirements for Isomorphic Strings.",
+        "Explore all states or exhaustive candidates (Try all letter mappings).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
+      "time": "O(n!)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!)\nclass Solution {\n    // Try all letter mappings\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all letter mappings\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two maps or last seen index array in one pass",
+      "steps": [
+        "Leverage structural invariants of Isomorphic Strings.",
+        "Apply optimal pattern: Two maps or last seen index array in one pass.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Two maps or last seen index array in one pass\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Two maps or last seen index array in one pass\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Isomorphic Strings. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Two maps or last seen index array in one pass.",
+      "Detailed formulation: Two maps or last seen index array in one pass. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 318,
+    "whyNext": "Builds directly on #317: transitions from simpler approach to optimal pattern for Word Pattern.",
+    "brute": {
+      "idea": "Try all mappings",
+      "steps": [
+        "Identify problem requirements for Word Pattern.",
+        "Explore all states or exhaustive candidates (Try all mappings).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
+      "time": "O(n!)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!)\nclass Solution {\n    // Try all mappings\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all mappings\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two maps pattern to word and word to pattern",
+      "steps": [
+        "Leverage structural invariants of Word Pattern.",
+        "Apply optimal pattern: Two maps pattern to word and word to pattern.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Two maps pattern to word and word to pattern\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Two maps pattern to word and word to pattern\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Word Pattern. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Two maps pattern to word and word to pattern.",
+      "Detailed formulation: Two maps pattern to word and word to pattern. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 319,
+    "whyNext": "Builds directly on #316: transitions from simpler approach to optimal pattern for Longest Palindrome.",
+    "brute": {
+      "idea": "Try every permutation",
+      "steps": [
+        "Identify problem requirements for Longest Palindrome.",
+        "Explore all states or exhaustive candidates (Try every permutation).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
+      "time": "O(n!)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n!)\nclass Solution {\n    // Try every permutation\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try every permutation\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count letter pairs, add 1 if any odd count exists",
+      "steps": [
+        "Leverage structural invariants of Longest Palindrome.",
+        "Apply optimal pattern: Count letter pairs, add 1 if any odd count exists.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Count letter pairs, add 1 if any odd count exists\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Count letter pairs, add 1 if any odd count exists\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Longest Palindrome. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Count letter pairs, add 1 if any odd count exists.",
+      "Detailed formulation: Count letter pairs, add 1 if any odd count exists. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 320,
+    "whyNext": "Builds directly on #319: transitions from simpler approach to optimal pattern for Length of Last Word.",
+    "brute": {
+      "idea": "Split string into words array",
+      "steps": [
+        "Identify problem requirements for Length of Last Word.",
+        "Explore all states or exhaustive candidates (Split string into words array).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Split string into words array\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Split string into words array\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Scan backward skipping trailing spaces",
+      "steps": [
+        "Leverage structural invariants of Length of Last Word.",
+        "Apply optimal pattern: Scan backward skipping trailing spaces.",
+        "Achieve optimal time complexity of O(1) space."
+      ],
+      "time": "O(1) space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) space\nclass Solution {\n    // Scan backward skipping trailing spaces\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Scan backward skipping trailing spaces\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Length of Last Word. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Scan backward skipping trailing spaces.",
+      "Detailed formulation: Scan backward skipping trailing spaces. Implement this in O(1) space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 321,
+    "whyNext": "Builds directly on #320: transitions from simpler approach to optimal pattern for Roman to Integer.",
+    "brute": {
+      "idea": "Long if-chains for two-letter pairs",
+      "steps": [
+        "Identify problem requirements for Roman to Integer.",
+        "Explore all states or exhaustive candidates (Long if-chains for two-letter pairs).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n).",
+      "time": "O(n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Long if-chains for two-letter pairs\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Long if-chains for two-letter pairs\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Value map; subtract when smaller precedes larger",
+      "steps": [
+        "Leverage structural invariants of Roman to Integer.",
+        "Apply optimal pattern: Value map; subtract when smaller precedes larger.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Value map; subtract when smaller precedes larger\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Value map; subtract when smaller precedes larger\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Roman to Integer. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Value map; subtract when smaller precedes larger.",
+      "Detailed formulation: Value map; subtract when smaller precedes larger. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 322,
+    "whyNext": "Builds directly on #321: transitions from simpler approach to optimal pattern for Integer to Roman.",
+    "brute": {
+      "idea": "If chains for each digit place",
+      "steps": [
+        "Identify problem requirements for Integer to Roman.",
+        "Explore all states or exhaustive candidates (If chains for each digit place).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(1).",
+      "time": "O(1)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // If chains for each digit place\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solveBrute(self, *args):\n        # If chains for each digit place\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy over static symbol-value table from 1000 to 1",
+      "steps": [
+        "Leverage structural invariants of Integer to Roman.",
+        "Apply optimal pattern: Greedy over static symbol-value table from 1000 to 1.",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Greedy over static symbol-value table from 1000 to 1\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Greedy over static symbol-value table from 1000 to 1\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Integer to Roman. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Greedy over static symbol-value table from 1000 to 1.",
+      "Detailed formulation: Greedy over static symbol-value table from 1000 to 1. Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 323,
+    "whyNext": "Builds directly on #322: transitions from simpler approach to optimal pattern for Add Binary.",
+    "brute": {
+      "idea": "Parse to integer and add (overflows)",
+      "steps": [
+        "Identify problem requirements for Add Binary.",
+        "Explore all states or exhaustive candidates (Parse to integer and add (overflows)).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of overflow risk.",
+      "time": "overflow risk",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: overflow risk\nclass Solution {\n    // Parse to integer and add (overflows)\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: overflow risk\nclass Solution:\n    def solveBrute(self, *args):\n        # Parse to integer and add (overflows)\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Add from right to left with carry",
+      "steps": [
+        "Leverage structural invariants of Add Binary.",
+        "Apply optimal pattern: Add from right to left with carry.",
+        "Achieve optimal time complexity of O(max(m,n))."
+      ],
+      "time": "O(max(m,n))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(max(m,n))\nclass Solution {\n    // Add from right to left with carry\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(max(m,n))\nclass Solution:\n    def solve(self, *args):\n        # Add from right to left with carry\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Add Binary. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Add from right to left with carry.",
+      "Detailed formulation: Add from right to left with carry. Implement this in O(max(m,n)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 324,
+    "whyNext": "Builds directly on #323: transitions from simpler approach to optimal pattern for Add Strings.",
+    "brute": {
+      "idea": "Parse to big integer (overflows)",
+      "steps": [
+        "Identify problem requirements for Add Strings.",
+        "Explore all states or exhaustive candidates (Parse to big integer (overflows)).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of overflow risk.",
+      "time": "overflow risk",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: overflow risk\nclass Solution {\n    // Parse to big integer (overflows)\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: overflow risk\nclass Solution:\n    def solveBrute(self, *args):\n        # Parse to big integer (overflows)\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Add digit by digit with carry from the back",
+      "steps": [
+        "Leverage structural invariants of Add Strings.",
+        "Apply optimal pattern: Add digit by digit with carry from the back.",
+        "Achieve optimal time complexity of O(max(m,n))."
+      ],
+      "time": "O(max(m,n))",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(max(m,n))\nclass Solution {\n    // Add digit by digit with carry from the back\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(max(m,n))\nclass Solution:\n    def solve(self, *args):\n        # Add digit by digit with carry from the back\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Add Strings. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Add digit by digit with carry from the back.",
+      "Detailed formulation: Add digit by digit with carry from the back. Implement this in O(max(m,n)) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 325,
+    "whyNext": "Builds directly on #324: transitions from simpler approach to optimal pattern for Multiply Strings.",
+    "brute": {
+      "idea": "Repeated string addition",
+      "steps": [
+        "Identify problem requirements for Multiply Strings.",
+        "Explore all states or exhaustive candidates (Repeated string addition).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of huge.",
+      "time": "huge",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: huge\nclass Solution {\n    // Repeated string addition\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: huge\nclass Solution:\n    def solveBrute(self, *args):\n        # Repeated string addition\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Schoolbook column multiplication into result array",
+      "steps": [
+        "Leverage structural invariants of Multiply Strings.",
+        "Apply optimal pattern: Schoolbook column multiplication into result array.",
+        "Achieve optimal time complexity of O(mn)."
+      ],
+      "time": "O(mn)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Schoolbook column multiplication into result array\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solve(self, *args):\n        # Schoolbook column multiplication into result array\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Multiply Strings. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Schoolbook column multiplication into result array.",
+      "Detailed formulation: Schoolbook column multiplication into result array. Implement this in O(mn) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 326,
+    "whyNext": "Builds directly on #320: transitions from simpler approach to optimal pattern for Reverse Words in a String.",
+    "brute": {
+      "idea": "Split, reverse list, join with space",
+      "steps": [
+        "Identify problem requirements for Reverse Words in a String.",
+        "Explore all states or exhaustive candidates (Split, reverse list, join with space).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
+      "time": "O(n) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n) space\nclass Solution {\n    // Split, reverse list, join with space\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Split, reverse list, join with space\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Reverse whole string, then reverse each word",
+      "steps": [
+        "Leverage structural invariants of Reverse Words in a String.",
+        "Apply optimal pattern: Reverse whole string, then reverse each word.",
+        "Achieve optimal time complexity of O(1) extra space."
+      ],
+      "time": "O(1) extra space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) extra space\nclass Solution {\n    // Reverse whole string, then reverse each word\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) extra space\nclass Solution:\n    def solve(self, *args):\n        # Reverse whole string, then reverse each word\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Reverse Words in a String. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: Reverse whole string, then reverse each word.",
+      "Detailed formulation: Reverse whole string, then reverse each word. Implement this in O(1) extra space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 327,
+    "whyNext": "Builds directly on #326: transitions from simpler approach to optimal pattern for Zigzag Conversion.",
+    "brute": {
+      "idea": "Build full 2D grid matrix",
+      "steps": [
+        "Identify problem requirements for Zigzag Conversion.",
+        "Explore all states or exhaustive candidates (Build full 2D grid matrix).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n·rows).",
+      "time": "O(n·rows)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n·rows)\nclass Solution {\n    // Build full 2D grid matrix\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n·rows)\nclass Solution:\n    def solveBrute(self, *args):\n        # Build full 2D grid matrix\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "One string builder per row, bouncing direction index",
+      "steps": [
+        "Leverage structural invariants of Zigzag Conversion.",
+        "Apply optimal pattern: One string builder per row, bouncing direction index.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // One string builder per row, bouncing direction index\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # One string builder per row, bouncing direction index\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Zigzag Conversion. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: One string builder per row, bouncing direction index.",
+      "Detailed formulation: One string builder per row, bouncing direction index. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 328,
+    "whyNext": "Builds directly on #327: transitions from simpler approach to optimal pattern for Find the Index of the First Occurrence in a String.",
+    "brute": {
+      "idea": "Substring match at every index",
+      "steps": [
+        "Identify problem requirements for Find the Index of the First Occurrence in a String.",
+        "Explore all states or exhaustive candidates (Substring match at every index).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(nm).",
+      "time": "O(nm)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(nm)\nclass Solution {\n    // Substring match at every index\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(nm)\nclass Solution:\n    def solveBrute(self, *args):\n        # Substring match at every index\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "KMP prefix failure table algorithm",
+      "steps": [
+        "Leverage structural invariants of Find the Index of the First Occurrence in a String.",
+        "Apply optimal pattern: KMP prefix failure table algorithm.",
+        "Achieve optimal time complexity of O(n+m)."
+      ],
+      "time": "O(n+m)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n+m)\nclass Solution {\n    // KMP prefix failure table algorithm\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n+m)\nclass Solution:\n    def solve(self, *args):\n        # KMP prefix failure table algorithm\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Find the Index of the First Occurrence in a String. Can you prune redundant work?",
+      "Apply the standard CH-20 pattern: KMP prefix failure table algorithm.",
+      "Detailed formulation: KMP prefix failure table algorithm. Implement this in O(n+m) without nested full re-scans."
+    ]
+  }
+]

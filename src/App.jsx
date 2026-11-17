@@ -9,6 +9,9 @@ import Roadmap from './pages/Roadmap';
 import Question from './pages/Question';
 import Today from './pages/Today';
 import Settings from './pages/Settings';
+import Companies from './pages/Companies';
+import CompanyDetail from './pages/CompanyDetail';
+import Stats from './pages/Stats';
 import { AlertCircle, CheckCircle, Info } from 'lucide-react';
 
 export default function App() {
@@ -41,6 +44,9 @@ export default function App() {
           <Route path="/question/:seq" element={<Question />} />
           <Route path="/today" element={<Today />} />
           <Route path="/settings" element={<Settings onOpenAuth={handleOpenAuth} />} />
+          <Route path="/companies" element={<Companies />} />
+          <Route path="/companies/:slug" element={<CompanyDetail />} />
+          <Route path="/stats" element={<Stats />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

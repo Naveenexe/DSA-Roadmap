@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { 
@@ -14,11 +14,14 @@ import {
   Check,
   ChevronDown,
   Info,
-  Layers
+  Layers,
+  Briefcase
 } from 'lucide-react';
+import CompanyLogo from '../components/CompanyLogo';
+import CompanyFilterModal from '../components/CompanyFilterModal';
 
 export default function Roadmap() {
-  const { questions, chapters, progressMap, getNextUp } = useApp();
+  const { questions, chapters, companies, progressMap, getNextUp } = useApp();
   const location = useLocation();
 
   const nextUp = getNextUp();
@@ -30,9 +33,12 @@ export default function Roadmap() {
   const [search, setSearch] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all'); // all, easy, medium, hard
   const [selectedStatus, setSelectedStatus] = useState('all'); // all, todo, in_progress, done, revisit
+  const [selectedCompany, setSelectedCompany] = useState(null); // company slug or null
+  const [companyModalOpen, setCompanyModalOpen] = useState(false);
+  const companyChipRef = useRef(null);
   const [filterMistakes, setFilterMistakes] = useState(false);
 
-  // Mobile bottom sheet toggle for 18 chapters
+  // Mobile bottom sheet toggle for chapters
   const [chapterSheetOpen, setChapterSheetOpen] = useState(false);
 
   // Mobile info legend toggle
@@ -60,6 +66,10 @@ export default function Roadmap() {
       whyNext: 'Foundation of counting, lookup and in-place transformations.'
     };
   }, [chapters, activeChapterId]);
+
+  // Part 1 and Part 2 chapters (SRS 3.0 Section 3.3)
+  const part1Chapters = useMemo(() => chapters.filter(c => c.order <= 18), [chapters]);
+  const part2Chapters = useMemo(() => chapters.filter(c => c.order > 18), [chapters]);
 
   // Questions for active chapter
   const chapterQuestions = useMemo(() => {
@@ -95,6 +105,11 @@ export default function Roadmap() {
         return false;
       }
 
+      // Company Filter
+      if (selectedCompany && (!q.companies || !q.companies.includes(selectedCompany))) {
+        return false;
+      }
+
       // Mistake
       if (filterMistakes && !progressMap[q.seq]?.mistake) {
         return false;
@@ -102,7 +117,7 @@ export default function Roadmap() {
 
       return true;
     });
-  }, [chapterQuestions, search, selectedDifficulty, selectedStatus, filterMistakes, progressMap]);
+  }, [chapterQuestions, search, selectedDifficulty, selectedStatus, selectedCompany, filterMistakes, progressMap]);
 
   // Filter chips counts
   const filterCounts = useMemo(() => {
@@ -121,10 +136,11 @@ export default function Roadmap() {
     setSearch('');
     setSelectedDifficulty('all');
     setSelectedStatus('all');
+    setSelectedCompany(null);
     setFilterMistakes(false);
   };
 
-  const hasActiveFilters = search || selectedDifficulty !== 'all' || selectedStatus !== 'all' || filterMistakes;
+  const hasActiveFilters = search || selectedDifficulty !== 'all' || selectedStatus !== 'all' || selectedCompany || filterMistakes;
 
   // Status icon renderer
   const renderStatusIcon = (status) => {
@@ -248,11 +264,16 @@ export default function Roadmap() {
             letterSpacing: '0.08em',
             color: 'var(--text-muted)'
           }}>
-            18 Chapters
+            {chapters.length} Chapters
           </span>
         </div>
 
-        {chapters.map(ch => {
+        {/* Part 1 Group Heading */}
+        <div style={{ padding: '6px 10px 4px 10px', fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Part 1 (chapters 1 to 18)
+        </div>
+
+        {part1Chapters.map(ch => {
           const chQs = questions.filter(q => q.chapter === ch.id);
           const totalInCh = chQs.length || (ch.seqTo - ch.seqFrom + 1);
           const doneInCh = chQs.filter(q => progressMap[q.seq]?.status === 'done').length;
@@ -313,6 +334,77 @@ export default function Roadmap() {
             </button>
           );
         })}
+
+        {/* Part 2 Group Heading */}
+        {part2Chapters.length > 0 && (
+          <>
+            <div style={{ padding: '14px 10px 4px 10px', fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', borderTop: '1px solid var(--glass-border)', marginTop: '8px' }}>
+              Part 2 (chapters 19 to 32)
+            </div>
+
+            {part2Chapters.map(ch => {
+              const chQs = questions.filter(q => q.chapter === ch.id);
+              const totalInCh = chQs.length || (ch.seqTo - ch.seqFrom + 1);
+              const doneInCh = chQs.filter(q => progressMap[q.seq]?.status === 'done').length;
+              const ratio = totalInCh ? (doneInCh / totalInCh) : 0;
+              const isActive = ch.id === activeChapter.id;
+
+              return (
+                <button
+                  key={ch.id}
+                  onClick={() => {
+                    setActiveChapterId(ch.id);
+                    setChapterSheetOpen(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                    padding: '10px 12px',
+                    borderRadius: 'var(--radius-inner)',
+                    background: isActive ? 'var(--accent-soft)' : 'transparent',
+                    color: isActive ? 'var(--accent-soft-text)' : 'var(--text-color)',
+                    textAlign: 'left',
+                    transition: 'all 150ms ease',
+                    minHeight: '44px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) e.currentTarget.style.background = 'var(--glass-surface)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                    <span style={{ fontWeight: isActive ? 700 : 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {ch.order}. {ch.name}
+                    </span>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: isActive ? 'var(--accent-soft-text)' : 'var(--text-muted)'
+                    }}>
+                      {doneInCh}/{totalInCh}
+                    </span>
+                  </div>
+
+                  {/* Progress bar fill */}
+                  <div className="progress-bar-container" style={{ height: '5px', background: isActive ? 'rgba(0,0,0,0.1)' : 'var(--progress-track)' }}>
+                    <div 
+                      className="progress-bar-fill" 
+                      style={{ 
+                        width: `${Math.round(ratio * 100)}%`,
+                        background: isActive ? 'var(--accent)' : 'var(--progress-fill)'
+                      }} 
+                    />
+                  </div>
+                </button>
+              );
+            })}
+          </>
+        )}
       </aside>
 
       {/* 2. MAIN CONTENT AREA */}
@@ -357,27 +449,48 @@ export default function Roadmap() {
               </p>
             </div>
 
-            {/* Search Box (Full width on phones per Part 2 #5) */}
-            <div className="roadmap-search-box-wrap" style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
-              <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search question or LC#..."
-                className="glass-input roadmap-search-input"
-                style={{ paddingLeft: '40px', paddingRight: '32px', height: '44px', minHeight: '44px', fontSize: '16px' }}
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch('')}
-                  style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', minHeight: '36px', minWidth: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  aria-label="Clear search"
-                >
-                  <X size={15} />
-                </button>
-              )}
+            {/* Actions: "By company" button and Search Box */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', maxWidth: '480px', flexWrap: 'wrap' }}>
+              <Link
+                to="/companies"
+                className="btn-secondary"
+                style={{
+                  height: '44px',
+                  minHeight: '44px',
+                  padding: '0 14px',
+                  fontSize: '0.85rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <Briefcase size={16} color="var(--accent)" />
+                <span>By company</span>
+              </Link>
+
+              <div className="roadmap-search-box-wrap" style={{ position: 'relative', flex: 1, minWidth: '180px' }}>
+                <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search question or LC#..."
+                  className="glass-input roadmap-search-input"
+                  style={{ paddingLeft: '40px', paddingRight: '32px', height: '44px', minHeight: '44px', fontSize: '16px', width: '100%' }}
+                />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch('')}
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', minHeight: '36px', minWidth: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    aria-label="Clear search"
+                  >
+                    <X size={15} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -385,11 +498,11 @@ export default function Roadmap() {
           <div className="roadmap-filter-chips-row">
             <button
               type="button"
-              onClick={() => { setSelectedDifficulty('all'); setSelectedStatus('all'); setFilterMistakes(false); }}
+              onClick={() => { setSelectedDifficulty('all'); setSelectedStatus('all'); setSelectedCompany(null); setFilterMistakes(false); }}
               className="nav-pill filter-chip"
               style={{
-                background: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !filterMistakes)) ? 'var(--accent)' : 'var(--glass-surface)',
-                color: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !filterMistakes)) ? 'var(--accent-text)' : 'var(--text-color)',
+                background: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !selectedCompany && !filterMistakes)) ? 'var(--accent)' : 'var(--glass-surface)',
+                color: (!hasActiveFilters || (selectedDifficulty === 'all' && selectedStatus === 'all' && !selectedCompany && !filterMistakes)) ? 'var(--accent-text)' : 'var(--text-color)',
                 fontSize: '0.825rem',
                 padding: '8px 14px',
                 minHeight: '44px'
@@ -442,6 +555,66 @@ export default function Roadmap() {
             >
               Hard ({filterCounts.hard})
             </button>
+
+            {/* Company Filter Chip */}
+            {selectedCompany ? (
+              <div
+                className="nav-pill filter-chip"
+                style={{
+                  background: 'var(--accent)',
+                  color: 'var(--accent-text)',
+                  fontSize: '0.825rem',
+                  padding: '8px 12px',
+                  minHeight: '44px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <CompanyLogo slug={selectedCompany} size={20} showTooltip={false} />
+                <span style={{ fontWeight: 700 }}>
+                  {companies?.find(c => c.slug === selectedCompany)?.name || selectedCompany}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCompany(null)}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    color: 'inherit',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '2px',
+                    marginLeft: '2px'
+                  }}
+                  aria-label="Remove company filter"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <button
+                ref={companyChipRef}
+                type="button"
+                onClick={() => setCompanyModalOpen(true)}
+                className="nav-pill filter-chip"
+                style={{
+                  background: 'var(--glass-surface)',
+                  color: 'var(--text-color)',
+                  fontSize: '0.825rem',
+                  padding: '8px 14px',
+                  minHeight: '44px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Briefcase size={15} />
+                <span>Company</span>
+                <ChevronDown size={14} />
+              </button>
+            )}
 
             <button
               type="button"
@@ -576,6 +749,28 @@ export default function Roadmap() {
                       {q.difficulty}
                     </span>
 
+                    {/* Company logos (up to 3 + "+n" chip) */}
+                    {q.companies && q.companies.length > 0 && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                        {q.companies.slice(0, 3).map(slug => (
+                          <CompanyLogo key={slug} slug={slug} size={24} />
+                        ))}
+                        {q.companies.length > 3 && (
+                          <span style={{
+                            fontSize: '0.68rem',
+                            padding: '2px 5px',
+                            borderRadius: 'var(--radius-pill)',
+                            background: 'var(--glass-surface)',
+                            border: '1px solid var(--glass-border)',
+                            color: 'var(--text-muted)',
+                            fontWeight: 700
+                          }}>
+                            +{q.companies.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
                     <div style={{ width: 180, flexShrink: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }} className="roadmap-col-builds-on">
                       {buildsOnQuestion ? (
                         <Link 
@@ -654,6 +849,28 @@ export default function Roadmap() {
                         <ExternalLink size={16} />
                       </a>
                     </div>
+
+                    {/* Third line: company logos (22px) only when tags exist */}
+                    {q.companies && q.companies.length > 0 && (
+                      <div className="question-card-mobile-line3" style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '6px', paddingTop: '4px' }}>
+                        {q.companies.slice(0, 3).map(slug => (
+                          <CompanyLogo key={slug} slug={slug} size={22} />
+                        ))}
+                        {q.companies.length > 3 && (
+                          <span style={{
+                            fontSize: '0.68rem',
+                            padding: '1px 5px',
+                            borderRadius: 'var(--radius-pill)',
+                            background: 'var(--glass-surface)',
+                            border: '1px solid var(--glass-border)',
+                            color: 'var(--text-muted)',
+                            fontWeight: 700
+                          }}>
+                            +{q.companies.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                 </div>
@@ -661,16 +878,21 @@ export default function Roadmap() {
             })
           )}
         </div>
+
+        {/* Legal & Attribution Disclaimer Footer */}
+        <footer style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)', padding: '24px 0 16px 0', borderTop: '1px solid var(--glass-border)', marginTop: '24px' }}>
+          Company names and logos belong to their owners. Chainline is not affiliated with them. Tags reported by candidates.
+        </footer>
       </main>
 
-      {/* MOBILE BOTTOM SHEET FOR 18 CHAPTERS (Part 2 #5) */}
+      {/* MOBILE BOTTOM SHEET FOR CHAPTERS (Part 1 and Part 2) */}
       {chapterSheetOpen && (
         <div className="bottom-sheet-overlay" onClick={() => setChapterSheetOpen(false)}>
           <div className="bottom-sheet-content glass-card" onClick={(e) => e.stopPropagation()}>
             <div className="bottom-sheet-handle" />
             <div className="bottom-sheet-header">
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-color)' }}>
-                Select Chapter (18 Total)
+                Select Chapter ({chapters.length} Total)
               </h3>
               <button
                 type="button"
@@ -684,7 +906,11 @@ export default function Roadmap() {
             </div>
 
             <div className="bottom-sheet-scrollable-list">
-              {chapters.map(ch => {
+              {/* Part 1 */}
+              <div style={{ padding: '6px 8px 4px 8px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Part 1 (chapters 1 to 18)
+              </div>
+              {part1Chapters.map(ch => {
                 const chQs = questions.filter(q => q.chapter === ch.id);
                 const totalInCh = chQs.length || (ch.seqTo - ch.seqFrom + 1);
                 const doneInCh = chQs.filter(q => progressMap[q.seq]?.status === 'done').length;
@@ -721,10 +947,65 @@ export default function Roadmap() {
                   </button>
                 );
               })}
+
+              {/* Part 2 */}
+              {part2Chapters.length > 0 && (
+                <>
+                  <div style={{ padding: '14px 8px 4px 8px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', borderTop: '1px solid var(--glass-border)', marginTop: '8px' }}>
+                    Part 2 (chapters 19 to 32)
+                  </div>
+                  {part2Chapters.map(ch => {
+                    const chQs = questions.filter(q => q.chapter === ch.id);
+                    const totalInCh = chQs.length || (ch.seqTo - ch.seqFrom + 1);
+                    const doneInCh = chQs.filter(q => progressMap[q.seq]?.status === 'done').length;
+                    const ratio = totalInCh ? (doneInCh / totalInCh) : 0;
+                    const isActive = ch.id === activeChapter.id;
+
+                    return (
+                      <button
+                        key={ch.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveChapterId(ch.id);
+                          setChapterSheetOpen(false);
+                        }}
+                        className={`bottom-sheet-chapter-item ${isActive ? 'active' : ''}`}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <span style={{ fontWeight: isActive ? 700 : 600, fontSize: '0.925rem', color: isActive ? 'var(--accent)' : 'var(--text-color)' }}>
+                            {ch.order}. {ch.name}
+                          </span>
+                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                            {doneInCh}/{totalInCh}
+                          </span>
+                        </div>
+                        <div className="progress-bar-container" style={{ height: '6px' }}>
+                          <div 
+                            className="progress-bar-fill" 
+                            style={{ 
+                              width: `${Math.round(ratio * 100)}%`,
+                              background: isActive ? 'var(--accent)' : 'var(--progress-fill)'
+                            }} 
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </>
+              )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Company Filter Modal */}
+      <CompanyFilterModal
+        isOpen={companyModalOpen}
+        onClose={() => setCompanyModalOpen(false)}
+        onSelectCompany={setSelectedCompany}
+        chapterQuestions={chapterQuestions}
+        anchorRef={companyChipRef}
+      />
 
     </div>
   );

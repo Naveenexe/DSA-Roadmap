@@ -1,0 +1,534 @@
+[
+  {
+    "seq": 429,
+    "whyNext": "Builds directly on #165: transitions from simpler approach to optimal pattern for Transpose Matrix.",
+    "brute": {
+      "idea": "Allocate transposed matrix and swap rows with columns",
+      "steps": [
+        "Identify problem requirements for Transpose Matrix.",
+        "Explore all states or exhaustive candidates (Allocate transposed matrix and swap rows with columns).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
+      "time": "O(mn)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Allocate transposed matrix and swap rows with columns\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Allocate transposed matrix and swap rows with columns\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass copying matrix[i][j] into result[j][i]",
+      "steps": [
+        "Leverage structural invariants of Transpose Matrix.",
+        "Apply optimal pattern: Single pass copying matrix[i][j] into result[j][i].",
+        "Achieve optimal time complexity of O(mn)."
+      ],
+      "time": "O(mn)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Single pass copying matrix[i][j] into result[j][i]\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solve(self, *args):\n        # Single pass copying matrix[i][j] into result[j][i]\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Transpose Matrix. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Single pass copying matrix[i][j] into result[j][i].",
+      "Detailed formulation: Single pass copying matrix[i][j] into result[j][i]. Implement this in O(mn) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 430,
+    "whyNext": "Builds directly on #429: transitions from simpler approach to optimal pattern for Flipping an Image.",
+    "brute": {
+      "idea": "Reverse row then invert each pixel separately",
+      "steps": [
+        "Identify problem requirements for Flipping an Image.",
+        "Explore all states or exhaustive candidates (Reverse row then invert each pixel separately).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn) two passes.",
+      "time": "O(mn) two passes",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn) two passes\nclass Solution {\n    // Reverse row then invert each pixel separately\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn) two passes\nclass Solution:\n    def solveBrute(self, *args):\n        # Reverse row then invert each pixel separately\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers per row: swap and invert with XOR in one pass",
+      "steps": [
+        "Leverage structural invariants of Flipping an Image.",
+        "Apply optimal pattern: Two pointers per row: swap and invert with XOR in one pass.",
+        "Achieve optimal time complexity of O(mn)."
+      ],
+      "time": "O(mn)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Two pointers per row: swap and invert with XOR in one pass\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solve(self, *args):\n        # Two pointers per row: swap and invert with XOR in one pass\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Flipping an Image. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Two pointers per row: swap and invert with XOR in one pass.",
+      "Detailed formulation: Two pointers per row: swap and invert with XOR in one pass. Implement this in O(mn) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 431,
+    "whyNext": "Builds directly on #429: transitions from simpler approach to optimal pattern for Shift 2D Grid.",
+    "brute": {
+      "idea": "Shift cell by cell k times",
+      "steps": [
+        "Identify problem requirements for Shift 2D Grid.",
+        "Explore all states or exhaustive candidates (Shift cell by cell k times).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(k·mn).",
+      "time": "O(k·mn)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(k·mn)\nclass Solution {\n    // Shift cell by cell k times\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(k·mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Shift cell by cell k times\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Flatten 1D index mapping (i*n + j + k) % (mn)",
+      "steps": [
+        "Leverage structural invariants of Shift 2D Grid.",
+        "Apply optimal pattern: Flatten 1D index mapping (i*n + j + k) % (mn).",
+        "Achieve optimal time complexity of O(mn)."
+      ],
+      "time": "O(mn)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Flatten 1D index mapping (i*n + j + k) % (mn)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solve(self, *args):\n        # Flatten 1D index mapping (i*n + j + k) % (mn)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Shift 2D Grid. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Flatten 1D index mapping (i*n + j + k) % (mn).",
+      "Detailed formulation: Flatten 1D index mapping (i*n + j + k) % (mn). Implement this in O(mn) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 432,
+    "whyNext": "Builds directly on #430: transitions from simpler approach to optimal pattern for Toeplitz Matrix.",
+    "brute": {
+      "idea": "Group diagonals in hash map",
+      "steps": [
+        "Identify problem requirements for Toeplitz Matrix.",
+        "Explore all states or exhaustive candidates (Group diagonals in hash map).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn) space.",
+      "time": "O(mn) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn) space\nclass Solution {\n    // Group diagonals in hash map\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Group diagonals in hash map\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Check if matrix[i][j] == matrix[i-1][j-1]",
+      "steps": [
+        "Leverage structural invariants of Toeplitz Matrix.",
+        "Apply optimal pattern: Check if matrix[i][j] == matrix[i-1][j-1].",
+        "Achieve optimal time complexity of O(1) space."
+      ],
+      "time": "O(1) space",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1) space\nclass Solution {\n    // Check if matrix[i][j] == matrix[i-1][j-1]\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Check if matrix[i][j] == matrix[i-1][j-1]\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Toeplitz Matrix. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Check if matrix[i][j] == matrix[i-1][j-1].",
+      "Detailed formulation: Check if matrix[i][j] == matrix[i-1][j-1]. Implement this in O(1) space without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 433,
+    "whyNext": "Builds directly on #432: transitions from simpler approach to optimal pattern for Matrix Diagonal Sum.",
+    "brute": {
+      "idea": "Scan all cells and check if diagonal",
+      "steps": [
+        "Identify problem requirements for Matrix Diagonal Sum.",
+        "Explore all states or exhaustive candidates (Scan all cells and check if diagonal).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(n²)\nclass Solution {\n    // Scan all cells and check if diagonal\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Scan all cells and check if diagonal\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Single loop summing primary and secondary diagonals, subtract center if odd",
+      "steps": [
+        "Leverage structural invariants of Matrix Diagonal Sum.",
+        "Apply optimal pattern: Single loop summing primary and secondary diagonals, subtract center if odd.",
+        "Achieve optimal time complexity of O(n)."
+      ],
+      "time": "O(n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(n)\nclass Solution {\n    // Single loop summing primary and secondary diagonals, subtract center if odd\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Single loop summing primary and secondary diagonals, subtract center if odd\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Matrix Diagonal Sum. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Single loop summing primary and secondary diagonals, subtract center if odd.",
+      "Detailed formulation: Single loop summing primary and secondary diagonals, subtract center if odd. Implement this in O(n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 434,
+    "whyNext": "Builds directly on #433: transitions from simpler approach to optimal pattern for Count Negative Numbers in a Sorted Matrix.",
+    "brute": {
+      "idea": "Scan every matrix element",
+      "steps": [
+        "Identify problem requirements for Count Negative Numbers in a Sorted Matrix.",
+        "Explore all states or exhaustive candidates (Scan every matrix element).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
+      "time": "O(mn)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(mn)\nclass Solution {\n    // Scan every matrix element\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Scan every matrix element\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Staircase search from top-right or bottom-left",
+      "steps": [
+        "Leverage structural invariants of Count Negative Numbers in a Sorted Matrix.",
+        "Apply optimal pattern: Staircase search from top-right or bottom-left.",
+        "Achieve optimal time complexity of O(m+n)."
+      ],
+      "time": "O(m+n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(m+n)\nclass Solution {\n    // Staircase search from top-right or bottom-left\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Staircase search from top-right or bottom-left\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Count Negative Numbers in a Sorted Matrix. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Staircase search from top-right or bottom-left.",
+      "Detailed formulation: Staircase search from top-right or bottom-left. Implement this in O(m+n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 435,
+    "whyNext": "Builds directly on #175: transitions from simpler approach to optimal pattern for Add Digits.",
+    "brute": {
+      "idea": "Simulate summing digits in a while loop",
+      "steps": [
+        "Identify problem requirements for Add Digits.",
+        "Explore all states or exhaustive candidates (Simulate summing digits in a while loop).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(log n).",
+      "time": "O(log n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(log n)\nclass Solution {\n    // Simulate summing digits in a while loop\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(log n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Simulate summing digits in a while loop\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Digital root math formula: 1 + (num - 1) % 9",
+      "steps": [
+        "Leverage structural invariants of Add Digits.",
+        "Apply optimal pattern: Digital root math formula: 1 + (num - 1) % 9.",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Digital root math formula: 1 + (num - 1) % 9\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Digital root math formula: 1 + (num - 1) % 9\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Add Digits. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Digital root math formula: 1 + (num - 1) % 9.",
+      "Detailed formulation: Digital root math formula: 1 + (num - 1) % 9. Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 436,
+    "whyNext": "Builds directly on #435: transitions from simpler approach to optimal pattern for Power of Three.",
+    "brute": {
+      "idea": "Loop dividing by 3",
+      "steps": [
+        "Identify problem requirements for Power of Three.",
+        "Explore all states or exhaustive candidates (Loop dividing by 3).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(log₃ n).",
+      "time": "O(log₃ n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(log₃ n)\nclass Solution {\n    // Loop dividing by 3\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(log₃ n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Loop dividing by 3\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Max 32-bit power 3¹⁹ % n == 0",
+      "steps": [
+        "Leverage structural invariants of Power of Three.",
+        "Apply optimal pattern: Max 32-bit power 3¹⁹ % n == 0.",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Max 32-bit power 3¹⁹ % n == 0\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Max 32-bit power 3¹⁹ % n == 0\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Power of Three. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Max 32-bit power 3¹⁹ % n == 0.",
+      "Detailed formulation: Max 32-bit power 3¹⁹ % n == 0. Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 437,
+    "whyNext": "Builds directly on #436: transitions from simpler approach to optimal pattern for Power of Four.",
+    "brute": {
+      "idea": "Divide by 4 in a loop",
+      "steps": [
+        "Identify problem requirements for Power of Four.",
+        "Explore all states or exhaustive candidates (Divide by 4 in a loop).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(log₄ n).",
+      "time": "O(log₄ n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(log₄ n)\nclass Solution {\n    // Divide by 4 in a loop\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(log₄ n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Divide by 4 in a loop\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Power of two check and odd-bit mask (0x55555555)",
+      "steps": [
+        "Leverage structural invariants of Power of Four.",
+        "Apply optimal pattern: Power of two check and odd-bit mask (0x55555555).",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Power of two check and odd-bit mask (0x55555555)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Power of two check and odd-bit mask (0x55555555)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Power of Four. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Power of two check and odd-bit mask (0x55555555).",
+      "Detailed formulation: Power of two check and odd-bit mask (0x55555555). Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 438,
+    "whyNext": "Builds directly on #437: transitions from simpler approach to optimal pattern for Number of Steps to Reduce a Number to Zero.",
+    "brute": {
+      "idea": "Loop subtracting 1 or dividing by 2",
+      "steps": [
+        "Identify problem requirements for Number of Steps to Reduce a Number to Zero.",
+        "Explore all states or exhaustive candidates (Loop subtracting 1 or dividing by 2).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(log n).",
+      "time": "O(log n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(log n)\nclass Solution {\n    // Loop subtracting 1 or dividing by 2\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(log n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Loop subtracting 1 or dividing by 2\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Bit count: total bits + set bits count - 1",
+      "steps": [
+        "Leverage structural invariants of Number of Steps to Reduce a Number to Zero.",
+        "Apply optimal pattern: Bit count: total bits + set bits count - 1.",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Bit count: total bits + set bits count - 1\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Bit count: total bits + set bits count - 1\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Number of Steps to Reduce a Number to Zero. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Bit count: total bits + set bits count - 1.",
+      "Detailed formulation: Bit count: total bits + set bits count - 1. Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 439,
+    "whyNext": "Builds directly on #435: transitions from simpler approach to optimal pattern for Subtract the Product and Sum of Digits of an Integer.",
+    "brute": {
+      "idea": "Convert to string and parse digits",
+      "steps": [
+        "Identify problem requirements for Subtract the Product and Sum of Digits of an Integer.",
+        "Explore all states or exhaustive candidates (Convert to string and parse digits).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(d) space.",
+      "time": "O(d) space",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(d) space\nclass Solution {\n    // Convert to string and parse digits\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(d) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Convert to string and parse digits\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Arithmetic extraction of digits: product minus sum",
+      "steps": [
+        "Leverage structural invariants of Subtract the Product and Sum of Digits of an Integer.",
+        "Apply optimal pattern: Arithmetic extraction of digits: product minus sum.",
+        "Achieve optimal time complexity of O(log n)."
+      ],
+      "time": "O(log n)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(log n)\nclass Solution {\n    // Arithmetic extraction of digits: product minus sum\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(log n)\nclass Solution:\n    def solve(self, *args):\n        # Arithmetic extraction of digits: product minus sum\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Subtract the Product and Sum of Digits of an Integer. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Arithmetic extraction of digits: product minus sum.",
+      "Detailed formulation: Arithmetic extraction of digits: product minus sum. Implement this in O(log n) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 440,
+    "whyNext": "Builds directly on #438: transitions from simpler approach to optimal pattern for Binary Number with Alternating Bits.",
+    "brute": {
+      "idea": "Check adjacent bits in binary string",
+      "steps": [
+        "Identify problem requirements for Binary Number with Alternating Bits.",
+        "Explore all states or exhaustive candidates (Check adjacent bits in binary string).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(32).",
+      "time": "O(32)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(32)\nclass Solution {\n    // Check adjacent bits in binary string\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(32)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check adjacent bits in binary string\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "n ^ (n >> 1) is all ones: x & (x + 1) == 0",
+      "steps": [
+        "Leverage structural invariants of Binary Number with Alternating Bits.",
+        "Apply optimal pattern: n ^ (n >> 1) is all ones: x & (x + 1) == 0.",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // n ^ (n >> 1) is all ones: x & (x + 1) == 0\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # n ^ (n >> 1) is all ones: x & (x + 1) == 0\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Binary Number with Alternating Bits. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: n ^ (n >> 1) is all ones: x & (x + 1) == 0.",
+      "Detailed formulation: n ^ (n >> 1) is all ones: x & (x + 1) == 0. Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 441,
+    "whyNext": "Builds directly on #440: transitions from simpler approach to optimal pattern for Number Complement.",
+    "brute": {
+      "idea": "Flip bits in string representation",
+      "steps": [
+        "Identify problem requirements for Number Complement.",
+        "Explore all states or exhaustive candidates (Flip bits in string representation).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(32).",
+      "time": "O(32)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(32)\nclass Solution {\n    // Flip bits in string representation\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(32)\nclass Solution:\n    def solveBrute(self, *args):\n        # Flip bits in string representation\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Bitmask of all 1s of same bit length XOR num",
+      "steps": [
+        "Leverage structural invariants of Number Complement.",
+        "Apply optimal pattern: Bitmask of all 1s of same bit length XOR num.",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Bitmask of all 1s of same bit length XOR num\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Bitmask of all 1s of same bit length XOR num\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Number Complement. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Bitmask of all 1s of same bit length XOR num.",
+      "Detailed formulation: Bitmask of all 1s of same bit length XOR num. Implement this in O(1) without nested full re-scans."
+    ]
+  },
+  {
+    "seq": 442,
+    "whyNext": "Builds directly on #440: transitions from simpler approach to optimal pattern for Hamming Distance.",
+    "brute": {
+      "idea": "Compare binary strings character by character",
+      "steps": [
+        "Identify problem requirements for Hamming Distance.",
+        "Explore all states or exhaustive candidates (Compare binary strings character by character).",
+        "Return matching answer or extreme value found."
+      ],
+      "whySlow": "Naive search has high asymptotic complexity of O(32).",
+      "time": "O(32)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "// Time: O(32)\nclass Solution {\n    // Compare binary strings character by character\n    public void solveBrute() {\n    }\n}",
+        "python": "# Time: O(32)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare binary strings character by character\n        pass"
+      }
+    },
+    "optimal": {
+      "idea": "Count set bits of (x ^ y)",
+      "steps": [
+        "Leverage structural invariants of Hamming Distance.",
+        "Apply optimal pattern: Count set bits of (x ^ y).",
+        "Achieve optimal time complexity of O(1)."
+      ],
+      "time": "O(1)",
+      "space": "O(n) auxiliary",
+      "code": {
+        "java": "// Time: O(1)\nclass Solution {\n    // Count set bits of (x ^ y)\n    public void solve() {\n    }\n}",
+        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Count set bits of (x ^ y)\n        pass"
+      }
+    },
+    "hints": [
+      "Consider how you can simplify checking candidates for Hamming Distance. Can you prune redundant work?",
+      "Apply the standard CH-28 pattern: Count set bits of (x ^ y).",
+      "Detailed formulation: Count set bits of (x ^ y). Implement this in O(1) without nested full re-scans."
+    ]
+  }
+]

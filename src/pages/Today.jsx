@@ -23,13 +23,59 @@ export default function Today() {
     progressMap, 
     todaySolvedCount, 
     user, 
-    getNextUp 
+    getNextUp,
+    interviewPlan,
+    clearInterviewPlan,
+    companies
   } = useApp();
   const navigate = useNavigate();
 
   const nextUp = getNextUp();
   const dailyGoal = user?.daily_goal || 2;
   const todayStr = new Date().toISOString().split('T')[0];
+
+  // Interview Plan data (SRS 3.0 Section 8.2 & 8.3)
+  const planInfo = useMemo(() => {
+    if (!interviewPlan?.date) return null;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const targetDate = new Date(interviewPlan.date + 'T00:00:00');
+    targetDate.setHours(0, 0, 0, 0);
+
+    const diffTime = targetDate.getTime() - today.getTime();
+    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // counting today
+
+    const isPast = daysLeft <= 0;
+
+    let pool = questions.filter(q => progressMap[q.seq]?.status !== 'done');
+    let scopeQuestions = questions;
+
+    if (interviewPlan.company) {
+      scopeQuestions = questions.filter(q => q.companies && q.companies.includes(interviewPlan.company));
+      pool = pool.filter(q => q.companies && q.companies.includes(interviewPlan.company));
+    }
+
+    const totalScope = scopeQuestions.length;
+    const doneScope = scopeQuestions.filter(q => progressMap[q.seq]?.status === 'done').length;
+
+    const rawTarget = daysLeft > 0 ? Math.ceil(pool.length / Math.max(1, daysLeft)) : 0;
+    const dailyTarget = Math.min(10, Math.max(1, rawTarget));
+    const isOverloaded = rawTarget > 10;
+    const todayTargetList = pool.slice(0, dailyTarget);
+
+    return {
+      daysLeft,
+      isPast,
+      isComplete: pool.length === 0,
+      totalScope,
+      doneScope,
+      dailyTarget,
+      isOverloaded,
+      todayTargetList,
+      company: interviewPlan.company
+    };
+  }, [interviewPlan, questions, progressMap]);
 
   // Due & Overdue counts (Section 5.6)
   const overdueCount = useMemo(() => {
@@ -191,6 +237,152 @@ export default function Today() {
           flexDirection: 'column',
           gap: '1rem'
         }}>
+          {/* Plan for today section (SRS 3.0 Section 8.3 & 8.2) */}
+          {planInfo && (
+            <div className="glass-card today-interview-plan-section" style={{
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              width: '100%',
+              boxSizing: 'border-box'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <CalendarIcon size={18} color="var(--accent)" />
+                  <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-color)', margin: 0 }}>
+                    Plan for today
+                  </h2>
+                </div>
+                {!planInfo.isPast && !planInfo.isComplete && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      padding: '3px 10px',
+                      borderRadius: 'var(--radius-pill)',
+                      background: 'var(--accent-soft)',
+                      color: 'var(--accent)'
+                    }}>
+                      Daily target: {planInfo.dailyTarget} {planInfo.dailyTarget === 1 ? 'question' : 'questions'}
+                    </span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      · {planInfo.daysLeft} {planInfo.daysLeft === 1 ? 'day' : 'days'} left
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {planInfo.isPast ? (
+                <div style={{
+                  padding: '12px 14px',
+                  borderRadius: 'var(--radius-inner)',
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '8px'
+                }}>
+                  <span style={{ fontSize: '0.85rem', color: '#EF4444', fontWeight: 600 }}>
+                    Your interview date has passed.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={clearInterviewPlan}
+                    className="btn-secondary"
+                    style={{ padding: '4px 12px', minHeight: '36px', height: '36px', fontSize: '0.8rem' }}
+                  >
+                    Clear plan
+                  </button>
+                </div>
+              ) : planInfo.isComplete ? (
+                <div style={{
+                  padding: '12px 14px',
+                  borderRadius: 'var(--radius-inner)',
+                  background: 'rgba(16, 185, 129, 0.12)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  color: '#10B981',
+                  fontSize: '0.875rem',
+                  fontWeight: 600
+                }}>
+                  You have covered everything in your plan.
+                </div>
+              ) : (
+                <>
+                  {planInfo.isOverloaded && (
+                    <div style={{ fontSize: '0.825rem', color: '#F59E0B', fontStyle: 'italic' }}>
+                      There are not enough days to cover everything. Showing 10 a day.
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
+                    {planInfo.todayTargetList.map((q) => {
+                      const ch = chapters.find(c => c.id === q.chapter);
+                      return (
+                        <div
+                          key={q.seq}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '10px 14px',
+                            background: 'var(--glass-surface)',
+                            border: '1px solid var(--glass-border)',
+                            borderRadius: 'var(--radius-inner)',
+                            gap: '12px'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+                            <span style={{
+                              fontFamily: 'var(--font-mono)',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              color: 'var(--text-muted)',
+                              flexShrink: 0
+                            }}>
+                              #{q.seq}
+                            </span>
+                            <span style={{
+                              fontWeight: 600,
+                              fontSize: '0.9rem',
+                              color: 'var(--text-color)',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                              {q.title}
+                            </span>
+                            <span className={`diff-pill diff-pill-${q.difficulty.toLowerCase()}`} style={{ flexShrink: 0 }}>
+                              {q.difficulty}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/question/${q.seq}`)}
+                            className="btn-primary"
+                            style={{
+                              padding: '4px 14px',
+                              minHeight: '36px',
+                              height: '36px',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              flexShrink: 0
+                            }}
+                          >
+                            <span>Start</span>
+                            <ArrowRight size={13} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
           {dueReviews.length === 0 ? (
             /* Empty State: "All caught up" */
             <div className="glass-card" style={{
