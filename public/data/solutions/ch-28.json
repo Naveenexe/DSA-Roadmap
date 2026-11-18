@@ -1,0 +1,562 @@
+[
+  {
+    "seq": 429,
+    "whyNext": "Builds on 2D matrix coordinate mapping from Rotate Image (Seq 20) by swapping row and column indices into a new n x m matrix where res[c][r] = matrix[r][c].",
+    "hints": [
+      "The transpose of an m x n matrix is an n x m matrix.",
+      "The element at row r and column c in the original matrix moves to row c and column r in the transposed matrix.",
+      "Allocate new int[n][m]. Iterate r from 0 to m - 1 and c from 0 to n - 1: ans[c][r] = matrix[r][c]. Return ans."
+    ],
+    "brute": {
+      "idea": "Iterate column by column through the original matrix and append rows to the transposed result matrix.",
+      "steps": [
+        "Let m = matrix.length, n = matrix[0].length.",
+        "Allocate int[n][m].",
+        "Outer loop c from 0 to n - 1, inner loop r from 0 to m - 1: ans[c][r] = matrix[r][c].",
+        "Return ans."
+      ],
+      "whySlow": "Non-sequential memory access across column major order.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int[][] transpose(int[][] matrix) {\n        int m = matrix.length, n = matrix[0].length;\n        int[][] res = new int[n][m];\n        for (int c = 0; c < n; c++) {\n            for (int r = 0; r < m; r++) {\n                res[c][r] = matrix[r][c];\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def transpose(self, matrix: list[list[int]]) -> list[list[int]]:\n        m, n = len(matrix), len(matrix[0])\n        res = [[0] * m for _ in range(n)]\n        for c in range(n):\n            for r in range(m):\n                res[c][r] = matrix[r][c]\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Row-major traversal transposition: read source matrix row-by-row for cache locality, writing directly into transposed coordinates.",
+      "steps": [
+        "int m = matrix.length, n = matrix[0].length.",
+        "int[][] ans = new int[n][m].",
+        "For r = 0 to m - 1: for c = 0 to n - 1: ans[c][r] = matrix[r][c].",
+        "Return ans."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int[][] transpose(int[][] matrix) {\n        int m = matrix.length, n = matrix[0].length;\n        int[][] ans = new int[n][m];\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                ans[c][r] = matrix[r][c];\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def transpose(self, matrix: list[list[int]]) -> list[list[int]]:\n        m, n = len(matrix), len(matrix[0])\n        ans = [[0] * m for _ in range(n)]\n        for r in range(m):\n            for c in range(n):\n                ans[c][r] = matrix[r][c]\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 430,
+    "whyNext": "Builds on 2D matrix flattening and reshaping from Transpose Matrix (Seq 429) by checking area equivalence (m * n == r * c) and mapping 1D index k to 2D coordinates (k / c, k % c).",
+    "hints": [
+      "If m * n != r * c, the matrix cannot be reshaped; return the original matrix as is.",
+      "Flatten coordinates: index k in [0, m * n - 1] maps to original cell [k / n][k % n].",
+      "In the reshaped matrix, index k maps to cell [k / c][k % c]. Copy elements in a single loop from 0 to m * n - 1."
+    ],
+    "brute": {
+      "idea": "Flatten matrix into a 1D ArrayList and populate the r x c matrix from the list.",
+      "steps": [
+        "Check if m * n == r * c. If not return original matrix.",
+        "Extract all elements into a 1D list.",
+        "Fill new r x c matrix row by row from the 1D list.",
+        "Return new matrix."
+      ],
+      "whySlow": "Allocating an intermediate list uses extra O(m * n) memory.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int[][] matrixReshape(int[][] mat, int r, int c) {\n        int m = mat.length, n = mat[0].length;\n        if (m * n != r * c) return mat;\n        List<Integer> list = new ArrayList<>();\n        for (int[] row : mat) for (int x : row) list.add(x);\n        int[][] res = new int[r][c];\n        int idx = 0;\n        for (int i = 0; i < r; i++) {\n            for (int j = 0; j < c; j++) {\n                res[i][j] = list.get(idx++);\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def matrixReshape(self, mat: list[list[int]], r: int, c: int) -> list[list[int]]:\n        m, n = len(mat), len(mat[0])\n        if m * n != r * c:\n            return mat\n        flat = []\n        for row in mat:\n            flat.extend(row)\n        res = []\n        for i in range(r):\n            res.append(flat[i * c:(i + 1) * c])\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Single loop coordinate arithmetic: map linear index k directly between old and new 2D matrix representations in O(m * n) time without extra lists.",
+      "steps": [
+        "Let m = mat.length, n = mat[0].length.",
+        "If m * n != r * c return mat.",
+        "int[][] ans = new int[r][c].",
+        "For k from 0 to m * n - 1: ans[k / c][k % c] = mat[k / n][k % n].",
+        "Return ans."
+      ],
+      "time": "O(m * n)",
+      "space": "O(r * c)",
+      "code": {
+        "java": "class Solution {\n    public int[][] matrixReshape(int[][] mat, int r, int c) {\n        int m = mat.length, n = mat[0].length;\n        if (m * n != r * c) return mat;\n        int[][] ans = new int[r][c];\n        for (int k = 0; k < m * n; k++) {\n            ans[k / c][k % c] = mat[k / n][k % n];\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def matrixReshape(self, mat: list[list[int]], r: int, c: int) -> list[list[int]]:\n        m, n = len(mat), len(mat[0])\n        if m * n != r * c:\n            return mat\n        ans = [[0] * c for _ in range(r)]\n        for k in range(m * n):\n            ans[k // c][k % c] = mat[k // n][k % n]\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 431,
+    "whyNext": "Inverts the clockwise spiral reading order from Spiral Matrix (Seq 19) by filling numbers 1 through n^2 along narrowing layer boundaries: top, right, bottom, left.",
+    "hints": [
+      "Maintain four boundary pointers: top = 0, bottom = n - 1, left = 0, right = n - 1.",
+      "Iterate num from 1 to n^2 in four directions: left-to-right along top, top-to-bottom along right, right-to-left along bottom, bottom-to-top along left.",
+      "Shrink the corresponding boundary after each traversal direction until all n^2 numbers are placed."
+    ],
+    "brute": {
+      "idea": "Simulate step-by-step movement with a direction vector [dr, dc] and turn right whenever hitting a boundary or already filled cell.",
+      "steps": [
+        "Initialize n x n matrix with 0.",
+        "Directions: right, down, left, up.",
+        "Move in current direction: if next step is out of bounds or visited, turn right.",
+        "Continue until 1 to n^2 are placed."
+      ],
+      "whySlow": "Boundary and occupancy checks on every single step.",
+      "time": "O(n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int[][] generateMatrix(int n) {\n        int[][] res = new int[n][n];\n        int[] dr = {0, 1, 0, -1};\n        int[] dc = {1, 0, -1, 0};\n        int r = 0, c = 0, d = 0;\n        for (int val = 1; val <= n * n; val++) {\n            res[r][c] = val;\n            int nr = r + dr[d], nc = c + dc[d];\n            if (nr < 0 || nr >= n || nc < 0 || nc >= n || res[nr][nc] != 0) {\n                d = (d + 1) % 4;\n                nr = r + dr[d];\n                nc = c + dc[d];\n            }\n            r = nr; c = nc;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def generateMatrix(self, n: int) -> list[list[int]]:\n        res = [[0] * n for _ in range(n)]\n        dirs = [(0, 1), (1, 0), (0, -1), (-1, 0)]\n        r = c = d = 0\n        for val in range(1, n * n + 1):\n            res[r][c] = val\n            dr, dc = dirs[d]\n            nr, nc = r + dr, c + dc\n            if not (0 <= nr < n and 0 <= nc < n and res[nr][nc] == 0):\n                d = (d + 1) % 4\n                dr, dc = dirs[d]\n                nr, nc = r + dr, c + dc\n            r, c = nr, nc\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Layer-by-layer 4-boundary traversal: fill outer border and contract boundaries inward in O(n^2) time.",
+      "steps": [
+        "int[][] matrix = new int[n][n].",
+        "int top = 0, bottom = n - 1, left = 0, right = n - 1, val = 1.",
+        "While left <= right and top <= bottom:",
+        "Fill left to right along top (top++); fill top to bottom along right (right--); fill right to left along bottom (bottom--); fill bottom to top along left (left++).",
+        "Return matrix."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int[][] generateMatrix(int n) {\n        int[][] mat = new int[n][n];\n        int top = 0, bottom = n - 1, left = 0, right = n - 1;\n        int val = 1;\n        while (left <= right && top <= bottom) {\n            for (int i = left; i <= right; i++) mat[top][i] = val++;\n            top++;\n            for (int i = top; i <= bottom; i++) mat[i][right] = val++;\n            right--;\n            for (int i = right; i >= left; i--) mat[bottom][i] = val++;\n            bottom--;\n            for (int i = bottom; i >= top; i--) mat[i][left] = val++;\n            left++;\n        }\n        return mat;\n    }\n}",
+        "python": "class Solution:\n    def generateMatrix(self, n: int) -> list[list[int]]:\n        mat = [[0] * n for _ in range(n)]\n        top, bottom, left, right = 0, n - 1, 0, n - 1\n        val = 1\n        while left <= right and top <= bottom:\n            for i in range(left, right + 1):\n                mat[top][i] = val\n                val += 1\n            top += 1\n            for i in range(top, bottom + 1):\n                mat[i][right] = val\n                val += 1\n            right -= 1\n            for i in range(right, left - 1, -1):\n                mat[bottom][i] = val\n                val += 1\n            bottom -= 1\n            for i in range(bottom, top - 1, -1):\n                mat[i][left] = val\n                val += 1\n            left += 1\n        return mat"
+      }
+    }
+  },
+  {
+    "seq": 432,
+    "whyNext": "Builds on 2D grid traversal patterns from Spiral Matrix II (Seq 431) by grouping cells by diagonal sum (r + c) and alternating direction (up-right vs down-left) for each diagonal.",
+    "hints": [
+      "All cells on the same diagonal have the exact same sum of indices: r + c = d, where d ranges from 0 to m + n - 2.",
+      "If d is even, traverse up-right: r decreases, c increases; if d is odd, traverse down-left: r increases, c decreases.",
+      "Alternatively, collect all cells for diagonal d in a list, reverse the list if d is even, and append to result."
+    ],
+    "brute": {
+      "idea": "Group matrix values into buckets keyed by r + c, then reverse alternating buckets before flattening.",
+      "steps": [
+        "Create Map<Integer, List<Integer>> buckets.",
+        "Traverse all cells (r, c): buckets[r + c].add(mat[r][c]).",
+        "Loop d from 0 to m + n - 2: if d % 2 == 0 reverse bucket[d].",
+        "Flatten all buckets into a 1D array and return."
+      ],
+      "whySlow": "Allocates lists for every diagonal.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int[] findDiagonalOrder(int[][] mat) {\n        int m = mat.length, n = mat[0].length;\n        Map<Integer, List<Integer>> map = new HashMap<>();\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                map.computeIfAbsent(r + c, k -> new ArrayList<>()).add(mat[r][c]);\n            }\n        }\n        int[] ans = new int[m * n];\n        int idx = 0;\n        for (int d = 0; d < m + n - 1; d++) {\n            List<Integer> list = map.get(d);\n            if (d % 2 == 0) Collections.reverse(list);\n            for (int x : list) ans[idx++] = x;\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def findDiagonalOrder(self, mat: list[list[int]]) -> list[int]:\n        from collections import defaultdict\n        diags = defaultdict(list)\n        m, n = len(mat), len(mat[0])\n        for r in range(m):\n            for c in range(n):\n                diags[r + c].append(mat[r][c])\n        ans = []\n        for d in range(m + n - 1):\n            if d % 2 == 0:\n                ans.extend(diags[d][::-1])\n            else:\n                ans.extend(diags[d])\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Direct simulation of diagonal bounds: step up-right or down-left with boundary turning in O(1) auxiliary space.",
+      "steps": [
+        "Let m = mat.length, n = mat[0].length.",
+        "int[] ans = new int[m * n]; int r = 0, c = 0.",
+        "For i from 0 to m * n - 1: ans[i] = mat[r][c].",
+        "If (r + c) % 2 == 0 (up-right): if c == n - 1: r++; else if r == 0: c++; else: r--; c++;",
+        "Else (down-left): if r == m - 1: c++; else if c == 0: r++; else: r++; c--;",
+        "Return ans."
+      ],
+      "time": "O(m * n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public int[] findDiagonalOrder(int[][] mat) {\n        if (mat == null || mat.length == 0) return new int[0];\n        int m = mat.length, n = mat[0].length;\n        int[] ans = new int[m * n];\n        int r = 0, c = 0;\n        for (int i = 0; i < m * n; i++) {\n            ans[i] = mat[r][c];\n            if ((r + c) % 2 == 0) {\n                if (c == n - 1) r++;\n                else if (r == 0) c++;\n                else { r--; c++; }\n            } else {\n                if (r == m - 1) c++;\n                else if (c == 0) r++;\n                else { r++; c--; }\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def findDiagonalOrder(self, mat: list[list[int]]) -> list[int]:\n        if not mat or not mat[0]:\n            return []\n        m, n = len(mat), len(mat[0])\n        ans = [0] * (m * n)\n        r = c = 0\n        for i in range(m * n):\n            ans[i] = mat[r][c]\n            if (r + c) % 2 == 0:\n                if c == n - 1:\n                    r += 1\n                elif r == 0:\n                    c += 1\n                else:\n                    r -= 1\n                    c += 1\n            else:\n                if r == m - 1:\n                    c += 1\n                elif c == 0:\n                    r += 1\n                else:\n                    r += 1\n                    c -= 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 433,
+    "whyNext": "Builds on 8-directional cell neighborhood counting from Diagonal Traverse (Seq 432) by encoding state transitions using bit states in-place to update the board simultaneously without auxiliary matrix memory.",
+    "hints": [
+      "Since all cell updates occur simultaneously, computing a cell's new state based on modified neighbors causes errors unless previous states are preserved.",
+      "Use 2 bits per cell: bit 0 represents current state, bit 1 represents next state.",
+      "Count live neighbors using (board[nr][nc] & 1). If a live cell remains live, or a dead cell becomes live, set bit 1 (board[r][c] |= 2). After updating all cells, shift right by 1: board[r][c] >>= 1."
+    ],
+    "brute": {
+      "idea": "Clone board into a separate 2D matrix, count live neighbors using the copy, and write next state to the original board.",
+      "steps": [
+        "Create deep copy of board.",
+        "For each cell (r, c), count live neighbors in the copy.",
+        "Apply Conway's rules to update board[r][c].",
+        "Return."
+      ],
+      "whySlow": "Requires O(m * n) auxiliary space for matrix copy.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public void gameOfLife(int[][] board) {\n        int m = board.length, n = board[0].length;\n        int[][] copy = new int[m][n];\n        for (int i = 0; i < m; i++) copy[i] = board[i].clone();\n        int[] dr = {-1,-1,-1,0,0,1,1,1};\n        int[] dc = {-1,0,1,-1,1,-1,0,1};\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                int live = 0;\n                for (int d = 0; d < 8; d++) {\n                    int nr = r + dr[d], nc = c + dc[d];\n                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && copy[nr][nc] == 1) live++;\n                }\n                if (copy[r][c] == 1 && (live < 2 || live > 3)) board[r][c] = 0;\n                if (copy[r][c] == 0 && live == 3) board[r][c] = 1;\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def gameOfLife(self, board: list[list[int]]) -> None:\n        m, n = len(board), len(board[0])\n        copy = [row[:] for row in board]\n        dirs = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]\n        for r in range(m):\n            for c in range(n):\n                live = 0\n                for dr, dc in dirs:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < m and 0 <= nc < n and copy[nr][nc] == 1:\n                        live += 1\n                if copy[r][c] == 1 and (live < 2 or live > 3):\n                    board[r][c] = 0\n                elif copy[r][c] == 0 and live == 3:\n                    board[r][c] = 1"
+      }
+    },
+    "optimal": {
+      "idea": "In-place 2-bit state encoding: store current state in bit 0 and next state in bit 1 in O(1) auxiliary space.",
+      "steps": [
+        "For each cell (r, c): count live neighbors using neighbor & 1.",
+        "If cell is currently 1 and live neighbors in {2, 3}: set bit 1 (board[r][c] |= 2).",
+        "If cell is currently 0 and live neighbors == 3: set bit 1 (board[r][c] |= 2).",
+        "Final pass: shift each cell right by 1 bit (board[r][c] >>= 1)."
+      ],
+      "time": "O(m * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void gameOfLife(int[][] board) {\n        int m = board.length, n = board[0].length;\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                int live = countLive(board, r, c, m, n);\n                if ((board[r][c] & 1) == 1 && (live == 2 || live == 3)) {\n                    board[r][c] |= 2;\n                } else if ((board[r][c] & 1) == 0 && live == 3) {\n                    board[r][c] |= 2;\n                }\n            }\n        }\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                board[r][c] >>= 1;\n            }\n        }\n    }\n    private int countLive(int[][] b, int r, int c, int m, int n) {\n        int cnt = 0;\n        for (int i = Math.max(0, r - 1); i <= Math.min(m - 1, r + 1); i++) {\n            for (int j = Math.max(0, c - 1); j <= Math.min(n - 1, c + 1); j++) {\n                if (i == r && j == c) continue;\n                cnt += b[i][j] & 1;\n            }\n        }\n        return cnt;\n    }\n}",
+        "python": "class Solution:\n    def gameOfLife(self, board: list[list[int]]) -> None:\n        m, n = len(board), len(board[0])\n        for r in range(m):\n            for c in range(n):\n                live = 0\n                for i in range(max(0, r - 1), min(m, r + 2)):\n                    for j in range(max(0, c - 1), min(n, c + 2)):\n                        if i == r and j == c:\n                            continue\n                        live += board[i][j] & 1\n                if (board[r][c] & 1) == 1 and live in (2, 3):\n                    board[r][c] |= 2\n                elif (board[r][c] & 1) == 0 and live == 3:\n                    board[r][c] |= 2\n        for r in range(m):\n            for c in range(n):\n                board[r][c] >>= 1"
+      }
+    }
+  },
+  {
+    "seq": 434,
+    "whyNext": "Builds on discrete value transitions from Game of Life (Seq 433) by propagating an addition carry right-to-left across digit array positions with dynamic array expansion on overflow.",
+    "hints": [
+      "Traverse the digits array backwards from right to left (index n - 1 down to 0).",
+      "If the current digit is less than 9, increment it and return the array immediately.",
+      "If the digit is 9, set it to 0 and continue to the next position. If all digits were 9, create a new array of size n + 1 with 1 at index 0."
+    ],
+    "brute": {
+      "idea": "Convert the digits array to a BigInteger, add 1, and convert back into an array of digits.",
+      "steps": [
+        "Construct BigInteger from string representation of digits.",
+        "Add BigInteger.ONE.",
+        "Convert result back into digit characters.",
+        "Return as integer array."
+      ],
+      "whySlow": "BigInteger allocation and string conversions create substantial overhead.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] plusOne(int[] digits) {\n        StringBuilder sb = new StringBuilder();\n        for (int d : digits) sb.append(d);\n        java.math.BigInteger val = new java.math.BigInteger(sb.toString()).add(java.math.BigInteger.ONE);\n        String s = val.toString();\n        int[] res = new int[s.length()];\n        for (int i = 0; i < s.length(); i++) {\n            res[i] = s.charAt(i) - '0';\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def plusOne(self, digits: list[int]) -> list[int]:\n        s = \"\".join(map(str, digits))\n        val = int(s) + 1\n        return [int(ch) for ch in str(val)]"
+      }
+    },
+    "optimal": {
+      "idea": "In-place backward carry propagation: return immediately once carry is absorbed, allocating new array only for all-9s in O(n) time.",
+      "steps": [
+        "Loop i from digits.length - 1 down to 0.",
+        "If digits[i] < 9: digits[i]++; return digits.",
+        "digits[i] = 0.",
+        "If loop ends, all digits were 9: allocate new int[n + 1], set ans[0] = 1, and return."
+      ],
+      "time": "O(n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public int[] plusOne(int[] digits) {\n        int n = digits.length;\n        for (int i = n - 1; i >= 0; i--) {\n            if (digits[i] < 9) {\n                digits[i]++;\n                return digits;\n            }\n            digits[i] = 0;\n        }\n        int[] res = new int[n + 1];\n        res[0] = 1;\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def plusOne(self, digits: list[int]) -> list[int]:\n        n = len(digits)\n        for i in range(n - 1, -1, -1):\n            if digits[i] < 9:\n                digits[i] += 1\n                return digits\n            digits[i] = 0\n        return [1] + [0] * n"
+      }
+    }
+  },
+  {
+    "seq": 435,
+    "whyNext": "Builds on integer arithmetic evaluation from Plus One (Seq 434) by testing divisibility by 3 and 5 to classify integers into string representations.",
+    "hints": [
+      "Check divisibility by 15 (or both 3 and 5) first, then 3, then 5, then default to string value.",
+      "String concatenation pattern: if divisible by 3 append \"Fizz\"; if divisible by 5 append \"Buzz\"; if empty append number.",
+      "Iterate i from 1 to n, apply rules, and append to result list."
+    ],
+    "brute": {
+      "idea": "Explicit if-else checks testing each condition in order from 1 to n.",
+      "steps": [
+        "Iterate i from 1 to n.",
+        "If i % 15 == 0 add \"FizzBuzz\".",
+        "Else if i % 3 == 0 add \"Fizz\".",
+        "Else if i % 5 == 0 add \"Buzz\".",
+        "Else add String.valueOf(i).",
+        "Return list."
+      ],
+      "whySlow": "Hardcoded branching does not scale easily to multiple divisors.",
+      "time": "O(n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public List<String> fizzBuzz(int n) {\n        List<String> res = new ArrayList<>();\n        for (int i = 1; i <= n; i++) {\n            if (i % 15 == 0) res.add(\"FizzBuzz\");\n            else if (i % 3 == 0) res.add(\"Fizz\");\n            else if (i % 5 == 0) res.add(\"Buzz\");\n            else res.add(String.valueOf(i));\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def fizzBuzz(self, n: int) -> list[str]:\n        res = []\n        for i in range(1, n + 1):\n            if i % 15 == 0:\n                res.append(\"FizzBuzz\")\n            elif i % 3 == 0:\n                res.append(\"Fizz\")\n            elif i % 5 == 0:\n                res.append(\"Buzz\")\n            else:\n                res.append(str(i))\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "String concatenation mapping: compose result modularly to keep code clean and easily extensible.",
+      "steps": [
+        "List<String> ans = new ArrayList<>(n).",
+        "Loop i from 1 to n: StringBuilder sb = new StringBuilder().",
+        "If i % 3 == 0 sb.append(\"Fizz\"); if i % 5 == 0 sb.append(\"Buzz\"); if sb.length() == 0 sb.append(i).",
+        "ans.add(sb.toString()). Return ans."
+      ],
+      "time": "O(n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public List<String> fizzBuzz(int n) {\n        List<String> ans = new ArrayList<>(n);\n        for (int i = 1; i <= n; i++) {\n            StringBuilder sb = new StringBuilder();\n            if (i % 3 == 0) sb.append(\"Fizz\");\n            if (i % 5 == 0) sb.append(\"Buzz\");\n            if (sb.length() == 0) sb.append(i);\n            ans.add(sb.toString());\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def fizzBuzz(self, n: int) -> list[str]:\n        ans = []\n        for i in range(1, n + 1):\n            curr = []\n            if i % 3 == 0:\n                curr.append(\"Fizz\")\n            if i % 5 == 0:\n                curr.append(\"Buzz\")\n            if not curr:\n                curr.append(str(i))\n            ans.append(\"\".join(curr))\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 436,
+    "whyNext": "Builds on base conversion arithmetic from Fizz Buzz (Seq 435) by converting base-10 integers into 1-indexed base-26 character strings ('A' through 'Z').",
+    "hints": [
+      "This is 1-indexed base 26 conversion: 1 -> A, 26 -> Z, 27 -> AA.",
+      "Because it is 1-indexed rather than 0-indexed, decrement the number by 1 at each step: n--.",
+      "Then char c = (char) ('A' + n % 26), and advance n = n / 26 until n is 0. Reverse the collected characters."
+    ],
+    "brute": {
+      "idea": "Simulate counting up from 1 to columnNumber using character carry addition.",
+      "steps": [
+        "Start with title = \"A\".",
+        "Simulate adding 1 columnNumber - 1 times.",
+        "Handle carries from 'Z' to 'A' with prefix carry.",
+        "Return resulting string."
+      ],
+      "whySlow": "Simulating increment by 1 takes O(columnNumber) time.",
+      "time": "O(N)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public String convertToTitle(int columnNumber) {\n        StringBuilder sb = new StringBuilder();\n        while (columnNumber > 0) {\n            columnNumber--;\n            sb.append((char) ('A' + (columnNumber % 26)));\n            columnNumber /= 26;\n        }\n        return sb.reverse().toString();\n    }\n}",
+        "python": "class Solution:\n    def convertToTitle(self, columnNumber: int) -> str:\n        res = []\n        while columnNumber > 0:\n            columnNumber -= 1\n            res.append(chr(ord('A') + (columnNumber % 26)))\n            columnNumber //= 26\n        return \"\".join(reversed(res))"
+      }
+    },
+    "optimal": {
+      "idea": "Logarithmic 1-indexed base-26 conversion: decrement n before modulo division to align 1..26 with 0..25 in O(log_26 n) time.",
+      "steps": [
+        "StringBuilder sb = new StringBuilder().",
+        "While columnNumber > 0: columnNumber--; char c = (char) ('A' + columnNumber % 26); sb.append(c); columnNumber /= 26.",
+        "Return sb.reverse().toString()."
+      ],
+      "time": "O(log_26 n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public String convertToTitle(int columnNumber) {\n        StringBuilder sb = new StringBuilder();\n        int n = columnNumber;\n        while (n > 0) {\n            n--;\n            char c = (char) ('A' + (n % 26));\n            sb.append(c);\n            n /= 26;\n        }\n        return sb.reverse().toString();\n    }\n}",
+        "python": "class Solution:\n    def convertToTitle(self, columnNumber: int) -> str:\n        ans = []\n        n = columnNumber\n        while n > 0:\n            n -= 1\n            ans.append(chr(ord('A') + (n % 26)))\n            n //= 26\n        return \"\".join(ans[::-1])"
+      }
+    }
+  },
+  {
+    "seq": 437,
+    "whyNext": "Builds on power validation math from Power of Two (Seq 292) by dividing by 3 repeatedly or testing divisibility into the maximum 32-bit integer power of three (3^19 = 1162261467).",
+    "hints": [
+      "Any number less than or equal to 0 cannot be a power of three.",
+      "Iterative approach: while n % 3 == 0, n /= 3. Return n == 1.",
+      "O(1) mathematical trick: 3^19 = 1,162,261,467 is the maximum 32-bit signed integer power of three. Since 3 is prime, n is a power of three if and only if n > 0 and 1162261467 % n == 0."
+    ],
+    "brute": {
+      "idea": "Repeatedly divide n by 3 as long as n is divisible by 3.",
+      "steps": [
+        "If n <= 0 return false.",
+        "While n % 3 == 0, set n = n / 3.",
+        "Return n == 1."
+      ],
+      "whySlow": "Requires loop running O(log_3 n) iterations.",
+      "time": "O(log_3 n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPowerOfThree(int n) {\n        if (n <= 0) return false;\n        while (n % 3 == 0) {\n            n /= 3;\n        }\n        return n == 1;\n    }\n}",
+        "python": "class Solution:\n    def isPowerOfThree(self, n: int) -> bool:\n        if n <= 0:\n            return False\n        while n % 3 == 0:\n            n //= 3\n        return n == 1"
+      }
+    },
+    "optimal": {
+      "idea": "Divisibility into maximum integer power of 3: 3^19 = 1162261467 in O(1) time without loops.",
+      "steps": [
+        "Verify n > 0.",
+        "Check if 1162261467 % n == 0.",
+        "Return result."
+      ],
+      "time": "O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPowerOfThree(int n) {\n        return n > 0 && 1162261467 % n == 0;\n    }\n}",
+        "python": "class Solution:\n    def isPowerOfThree(self, n: int) -> bool:\n        if n <= 0:\n            return False\n        return 1162261467 % n == 0"
+      }
+    }
+  },
+  {
+    "seq": 438,
+    "whyNext": "Builds on power checks from Power of Three (Seq 437) and bit masking from Power of Two (Seq 292) by checking that exactly one bit is set and that bit resides at an odd index mask (0x55555555).",
+    "hints": [
+      "A power of four must first be a power of two: n > 0 and (n & (n - 1)) == 0.",
+      "Additionally, the single set bit must be at an even bit position (0, 2, 4, ...).",
+      "Mask 0x55555555 has 1s at all even bit positions (0b01010101...). So (n & 0x55555555) != 0 validates power of four."
+    ],
+    "brute": {
+      "idea": "Divide n by 4 repeatedly while n % 4 == 0.",
+      "steps": [
+        "If n <= 0 return false.",
+        "While n % 4 == 0, n /= 4.",
+        "Return n == 1."
+      ],
+      "whySlow": "Iterative loop takes O(log_4 n) operations.",
+      "time": "O(log_4 n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPowerOfFour(int n) {\n        if (n <= 0) return false;\n        while (n % 4 == 0) {\n            n /= 4;\n        }\n        return n == 1;\n    }\n}",
+        "python": "class Solution:\n    def isPowerOfFour(self, n: int) -> bool:\n        if n <= 0:\n            return False\n        while n % 4 == 0:\n            n //= 4\n        return n == 1"
+      }
+    },
+    "optimal": {
+      "idea": "Bit manipulation with alternating mask: power of two check combined with bitmask 0x55555555 in O(1) time.",
+      "steps": [
+        "Check n > 0.",
+        "Check (n & (n - 1)) == 0 (verifies power of two).",
+        "Check (n & 0x55555555) != 0 (verifies bit is at position 0, 2, 4, ...).",
+        "Return true if all hold."
+      ],
+      "time": "O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPowerOfFour(int n) {\n        return n > 0 && (n & (n - 1)) == 0 && (n & 0x55555555) != 0;\n    }\n}",
+        "python": "class Solution:\n    def isPowerOfFour(self, n: int) -> bool:\n        if n <= 0:\n            return False\n        return (n & (n - 1)) == 0 and (n & 0x55555555) != 0"
+      }
+    }
+  },
+  {
+    "seq": 439,
+    "whyNext": "Builds on bit counting from Number of 1 Bits (Seq 290) by computing x ^ y to isolate differing bit positions and counting set bits using Brian Kernighan's algorithm.",
+    "hints": [
+      "The Hamming distance between two integers is the number of positions where corresponding bits are different.",
+      "The XOR operator (x ^ y) produces 1 exactly where bits differ.",
+      "Count set bits in x ^ y using Integer.bitCount(x ^ y) or loop: while v != 0 { v &= (v - 1); count++; }."
+    ],
+    "brute": {
+      "idea": "Examine all 32 bits one by one using right shifts and bitwise AND with 1.",
+      "steps": [
+        "Initialize dist = 0.",
+        "Loop 32 times: if (x & 1) != (y & 1) dist++; x >>= 1; y >>= 1.",
+        "Return dist."
+      ],
+      "whySlow": "Always iterates through all 32 bits regardless of how few bits differ.",
+      "time": "O(32) = O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int hammingDistance(int x, int y) {\n        int dist = 0;\n        for (int i = 0; i < 32; i++) {\n            if ((x & 1) != (y & 1)) dist++;\n            x >>= 1;\n            y >>= 1;\n        }\n        return dist;\n    }\n}",
+        "python": "class Solution:\n    def hammingDistance(self, x: int, y: int) -> int:\n        dist = 0\n        for _ in range(32):\n            if (x & 1) != (y & 1):\n                dist += 1\n            x >>= 1\n            y >>= 1\n        return dist"
+      }
+    },
+    "optimal": {
+      "idea": "Brian Kernighan's bit-clearing algorithm on x ^ y: counts differing bits in O(number of 1s) time.",
+      "steps": [
+        "int xor = x ^ y; int count = 0.",
+        "While xor != 0: xor &= (xor - 1); count++.",
+        "Return count."
+      ],
+      "time": "O(k) where k is number of differing bits",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int hammingDistance(int x, int y) {\n        int xor = x ^ y;\n        int count = 0;\n        while (xor != 0) {\n            xor &= (xor - 1);\n            count++;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def hammingDistance(self, x: int, y: int) -> int:\n        xor_val = x ^ y\n        count = 0\n        while xor_val:\n            xor_val &= (xor_val - 1)\n            count += 1\n        return count"
+      }
+    }
+  },
+  {
+    "seq": 440,
+    "whyNext": "Builds on pair-wise bit differences from Hamming Distance (Seq 439) by analyzing each of the 32 bit positions across all n numbers, multiplying (count of 1s) * (count of 0s) to sum differences in O(32 * n) time.",
+    "hints": [
+      "Instead of calculating O(n^2) pair Hamming distances, calculate the contribution of each bit position independently.",
+      "For bit position b: let count1 be numbers with bit b set, and count0 = n - count1.",
+      "Each pair with different bits at position b contributes count1 * count0 to the total. Sum count1 * (n - count1) across all 32 bit positions."
+    ],
+    "brute": {
+      "idea": "Compute Hamming distance for every pair of numbers (i, j) with i < j and sum them.",
+      "steps": [
+        "Initialize total = 0.",
+        "Nested loop for i from 0 to n - 1 and j from i + 1 to n - 1.",
+        "total += Integer.bitCount(nums[i] ^ nums[j]).",
+        "Return total."
+      ],
+      "whySlow": "O(n^2) pairwise comparisons timeout for n = 10,000.",
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int totalHammingDistance(int[] nums) {\n        int total = 0;\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                total += Integer.bitCount(nums[i] ^ nums[j]);\n            }\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def totalHammingDistance(self, nums: list[int]) -> int:\n        total = 0\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                total += bin(nums[i] ^ nums[j]).count('1')\n        return total"
+      }
+    },
+    "optimal": {
+      "idea": "Bit-by-bit column accumulation: count 1s at bit i across all numbers; contribution is ones * (n - ones) in O(32 * n) time.",
+      "steps": [
+        "int total = 0, n = nums.length.",
+        "Loop bit from 0 to 31: count ones = 0.",
+        "For each num in nums: if ((num >> bit) & 1) == 1, ones++.",
+        "total += ones * (n - ones).",
+        "Return total."
+      ],
+      "time": "O(32 * n) = O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int totalHammingDistance(int[] nums) {\n        int total = 0;\n        int n = nums.length;\n        for (int b = 0; b < 32; b++) {\n            int ones = 0;\n            for (int x : nums) {\n                ones += (x >> b) & 1;\n            }\n            total += ones * (n - ones);\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def totalHammingDistance(self, nums: list[int]) -> int:\n        total = 0\n        n = len(nums)\n        for b in range(32):\n            ones = sum((x >> b) & 1 for x in nums)\n            total += ones * (n - ones)\n        return total"
+      }
+    }
+  },
+  {
+    "seq": 441,
+    "whyNext": "Builds on bitwise column stability from Total Hamming Distance (Seq 440) by shifting both range endpoints right until they match to identify the common bitwise prefix of all numbers in [left, right].",
+    "hints": [
+      "Any bit that changes anywhere within [left, right] will encounter a 0 at least once, causing the bitwise AND to become 0.",
+      "Only the common binary prefix of left and right remains unchanged throughout the range.",
+      "Shift both left and right rightward until left == right, counting shift steps. Then shift the common prefix left by the recorded shift count."
+    ],
+    "brute": {
+      "idea": "Iteratively AND all numbers from left to right.",
+      "steps": [
+        "Initialize res = left.",
+        "Loop i from left + 1 to right: res &= i; if res == 0 break.",
+        "Return res."
+      ],
+      "whySlow": "Iterating through the full range takes O(right - left) time, which can exceed 2 * 10^9.",
+      "time": "O(R - L)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int rangeBitwiseAnd(int left, int right) {\n        int res = left;\n        for (long i = (long) left + 1; i <= right; i++) {\n            res &= i;\n            if (res == 0) break;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def rangeBitwiseAnd(self, left: int, right: int) -> int:\n        res = left\n        for i in range(left + 1, right + 1):\n            res &= i\n            if res == 0:\n                break\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Common binary prefix extraction: right shift both left and right until equal, then left shift back in O(1) time.",
+      "steps": [
+        "int shift = 0.",
+        "While left < right: left >>= 1; right >>= 1; shift++.",
+        "Return left << shift."
+      ],
+      "time": "O(32) = O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int rangeBitwiseAnd(int left, int right) {\n        int shift = 0;\n        while (left < right) {\n            left >>= 1;\n            right >>= 1;\n            shift++;\n        }\n        return left << shift;\n    }\n}",
+        "python": "class Solution:\n    def rangeBitwiseAnd(self, left: int, right: int) -> int:\n        shift = 0\n        while left < right:\n            left >>= 1\n            right >>= 1\n            shift += 1\n        return left << shift"
+      }
+    }
+  },
+  {
+    "seq": 442,
+    "whyNext": "Builds on binary bit shifting from Bitwise AND of Numbers Range (Seq 441) by doubling divisor powers of two (divisor << shift) to subtract large multiples without multiplication, division, or modulo operators.",
+    "hints": [
+      "Handle overflow: when dividend == Integer.MIN_VALUE and divisor == -1, return Integer.MAX_VALUE.",
+      "Work with positive numbers using long (or negative numbers in int) to prevent overflow.",
+      "Greedily subtract largest doubled multiples: while dividend >= (divisor << shift), subtract (divisor << shift) and add (1 << shift) to quotient."
+    ],
+    "brute": {
+      "idea": "Repeatedly subtract divisor from dividend until remainder is smaller than divisor.",
+      "steps": [
+        "Handle sign of quotient.",
+        "Use long to avoid overflow.",
+        "Count subtractions until dividend < divisor.",
+        "Apply sign and clamp between MIN_VALUE and MAX_VALUE."
+      ],
+      "whySlow": "Subtracting 1 by 1 takes O(dividend / divisor) time, timing out when dividing 2^31 by 1.",
+      "time": "O(dividend / divisor)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int divide(int dividend, int divisor) {\n        if (dividend == Integer.MIN_VALUE && divisor == -1) return Integer.MAX_VALUE;\n        long a = Math.abs((long) dividend);\n        long b = Math.abs((long) divisor);\n        long ans = 0;\n        while (a >= b) {\n            a -= b;\n            ans++;\n        }\n        if ((dividend > 0) ^ (divisor > 0)) ans = -ans;\n        return (int) ans;\n    }\n}",
+        "python": "class Solution:\n    def divide(self, dividend: int, divisor: int) -> int:\n        if dividend == -2**31 and divisor == -1:\n            return 2**31 - 1\n        a, b = abs(dividend), abs(divisor)\n        ans = 0\n        while a >= b:\n            a -= b\n            ans += 1\n        if (dividend > 0) ^ (divisor > 0):\n            ans = -ans\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Exponential bit shift subtraction: double the divisor using left shifts (divisor << shift) to subtract maximum powers in O(log^2 n) time.",
+      "steps": [
+        "If dividend == Integer.MIN_VALUE && divisor == -1 return Integer.MAX_VALUE.",
+        "Convert to long: a = Math.abs((long) dividend), b = Math.abs((long) divisor).",
+        "long ans = 0.",
+        "While a >= b: long temp = b, mult = 1; while (a >= (temp << 1)) { temp <<= 1; mult <<= 1; } a -= temp; ans += mult.",
+        "Apply sign: if ((dividend > 0) ^ (divisor > 0)) ans = -ans; return (int) ans."
+      ],
+      "time": "O(log^2(dividend))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int divide(int dividend, int divisor) {\n        if (dividend == Integer.MIN_VALUE && divisor == -1) {\n            return Integer.MAX_VALUE;\n        }\n        long a = Math.abs((long) dividend);\n        long b = Math.abs((long) divisor);\n        long ans = 0;\n        while (a >= b) {\n            long temp = b;\n            long mult = 1;\n            while (a >= (temp << 1)) {\n                temp <<= 1;\n                mult <<= 1;\n            }\n            a -= temp;\n            ans += mult;\n        }\n        if ((dividend > 0) ^ (divisor > 0)) {\n            ans = -ans;\n        }\n        return (int) ans;\n    }\n}",
+        "python": "class Solution:\n    def divide(self, dividend: int, divisor: int) -> int:\n        if dividend == -2**31 and divisor == -1:\n            return 2**31 - 1\n        a, b = abs(dividend), abs(divisor)\n        ans = 0\n        while a >= b:\n            temp = b\n            mult = 1\n            while a >= (temp << 1):\n                temp <<= 1\n                mult <<= 1\n            a -= temp\n            ans += mult\n        if (dividend > 0) ^ (divisor > 0):\n            ans = -ans\n        return ans"
+      }
+    }
+  }
+]

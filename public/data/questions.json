@@ -7800,19 +7800,19 @@
   },
   {
     "seq": 426,
-    "lc": 2233,
-    "title": "Maximum Product After K Increments",
-    "slug": "maximum-product-after-k-increments",
+    "lc": 1024,
+    "title": "Video Stitching",
+    "slug": "video-stitching",
     "difficulty": "Medium",
-    "buildsOn": 425,
     "chapter": "ch-27",
+    "buildsOn": 425,
     "brute": {
-      "idea": "Try incrementing each position",
-      "time": "exponential"
+      "idea": "Dynamic programming: dp[i] represents min clips needed to cover [0, i], iterating over all clips.",
+      "time": "O(T * n)"
     },
     "optimal": {
-      "idea": "Min-heap: increment smallest element k times",
-      "time": "O(k log n)"
+      "idea": "Greedy jump-game extension: record max reach for each start time and extend coverage in O(time + n) time.",
+      "time": "O(n + T)"
     },
     "companies": [
       "amazon",
@@ -7821,19 +7821,19 @@
   },
   {
     "seq": 427,
-    "lc": 1024,
-    "title": "Video Stitching",
-    "slug": "video-stitching",
-    "difficulty": "Medium",
-    "buildsOn": 419,
+    "lc": 218,
+    "title": "The Skyline Problem",
+    "slug": "the-skyline-problem",
+    "difficulty": "Hard",
     "chapter": "ch-27",
+    "buildsOn": 426,
     "brute": {
-      "idea": "Try all subsets of clips",
-      "time": "O(2ⁿ)"
+      "idea": "Discretize the x-axis, compute the max height at every coordinate, and collect coordinates where height changes.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Greedy jump game: track farthest reachable end",
-      "time": "O(time + n)"
+      "idea": "Sweep-line with TreeMap frequency map: process left-edge and right-edge events, recording key points when maximum height changes in O(n log n) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "amazon",
@@ -7846,14 +7846,14 @@
     "title": "Minimum Number of Taps to Open to Water a Garden",
     "slug": "minimum-number-of-taps-to-open-to-water-a-garden",
     "difficulty": "Hard",
-    "buildsOn": 427,
     "chapter": "ch-27",
+    "buildsOn": 426,
     "brute": {
-      "idea": "All combinations of taps",
-      "time": "O(2ⁿ)"
+      "idea": "Dynamic programming: dp[i] is min taps to water [0, i], updating across all taps.",
+      "time": "O(n * R)"
     },
     "optimal": {
-      "idea": "Convert to interval jump game, track max reach",
+      "idea": "Greedy linear sweep: precalculate max reachable point from each starting index and jump greedily in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7868,15 +7868,15 @@
     "title": "Transpose Matrix",
     "slug": "transpose-matrix",
     "difficulty": "Easy",
-    "buildsOn": 165,
     "chapter": "ch-28",
+    "buildsOn": 20,
     "brute": {
-      "idea": "Allocate transposed matrix and swap rows with columns",
-      "time": "O(mn)"
+      "idea": "Iterate column by column through the original matrix and append rows to the transposed result matrix.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "Single pass copying matrix[i][j] into result[j][i]",
-      "time": "O(mn)"
+      "idea": "Row-major traversal transposition: read source matrix row-by-row for cache locality, writing directly into transposed coordinates.",
+      "time": "O(m * n)"
     },
     "companies": [
       "google",
@@ -7885,19 +7885,19 @@
   },
   {
     "seq": 430,
-    "lc": 832,
-    "title": "Flipping an Image",
-    "slug": "flipping-an-image",
+    "lc": 566,
+    "title": "Reshape the Matrix",
+    "slug": "reshape-the-matrix",
     "difficulty": "Easy",
-    "buildsOn": 429,
     "chapter": "ch-28",
+    "buildsOn": 429,
     "brute": {
-      "idea": "Reverse row then invert each pixel separately",
-      "time": "O(mn) two passes"
+      "idea": "Flatten matrix into a 1D ArrayList and populate the r x c matrix from the list.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "Two pointers per row: swap and invert with XOR in one pass",
-      "time": "O(mn)"
+      "idea": "Single loop coordinate arithmetic: map linear index k directly between old and new 2D matrix representations in O(m * n) time without extra lists.",
+      "time": "O(m * n)"
     },
     "companies": [
       "google",
@@ -7906,19 +7906,19 @@
   },
   {
     "seq": 431,
-    "lc": 1260,
-    "title": "Shift 2D Grid",
-    "slug": "shift-2d-grid",
-    "difficulty": "Easy",
-    "buildsOn": 429,
+    "lc": 59,
+    "title": "Spiral Matrix II",
+    "slug": "spiral-matrix-ii",
+    "difficulty": "Medium",
     "chapter": "ch-28",
+    "buildsOn": 19,
     "brute": {
-      "idea": "Shift cell by cell k times",
-      "time": "O(k·mn)"
+      "idea": "Simulate step-by-step movement with a direction vector [dr, dc] and turn right whenever hitting a boundary or already filled cell.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Flatten 1D index mapping (i*n + j + k) % (mn)",
-      "time": "O(mn)"
+      "idea": "Layer-by-layer 4-boundary traversal: fill outer border and contract boundaries inward in O(n^2) time.",
+      "time": "O(n^2)"
     },
     "companies": [
       "amazon",
@@ -7927,19 +7927,19 @@
   },
   {
     "seq": 432,
-    "lc": 766,
-    "title": "Toeplitz Matrix",
-    "slug": "toeplitz-matrix",
-    "difficulty": "Easy",
-    "buildsOn": 430,
+    "lc": 498,
+    "title": "Diagonal Traverse",
+    "slug": "diagonal-traverse",
+    "difficulty": "Medium",
     "chapter": "ch-28",
+    "buildsOn": 431,
     "brute": {
-      "idea": "Group diagonals in hash map",
-      "time": "O(mn) space"
+      "idea": "Group matrix values into buckets keyed by r + c, then reverse alternating buckets before flattening.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "Check if matrix[i][j] == matrix[i-1][j-1]",
-      "time": "O(1) space"
+      "idea": "Direct simulation of diagonal bounds: step up-right or down-left with boundary turning in O(1) auxiliary space.",
+      "time": "O(m * n)"
     },
     "companies": [
       "google",
@@ -7949,19 +7949,19 @@
   },
   {
     "seq": 433,
-    "lc": 1572,
-    "title": "Matrix Diagonal Sum",
-    "slug": "matrix-diagonal-sum",
-    "difficulty": "Easy",
-    "buildsOn": 432,
+    "lc": 289,
+    "title": "Game of Life",
+    "slug": "game-of-life",
+    "difficulty": "Medium",
     "chapter": "ch-28",
+    "buildsOn": 432,
     "brute": {
-      "idea": "Scan all cells and check if diagonal",
-      "time": "O(n²)"
+      "idea": "Clone board into a separate 2D matrix, count live neighbors using the copy, and write next state to the original board.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "Single loop summing primary and secondary diagonals, subtract center if odd",
-      "time": "O(n)"
+      "idea": "In-place 2-bit state encoding: store current state in bit 0 and next state in bit 1 in O(1) auxiliary space.",
+      "time": "O(m * n)"
     },
     "companies": [
       "amazon",
@@ -7970,19 +7970,19 @@
   },
   {
     "seq": 434,
-    "lc": 1351,
-    "title": "Count Negative Numbers in a Sorted Matrix",
-    "slug": "count-negative-numbers-in-a-sorted-matrix",
+    "lc": 66,
+    "title": "Plus One",
+    "slug": "plus-one",
     "difficulty": "Easy",
-    "buildsOn": 433,
     "chapter": "ch-28",
+    "buildsOn": 433,
     "brute": {
-      "idea": "Scan every matrix element",
-      "time": "O(mn)"
+      "idea": "Convert the digits array to a BigInteger, add 1, and convert back into an array of digits.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Staircase search from top-right or bottom-left",
-      "time": "O(m+n)"
+      "idea": "In-place backward carry propagation: return immediately once carry is absorbed, allocating new array only for all-9s in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -7991,19 +7991,19 @@
   },
   {
     "seq": 435,
-    "lc": 258,
-    "title": "Add Digits",
-    "slug": "add-digits",
+    "lc": 412,
+    "title": "Fizz Buzz",
+    "slug": "fizz-buzz",
     "difficulty": "Easy",
-    "buildsOn": 175,
     "chapter": "ch-28",
+    "buildsOn": 434,
     "brute": {
-      "idea": "Simulate summing digits in a while loop",
-      "time": "O(log n)"
+      "idea": "Explicit if-else checks testing each condition in order from 1 to n.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Digital root math formula: 1 + (num - 1) % 9",
-      "time": "O(1)"
+      "idea": "String concatenation mapping: compose result modularly to keep code clean and easily extensible.",
+      "time": "O(n)"
     },
     "companies": [
       "microsoft",
@@ -8012,19 +8012,19 @@
   },
   {
     "seq": 436,
-    "lc": 326,
-    "title": "Power of Three",
-    "slug": "power-of-three",
+    "lc": 168,
+    "title": "Excel Sheet Column Title",
+    "slug": "excel-sheet-column-title",
     "difficulty": "Easy",
-    "buildsOn": 435,
     "chapter": "ch-28",
+    "buildsOn": 435,
     "brute": {
-      "idea": "Loop dividing by 3",
-      "time": "O(log₃ n)"
+      "idea": "Simulate counting up from 1 to columnNumber using character carry addition.",
+      "time": "O(N)"
     },
     "optimal": {
-      "idea": "Max 32-bit power 3¹⁹ % n == 0",
-      "time": "O(1)"
+      "idea": "Logarithmic 1-indexed base-26 conversion: decrement n before modulo division to align 1..26 with 0..25 in O(log_26 n) time.",
+      "time": "O(log_26 n)"
     },
     "companies": [
       "google",
@@ -8033,18 +8033,18 @@
   },
   {
     "seq": 437,
-    "lc": 342,
-    "title": "Power of Four",
-    "slug": "power-of-four",
+    "lc": 326,
+    "title": "Power of Three",
+    "slug": "power-of-three",
     "difficulty": "Easy",
-    "buildsOn": 436,
     "chapter": "ch-28",
+    "buildsOn": 292,
     "brute": {
-      "idea": "Divide by 4 in a loop",
-      "time": "O(log₄ n)"
+      "idea": "Repeatedly divide n by 3 as long as n is divisible by 3.",
+      "time": "O(log_3 n)"
     },
     "optimal": {
-      "idea": "Power of two check and odd-bit mask (0x55555555)",
+      "idea": "Divisibility into maximum integer power of 3: 3^19 = 1162261467 in O(1) time without loops.",
       "time": "O(1)"
     },
     "companies": [
@@ -8054,18 +8054,18 @@
   },
   {
     "seq": 438,
-    "lc": 1342,
-    "title": "Number of Steps to Reduce a Number to Zero",
-    "slug": "number-of-steps-to-reduce-a-number-to-zero",
+    "lc": 342,
+    "title": "Power of Four",
+    "slug": "power-of-four",
     "difficulty": "Easy",
-    "buildsOn": 437,
     "chapter": "ch-28",
+    "buildsOn": 437,
     "brute": {
-      "idea": "Loop subtracting 1 or dividing by 2",
-      "time": "O(log n)"
+      "idea": "Divide n by 4 repeatedly while n % 4 == 0.",
+      "time": "O(log_4 n)"
     },
     "optimal": {
-      "idea": "Bit count: total bits + set bits count - 1",
+      "idea": "Bit manipulation with alternating mask: power of two check combined with bitmask 0x55555555 in O(1) time.",
       "time": "O(1)"
     },
     "companies": [
@@ -8075,19 +8075,19 @@
   },
   {
     "seq": 439,
-    "lc": 1281,
-    "title": "Subtract the Product and Sum of Digits of an Integer",
-    "slug": "subtract-the-product-and-sum-of-digits-of-an-integer",
+    "lc": 461,
+    "title": "Hamming Distance",
+    "slug": "hamming-distance",
     "difficulty": "Easy",
-    "buildsOn": 435,
     "chapter": "ch-28",
+    "buildsOn": 290,
     "brute": {
-      "idea": "Convert to string and parse digits",
-      "time": "O(d) space"
+      "idea": "Examine all 32 bits one by one using right shifts and bitwise AND with 1.",
+      "time": "O(32) = O(1)"
     },
     "optimal": {
-      "idea": "Arithmetic extraction of digits: product minus sum",
-      "time": "O(log n)"
+      "idea": "Brian Kernighan's bit-clearing algorithm on x ^ y: counts differing bits in O(number of 1s) time.",
+      "time": "O(k) where k is number of differing bits"
     },
     "companies": [
       "google",
@@ -8096,19 +8096,19 @@
   },
   {
     "seq": 440,
-    "lc": 693,
-    "title": "Binary Number with Alternating Bits",
-    "slug": "binary-number-with-alternating-bits",
-    "difficulty": "Easy",
-    "buildsOn": 438,
+    "lc": 477,
+    "title": "Total Hamming Distance",
+    "slug": "total-hamming-distance",
+    "difficulty": "Medium",
     "chapter": "ch-28",
+    "buildsOn": 439,
     "brute": {
-      "idea": "Check adjacent bits in binary string",
-      "time": "O(32)"
+      "idea": "Compute Hamming distance for every pair of numbers (i, j) with i < j and sum them.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "n ^ (n >> 1) is all ones: x & (x + 1) == 0",
-      "time": "O(1)"
+      "idea": "Bit-by-bit column accumulation: count 1s at bit i across all numbers; contribution is ones * (n - ones) in O(32 * n) time.",
+      "time": "O(32 * n) = O(n)"
     },
     "companies": [
       "google",
@@ -8117,19 +8117,19 @@
   },
   {
     "seq": 441,
-    "lc": 476,
-    "title": "Number Complement",
-    "slug": "number-complement",
-    "difficulty": "Easy",
-    "buildsOn": 440,
+    "lc": 201,
+    "title": "Bitwise AND of Numbers Range",
+    "slug": "bitwise-and-of-numbers-range",
+    "difficulty": "Medium",
     "chapter": "ch-28",
+    "buildsOn": 440,
     "brute": {
-      "idea": "Flip bits in string representation",
-      "time": "O(32)"
+      "idea": "Iteratively AND all numbers from left to right.",
+      "time": "O(R - L)"
     },
     "optimal": {
-      "idea": "Bitmask of all 1s of same bit length XOR num",
-      "time": "O(1)"
+      "idea": "Common binary prefix extraction: right shift both left and right until equal, then left shift back in O(1) time.",
+      "time": "O(32) = O(1)"
     },
     "companies": [
       "amazon",
@@ -8138,19 +8138,19 @@
   },
   {
     "seq": 442,
-    "lc": 461,
-    "title": "Hamming Distance",
-    "slug": "hamming-distance",
-    "difficulty": "Easy",
-    "buildsOn": 440,
+    "lc": 29,
+    "title": "Divide Two Integers",
+    "slug": "divide-two-integers",
+    "difficulty": "Medium",
     "chapter": "ch-28",
+    "buildsOn": 441,
     "brute": {
-      "idea": "Compare binary strings character by character",
-      "time": "O(32)"
+      "idea": "Repeatedly subtract divisor from dividend until remainder is smaller than divisor.",
+      "time": "O(dividend / divisor)"
     },
     "optimal": {
-      "idea": "Count set bits of (x ^ y)",
-      "time": "O(1)"
+      "idea": "Exponential bit shift subtraction: double the divisor using left shifts (divisor << shift) to subtract maximum powers in O(log^2 n) time.",
+      "time": "O(log^2(dividend))"
     },
     "companies": [
       "meta",
@@ -8159,19 +8159,19 @@
   },
   {
     "seq": 443,
-    "lc": 1254,
-    "title": "Number of Closed Islands",
-    "slug": "number-of-closed-islands",
-    "difficulty": "Medium",
-    "buildsOn": 183,
+    "lc": 1791,
+    "title": "Find Center of Star Graph",
+    "slug": "find-center-of-star-graph",
+    "difficulty": "Easy",
     "chapter": "ch-29",
+    "buildsOn": 212,
     "brute": {
-      "idea": "Flood fill all zeros and track boundary contact",
-      "time": "O(mn)"
+      "idea": "Count the degrees of all nodes across all edges and find the node with degree == n - 1.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Flood fill border zeros first, then count remaining closed islands",
-      "time": "O(mn)"
+      "idea": "Two-edge intersection: the node appearing in both edges[0] and edges[1] is guaranteed to be the center in O(1) time.",
+      "time": "O(1)"
     },
     "companies": [
       "google",
@@ -8180,19 +8180,19 @@
   },
   {
     "seq": 444,
-    "lc": 1557,
-    "title": "Minimum Number of Vertices to Reach All Nodes",
-    "slug": "minimum-number-of-vertices-to-reach-all-nodes",
-    "difficulty": "Medium",
-    "buildsOn": 443,
+    "lc": 997,
+    "title": "Find the Town Judge",
+    "slug": "find-the-town-judge",
+    "difficulty": "Easy",
     "chapter": "ch-29",
+    "buildsOn": 443,
     "brute": {
-      "idea": "Run DFS from every subset of vertices",
-      "time": "exponential"
+      "idea": "Track separate in-degree and out-degree arrays, then find person with in-degree n-1 and out-degree 0.",
+      "time": "O(E + n)"
     },
     "optimal": {
-      "idea": "Find all vertices with zero in-degree",
-      "time": "O(V + E)"
+      "idea": "Single net degree array: increment score for incoming trust and decrement for outgoing trust in O(E + n) time.",
+      "time": "O(E + n)"
     },
     "companies": [
       "google",
@@ -8201,19 +8201,19 @@
   },
   {
     "seq": 445,
-    "lc": 1905,
-    "title": "Count Sub Islands",
-    "slug": "count-sub-islands",
+    "lc": 1557,
+    "title": "Minimum Number of Vertices to Reach All Nodes",
+    "slug": "minimum-number-of-vertices-to-reach-all-nodes",
     "difficulty": "Medium",
-    "buildsOn": 444,
     "chapter": "ch-29",
+    "buildsOn": 444,
     "brute": {
-      "idea": "Extract all island coordinates in grid2 and verify against grid1",
-      "time": "O(mn)"
+      "idea": "Run BFS from every subset of nodes to check if they reach all n vertices.",
+      "time": "O(V + E)"
     },
     "optimal": {
-      "idea": "DFS on grid2: flag false if corresponding cell in grid1 is water",
-      "time": "O(mn)"
+      "idea": "Boolean in-degree array: mark targets of directed edges; return all indices that remain unmarked in O(V + E) time.",
+      "time": "O(V + E)"
     },
     "companies": [
       "google",
@@ -8222,19 +8222,19 @@
   },
   {
     "seq": 446,
-    "lc": 1162,
-    "title": "As Far from Land as Possible",
-    "slug": "as-far-from-land-as-possible",
+    "lc": 1466,
+    "title": "Reorder Routes to Make All Paths Lead to the City Zero",
+    "slug": "reorder-routes-to-make-all-paths-lead-to-the-city-zero",
     "difficulty": "Medium",
-    "buildsOn": 187,
     "chapter": "ch-29",
+    "buildsOn": 445,
     "brute": {
-      "idea": "BFS from each water cell to nearest land",
-      "time": "O((mn)²)"
+      "idea": "Construct adjacency lists and run DFS from 0, checking edge direction against a set of original edges.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Multi-source BFS starting from all land cells simultaneously",
-      "time": "O(mn)"
+      "idea": "Weighted bidirectional adjacency: encode forward edges as weight 1 and reverse edges as weight 0, summing weights in O(n) DFS.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -8243,19 +8243,19 @@
   },
   {
     "seq": 447,
-    "lc": 1765,
-    "title": "Map of Highest Peak",
-    "slug": "map-of-highest-peak",
+    "lc": 1306,
+    "title": "Jump Game III",
+    "slug": "jump-game-iii",
     "difficulty": "Medium",
-    "buildsOn": 446,
     "chapter": "ch-29",
+    "buildsOn": 210,
     "brute": {
-      "idea": "Compute distance to nearest water cell for each land cell",
-      "time": "O((mn)²)"
+      "idea": "Standard DFS with a boolean visited array to explore left and right jumps.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Multi-source BFS from water cells setting heights = dist",
-      "time": "O(mn)"
+      "idea": "In-place array negation BFS: negate visited elements in arr to track visits without extra memory in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -8264,19 +8264,19 @@
   },
   {
     "seq": 448,
-    "lc": 864,
-    "title": "Shortest Path to Get All Keys",
-    "slug": "shortest-path-to-get-all-keys",
-    "difficulty": "Hard",
-    "buildsOn": 447,
+    "lc": 1443,
+    "title": "Minimum Time to Collect All Apples in a Tree",
+    "slug": "minimum-time-to-collect-all-apples-in-a-tree",
+    "difficulty": "Medium",
     "chapter": "ch-29",
+    "buildsOn": 446,
     "brute": {
-      "idea": "DFS trying all key orderings",
-      "time": "exponential"
+      "idea": "Find paths from root to every node with an apple, union all traversed edges into a set, and multiply set size by 2.",
+      "time": "O(n * A)"
     },
     "optimal": {
-      "idea": "BFS on state space (r, c, keyBitmask)",
-      "time": "O(mn · 2^K)"
+      "idea": "Bottom-up postorder DFS: accumulate 2 units of time for every child edge that connects to an apple-containing subtree in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -8285,19 +8285,19 @@
   },
   {
     "seq": 449,
-    "lc": 1654,
-    "title": "Minimum Jumps to Reach Home",
-    "slug": "minimum-jumps-to-reach-home",
+    "lc": 1376,
+    "title": "Time Needed to Inform All Employees",
+    "slug": "time-needed-to-inform-all-employees",
     "difficulty": "Medium",
-    "buildsOn": 448,
     "chapter": "ch-29",
+    "buildsOn": 448,
     "brute": {
-      "idea": "DFS with arbitrary depth recursion",
-      "time": "exponential"
+      "idea": "For every employee without subordinates (leaves), walk up the manager chain to root summing informTime, and take the maximum.",
+      "time": "O(n * h)"
     },
     "optimal": {
-      "idea": "BFS shortest path on (pos, canJumpBack) up to upper bound",
-      "time": "O(max_limit)"
+      "idea": "Top-down DFS over adjacency tree: return informTime[node] + max(dfs(child)) in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -8306,19 +8306,19 @@
   },
   {
     "seq": 450,
-    "lc": 1376,
-    "title": "Time Needed to Inform All Employees",
-    "slug": "time-needed-to-inform-all-employees",
+    "lc": 1254,
+    "title": "Number of Closed Islands",
+    "slug": "number-of-closed-islands",
     "difficulty": "Medium",
-    "buildsOn": 449,
     "chapter": "ch-29",
+    "buildsOn": 197,
     "brute": {
-      "idea": "Simulate minute by minute",
-      "time": "O(n·T)"
+      "idea": "Flood fill each 0-cell connected component and check whether any cell in the component touches the grid boundary.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "DFS/BFS from headID accumulating inform time along tree depth",
-      "time": "O(n)"
+      "idea": "Boundary flood fill pre-elimination: sink all perimeter-touching 0-cells to 1s, then count remaining internal 0-islands in O(m * n) time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "amazon",

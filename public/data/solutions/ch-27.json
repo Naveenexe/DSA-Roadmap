@@ -534,5 +534,126 @@
         "python": "class Solution:\n    def minGroups(self, intervals: list[list[int]]) -> int:\n        import heapq\n        intervals.sort()\n        pq = []\n        for s, e in intervals:\n            if pq and pq[0] < s:\n                heapq.heappop(pq)\n            heapq.heappush(pq, e)\n        return len(pq)"
       }
     }
+  },
+  {
+    "seq": 426,
+    "whyNext": "Builds on interval grouping from Divide Intervals Into Minimum Number of Groups (Seq 425) by greedily selecting the clip starting within the current coverage window that extends the farthest rightward to cover [0, time].",
+    "hints": [
+      "At each stage, among all clips starting at or before the current covered end (curEnd), pick the one that reaches the farthest right (maxReach).",
+      "If maxReach == curEnd, we cannot make any forward progress; return -1.",
+      "Sort clips by start time (or record max reachable end for each start position). Loop until curEnd >= time, incrementing clip count each time we jump to maxReach."
+    ],
+    "brute": {
+      "idea": "Dynamic programming: dp[i] represents min clips needed to cover [0, i], iterating over all clips.",
+      "steps": [
+        "Initialize dp array of size time + 1 with time + 1.",
+        "dp[0] = 0.",
+        "Loop i from 1 to time: for each clip [start, end]: if start <= i and i <= end, dp[i] = min(dp[i], dp[start] + 1).",
+        "Return dp[time] == time + 1 ? -1 : dp[time]."
+      ],
+      "whySlow": "O(time * clips) nested iteration over all time steps.",
+      "time": "O(T * n)",
+      "space": "O(T)",
+      "code": {
+        "java": "class Solution {\n    public int videoStitching(int[][] clips, int time) {\n        int[] dp = new int[time + 1];\n        Arrays.fill(dp, time + 1);\n        dp[0] = 0;\n        for (int i = 1; i <= time; i++) {\n            for (int[] c : clips) {\n                if (c[0] <= i && i <= c[1]) {\n                    dp[i] = Math.min(dp[i], dp[c[0]] + 1);\n                }\n            }\n        }\n        return dp[time] > time ? -1 : dp[time];\n    }\n}",
+        "python": "class Solution:\n    def videoStitching(self, clips: list[list[int]], time: int) -> int:\n        dp = [float('inf')] * (time + 1)\n        dp[0] = 0\n        for i in range(1, time + 1):\n            for s, e in clips:\n                if s <= i <= e:\n                    dp[i] = min(dp[i], dp[s] + 1)\n        return -1 if dp[time] == float('inf') else dp[time]"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy jump-game extension: record max reach for each start time and extend coverage in O(time + n) time.",
+      "steps": [
+        "Record max reachable end for each starting second in an array maxEnd of size time + 1.",
+        "Maintain curEnd = 0, nextEnd = 0, ans = 0.",
+        "Loop i from 0 to time - 1: nextEnd = Math.max(nextEnd, maxEnd[i]); if i == curEnd: if nextEnd <= i return -1; curEnd = nextEnd; ans++.",
+        "Return ans."
+      ],
+      "time": "O(n + T)",
+      "space": "O(T)",
+      "code": {
+        "java": "class Solution {\n    public int videoStitching(int[][] clips, int time) {\n        int[] maxEnd = new int[time + 1];\n        for (int[] c : clips) {\n            if (c[0] <= time) {\n                maxEnd[c[0]] = Math.max(maxEnd[c[0]], c[1]);\n            }\n        }\n        int ans = 0, curEnd = 0, nextEnd = 0;\n        for (int i = 0; i < time; i++) {\n            nextEnd = Math.max(nextEnd, maxEnd[i]);\n            if (i == curEnd) {\n                if (nextEnd <= i) return -1;\n                curEnd = nextEnd;\n                ans++;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def videoStitching(self, clips: list[list[int]], time: int) -> int:\n        max_end = [0] * (time + 1)\n        for s, e in clips:\n            if s <= time:\n                max_end[s] = max(max_end[s], e)\n        ans = cur_end = next_end = 0\n        for i in range(time):\n            next_end = max(next_end, max_end[i])\n            if i == cur_end:\n                if next_end <= i:\n                    return -1\n                cur_end = next_end\n                ans += 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 427,
+    "whyNext": "Builds on interval boundary events from Video Stitching (Seq 426) by splitting buildings into left-edge (start) and right-edge (end) events, tracking active heights using a TreeMap/heap to output key outline points when max height changes.",
+    "hints": [
+      "Represent each building [L, R, H] as two events: (L, -H) for start, and (R, H) for end (negating height for start ensures starts are processed before ends at same x).",
+      "Sort events by x coordinate. Maintain active heights in a multiset/TreeMap with a default height 0.",
+      "For each event: if start, add H; if end, remove one instance of H. If the maximum active height changes after the event, record [x, newMaxHeight]."
+    ],
+    "brute": {
+      "idea": "Discretize the x-axis, compute the max height at every coordinate, and collect coordinates where height changes.",
+      "steps": [
+        "Collect all critical x-coordinates (building left and right bounds) in sorted order.",
+        "For each x-coordinate, find max height among all buildings covering x.",
+        "Filter and output keypoints where max height changes."
+      ],
+      "whySlow": "Scanning all buildings for each critical point takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> getSkyline(int[][] buildings) {\n        List<Integer> xCoords = new ArrayList<>();\n        for (int[] b : buildings) {\n            xCoords.add(b[0]);\n            xCoords.add(b[1]);\n        }\n        Collections.sort(xCoords);\n        List<List<Integer>> res = new ArrayList<>();\n        int prevH = -1;\n        for (int x : xCoords) {\n            int maxH = 0;\n            for (int[] b : buildings) {\n                if (b[0] <= x && x < b[1]) {\n                    maxH = Math.max(maxH, b[2]);\n                }\n            }\n            if (maxH != prevH) {\n                res.add(Arrays.asList(x, maxH));\n                prevH = maxH;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def getSkyline(self, buildings: list[list[int]]) -> list[list[int]]:\n        events = []\n        for l, r, h in buildings:\n            events.append((l, -h, r))\n            events.append((r, 0, 0))\n        events.sort()\n        res = [[0, 0]]\n        import heapq\n        live = [(0, float('inf'))]\n        for pos, neg_h, r in events:\n            while live[0][1] <= pos:\n                heapq.heappop(live)\n            if neg_h != 0:\n                heapq.heappush(live, (neg_h, r))\n            if res[-1][1] != -live[0][0]:\n                res.append([pos, -live[0][0]])\n        return res[1:]"
+      }
+    },
+    "optimal": {
+      "idea": "Sweep-line with TreeMap frequency map: process left-edge and right-edge events, recording key points when maximum height changes in O(n log n) time.",
+      "steps": [
+        "Create event list: [L, -H] and [R, H].",
+        "Sort events: if x differs sort by x; else sort by height.",
+        "Use TreeMap<Integer, Integer> heights map with heights.put(0, 1).",
+        "For each event: if start, increment height count; if end, decrement count (remove if 0).",
+        "Get current max height; if it differs from previous max, add [x, curMax] to result. Return result."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> getSkyline(int[][] buildings) {\n        List<int[]> events = new ArrayList<>();\n        for (int[] b : buildings) {\n            events.add(new int[]{b[0], -b[2]});\n            events.add(new int[]{b[1], b[2]});\n        }\n        events.sort((a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);\n        TreeMap<Integer, Integer> map = new TreeMap<>();\n        map.put(0, 1);\n        int prevMax = 0;\n        List<List<Integer>> res = new ArrayList<>();\n        for (int[] e : events) {\n            int x = e[0], h = e[1];\n            if (h < 0) {\n                map.put(-h, map.getOrDefault(-h, 0) + 1);\n            } else {\n                int cnt = map.get(h);\n                if (cnt == 1) map.remove(h);\n                else map.put(h, cnt - 1);\n            }\n            int curMax = map.lastKey();\n            if (curMax != prevMax) {\n                res.add(Arrays.asList(x, curMax));\n                prevMax = curMax;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def getSkyline(self, buildings: list[list[int]]) -> list[list[int]]:\n        events = []\n        for l, r, h in buildings:\n            events.append((l, -h, r))\n            events.append((r, 0, 0))\n        events.sort()\n        res = [[0, 0]]\n        import heapq\n        hp = [(0, float('inf'))]\n        for x, neg_h, r in events:\n            while hp[0][1] <= x:\n                heapq.heappop(hp)\n            if neg_h < 0:\n                heapq.heappush(hp, (neg_h, r))\n            cur_h = -hp[0][0]\n            if res[-1][1] != cur_h:\n                res.append([x, cur_h])\n        return res[1:]"
+      }
+    }
+  },
+  {
+    "seq": 428,
+    "whyNext": "Builds on interval coverage extension from Video Stitching (Seq 426) by transforming each tap at position i with radius ranges[i] into an interval [max(0, i - r), min(n, i + r)] and finding the minimum taps to cover [0, n].",
+    "hints": [
+      "Convert each tap i into a watering interval: [Math.max(0, i - ranges[i]), Math.min(n, i + ranges[i])].",
+      "This reduces the problem to covering [0, n] with minimum intervals.",
+      "Store maxEnd[start] = max(maxEnd[start], end). Run greedy jump-game over [0, n - 1]: track curEnd and nextEnd. Increment tap count when i reaches curEnd."
+    ],
+    "brute": {
+      "idea": "Dynamic programming: dp[i] is min taps to water [0, i], updating across all taps.",
+      "steps": [
+        "Initialize dp array of size n + 1 with n + 2.",
+        "dp[0] = 0.",
+        "For each tap i: let left = max(0, i - ranges[i]) and right = min(n, i + ranges[i]).",
+        "For j from left to right: dp[j] = min(dp[j], dp[left] + 1).",
+        "Return dp[n] > n + 1 ? -1 : dp[n]."
+      ],
+      "whySlow": "O(n * ranges) nested DP updates.",
+      "time": "O(n * R)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minTaps(int n, int[] ranges) {\n        int[] dp = new int[n + 1];\n        Arrays.fill(dp, n + 2);\n        dp[0] = 0;\n        for (int i = 0; i <= n; i++) {\n            int left = Math.max(0, i - ranges[i]);\n            int right = Math.min(n, i + ranges[i]);\n            for (int j = left; j <= right; j++) {\n                dp[j] = Math.min(dp[j], dp[left] + 1);\n            }\n        }\n        return dp[n] > n + 1 ? -1 : dp[n];\n    }\n}",
+        "python": "class Solution:\n    def minTaps(self, n: int, ranges: list[int]) -> int:\n        dp = [float('inf')] * (n + 1)\n        dp[0] = 0\n        for i, r in enumerate(ranges):\n            left = max(0, i - r)\n            right = min(n, i + r)\n            for j in range(left, right + 1):\n                dp[j] = min(dp[j], dp[left] + 1)\n        return -1 if dp[n] == float('inf') else dp[n]"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy linear sweep: precalculate max reachable point from each starting index and jump greedily in O(n) time.",
+      "steps": [
+        "int[] maxReach = new int[n + 1].",
+        "For each i: let l = Math.max(0, i - ranges[i]), r = Math.min(n, i + ranges[i]); maxReach[l] = Math.max(maxReach[l], r).",
+        "Loop i from 0 to n - 1: nextEnd = Math.max(nextEnd, maxReach[i]); if i == curEnd: if nextEnd <= i return -1; curEnd = nextEnd; taps++.",
+        "Return taps."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minTaps(int n, int[] ranges) {\n        int[] maxReach = new int[n + 1];\n        for (int i = 0; i <= n; i++) {\n            int left = Math.max(0, i - ranges[i]);\n            int right = Math.min(n, i + ranges[i]);\n            maxReach[left] = Math.max(maxReach[left], right);\n        }\n        int taps = 0, curEnd = 0, nextEnd = 0;\n        for (int i = 0; i < n; i++) {\n            nextEnd = Math.max(nextEnd, maxReach[i]);\n            if (i == curEnd) {\n                if (nextEnd <= i) return -1;\n                curEnd = nextEnd;\n                taps++;\n            }\n        }\n        return taps;\n    }\n}",
+        "python": "class Solution:\n    def minTaps(self, n: int, ranges: list[int]) -> int:\n        max_reach = [0] * (n + 1)\n        for i, r in enumerate(ranges):\n            left = max(0, i - r)\n            right = min(n, i + r)\n            max_reach[left] = max(max_reach[left], right)\n        taps = cur_end = next_end = 0\n        for i in range(n):\n            next_end = max(next_end, max_reach[i])\n            if i == cur_end:\n                if next_end <= i:\n                    return -1\n                cur_end = next_end\n                taps += 1\n        return taps"
+      }
+    }
   }
 ]
