@@ -30,7 +30,7 @@ export function AppProvider({ children }) {
       const params = new URLSearchParams(window.location.search);
       const urlTheme = params.get('theme');
       if (urlTheme && ['light', 'evening', 'dark'].includes(urlTheme)) return urlTheme;
-    } catch (_) {}
+    } catch (_) { }
     if (user?.theme) return user.theme;
     const saved = localStorage.getItem('chainline_theme');
     return saved || 'light';
@@ -42,7 +42,7 @@ export function AppProvider({ children }) {
       const params = new URLSearchParams(window.location.search);
       const urlLang = params.get('lang');
       if (urlLang && ['java', 'python'].includes(urlLang)) return urlLang;
-    } catch (_) {}
+    } catch (_) { }
     if (user?.language) return user.language;
     return localStorage.getItem('chainline_language') || 'java';
   });
@@ -98,7 +98,7 @@ export function AppProvider({ children }) {
         if (compRes && compRes.ok) {
           try {
             compData = await compRes.json();
-          } catch (_) {}
+          } catch (_) { }
         }
 
         let finalChapters = chData;
@@ -602,7 +602,7 @@ export function AppProvider({ children }) {
       if (!user) {
         try {
           localStorage.setItem('chainline_guest_stats', JSON.stringify(nextMap));
-        } catch (_) {}
+        } catch (_) { }
       }
       return nextMap;
     });
@@ -631,7 +631,7 @@ export function AppProvider({ children }) {
     if (!user) {
       try {
         localStorage.setItem('chainline_guest_interview', JSON.stringify(plan));
-      } catch (_) {}
+      } catch (_) { }
     } else {
       try {
         await api.saveInterview({
