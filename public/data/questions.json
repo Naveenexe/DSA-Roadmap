@@ -6739,15 +6739,15 @@
     "title": "Swapping Nodes in a Linked List",
     "slug": "swapping-nodes-in-a-linked-list",
     "difficulty": "Medium",
-    "buildsOn": 89,
     "chapter": "ch-24",
+    "buildsOn": 89,
     "brute": {
-      "idea": "Convert to array of nodes",
-      "time": "O(n) space"
+      "idea": "Convert the linked list into an ArrayList of nodes, swap values at index k - 1 and index n - k, and return head.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Two pointers with k gap to find k-th from start and end",
-      "time": "O(1) space"
+      "idea": "One-pass two-pointer technique: locate k-th from start, then move a second pointer alongside from head until end to locate k-th from end in O(1) space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -6760,15 +6760,15 @@
     "title": "Design Linked List",
     "slug": "design-linked-list",
     "difficulty": "Medium",
-    "buildsOn": 376,
     "chapter": "ch-24",
+    "buildsOn": 376,
     "brute": {
-      "idea": "Array with shifting on inserts/deletes",
-      "time": "O(n) per op"
+      "idea": "Implement using an ArrayList backing store to satisfy all list interface methods.",
+      "time": "O(n) per insertion/deletion, O(1) get"
     },
     "optimal": {
-      "idea": "Doubly linked list with dummy head and tail",
-      "time": "O(1) at ends"
+      "idea": "Doubly linked list with dummy head and dummy tail sentinels for O(1) head/tail insertions and O(min(k, n-k)) indexed lookups.",
+      "time": "O(index) for get/addAtIndex/deleteAtIndex, O(1) for head/tail"
     },
     "companies": [
       "amazon",
@@ -6782,15 +6782,15 @@
     "title": "Design HashMap",
     "slug": "design-hashmap",
     "difficulty": "Easy",
-    "buildsOn": 377,
     "chapter": "ch-24",
+    "buildsOn": 377,
     "brute": {
-      "idea": "Single gigantic array of 1,000,000 slots",
-      "time": "high memory"
+      "idea": "Use a flat array of size 1,000,001 initialized to -1 for direct key indexing.",
+      "time": "O(1) per operation"
     },
     "optimal": {
-      "idea": "Bucket array of linked lists with prime modulus",
-      "time": "O(1) amortized"
+      "idea": "Separate chaining hash table: array of prime size (e.g. 2069) holding linked lists of (key, val) nodes.",
+      "time": "O(N/K) amortized O(1) per operation"
     },
     "companies": [
       "amazon",
@@ -6805,15 +6805,15 @@
     "title": "Insert Delete GetRandom O(1)",
     "slug": "insert-delete-getrandom-o1",
     "difficulty": "Medium",
-    "buildsOn": 378,
     "chapter": "ch-24",
+    "buildsOn": 378,
     "brute": {
-      "idea": "Scan array on remove",
-      "time": "O(n) remove"
+      "idea": "Store unique elements in a HashSet and convert to array for getRandom.",
+      "time": "O(1) insert/remove, O(n) getRandom"
     },
     "optimal": {
-      "idea": "Dynamic array plus hash map, swap with last element on remove",
-      "time": "O(1) all ops"
+      "idea": "ArrayList + HashMap: swap element with last item for O(1) deletion and use list index for O(1) uniform getRandom.",
+      "time": "O(1) average for all operations"
     },
     "companies": [
       "meta",
@@ -6828,15 +6828,15 @@
     "title": "Design Browser History",
     "slug": "design-browser-history",
     "difficulty": "Medium",
-    "buildsOn": 379,
     "chapter": "ch-24",
+    "buildsOn": 379,
     "brute": {
-      "idea": "List copying on every forward and back",
-      "time": "O(n)"
+      "idea": "Use two stacks (historyStack and forwardStack) to simulate browser navigation.",
+      "time": "O(steps) per back/forward, O(1) visit"
     },
     "optimal": {
-      "idea": "Dynamic array and current index pointer, truncate forward on visit",
-      "time": "O(1)"
+      "idea": "Single dynamic array with current index and upper bound for O(1) jump navigation on back and forward.",
+      "time": "O(1) per operation"
     },
     "companies": [
       "bloomberg",
@@ -6850,15 +6850,15 @@
     "title": "Binary Watch",
     "slug": "binary-watch",
     "difficulty": "Easy",
-    "buildsOn": 102,
     "chapter": "ch-25",
+    "buildsOn": 102,
     "brute": {
-      "idea": "Generate all binary states",
-      "time": "O(2¹⁰)"
+      "idea": "Enumerate all combinations of picking turnedOn LEDs among 10 LED positions (4 for hours, 6 for minutes) using backtracking.",
+      "time": "O(10 choose k)"
     },
     "optimal": {
-      "idea": "Loop hours and minutes checking set bits count",
-      "time": "O(720)"
+      "idea": "Direct iteration over all 720 possible clock times, filtering by bit count sum equal to turnedOn.",
+      "time": "O(1) (exactly 12 * 60 = 720 iterations)"
     },
     "companies": [
       "google",
@@ -6871,15 +6871,15 @@
     "title": "Letter Tile Possibilities",
     "slug": "letter-tile-possibilities",
     "difficulty": "Medium",
-    "buildsOn": 109,
     "chapter": "ch-25",
+    "buildsOn": 109,
     "brute": {
-      "idea": "Generate all sequences, dedupe with set",
-      "time": "O(n!·n)"
+      "idea": "Generate all permutations of all subsets using boolean used array and store unique strings in a HashSet.",
+      "time": "O(n * n!)"
     },
     "optimal": {
-      "idea": "Backtrack using frequency count array",
-      "time": "pruned"
+      "idea": "Count-based frequency backtracking: at each branch, each remaining character forms a new distinct sequence without set overhead.",
+      "time": "O(26^n) bounded by total unique tile permutations"
     },
     "companies": [
       "google",
@@ -6892,15 +6892,15 @@
     "title": "Beautiful Arrangement",
     "slug": "beautiful-arrangement",
     "difficulty": "Medium",
-    "buildsOn": 108,
     "chapter": "ch-25",
+    "buildsOn": 108,
     "brute": {
-      "idea": "All permutations, then check divisibility",
-      "time": "O(n!)"
+      "idea": "Generate all n! permutations and check if every position satisfies the divisibility condition.",
+      "time": "O(n! * n)"
     },
     "optimal": {
-      "idea": "Backtrack placing only valid divisors at each position",
-      "time": "pruned"
+      "idea": "Backtracking with reverse placement: place numbers from position n down to 1 to prune invalid branches earliest.",
+      "time": "O(valid arrangements) << O(n!)"
     },
     "companies": [
       "google",
@@ -6913,15 +6913,15 @@
     "title": "Non-decreasing Subsequences",
     "slug": "non-decreasing-subsequences",
     "difficulty": "Medium",
-    "buildsOn": 103,
     "chapter": "ch-25",
+    "buildsOn": 103,
     "brute": {
-      "idea": "Generate all subsets and filter",
-      "time": "O(2ⁿ)"
+      "idea": "Generate all 2^n subsequences, filter those that are non-decreasing with length >= 2, and deduplicate with a global HashSet.",
+      "time": "O(2^n * n)"
     },
     "optimal": {
-      "idea": "Backtrack with local set at each recursion level",
-      "time": "pruned"
+      "idea": "Backtracking with local per-level HashSet to prevent duplicate branch exploration at each recursion depth.",
+      "time": "O(2^n * n)"
     },
     "companies": [
       "meta",
@@ -6934,15 +6934,15 @@
     "title": "Numbers With Same Consecutive Differences",
     "slug": "numbers-with-same-consecutive-differences",
     "difficulty": "Medium",
-    "buildsOn": 111,
     "chapter": "ch-25",
+    "buildsOn": 111,
     "brute": {
-      "idea": "Check every n-digit integer",
-      "time": "O(10ⁿ)"
+      "idea": "Iterate through all n-digit numbers from 10^(n-1) to 10^n - 1 and verify the consecutive difference condition.",
+      "time": "O(10^n * n)"
     },
     "optimal": {
-      "idea": "Build digit by digit adding/subtracting k",
-      "time": "O(2ⁿ·10)"
+      "idea": "BFS or DFS digit extension: start with digits 1-9 and branch only to valid adjacent digits (last + k and last - k).",
+      "time": "O(2^n * 9)"
     },
     "companies": [
       "google",
@@ -6955,15 +6955,15 @@
     "title": "The k-th Lexicographical String of All Happy Strings of a Given Length",
     "slug": "the-k-th-lexicographical-string-of-all-happy-strings-of-a-given-length",
     "difficulty": "Medium",
-    "buildsOn": 385,
     "chapter": "ch-25",
+    "buildsOn": 385,
     "brute": {
-      "idea": "Generate all strings and sort",
-      "time": "O(3ⁿ)"
+      "idea": "Generate all 3^n strings of letters 'a', 'b', 'c', filter happy strings, sort lexicographically, and pick index k - 1.",
+      "time": "O(3^n * n)"
     },
     "optimal": {
-      "idea": "Backtrack in lexicographical order, stop at k-th",
-      "time": "O(k)"
+      "idea": "Lexicographical DFS with early termination: backtrack over ['a', 'b', 'c'] and terminate immediately when k-th string is found.",
+      "time": "O(k * n)"
     },
     "companies": [
       "amazon",
@@ -6976,15 +6976,15 @@
     "title": "Maximum Length of a Concatenated String with Unique Characters",
     "slug": "maximum-length-of-a-concatenated-string-with-unique-characters",
     "difficulty": "Medium",
-    "buildsOn": 102,
     "chapter": "ch-25",
+    "buildsOn": 102,
     "brute": {
-      "idea": "All subsets, check duplicate letters",
-      "time": "O(2ⁿ·L)"
+      "idea": "Generate all 2^n combinations of words, check uniqueness using a HashSet, and record max length.",
+      "time": "O(2^n * L)"
     },
     "optimal": {
-      "idea": "Backtrack using bitmask of used characters",
-      "time": "pruned"
+      "idea": "Bitmask DFS: convert each string to a bitmask and length, filtering out internal duplicates, then backtrack combining disjoint masks.",
+      "time": "O(2^n)"
     },
     "companies": [
       "microsoft",
@@ -6997,14 +6997,14 @@
     "title": "Count Numbers with Unique Digits",
     "slug": "count-numbers-with-unique-digits",
     "difficulty": "Medium",
-    "buildsOn": 108,
     "chapter": "ch-25",
+    "buildsOn": 108,
     "brute": {
-      "idea": "Check every number up to 10ⁿ",
-      "time": "O(10ⁿ)"
+      "idea": "Iterate through every integer from 0 to 10^n - 1, checking if its decimal digits are all unique.",
+      "time": "O(10^n)"
     },
     "optimal": {
-      "idea": "Combinatorics permutation formula per digit count",
+      "idea": "Combinatorial dynamic programming: count unique numbers of length k using product 9 * 9 * 8 * ... in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7018,15 +7018,15 @@
     "title": "Path with Maximum Gold",
     "slug": "path-with-maximum-gold",
     "difficulty": "Medium",
-    "buildsOn": 115,
     "chapter": "ch-25",
+    "buildsOn": 115,
     "brute": {
-      "idea": "All paths without pruning",
-      "time": "exponential"
+      "idea": "DFS with a boolean visited matrix, initiating search from every positive gold cell.",
+      "time": "O(k * 4 * 3^(gold_cells)) where gold_cells <= 25"
     },
     "optimal": {
-      "idea": "DFS from each non-zero gold cell with temporary marking",
-      "time": "pruned"
+      "idea": "In-place grid marking backtracking: negate grid[r][c] to mark as visited and restore after exploring 4 directions.",
+      "time": "O(gold_cells * 3^(gold_cells))"
     },
     "companies": [
       "google",
@@ -7039,15 +7039,15 @@
     "title": "Unique Paths III",
     "slug": "unique-paths-iii",
     "difficulty": "Hard",
-    "buildsOn": 389,
     "chapter": "ch-25",
+    "buildsOn": 389,
     "brute": {
-      "idea": "Try all paths",
-      "time": "exponential"
+      "idea": "DFS with a visited matrix to track cells, checking all path lengths at the destination.",
+      "time": "O(4^(m*n))"
     },
     "optimal": {
-      "idea": "DFS backtracking tracking empty cells visited count",
-      "time": "pruned"
+      "idea": "In-place grid marking DFS: modify grid cell to -1 during visit and check remaining count == 0 at destination cell.",
+      "time": "O(4^(m*n)) bounded by empty <= 20"
     },
     "companies": [
       "google",
@@ -7060,15 +7060,15 @@
     "title": "Additive Number",
     "slug": "additive-number",
     "difficulty": "Medium",
-    "buildsOn": 390,
     "chapter": "ch-25",
+    "buildsOn": 390,
     "brute": {
-      "idea": "Try all splits blindly",
-      "time": "O(n³)"
+      "idea": "Generate all possible splits of string into lists of numbers and verify the additive property.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Fix first two numbers, verify rest iteratively",
-      "time": "O(n²)"
+      "idea": "Fix first two numbers with bounds pruning (first <= n/2, second <= (n - first)/2) and iteratively match remainder in O(n^3) time.",
+      "time": "O(n^3)"
     },
     "companies": [
       "google",
@@ -7081,15 +7081,15 @@
     "title": "Split Array into Fibonacci Sequence",
     "slug": "split-array-into-fibonacci-sequence",
     "difficulty": "Medium",
-    "buildsOn": 391,
     "chapter": "ch-25",
+    "buildsOn": 391,
     "brute": {
-      "idea": "Try all partitionings",
-      "time": "exponential"
+      "idea": "Explore all possible partitions with recursion, checking integer range and fibonacci sum at each step.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Backtrack with 32-bit integer overflow and leading zero checks",
-      "time": "pruned"
+      "idea": "Pruned backtracking: parse digits incrementally, aborting as soon as value exceeds Integer.MAX_VALUE or exceeds expected Fibonacci sum.",
+      "time": "O(n^2)"
     },
     "companies": [
       "amazon",
@@ -7102,15 +7102,15 @@
     "title": "Word Break II",
     "slug": "word-break-ii",
     "difficulty": "Hard",
-    "buildsOn": 246,
     "chapter": "ch-25",
+    "buildsOn": 246,
     "brute": {
-      "idea": "Try all string splits",
-      "time": "O(2ⁿ)"
+      "idea": "Unmemoized backtracking: try every prefix word match and collect valid sentences upon reaching end of string.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Backtracking with memoization and word hash set",
-      "time": "O(n² + total)"
+      "idea": "DFS with memoization (suffix caching): memoize list of valid sentences formable from each suffix to avoid duplicate branch exploration.",
+      "time": "O(n^2 + 2^n)"
     },
     "companies": [
       "amazon",
@@ -7124,15 +7124,15 @@
     "title": "Expression Add Operators",
     "slug": "expression-add-operators",
     "difficulty": "Hard",
-    "buildsOn": 393,
     "chapter": "ch-25",
+    "buildsOn": 393,
     "brute": {
-      "idea": "Generate all operator placements then evaluate",
-      "time": "O(4ⁿ·n)"
+      "idea": "Generate all 4^(n-1) operator combinations (none, +, -, *), parse each expression with a mathematical evaluator, and compare to target.",
+      "time": "O(4^n * n)"
     },
     "optimal": {
-      "idea": "Backtrack tracking running value and last added operand for precedence",
-      "time": "pruned"
+      "idea": "StringBuilder backtracking: maintain evaluated value and previous operand in O(1) space, rolling back StringBuilder after each branch.",
+      "time": "O(4^n)"
     },
     "companies": [
       "meta",
@@ -7142,18 +7142,18 @@
   },
   {
     "seq": 395,
-    "lc": 617,
-    "title": "Merge Two Binary Trees",
-    "slug": "merge-two-binary-trees",
+    "lc": 145,
+    "title": "Binary Tree Postorder Traversal",
+    "slug": "binary-tree-postorder-traversal",
     "difficulty": "Easy",
-    "buildsOn": 118,
     "chapter": "ch-26",
+    "buildsOn": 139,
     "brute": {
-      "idea": "Create complete copies of both trees",
-      "time": "O(n) space"
+      "idea": "Standard recursive postorder traversal: recurse on left child, recurse on right child, then record root value.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Preorder recursive merge node sums in place",
+      "idea": "Iterative traversal using a stack: push root, traverse root -> right -> left, and prepend each node value to a LinkedList (or reverse at the end).",
       "time": "O(n)"
     },
     "companies": [
@@ -7164,19 +7164,19 @@
   },
   {
     "seq": 396,
-    "lc": 501,
-    "title": "Find Mode in Binary Search Tree",
-    "slug": "find-mode-in-binary-search-tree",
+    "lc": 637,
+    "title": "Average of Levels in Binary Tree",
+    "slug": "average-of-levels-in-binary-tree",
     "difficulty": "Easy",
-    "buildsOn": 395,
     "chapter": "ch-26",
+    "buildsOn": 135,
     "brute": {
-      "idea": "Hash map of frequencies from tree traversal",
-      "time": "O(n) space"
+      "idea": "Collect all node values level by level into a list of lists using DFS, then calculate average of each level list.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Inorder traversal tracking current count and max count",
-      "time": "O(1) extra space"
+      "idea": "Queue-based BFS: sum values directly on the fly level by level using O(width) auxiliary space.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -7185,18 +7185,18 @@
   },
   {
     "seq": 397,
-    "lc": 1382,
-    "title": "Balance a Binary Search Tree",
-    "slug": "balance-a-binary-search-tree",
+    "lc": 107,
+    "title": "Binary Tree Level Order Traversal II",
+    "slug": "binary-tree-level-order-traversal-ii",
     "difficulty": "Medium",
-    "buildsOn": 396,
     "chapter": "ch-26",
+    "buildsOn": 396,
     "brute": {
-      "idea": "Re-insert nodes one by one into BST",
-      "time": "O(n²)"
+      "idea": "Standard BFS level order traversal followed by Collections.reverse.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Inorder traversal to sorted array, divide-and-conquer build",
+      "idea": "Prepend each level directly to a LinkedList in O(1) time per level without requiring full array reversal.",
       "time": "O(n)"
     },
     "companies": [
@@ -7207,18 +7207,18 @@
   },
   {
     "seq": 398,
-    "lc": 1302,
-    "title": "Deepest Leaves Sum",
-    "slug": "deepest-leaves-sum",
+    "lc": 515,
+    "title": "Find Largest Value in Each Tree Row",
+    "slug": "find-largest-value-in-each-tree-row",
     "difficulty": "Medium",
-    "buildsOn": 397,
     "chapter": "ch-26",
+    "buildsOn": 396,
     "brute": {
-      "idea": "Find max depth, then second pass sum nodes at that depth",
-      "time": "O(n) two passes"
+      "idea": "DFS traversal collecting all values level by level in a Map<Integer, List<Integer>>, then finding the maximum of each level.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "BFS level-order traversal, sum of final queue level",
+      "idea": "BFS level-order traversal updating maximum value in O(1) space per level.",
       "time": "O(n)"
     },
     "companies": [
@@ -7228,18 +7228,18 @@
   },
   {
     "seq": 399,
-    "lc": 669,
-    "title": "Trim a Binary Search Tree",
-    "slug": "trim-a-binary-search-tree",
+    "lc": 513,
+    "title": "Find Bottom Left Tree Value",
+    "slug": "find-bottom-left-tree-value",
     "difficulty": "Medium",
-    "buildsOn": 398,
     "chapter": "ch-26",
+    "buildsOn": 398,
     "brute": {
-      "idea": "Collect valid keys and rebuild BST",
+      "idea": "DFS keeping track of maximum depth seen and recording the first node encountered at any new depth.",
       "time": "O(n)"
     },
     "optimal": {
-      "idea": "Recursively drop left or right subtree outside [low, high]",
+      "idea": "Right-to-left BFS: enqueue right child then left child so the last node popped from the queue is the bottom-left node.",
       "time": "O(n)"
     },
     "companies": [
@@ -7249,19 +7249,19 @@
   },
   {
     "seq": 400,
-    "lc": 106,
-    "title": "Construct Binary Tree from Inorder and Postorder Traversal",
-    "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
-    "difficulty": "Medium",
-    "buildsOn": 126,
+    "lc": 617,
+    "title": "Merge Two Binary Trees",
+    "slug": "merge-two-binary-trees",
+    "difficulty": "Easy",
     "chapter": "ch-26",
+    "buildsOn": 124,
     "brute": {
-      "idea": "Linear scan to find root in inorder array",
-      "time": "O(n²)"
+      "idea": "Explicitly allocate a brand new TreeNode for every merged position using simultaneous BFS.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Hash map of inorder indices, pop root from postorder end",
-      "time": "O(n)"
+      "idea": "Recursive in-place merging: reuse root1 node, add root2.val to root1.val, and recurse on left and right children.",
+      "time": "O(min(n1, n2))"
     },
     "companies": [
       "amazon",

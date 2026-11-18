@@ -1,0 +1,247 @@
+[
+  {
+    "seq": 395,
+    "whyNext": "Builds on tree depth-first exploration from Binary Tree Inorder Traversal (Seq 139) by recording node values in left-right-root order both recursively and iteratively.",
+    "hints": [
+      "In postorder traversal, a node is processed only after both its left and right subtrees have been completely visited.",
+      "Recursive traversal visits root.left, then root.right, then adds root.val.",
+      "Iterative approach: do a modified preorder (root -> right -> left) and reverse the collected list, or use a stack with a prev pointer to detect returning from the right child."
+    ],
+    "brute": {
+      "idea": "Standard recursive postorder traversal: recurse on left child, recurse on right child, then record root value.",
+      "steps": [
+        "Create an empty result list.",
+        "Define postorder(node): if node == null return; postorder(node.left); postorder(node.right); list.add(node.val).",
+        "Call postorder(root) and return list."
+      ],
+      "whySlow": "Recursive call stack relies on system memory which can overflow for deep trees.",
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> postorderTraversal(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        dfs(root, res);\n        return res;\n    }\n    private void dfs(TreeNode node, List<Integer> res) {\n        if (node == null) return;\n        dfs(node.left, res);\n        dfs(node.right, res);\n        res.add(node.val);\n    }\n}",
+        "python": "class Solution:\n    def postorderTraversal(self, root: TreeNode) -> list[int]:\n        res = []\n        def dfs(node: TreeNode) -> None:\n            if not node:\n                return\n            dfs(node.left)\n            dfs(node.right)\n            res.append(node.val)\n        dfs(root)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative traversal using a stack: push root, traverse root -> right -> left, and prepend each node value to a LinkedList (or reverse at the end).",
+      "steps": [
+        "If root is null, return empty list.",
+        "Initialize stack and push root.",
+        "While stack is not empty: pop node, add node.val to head of linked list.",
+        "Push node.left, then push node.right.",
+        "Return list."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> postorderTraversal(TreeNode root) {\n        LinkedList<Integer> res = new LinkedList<>();\n        if (root == null) return res;\n        Stack<TreeNode> stack = new Stack<>();\n        stack.push(root);\n        while (!stack.isEmpty()) {\n            TreeNode node = stack.pop();\n            res.addFirst(node.val);\n            if (node.left != null) stack.push(node.left);\n            if (node.right != null) stack.push(node.right);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def postorderTraversal(self, root: TreeNode) -> list[int]:\n        if not root:\n            return []\n        res = []\n        stack = [root]\n        while stack:\n            node = stack.pop()\n            res.append(node.val)\n            if node.left:\n                stack.append(node.left)\n            if node.right:\n                stack.append(node.right)\n        return res[::-1]"
+      }
+    }
+  },
+  {
+    "seq": 396,
+    "whyNext": "Builds on BFS level grouping from Binary Tree Level Order Traversal (Seq 135) by summing node values per level using 64-bit integers and computing the floating-point level average.",
+    "hints": [
+      "Use BFS with a queue. In each level iteration, queue.size() gives the exact count of nodes in the current tree level.",
+      "Sum values using a double or long to prevent 32-bit integer overflow.",
+      "For each level: double sum = 0; int size = queue.size(); repeat size times: node = queue.poll(); sum += node.val; enqueue children. Add sum / size to result list."
+    ],
+    "brute": {
+      "idea": "Collect all node values level by level into a list of lists using DFS, then calculate average of each level list.",
+      "steps": [
+        "Use DFS with level index to store values in List<List<Integer>>.",
+        "For each level list, compute average of elements.",
+        "Collect averages and return."
+      ],
+      "whySlow": "Requires storing all tree node values explicitly in lists before computing averages.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Double> averageOfLevels(TreeNode root) {\n        List<List<Integer>> levels = new ArrayList<>();\n        dfs(root, 0, levels);\n        List<Double> ans = new ArrayList<>();\n        for (List<Integer> lvl : levels) {\n            double sum = 0;\n            for (int v : lvl) sum += v;\n            ans.add(sum / lvl.size());\n        }\n        return ans;\n    }\n    private void dfs(TreeNode node, int lvl, List<List<Integer>> levels) {\n        if (node == null) return;\n        if (lvl == levels.size()) levels.add(new ArrayList<>());\n        levels.get(lvl).add(node.val);\n        dfs(node.left, lvl + 1, levels);\n        dfs(node.right, lvl + 1, levels);\n    }\n}",
+        "python": "class Solution:\n    def averageOfLevels(self, root: TreeNode) -> list[float]:\n        levels = []\n        def dfs(node: TreeNode, depth: int) -> None:\n            if not node:\n                return\n            if depth == len(levels):\n                levels.append([])\n            levels[depth].append(node.val)\n            dfs(node.left, depth + 1)\n            dfs(node.right, depth + 1)\n        dfs(root, 0)\n        return [sum(lvl) / len(lvl) for lvl in levels]"
+      }
+    },
+    "optimal": {
+      "idea": "Queue-based BFS: sum values directly on the fly level by level using O(width) auxiliary space.",
+      "steps": [
+        "If root is null, return empty list.",
+        "Initialize Queue<TreeNode> and add root.",
+        "While queue is not empty: int sz = queue.size(), double sum = 0.",
+        "Loop sz times: poll node, sum += node.val, enqueue non-null left and right children.",
+        "Add sum / sz to result list. Return result list."
+      ],
+      "time": "O(n)",
+      "space": "O(width) = O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Double> averageOfLevels(TreeNode root) {\n        List<Double> ans = new ArrayList<>();\n        if (root == null) return ans;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            double sum = 0;\n            for (int i = 0; i < sz; i++) {\n                TreeNode node = q.poll();\n                sum += node.val;\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            ans.add(sum / sz);\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def averageOfLevels(self, root: TreeNode) -> list[float]:\n        from collections import deque\n        if not root:\n            return []\n        ans = []\n        q = deque([root])\n        while q:\n            sz = len(q)\n            level_sum = 0\n            for _ in range(sz):\n                node = q.popleft()\n                level_sum += node.val\n                if node.left:\n                    q.append(node.left)\n                if node.right:\n                    q.append(node.right)\n            ans.append(level_sum / sz)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 397,
+    "whyNext": "Inverts the result ordering from Average of Levels in Binary Tree (Seq 396) by collecting level node lists and reversing them into bottom-up level order.",
+    "hints": [
+      "Traverse top-down using standard BFS level order traversal.",
+      "Store each level's node values in a list.",
+      "Prepend each level to the front of a LinkedList, or reverse the top-down result list before returning."
+    ],
+    "brute": {
+      "idea": "Standard BFS level order traversal followed by Collections.reverse.",
+      "steps": [
+        "Collect top-down level lists using standard BFS.",
+        "Reverse the full list of levels.",
+        "Return reversed list."
+      ],
+      "whySlow": "Requires post-processing reversal step on the entire outer list.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> levelOrderBottom(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            List<Integer> level = new ArrayList<>();\n            for (int i = 0; i < sz; i++) {\n                TreeNode node = q.poll();\n                level.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(level);\n        }\n        Collections.reverse(res);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def levelOrderBottom(self, root: TreeNode) -> list[list[int]]:\n        from collections import deque\n        if not root:\n            return []\n        res = []\n        q = deque([root])\n        while q:\n            sz = len(q)\n            level = []\n            for _ in range(sz):\n                node = q.popleft()\n                level.append(node.val)\n                if node.left:\n                    q.append(node.left)\n                if node.right:\n                    q.append(node.right)\n            res.append(level)\n        return res[::-1]"
+      }
+    },
+    "optimal": {
+      "idea": "Prepend each level directly to a LinkedList in O(1) time per level without requiring full array reversal.",
+      "steps": [
+        "Use LinkedList<List<Integer>> res.",
+        "BFS with queue: at each level, extract all nodes of that level into a list.",
+        "Call res.addFirst(level).",
+        "Return res."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> levelOrderBottom(TreeNode root) {\n        LinkedList<List<Integer>> res = new LinkedList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            List<Integer> level = new ArrayList<>();\n            for (int i = 0; i < sz; i++) {\n                TreeNode node = q.poll();\n                level.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.addFirst(level);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def levelOrderBottom(self, root: TreeNode) -> list[list[int]]:\n        from collections import deque\n        if not root:\n            return []\n        res = deque()\n        q = deque([root])\n        while q:\n            sz = len(q)\n            level = []\n            for _ in range(sz):\n                node = q.popleft()\n                level.append(node.val)\n                if node.left:\n                    q.append(node.left)\n                if node.right:\n                    q.append(node.right)\n            res.appendleft(level)\n        return list(res)"
+      }
+    }
+  },
+  {
+    "seq": 398,
+    "whyNext": "Adapts level-wise reduction from Average of Levels in Binary Tree (Seq 396) by tracking the maximum node value instead of the sum at each BFS level.",
+    "hints": [
+      "Use BFS level order traversal.",
+      "Initialize maxVal = Integer.MIN_VALUE at the start of each level.",
+      "Iterate through all nodes in the current level, updating maxVal = Math.max(maxVal, node.val), and add maxVal to the result list."
+    ],
+    "brute": {
+      "idea": "DFS traversal collecting all values level by level in a Map<Integer, List<Integer>>, then finding the maximum of each level.",
+      "steps": [
+        "Traverse tree with DFS tracking level depth.",
+        "Collect node values in Map<Integer, List<Integer>>.",
+        "For each level in map, find maximum value.",
+        "Collect maximums in order and return."
+      ],
+      "whySlow": "Requires storing all tree nodes in lists before finding max values.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> largestValues(TreeNode root) {\n        Map<Integer, List<Integer>> map = new HashMap<>();\n        dfs(root, 0, map);\n        List<Integer> res = new ArrayList<>();\n        for (int i = 0; i < map.size(); i++) {\n            int max = Integer.MIN_VALUE;\n            for (int v : map.get(i)) max = Math.max(max, v);\n            res.add(max);\n        }\n        return res;\n    }\n    private void dfs(TreeNode node, int d, Map<Integer, List<Integer>> map) {\n        if (node == null) return;\n        map.computeIfAbsent(d, k -> new ArrayList<>()).add(node.val);\n        dfs(node.left, d + 1, map);\n        dfs(node.right, d + 1, map);\n    }\n}",
+        "python": "class Solution:\n    def largestValues(self, root: TreeNode) -> list[int]:\n        from collections import defaultdict\n        levels = defaultdict(list)\n        def dfs(node: TreeNode, depth: int) -> None:\n            if not node:\n                return\n            levels[depth].append(node.val)\n            dfs(node.left, depth + 1)\n            dfs(node.right, depth + 1)\n        dfs(root, 0)\n        return [max(levels[d]) for d in range(len(levels))]"
+      }
+    },
+    "optimal": {
+      "idea": "BFS level-order traversal updating maximum value in O(1) space per level.",
+      "steps": [
+        "If root is null, return empty list.",
+        "Initialize queue with root.",
+        "While queue is not empty: sz = queue.size(), maxVal = Integer.MIN_VALUE.",
+        "Loop sz times: pop node, maxVal = Math.max(maxVal, node.val), enqueue non-null children.",
+        "Add maxVal to result list. Return result list."
+      ],
+      "time": "O(n)",
+      "space": "O(width) = O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> largestValues(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            int maxVal = Integer.MIN_VALUE;\n            for (int i = 0; i < sz; i++) {\n                TreeNode node = q.poll();\n                maxVal = Math.max(maxVal, node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(maxVal);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def largestValues(self, root: TreeNode) -> list[int]:\n        from collections import deque\n        if not root:\n            return []\n        res = []\n        q = deque([root])\n        while q:\n            sz = len(q)\n            max_val = float('-inf')\n            for _ in range(sz):\n                node = q.popleft()\n                max_val = max(max_val, node.val)\n                if node.left:\n                    q.append(node.left)\n                if node.right:\n                    q.append(node.right)\n            res.append(max_val)\n        return res"
+      }
+    }
+  },
+  {
+    "seq": 399,
+    "whyNext": "Builds on BFS level row scanning from Find Largest Value in Each Tree Row (Seq 398) by visiting right child before left child so the final polled node in the queue is guaranteed to be the bottom-left value.",
+    "hints": [
+      "Standard BFS processes left child then right child, so the first node polled in each level is the leftmost.",
+      "Clever BFS variation: enqueue right child first, then left child. Then the very last node polled in the entire BFS traversal is the bottom-left node.",
+      "Initialize queue with root. While !q.isEmpty(): node = q.poll(); if (node.right != null) q.offer(node.right); if (node.left != null) q.offer(node.left). Return node.val."
+    ],
+    "brute": {
+      "idea": "DFS keeping track of maximum depth seen and recording the first node encountered at any new depth.",
+      "steps": [
+        "Maintain maxDepth = -1 and leftmostVal.",
+        "DFS(node, depth): if node == null return.",
+        "If depth > maxDepth, update maxDepth = depth and leftmostVal = node.val.",
+        "Recurse left child with depth + 1, then right child with depth + 1.",
+        "Return leftmostVal."
+      ],
+      "whySlow": "Requires recursive stack and depth comparisons across all nodes.",
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private int maxDepth = -1;\n    private int ans = 0;\n    public int findBottomLeftValue(TreeNode root) {\n        dfs(root, 0);\n        return ans;\n    }\n    private void dfs(TreeNode node, int depth) {\n        if (node == null) return;\n        if (depth > maxDepth) {\n            maxDepth = depth;\n            ans = node.val;\n        }\n        dfs(node.left, depth + 1);\n        dfs(node.right, depth + 1);\n    }\n}",
+        "python": "class Solution:\n    def findBottomLeftValue(self, root: TreeNode) -> int:\n        max_depth = -1\n        ans = root.val\n        def dfs(node: TreeNode, depth: int) -> None:\n            nonlocal max_depth, ans\n            if not node:\n                return\n            if depth > max_depth:\n                max_depth = depth\n                ans = node.val\n            dfs(node.left, depth + 1)\n            dfs(node.right, depth + 1)\n        dfs(root, 0)\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Right-to-left BFS: enqueue right child then left child so the last node popped from the queue is the bottom-left node.",
+      "steps": [
+        "Initialize queue with root.",
+        "While queue is not empty: pop node.",
+        "If node.right is not null, push node.right.",
+        "If node.left is not null, push node.left.",
+        "When queue becomes empty, return last popped node's value."
+      ],
+      "time": "O(n)",
+      "space": "O(width) = O(n)",
+      "code": {
+        "java": "class Solution {\n    public int findBottomLeftValue(TreeNode root) {\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        TreeNode node = root;\n        while (!q.isEmpty()) {\n            node = q.poll();\n            if (node.right != null) q.offer(node.right);\n            if (node.left != null) q.offer(node.left);\n        }\n        return node.val;\n    }\n}",
+        "python": "class Solution:\n    def findBottomLeftValue(self, root: TreeNode) -> int:\n        from collections import deque\n        q = deque([root])\n        node = root\n        while q:\n            node = q.popleft()\n            if node.right:\n                q.append(node.right)\n            if node.left:\n                q.append(node.left)\n        return node.val"
+      }
+    }
+  },
+  {
+    "seq": 400,
+    "whyNext": "Builds on recursive tree reconstruction from Maximum Depth of Binary Tree (Seq 124) by summing overlapping node values and recursing on both left and right subtrees simultaneously.",
+    "hints": [
+      "If one of the two nodes is null, the merged tree takes the other node entirely.",
+      "If both nodes are non-null, create a new node (or reuse root1) whose value is root1.val + root2.val.",
+      "Recurse: merged.left = mergeTrees(root1.left, root2.left) and merged.right = mergeTrees(root1.right, root2.right). Return merged."
+    ],
+    "brute": {
+      "idea": "Explicitly allocate a brand new TreeNode for every merged position using simultaneous BFS.",
+      "steps": [
+        "If root1 == null return root2; if root2 == null return root1.",
+        "Use queues to hold pairs of corresponding nodes from both trees.",
+        "Create new TreeNode with sum of values.",
+        "Merge left children and right children accordingly.",
+        "Return root of merged tree."
+      ],
+      "whySlow": "Allocating auxiliary pairs and queue elements creates unnecessary heap allocation overhead.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {\n        if (root1 == null) return root2;\n        if (root2 == null) return root1;\n        TreeNode root = new TreeNode(root1.val + root2.val);\n        Queue<TreeNode[]> q = new LinkedList<>();\n        q.offer(new TreeNode[]{root, root1, root2});\n        while (!q.isEmpty()) {\n            TreeNode[] cur = q.poll();\n            TreeNode node = cur[0], n1 = cur[1], n2 = cur[2];\n            if (n1.left != null || n2.left != null) {\n                if (n1.left != null && n2.left != null) {\n                    node.left = new TreeNode(n1.left.val + n2.left.val);\n                    q.offer(new TreeNode[]{node.left, n1.left, n2.left});\n                } else if (n1.left != null) {\n                    node.left = n1.left;\n                } else {\n                    node.left = n2.left;\n                }\n            }\n            if (n1.right != null || n2.right != null) {\n                if (n1.right != null && n2.right != null) {\n                    node.right = new TreeNode(n1.right.val + n2.right.val);\n                    q.offer(new TreeNode[]{node.right, n1.right, n2.right});\n                } else if (n1.right != null) {\n                    node.right = n1.right;\n                } else {\n                    node.right = n2.right;\n                }\n            }\n        }\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:\n        if not root1:\n            return root2\n        if not root2:\n            return root1\n        from collections import deque\n        root = TreeNode(root1.val + root2.val)\n        q = deque([(root, root1, root2)])\n        while q:\n            node, n1, n2 = q.popleft()\n            if n1.left or n2.left:\n                if n1.left and n2.left:\n                    node.left = TreeNode(n1.left.val + n2.left.val)\n                    q.append((node.left, n1.left, n2.left))\n                elif n1.left:\n                    node.left = n1.left\n                else:\n                    node.left = n2.left\n            if n1.right or n2.right:\n                if n1.right and n2.right:\n                    node.right = TreeNode(n1.right.val + n2.right.val)\n                    q.append((node.right, n1.right, n2.right))\n                elif n1.right:\n                    node.right = n1.right\n                else:\n                    node.right = n2.right\n        return root"
+      }
+    },
+    "optimal": {
+      "idea": "Recursive in-place merging: reuse root1 node, add root2.val to root1.val, and recurse on left and right children.",
+      "steps": [
+        "If root1 == null return root2.",
+        "If root2 == null return root1.",
+        "root1.val += root2.val.",
+        "root1.left = mergeTrees(root1.left, root2.left).",
+        "root1.right = mergeTrees(root1.right, root2.right).",
+        "Return root1."
+      ],
+      "time": "O(min(n1, n2))",
+      "space": "O(min(h1, h2)) recursion stack",
+      "code": {
+        "java": "class Solution {\n    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {\n        if (root1 == null) return root2;\n        if (root2 == null) return root1;\n        root1.val += root2.val;\n        root1.left = mergeTrees(root1.left, root2.left);\n        root1.right = mergeTrees(root1.right, root2.right);\n        return root1;\n    }\n}",
+        "python": "class Solution:\n    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:\n        if not root1:\n            return root2\n        if not root2:\n            return root1\n        root1.val += root2.val\n        root1.left = self.mergeTrees(root1.left, root2.left)\n        root1.right = self.mergeTrees(root1.right, root2.right)\n        return root1"
+      }
+    }
+  }
+]

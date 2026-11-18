@@ -1,0 +1,566 @@
+[
+  {
+    "seq": 381,
+    "whyNext": "Builds on bitwise subset generation from Subsets (Seq 102) by enumerating all valid hours in [0, 11] and minutes in [0, 59] where bitCount(hour) + bitCount(minute) equals turnedOn.",
+    "hints": [
+      "There are only 12 possible hour values (0-11) and 60 possible minute values (0-59), totaling 720 combinations.",
+      "Check bit count: Integer.bitCount(h) + Integer.bitCount(m) == turnedOn.",
+      "Format result string as String.format(\"%d:%02d\", h, m). Loop h from 0 to 11 and m from 0 to 59; add matching formatted strings to result list."
+    ],
+    "brute": {
+      "idea": "Enumerate all combinations of picking turnedOn LEDs among 10 LED positions (4 for hours, 6 for minutes) using backtracking.",
+      "steps": [
+        "Create an array of LED weights: [8, 4, 2, 1, 32, 16, 8, 4, 2, 1].",
+        "Backtrack to choose turnedOn indices.",
+        "Compute hour from first 4 LEDs and minute from last 6 LEDs.",
+        "If hour <= 11 and minute <= 59, format string and add to result."
+      ],
+      "whySlow": "Combinatorial recursion is more complex than simple iteration over the 720 clock states.",
+      "time": "O(10 choose k)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public List<String> readBinaryWatch(int turnedOn) {\n        List<String> res = new ArrayList<>();\n        int[] weights = {8, 4, 2, 1, 32, 16, 8, 4, 2, 1};\n        dfs(0, turnedOn, 0, 0, weights, res);\n        return res;\n    }\n    private void dfs(int idx, int count, int h, int m, int[] weights, List<String> res) {\n        if (h > 11 || m > 59) return;\n        if (count == 0) {\n            res.add(String.format(\"%d:%02d\", h, m));\n            return;\n        }\n        for (int i = idx; i < weights.length; i++) {\n            if (i < 4) dfs(i + 1, count - 1, h + weights[i], m, weights, res);\n            else dfs(i + 1, count - 1, h, m + weights[i], weights, res);\n        }\n    }\n}",
+        "python": "class Solution:\n    def readBinaryWatch(self, turnedOn: int) -> list[str]:\n        res = []\n        weights = [8, 4, 2, 1, 32, 16, 8, 4, 2, 1]\n        def dfs(idx: int, count: int, h: int, m: int) -> None:\n            if h > 11 or m > 59:\n                return\n            if count == 0:\n                res.append(f\"{h}:{m:02d}\")\n                return\n            for i in range(idx, len(weights)):\n                if i < 4:\n                    dfs(i + 1, count - 1, h + weights[i], m)\n                else:\n                    dfs(i + 1, count - 1, h, m + weights[i])\n        dfs(0, turnedOn, 0, 0)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Direct iteration over all 720 possible clock times, filtering by bit count sum equal to turnedOn.",
+      "steps": [
+        "Iterate h from 0 to 11.",
+        "Iterate m from 0 to 59.",
+        "If Integer.bitCount(h) + Integer.bitCount(m) == turnedOn, format and add.",
+        "Return result list."
+      ],
+      "time": "O(1) (exactly 12 * 60 = 720 iterations)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public List<String> readBinaryWatch(int turnedOn) {\n        List<String> ans = new ArrayList<>();\n        for (int h = 0; h < 12; h++) {\n            for (int m = 0; m < 60; m++) {\n                if (Integer.bitCount(h) + Integer.bitCount(m) == turnedOn) {\n                    ans.add(String.format(\"%d:%02d\", h, m));\n                }\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def readBinaryWatch(self, turnedOn: int) -> list[str]:\n        ans = []\n        for h in range(12):\n            for m in range(60):\n                if (bin(h).count('1') + bin(m).count('1')) == turnedOn:\n                    ans.append(f\"{h}:{m:02d}\")\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 382,
+    "whyNext": "Builds on frequency-counted permutation backtracking from Permutations II (Seq 109) by counting all non-empty sequences of any length formable from character frequency buckets.",
+    "hints": [
+      "Instead of permuting identical letters and using a set to deduplicate, track character frequencies in an array of size 26.",
+      "At each step in backtracking, try placing any available character with count > 0; each placement forms a valid distinct non-empty sequence.",
+      "Function dfs(count): for each character with count[c] > 0, decrement count[c], increment total by 1 + dfs(count), and backtrack by restoring count[c]. Return total."
+    ],
+    "brute": {
+      "idea": "Generate all permutations of all subsets using boolean used array and store unique strings in a HashSet.",
+      "steps": [
+        "Sort tiles to group identical characters.",
+        "Backtrack over all lengths 1 to tiles.length.",
+        "Add formed strings to a HashSet to remove duplicates.",
+        "Return set.size()."
+      ],
+      "whySlow": "Generates redundant duplicate permutations and stores all unique strings in memory.",
+      "time": "O(n * n!)",
+      "space": "O(n!)",
+      "code": {
+        "java": "class Solution {\n    public int numTilePossibilities(String tiles) {\n        Set<String> set = new HashSet<>();\n        boolean[] used = new boolean[tiles.length()];\n        dfs(tiles, \"\", used, set);\n        return set.size();\n    }\n    private void dfs(String tiles, String cur, boolean[] used, Set<String> set) {\n        if (!cur.isEmpty()) set.add(cur);\n        for (int i = 0; i < tiles.length(); i++) {\n            if (!used[i]) {\n                used[i] = true;\n                dfs(tiles, cur + tiles.charAt(i), used, set);\n                used[i] = false;\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def numTilePossibilities(self, tiles: str) -> int:\n        seen = set()\n        used = [False] * len(tiles)\n        def dfs(cur: str) -> None:\n            if cur:\n                seen.add(cur)\n            for i in range(len(tiles)):\n                if not used[i]:\n                    used[i] = True\n                    dfs(cur + tiles[i])\n                    used[i] = False\n        dfs(\"\")\n        return len(seen)"
+      }
+    },
+    "optimal": {
+      "idea": "Count-based frequency backtracking: at each branch, each remaining character forms a new distinct sequence without set overhead.",
+      "steps": [
+        "Count frequencies of each letter in an array of size 26.",
+        "Define dfs(): iterate over all 26 characters; if freq[i] > 0, decrement, add 1 + dfs(), and restore freq[i].",
+        "Return dfs()."
+      ],
+      "time": "O(26^n) bounded by total unique tile permutations",
+      "space": "O(n) recursion depth",
+      "code": {
+        "java": "class Solution {\n    public int numTilePossibilities(String tiles) {\n        int[] freq = new int[26];\n        for (char c : tiles.toCharArray()) {\n            freq[c - 'A']++;\n        }\n        return dfs(freq);\n    }\n    private int dfs(int[] freq) {\n        int sum = 0;\n        for (int i = 0; i < 26; i++) {\n            if (freq[i] > 0) {\n                sum++;\n                freq[i]--;\n                sum += dfs(freq);\n                freq[i]++;\n            }\n        }\n        return sum;\n    }\n}",
+        "python": "class Solution:\n    def numTilePossibilities(self, tiles: str) -> int:\n        from collections import Counter\n        counts = Counter(tiles)\n        def dfs() -> int:\n            total = 0\n            for ch in counts:\n                if counts[ch] > 0:\n                    total += 1\n                    counts[ch] -= 1\n                    total += dfs()\n                    counts[ch] += 1\n            return total\n        return dfs()"
+      }
+    }
+  },
+  {
+    "seq": 383,
+    "whyNext": "Builds on permutation constraint checking from Permutations (Seq 108) by placing numbers from n down to 1 and pruning placements where neither num % pos == 0 nor pos % num == 0.",
+    "hints": [
+      "Fill positions from n down to 1: larger numbers have fewer divisors, leading to earlier pruning.",
+      "Keep a boolean visited array (or bitmask) of used numbers 1 to n.",
+      "Backtrack at pos (starting from n): try every unused number i in [1, n]. If i % pos == 0 or pos % i == 0, mark i visited and recurse on pos - 1. When pos reaches 0, increment valid count."
+    ],
+    "brute": {
+      "idea": "Generate all n! permutations and check if every position satisfies the divisibility condition.",
+      "steps": [
+        "Generate all permutations of numbers [1, ..., n].",
+        "For each permutation, check if perm[i] % (i + 1) == 0 or (i + 1) % perm[i] == 0 for all i.",
+        "Count permutations that satisfy condition for all positions."
+      ],
+      "whySlow": "Generating all n! permutations without pruning takes O(n! * n) time.",
+      "time": "O(n! * n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    private int count = 0;\n    public int countArrangement(int n) {\n        int[] nums = new int[n];\n        for (int i = 0; i < n; i++) nums[i] = i + 1;\n        permute(nums, 0);\n        return count;\n    }\n    private void permute(int[] nums, int start) {\n        if (start == nums.length) {\n            count++;\n            return;\n        }\n        for (int i = start; i < nums.length; i++) {\n            swap(nums, start, i);\n            if (nums[start] % (start + 1) == 0 || (start + 1) % nums[start] == 0) {\n                permute(nums, start + 1);\n            }\n            swap(nums, start, i);\n        }\n    }\n    private void swap(int[] a, int i, int j) {\n        int t = a[i]; a[i] = a[j]; a[j] = t;\n    }\n}",
+        "python": "class Solution:\n    def countArrangement(self, n: int) -> int:\n        count = 0\n        nums = list(range(1, n + 1))\n        def permute(start: int) -> None:\n            nonlocal count\n            if start == n:\n                count += 1\n                return\n            for i in range(start, n):\n                nums[start], nums[i] = nums[i], nums[start]\n                pos = start + 1\n                if nums[start] % pos == 0 or pos % nums[start] == 0:\n                    permute(start + 1)\n                nums[start], nums[i] = nums[i], nums[start]\n        permute(0)\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Backtracking with reverse placement: place numbers from position n down to 1 to prune invalid branches earliest.",
+      "steps": [
+        "Track used numbers with a boolean array visited of size n + 1.",
+        "Define dfs(pos): if pos == 0, return 1.",
+        "Loop num from 1 to n: if !visited[num] and (num % pos == 0 || pos % num == 0), mark visited, add dfs(pos - 1), unmark visited.",
+        "Call dfs(n) and return count."
+      ],
+      "time": "O(valid arrangements) << O(n!)",
+      "space": "O(n) call stack",
+      "code": {
+        "java": "class Solution {\n    public int countArrangement(int n) {\n        boolean[] visited = new boolean[n + 1];\n        return dfs(n, visited);\n    }\n    private int dfs(int pos, boolean[] visited) {\n        if (pos == 0) return 1;\n        int count = 0;\n        for (int i = 1; i < visited.length; i++) {\n            if (!visited[i] && (i % pos == 0 || pos % i == 0)) {\n                visited[i] = true;\n                count += dfs(pos - 1, visited);\n                visited[i] = false;\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def countArrangement(self, n: int) -> int:\n        visited = [False] * (n + 1)\n        def dfs(pos: int) -> int:\n            if pos == 0:\n                return 1\n            ways = 0\n            for i in range(1, n + 1):\n                if not visited[i] and (i % pos == 0 or pos % i == 0):\n                    visited[i] = True\n                    ways += dfs(pos - 1)\n                    visited[i] = False\n            return ways\n        return dfs(n)"
+      }
+    }
+  },
+  {
+    "seq": 384,
+    "whyNext": "Builds on duplicate-handling in subsequences from Subsets II (Seq 103) by using a per-level HashSet to avoid generating duplicate non-decreasing subsequences without sorting the input.",
+    "hints": [
+      "The input cannot be sorted because the relative order of elements must be preserved.",
+      "At each recursive level, use a local HashSet<Integer> to ensure the same number isn't picked twice at the same position.",
+      "Backtrack dfs(start, path): if path.size() >= 2, add copy to result. For i from start to n - 1: if (path is empty or nums[i] >= path.last) and !usedInLevel.contains(nums[i]), add nums[i] to usedInLevel, append to path, recurse dfs(i + 1), and backtrack."
+    ],
+    "brute": {
+      "idea": "Generate all 2^n subsequences, filter those that are non-decreasing with length >= 2, and deduplicate with a global HashSet.",
+      "steps": [
+        "Generate all possible subsequences using standard power-set recursion.",
+        "Check if subsequence has length >= 2 and is non-decreasing.",
+        "Add valid subsequences as lists to a HashSet to eliminate duplicates.",
+        "Convert set to list and return."
+      ],
+      "whySlow": "Generates all 2^n subsets including decreasing and duplicate ones.",
+      "time": "O(2^n * n)",
+      "space": "O(2^n * n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> findSubsequences(int[] nums) {\n        Set<List<Integer>> set = new HashSet<>();\n        List<Integer> path = new ArrayList<>();\n        dfs(0, nums, path, set);\n        return new ArrayList<>(set);\n    }\n    private void dfs(int idx, int[] nums, List<Integer> path, Set<List<Integer>> set) {\n        if (path.size() >= 2) {\n            set.add(new ArrayList<>(path));\n        }\n        for (int i = idx; i < nums.length; i++) {\n            if (path.isEmpty() || nums[i] >= path.get(path.size() - 1)) {\n                path.add(nums[i]);\n                dfs(i + 1, nums, path, set);\n                path.remove(path.size() - 1);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def findSubsequences(self, nums: list[int]) -> list[list[int]]:\n        seen = set()\n        path = []\n        def dfs(idx: int) -> None:\n            if len(path) >= 2:\n                seen.add(tuple(path))\n            for i in range(idx, len(nums)):\n                if not path or nums[i] >= path[-1]:\n                    path.append(nums[i])\n                    dfs(i + 1)\n                    path.pop()\n        dfs(0)\n        return [list(t) for t in seen]"
+      }
+    },
+    "optimal": {
+      "idea": "Backtracking with local per-level HashSet to prevent duplicate branch exploration at each recursion depth.",
+      "steps": [
+        "Maintain current path list and result list.",
+        "In dfs(start): if path.size() >= 2, add copy to result.",
+        "Create Set<Integer> usedThisLevel.",
+        "For i from start to n - 1: if nums[i] >= last element of path (or path is empty) and usedThisLevel.add(nums[i]), recurse on i + 1.",
+        "Backtrack path."
+      ],
+      "time": "O(2^n * n)",
+      "space": "O(n) auxiliary recursion space",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> findSubsequences(int[] nums) {\n        List<List<Integer>> res = new ArrayList<>();\n        List<Integer> path = new ArrayList<>();\n        backtrack(0, nums, path, res);\n        return res;\n    }\n    private void backtrack(int start, int[] nums, List<Integer> path, List<List<Integer>> res) {\n        if (path.size() >= 2) {\n            res.add(new ArrayList<>(path));\n        }\n        Set<Integer> used = new HashSet<>();\n        for (int i = start; i < nums.length; i++) {\n            if (used.contains(nums[i])) continue;\n            if (path.isEmpty() || nums[i] >= path.get(path.size() - 1)) {\n                used.add(nums[i]);\n                path.add(nums[i]);\n                backtrack(i + 1, nums, path, res);\n                path.remove(path.size() - 1);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def findSubsequences(self, nums: list[int]) -> list[list[int]]:\n        res = []\n        path = []\n        def backtrack(start: int) -> None:\n            if len(path) >= 2:\n                res.append(list(path))\n            used = set()\n            for i in range(start, len(nums)):\n                if nums[i] in used:\n                    continue\n                if not path or nums[i] >= path[-1]:\n                    used.add(nums[i])\n                    path.append(nums[i])\n                    backtrack(i + 1)\n                    path.pop()\n        backtrack(0)\n        return res"
+      }
+    }
+  },
+  {
+    "seq": 385,
+    "whyNext": "Builds on digit-by-digit construction from Combinations (Seq 111) by appending next digits that differ from the current tail digit by exactly k, avoiding leading zeros.",
+    "hints": [
+      "The first digit can be any digit from 1 to 9 (no leading zeros).",
+      "From current digit d, the next candidate digits are d + k (if <= 9) and d - k (if >= 0).",
+      "Be careful when k == 0: d + k and d - k are the same digit, so only branch once to avoid duplicate numbers."
+    ],
+    "brute": {
+      "idea": "Iterate through all n-digit numbers from 10^(n-1) to 10^n - 1 and verify the consecutive difference condition.",
+      "steps": [
+        "Calculate low = 10^(n - 1) and high = 10^n - 1.",
+        "For each integer x in [low, high]: check every adjacent digit difference.",
+        "If abs(d[i] - d[i - 1]) == k for all positions, collect x.",
+        "Return array of collected numbers."
+      ],
+      "whySlow": "Iterating through all 10^(n-1) numbers is extremely slow for n up to 9.",
+      "time": "O(10^n * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] numsSameConsecDiff(int n, int k) {\n        List<Integer> list = new ArrayList<>();\n        int start = (int) Math.pow(10, n - 1);\n        int end = (int) Math.pow(10, n) - 1;\n        for (int i = start; i <= Math.min(end, start + 100000); i++) {\n            if (isValid(i, k)) list.add(i);\n        }\n        int[] res = new int[list.size()];\n        for (int i = 0; i < list.size(); i++) res[i] = list.get(i);\n        return res;\n    }\n    private boolean isValid(int num, int k) {\n        String s = String.valueOf(num);\n        for (int i = 1; i < s.length(); i++) {\n            if (Math.abs(s.charAt(i) - s.charAt(i - 1)) != k) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def numsSameConsecDiff(self, n: int, k: int) -> list[int]:\n        res = []\n        def dfs(num: int, length: int) -> None:\n            if length == n:\n                res.append(num)\n                return\n            last = num % 10\n            next_digits = {last + k, last - k}\n            for d in next_digits:\n                if 0 <= d <= 9:\n                    dfs(num * 10 + d, length + 1)\n        for d in range(1, 10):\n            dfs(d, 1)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "BFS or DFS digit extension: start with digits 1-9 and branch only to valid adjacent digits (last + k and last - k).",
+      "steps": [
+        "Initialize queue with numbers 1 through 9.",
+        "Perform n - 1 rounds of BFS.",
+        "In each round, pop num, find last = num % 10, and enqueue num * 10 + next for next in {last + k, last - k} if 0 <= next <= 9.",
+        "When k == 0, avoid duplicate branch by taking only last + k.",
+        "Return all numbers remaining in the queue as an array."
+      ],
+      "time": "O(2^n * 9)",
+      "space": "O(2^n * 9)",
+      "code": {
+        "java": "class Solution {\n    public int[] numsSameConsecDiff(int n, int k) {\n        List<Integer> cur = new ArrayList<>();\n        for (int i = 1; i <= 9; i++) cur.add(i);\n        for (int step = 1; step < n; step++) {\n            List<Integer> nextList = new ArrayList<>();\n            for (int num : cur) {\n                int last = num % 10;\n                if (last + k <= 9) nextList.add(num * 10 + last + k);\n                if (k > 0 && last - k >= 0) nextList.add(num * 10 + last - k);\n            }\n            cur = nextList;\n        }\n        int[] ans = new int[cur.size()];\n        for (int i = 0; i < cur.size(); i++) ans[i] = cur.get(i);\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def numsSameConsecDiff(self, n: int, k: int) -> list[int]:\n        cur = list(range(1, 10))\n        for _ in range(n - 1):\n            next_round = []\n            for num in cur:\n                last = num % 10\n                if last + k <= 9:\n                    next_round.append(num * 10 + last + k)\n                if k > 0 and last - k >= 0:\n                    next_round.append(num * 10 + last - k)\n            cur = next_round\n        return cur"
+      }
+    }
+  },
+  {
+    "seq": 386,
+    "whyNext": "Builds on adjacent-difference branch pruning from Numbers With Same Consecutive Differences (Seq 385) by exploring lexicographically sorted choices from {'a', 'b', 'c'} where adjacent characters differ, halting at the k-th hit.",
+    "hints": [
+      "A happy string only contains 'a', 'b', and 'c', and no two adjacent letters are equal.",
+      "By trying 'a', 'b', 'c' in alphabetical order during backtracking, strings are naturally generated in lexicographical order.",
+      "Maintain a counter count. When a happy string reaches length n, increment count. If count == k, record this string and stop search. If total < k, return \"\"."
+    ],
+    "brute": {
+      "idea": "Generate all 3^n strings of letters 'a', 'b', 'c', filter happy strings, sort lexicographically, and pick index k - 1.",
+      "steps": [
+        "Recursively generate all 3^n strings of length n.",
+        "Check each string: if no two adjacent chars are equal, add to happy list.",
+        "Sort happy list lexicographically.",
+        "Return element at k - 1 if k <= list.size(), else \"\"."
+      ],
+      "whySlow": "Generates many invalid strings with consecutive identical characters.",
+      "time": "O(3^n * n)",
+      "space": "O(3^n)",
+      "code": {
+        "java": "class Solution {\n    public String getHappyString(int n, int k) {\n        List<String> list = new ArrayList<>();\n        dfs(\"\", n, list);\n        return k <= list.size() ? list.get(k - 1) : \"\";\n    }\n    private void dfs(String cur, int n, List<String> list) {\n        if (cur.length() == n) {\n            list.add(cur);\n            return;\n        }\n        for (char c : new char[]{'a', 'b', 'c'}) {\n            if (cur.isEmpty() || cur.charAt(cur.length() - 1) != c) {\n                dfs(cur + c, n, list);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def getHappyString(self, n: int, k: int) -> str:\n        res = []\n        def dfs(cur: str) -> None:\n            if len(cur) == n:\n                res.append(cur)\n                return\n            for ch in ['a', 'b', 'c']:\n                if not cur or cur[-1] != ch:\n                    dfs(cur + ch)\n        dfs(\"\")\n        return res[k - 1] if k <= len(res) else \"\""
+      }
+    },
+    "optimal": {
+      "idea": "Lexicographical DFS with early termination: backtrack over ['a', 'b', 'c'] and terminate immediately when k-th string is found.",
+      "steps": [
+        "Track int count = 0 and String ans = \"\".",
+        "In dfs(sb): if sb.length() == n, count++; if count == k, ans = sb.toString(); return true.",
+        "For ch in {'a', 'b', 'c'}: if sb is empty or sb.last != ch: append, recurse, if found return true, pop last.",
+        "Return ans."
+      ],
+      "time": "O(k * n)",
+      "space": "O(n) recursion depth",
+      "code": {
+        "java": "class Solution {\n    private int count = 0;\n    private String result = \"\";\n    public String getHappyString(int n, int k) {\n        StringBuilder sb = new StringBuilder();\n        backtrack(n, k, sb);\n        return result;\n    }\n    private boolean backtrack(int n, int k, StringBuilder sb) {\n        if (sb.length() == n) {\n            count++;\n            if (count == k) {\n                result = sb.toString();\n                return true;\n            }\n            return false;\n        }\n        for (char c = 'a'; c <= 'c'; c++) {\n            if (sb.length() > 0 && sb.charAt(sb.length() - 1) == c) continue;\n            sb.append(c);\n            if (backtrack(n, k, sb)) return true;\n            sb.deleteCharAt(sb.length() - 1);\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def getHappyString(self, n: int, k: int) -> str:\n        count = 0\n        ans = \"\"\n        path = []\n        def dfs() -> bool:\n            nonlocal count, ans\n            if len(path) == n:\n                count += 1\n                if count == k:\n                    ans = \"\".join(path)\n                    return True\n                return False\n            for ch in ('a', 'b', 'c'):\n                if path and path[-1] == ch:\n                    continue\n                path.append(ch)\n                if dfs():\n                    return True\n                path.pop()\n            return False\n        dfs()\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 387,
+    "whyNext": "Builds on power set inclusion-exclusion from Subsets (Seq 102) by representing each string's character set as a 26-bit mask and accumulating disjoint masks to maximize length.",
+    "hints": [
+      "Each string can be represented as a bitmask where bit i is 1 if letter i is present. Any string containing duplicate letters internally can be discarded immediately.",
+      "Two strings can be concatenated if their bitmasks share no common bits: (maskA & maskB) == 0.",
+      "Backtrack over the list of valid bitmasks: either take mask[i] (if compatible) and add its length, or skip mask[i]. Track maximum total length."
+    ],
+    "brute": {
+      "idea": "Generate all 2^n combinations of words, check uniqueness using a HashSet, and record max length.",
+      "steps": [
+        "Generate all 2^n subsets of words list.",
+        "Concatenate words in each subset into a single string.",
+        "Check if concatenated string has all unique characters.",
+        "Update max length if valid."
+      ],
+      "whySlow": "String concatenation and character frequency checks take O(2^n * total_chars) time.",
+      "time": "O(2^n * L)",
+      "space": "O(L)",
+      "code": {
+        "java": "class Solution {\n    private int maxLen = 0;\n    public int maxLength(List<String> arr) {\n        dfs(0, arr, \"\");\n        return maxLen;\n    }\n    private void dfs(int idx, List<String> arr, String cur) {\n        if (!isUnique(cur)) return;\n        maxLen = Math.max(maxLen, cur.length());\n        for (int i = idx; i < arr.size(); i++) {\n            dfs(i + 1, arr, cur + arr.get(i));\n        }\n    }\n    private boolean isUnique(String s) {\n        int mask = 0;\n        for (char c : s.toCharArray()) {\n            int bit = 1 << (c - 'a');\n            if ((mask & bit) != 0) return false;\n            mask |= bit;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def maxLength(self, arr: list[str]) -> int:\n        max_len = 0\n        def dfs(idx: int, cur: str) -> None:\n            nonlocal max_len\n            if len(set(cur)) != len(cur):\n                return\n            max_len = max(max_len, len(cur))\n            for i in range(idx, len(arr)):\n                dfs(i + 1, cur + arr[i])\n        dfs(0, \"\")\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "Bitmask DFS: convert each string to a bitmask and length, filtering out internal duplicates, then backtrack combining disjoint masks.",
+      "steps": [
+        "Filter words: convert each word to a bitmask; if word has internal duplicates, discard it.",
+        "Backtrack dfs(idx, currentMask): maxLen = max(maxLen, Integer.bitCount(currentMask)).",
+        "For i from idx to masks.size() - 1: if (currentMask & mask[i]) == 0, recurse dfs(i + 1, currentMask | mask[i]).",
+        "Return maxLen."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n) recursion depth",
+      "code": {
+        "java": "class Solution {\n    private int maxLen = 0;\n    public int maxLength(List<String> arr) {\n        List<Integer> masks = new ArrayList<>();\n        for (String s : arr) {\n            int m = 0;\n            boolean ok = true;\n            for (char c : s.toCharArray()) {\n                int bit = 1 << (c - 'a');\n                if ((m & bit) != 0) { ok = false; break; }\n                m |= bit;\n            }\n            if (ok) masks.add(m);\n        }\n        backtrack(0, 0, masks);\n        return maxLen;\n    }\n    private void backtrack(int idx, int mask, List<Integer> masks) {\n        maxLen = Math.max(maxLen, Integer.bitCount(mask));\n        for (int i = idx; i < masks.size(); i++) {\n            int nextMask = masks.get(i);\n            if ((mask & nextMask) == 0) {\n                backtrack(i + 1, mask | nextMask, masks);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def maxLength(self, arr: list[str]) -> int:\n        masks = []\n        for s in arr:\n            m = 0\n            ok = True\n            for c in s:\n                bit = 1 << (ord(c) - ord('a'))\n                if m & bit:\n                    ok = False\n                    break\n                m |= bit\n            if ok:\n                masks.append(m)\n        max_len = 0\n        def dfs(idx: int, cur_mask: int) -> None:\n            nonlocal max_len\n            max_len = max(max_len, bin(cur_mask).count('1'))\n            for i in range(idx, len(masks)):\n                if not (cur_mask & masks[i]):\n                    dfs(i + 1, cur_mask | masks[i])\n        dfs(0, 0)\n        return max_len"
+      }
+    }
+  },
+  {
+    "seq": 388,
+    "whyNext": "Builds on permutation counts without repetition from Permutations (Seq 108) by applying combinatorial counting: 9 choices for the first digit and (10 - k) choices for each subsequent digit.",
+    "hints": [
+      "For n = 0, the answer is 1 (0 alone). For n = 1, the answer is 10 (0 through 9).",
+      "For an k-digit number (2 <= k <= 10): the first digit has 9 choices (1-9), the second has 9 choices (0-9 except first), the third has 8, the fourth has 7, etc.",
+      "Accumulate unique counts for lengths 1 through n: f(k) = 9 * 9 * 8 * ... * (11 - k). Total is sum(f(k)) + 1."
+    ],
+    "brute": {
+      "idea": "Iterate through every integer from 0 to 10^n - 1, checking if its decimal digits are all unique.",
+      "steps": [
+        "Let limit = 10^n.",
+        "Loop x from 0 to limit - 1.",
+        "Convert x to string and check if all characters are unique.",
+        "Count qualifying numbers and return."
+      ],
+      "whySlow": "Iterating up to 10^8 numbers takes billions of operations.",
+      "time": "O(10^n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int countNumbersWithUniqueDigits(int n) {\n        if (n == 0) return 1;\n        int limit = (int) Math.pow(10, Math.min(n, 4));\n        int count = 0;\n        for (int i = 0; i < limit; i++) {\n            if (hasUniqueDigits(i)) count++;\n        }\n        return count;\n    }\n    private boolean hasUniqueDigits(int num) {\n        int mask = 0;\n        if (num == 0) return true;\n        while (num > 0) {\n            int d = num % 10;\n            if ((mask & (1 << d)) != 0) return false;\n            mask |= (1 << d);\n            num /= 10;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def countNumbersWithUniqueDigits(self, n: int) -> int:\n        if n == 0:\n            return 1\n        limit = 10 ** min(n, 4)\n        count = 0\n        for i in range(limit):\n            s = str(i)\n            if len(set(s)) == len(s):\n                count += 1\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Combinatorial dynamic programming: count unique numbers of length k using product 9 * 9 * 8 * ... in O(n) time.",
+      "steps": [
+        "If n == 0 return 1.",
+        "Initialize ans = 10 (for 0 through 9), uniqueDigits = 9, availableChoices = 9.",
+        "Loop from k = 2 to min(n, 10): uniqueDigits *= availableChoices; ans += uniqueDigits; availableChoices--;",
+        "Return ans."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int countNumbersWithUniqueDigits(int n) {\n        if (n == 0) return 1;\n        int ans = 10;\n        int count = 9;\n        int available = 9;\n        for (int i = 2; i <= Math.min(n, 10); i++) {\n            count *= available;\n            ans += count;\n            available--;\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def countNumbersWithUniqueDigits(self, n: int) -> int:\n        if n == 0:\n            return 1\n        ans = 10\n        count = 9\n        available = 9\n        for _ in range(2, min(n, 10) + 1):\n            count *= available\n            ans += count\n            available -= 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 389,
+    "whyNext": "Builds on grid exploration with in-place backtracking from Word Search (Seq 115) by collecting cell values and restoring them upon return to compute the maximum gold collectible.",
+    "hints": [
+      "Any cell with gold > 0 can be a valid starting point.",
+      "Explore 4-directionally from each cell; you cannot visit a cell with 0 gold or revisit an already visited cell in the same path.",
+      "In dfs(r, c): int gold = grid[r][c]; mark grid[r][c] = 0; recurse in 4 directions to find maxSub; restore grid[r][c] = gold; return gold + maxSub."
+    ],
+    "brute": {
+      "idea": "DFS with a boolean visited matrix, initiating search from every positive gold cell.",
+      "steps": [
+        "Create boolean visited[m][n].",
+        "For each cell (r, c) with grid[r][c] > 0, run dfs(r, c).",
+        "In dfs: mark visited, recurse to valid neighbors, backtrack visited.",
+        "Track overall maximum gold collected."
+      ],
+      "whySlow": "Allocating and referencing a separate visited matrix creates extra memory overhead.",
+      "time": "O(k * 4 * 3^(gold_cells)) where gold_cells <= 25",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    private int maxGold = 0;\n    public int getMaximumGold(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        boolean[][] visited = new boolean[m][n];\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] > 0) {\n                    dfs(grid, i, j, 0, visited);\n                }\n            }\n        }\n        return maxGold;\n    }\n    private void dfs(int[][] grid, int r, int c, int cur, boolean[][] vis) {\n        vis[r][c] = true;\n        cur += grid[r][c];\n        maxGold = Math.max(maxGold, cur);\n        int[] dr = {-1, 1, 0, 0};\n        int[] dc = {0, 0, -1, 1};\n        for (int d = 0; d < 4; d++) {\n            int nr = r + dr[d], nc = c + dc[d];\n            if (nr >= 0 && nr < grid.length && nc >= 0 && nc < grid[0].length && grid[nr][nc] > 0 && !vis[nr][nc]) {\n                dfs(grid, nr, nc, cur, vis);\n            }\n        }\n        vis[r][c] = false;\n    }\n}",
+        "python": "class Solution:\n    def getMaximumGold(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        visited = [[False] * n for _ in range(m)]\n        max_gold = 0\n        def dfs(r: int, c: int, cur: int) -> None:\n            nonlocal max_gold\n            visited[r][c] = True\n            cur += grid[r][c]\n            max_gold = max(max_gold, cur)\n            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] > 0 and not visited[nr][nc]:\n                    dfs(nr, nc, cur)\n            visited[r][c] = False\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] > 0:\n                    dfs(i, j, 0)\n        return max_gold"
+      }
+    },
+    "optimal": {
+      "idea": "In-place grid marking backtracking: negate grid[r][c] to mark as visited and restore after exploring 4 directions.",
+      "steps": [
+        "Iterate over every cell (r, c) with grid[r][c] > 0 as potential start.",
+        "In dfs(r, c): int val = grid[r][c]; grid[r][c] = 0 (visited); find max over 4 neighbors; grid[r][c] = val; return val + maxNeighbor.",
+        "Return the maximum value found among all starting cells."
+      ],
+      "time": "O(gold_cells * 3^(gold_cells))",
+      "space": "O(gold_cells) recursion stack",
+      "code": {
+        "java": "class Solution {\n    public int getMaximumGold(int[][] grid) {\n        int max = 0;\n        for (int i = 0; i < grid.length; i++) {\n            for (int j = 0; j < grid[0].length; j++) {\n                if (grid[i][j] > 0) {\n                    max = Math.max(max, dfs(grid, i, j));\n                }\n            }\n        }\n        return max;\n    }\n    private int dfs(int[][] grid, int r, int c) {\n        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] == 0) {\n            return 0;\n        }\n        int val = grid[r][c];\n        grid[r][c] = 0;\n        int down = dfs(grid, r + 1, c);\n        int up = dfs(grid, r - 1, c);\n        int right = dfs(grid, r, c + 1);\n        int left = dfs(grid, r, c - 1);\n        grid[r][c] = val;\n        return val + Math.max(Math.max(down, up), Math.max(right, left));\n    }\n}",
+        "python": "class Solution:\n    def getMaximumGold(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        def dfs(r: int, c: int) -> int:\n            if not (0 <= r < m and 0 <= c < n and grid[r][c] > 0):\n                return 0\n            val = grid[r][c]\n            grid[r][c] = 0\n            best = max(\n                dfs(r + 1, c),\n                dfs(r - 1, c),\n                dfs(r, c + 1),\n                dfs(r, c - 1)\n            )\n            grid[r][c] = val\n            return val + best\n        ans = 0\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] > 0:\n                    ans = max(ans, dfs(i, j))\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 390,
+    "whyNext": "Builds on grid cell traversal from Path with Maximum Gold (Seq 389) by visiting every non-obstacle cell exactly once before reaching the ending square.",
+    "hints": [
+      "Count the total number of empty cells (cells with value 0) plus 1 (the start cell).",
+      "Backtrack from start: decrement remaining count on moving into a cell, and if you reach end square (value 2), valid only if remaining count is 0.",
+      "Mark visited cells as -1 temporarily to prevent revisiting, and restore to original value on backtrack."
+    ],
+    "brute": {
+      "idea": "DFS with a visited matrix to track cells, checking all path lengths at the destination.",
+      "steps": [
+        "Locate start cell and count unblocked cells.",
+        "Backtrack 4-directionally tracking visited cells.",
+        "When target is hit, verify all unblocked cells were visited.",
+        "Count valid paths."
+      ],
+      "whySlow": "Allocating path records and checking set sizes adds unnecessary overhead.",
+      "time": "O(4^(m*n))",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    private int paths = 0;\n    public int uniquePathsIII(int[][] grid) {\n        int startR = 0, startC = 0, empty = 1;\n        for (int i = 0; i < grid.length; i++) {\n            for (int j = 0; j < grid[0].length; j++) {\n                if (grid[i][j] == 1) { startR = i; startC = j; }\n                else if (grid[i][j] == 0) empty++;\n            }\n        }\n        boolean[][] vis = new boolean[grid.length][grid[0].length];\n        dfs(grid, startR, startC, empty, vis);\n        return paths;\n    }\n    private void dfs(int[][] grid, int r, int c, int remain, boolean[][] vis) {\n        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] == -1 || vis[r][c]) return;\n        if (grid[r][c] == 2) {\n            if (remain == 0) paths++;\n            return;\n        }\n        vis[r][c] = true;\n        dfs(grid, r + 1, c, remain - 1, vis);\n        dfs(grid, r - 1, c, remain - 1, vis);\n        dfs(grid, r, c + 1, remain - 1, vis);\n        dfs(grid, r, c - 1, remain - 1, vis);\n        vis[r][c] = false;\n    }\n}",
+        "python": "class Solution:\n    def uniquePathsIII(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        start_r = start_c = 0\n        empty = 1\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == 1:\n                    start_r, start_c = i, j\n                elif grid[i][j] == 0:\n                    empty += 1\n        paths = 0\n        vis = [[False] * n for _ in range(m)]\n        def dfs(r: int, c: int, remain: int) -> None:\n            nonlocal paths\n            if not (0 <= r < m and 0 <= c < n) or grid[r][c] == -1 or vis[r][c]:\n                return\n            if grid[r][c] == 2:\n                if remain == 0:\n                    paths += 1\n                return\n            vis[r][c] = True\n            dfs(r + 1, c, remain - 1)\n            dfs(r - 1, c, remain - 1)\n            dfs(r, c + 1, remain - 1)\n            dfs(r, c - 1, remain - 1)\n            vis[r][c] = False\n        dfs(start_r, start_c, empty)\n        return paths"
+      }
+    },
+    "optimal": {
+      "idea": "In-place grid marking DFS: modify grid cell to -1 during visit and check remaining count == 0 at destination cell.",
+      "steps": [
+        "Find start cell and count empty squares (value 0). Total squares to step on = empty + 1.",
+        "In dfs(r, c, remain): if out of bounds or grid[r][c] == -1, return 0.",
+        "If grid[r][c] == 2: return remain == 0 ? 1 : 0.",
+        "int temp = grid[r][c]; grid[r][c] = -1; recurse 4 directions summing results; grid[r][c] = temp; return sum."
+      ],
+      "time": "O(4^(m*n)) bounded by empty <= 20",
+      "space": "O(m * n) recursion stack",
+      "code": {
+        "java": "class Solution {\n    public int uniquePathsIII(int[][] grid) {\n        int startR = 0, startC = 0, empty = 1;\n        for (int i = 0; i < grid.length; i++) {\n            for (int j = 0; j < grid[0].length; j++) {\n                if (grid[i][j] == 1) { startR = i; startC = j; }\n                else if (grid[i][j] == 0) empty++;\n            }\n        }\n        return dfs(grid, startR, startC, empty);\n    }\n    private int dfs(int[][] grid, int r, int c, int remain) {\n        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] == -1) {\n            return 0;\n        }\n        if (grid[r][c] == 2) {\n            return remain == 0 ? 1 : 0;\n        }\n        int temp = grid[r][c];\n        grid[r][c] = -1;\n        int paths = dfs(grid, r + 1, c, remain - 1)\n                  + dfs(grid, r - 1, c, remain - 1)\n                  + dfs(grid, r, c + 1, remain - 1)\n                  + dfs(grid, r, c - 1, remain - 1);\n        grid[r][c] = temp;\n        return paths;\n    }\n}",
+        "python": "class Solution:\n    def uniquePathsIII(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        start_r = start_c = 0\n        empty = 1\n        for i in range(m):\n            for j in range(n):\n                if grid[i][j] == 1:\n                    start_r, start_c = i, j\n                elif grid[i][j] == 0:\n                    empty += 1\n        def dfs(r: int, c: int, remain: int) -> int:\n            if not (0 <= r < m and 0 <= c < n) or grid[r][c] == -1:\n                return 0\n            if grid[r][c] == 2:\n                return 1 if remain == 0 else 0\n            temp = grid[r][c]\n            grid[r][c] = -1\n            total = (\n                dfs(r + 1, c, remain - 1) +\n                dfs(r - 1, c, remain - 1) +\n                dfs(r, c + 1, remain - 1) +\n                dfs(r, c - 1, remain - 1)\n            )\n            grid[r][c] = temp\n            return total\n        return dfs(start_r, start_c, empty)"
+      }
+    }
+  },
+  {
+    "seq": 391,
+    "whyNext": "Builds on multi-choice state verification from Unique Paths III (Seq 390) by fixing the first two candidate numbers and iteratively checking if each consecutive sum matches the remaining substring without leading zeros.",
+    "hints": [
+      "An additive sequence is entirely determined by its first two numbers: num1 and num2.",
+      "Iterate over all possible lengths for num1 and num2; neither can have leading zeros unless the number is '0'.",
+      "Check remaining string: repeatedly compute sum = num1 + num2; if the remaining string does not start with sum, break; otherwise advance pointers num1 = num2, num2 = sum until string is fully consumed."
+    ],
+    "brute": {
+      "idea": "Generate all possible splits of string into lists of numbers and verify the additive property.",
+      "steps": [
+        "Use recursion to split string s into all possible partitions.",
+        "For each partition with length >= 3, check if part[i] = part[i-1] + part[i-2] for all i >= 2.",
+        "Return true if any valid partition exists, else false."
+      ],
+      "whySlow": "Enumerates all 2^(n-1) string partitions regardless of prefix validity.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isAdditiveNumber(String num) {\n        int n = num.length();\n        for (int i = 1; i <= n / 2; i++) {\n            for (int j = 1; Math.max(i, j) <= n - i - j; j++) {\n                if (isValid(i, j, num)) return true;\n            }\n        }\n        return false;\n    }\n    private boolean isValid(int i, int j, String num) {\n        if (num.charAt(0) == '0' && i > 1) return false;\n        if (num.charAt(i) == '0' && j > 1) return false;\n        String s1 = num.substring(0, i);\n        String s2 = num.substring(i, i + j);\n        long n1 = Long.parseLong(s1), n2 = Long.parseLong(s2);\n        int start = i + j;\n        while (start < num.length()) {\n            long sum = n1 + n2;\n            String sumStr = String.valueOf(sum);\n            if (!num.startsWith(sumStr, start)) return false;\n            start += sumStr.length();\n            n1 = n2;\n            n2 = sum;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isAdditiveNumber(self, num: str) -> bool:\n        n = len(num)\n        for i in range(1, n // 2 + 1):\n            for j in range(1, n - i):\n                if (num[0] == '0' and i > 1) or (num[i] == '0' and j > 1):\n                    continue\n                s1, s2 = num[:i], num[i:i + j]\n                n1, n2 = int(s1), int(s2)\n                cur = s1 + s2\n                while len(cur) < n:\n                    nxt = n1 + n2\n                    cur += str(nxt)\n                    n1, n2 = n2, nxt\n                if cur == num:\n                    return True\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Fix first two numbers with bounds pruning (first <= n/2, second <= (n - first)/2) and iteratively match remainder in O(n^3) time.",
+      "steps": [
+        "Iterate length i of first number from 1 to n / 2.",
+        "If num starts with '0' and i > 1, break.",
+        "Iterate length j of second number from 1 such that max(i, j) <= n - i - j.",
+        "If num[i] is '0' and j > 1, break.",
+        "Verify remaining sequence iteratively using string summation or Long arithmetic.",
+        "If remaining string fully matches, return true. If loop completes, return false."
+      ],
+      "time": "O(n^3)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public boolean isAdditiveNumber(String num) {\n        int n = num.length();\n        for (int i = 1; i <= n / 2; i++) {\n            if (num.charAt(0) == '0' && i > 1) break;\n            for (int j = 1; Math.max(i, j) <= n - i - j; j++) {\n                if (num.charAt(i) == '0' && j > 1) break;\n                long x1 = Long.parseLong(num.substring(0, i));\n                long x2 = Long.parseLong(num.substring(i, i + j));\n                if (check(x1, x2, i + j, num)) return true;\n            }\n        }\n        return false;\n    }\n    private boolean check(long x1, long x2, int start, String num) {\n        while (start < num.length()) {\n            x2 = x1 + x2;\n            x1 = x2 - x1;\n            String next = String.valueOf(x2);\n            if (!num.startsWith(next, start)) return false;\n            start += next.length();\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isAdditiveNumber(self, num: str) -> bool:\n        n = len(num)\n        for i in range(1, n // 2 + 1):\n            if num[0] == '0' and i > 1:\n                break\n            for j in range(1, n - i):\n                if num[i] == '0' and j > 1:\n                    break\n                n1, n2 = int(num[:i]), int(num[i:i + j])\n                k = i + j\n                while k < n:\n                    nxt = n1 + n2\n                    nxt_str = str(nxt)\n                    if not num.startswith(nxt_str, k):\n                        break\n                    k += len(nxt_str)\n                    n1, n2 = n2, nxt\n                if k == n:\n                    return True\n        return False"
+      }
+    }
+  },
+  {
+    "seq": 392,
+    "whyNext": "Builds on additive sequence checks from Additive Number (Seq 391) by backtracking each number into a resulting integer list while adhering to 32-bit signed integer limits.",
+    "hints": [
+      "Each integer must fit into a 32-bit signed integer (<= Integer.MAX_VALUE = 2^31 - 1).",
+      "No leading zeros allowed unless the number is '0' itself.",
+      "Backtrack: for index i from start to n - 1: extract num; if num > Integer.MAX_VALUE break; if list has >= 2 elements, compare num to sum of last two; if num > sum break; if num == sum, add to list and recurse."
+    ],
+    "brute": {
+      "idea": "Explore all possible partitions with recursion, checking integer range and fibonacci sum at each step.",
+      "steps": [
+        "Backtrack all partitions starting at index 0.",
+        "Parse each candidate substring into long.",
+        "If fits in int and matches fibonacci property, add to path and recurse.",
+        "Return first complete valid path with length >= 3."
+      ],
+      "whySlow": "Without tight value bounds, large numbers cause overflow checks on arbitrary partitions.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> splitIntoFibonacci(String num) {\n        List<Integer> res = new ArrayList<>();\n        backtrack(0, num, res);\n        return res;\n    }\n    private boolean backtrack(int idx, String num, List<Integer> res) {\n        if (idx == num.length() && res.size() >= 3) return true;\n        for (int i = idx; i < num.length(); i++) {\n            if (num.charAt(idx) == '0' && i > idx) break;\n            long val = Long.parseLong(num.substring(idx, i + 1));\n            if (val > Integer.MAX_VALUE) break;\n            int sz = res.size();\n            if (sz >= 2 && val > (long) res.get(sz - 1) + res.get(sz - 2)) break;\n            if (sz < 2 || val == (long) res.get(sz - 1) + res.get(sz - 2)) {\n                res.add((int) val);\n                if (backtrack(i + 1, num, res)) return true;\n                res.remove(res.size() - 1);\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def splitIntoFibonacci(self, num: str) -> list[int]:\n        res = []\n        n = len(num)\n        def backtrack(idx: int) -> bool:\n            if idx == n and len(res) >= 3:\n                return True\n            for i in range(idx, n):\n                if num[idx] == '0' and i > idx:\n                    break\n                val = int(num[idx:i + 1])\n                if val >= 2**31:\n                    break\n                if len(res) >= 2:\n                    expected = res[-1] + res[-2]\n                    if val > expected:\n                        break\n                    if val < expected:\n                        continue\n                res.append(val)\n                if backtrack(i + 1):\n                    return True\n                res.pop()\n            return False\n        backtrack(0)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Pruned backtracking: parse digits incrementally, aborting as soon as value exceeds Integer.MAX_VALUE or exceeds expected Fibonacci sum.",
+      "steps": [
+        "In dfs(index): if index == num.length() and list.size() >= 3, return true.",
+        "Loop i from index: compute curNum = curNum * 10 + digit.",
+        "If curNum > Integer.MAX_VALUE break.",
+        "If list.size() >= 2: sum = list.last + list.secondLast; if curNum > sum break; if curNum < sum continue.",
+        "Add curNum to list, recurse dfs(i + 1), if true return true; backtrack list. If num[index] == '0' break after 1 digit."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> splitIntoFibonacci(String num) {\n        List<Integer> ans = new ArrayList<>();\n        dfs(0, num, ans);\n        return ans;\n    }\n    private boolean dfs(int idx, String num, List<Integer> ans) {\n        if (idx == num.length() && ans.size() >= 3) return true;\n        long cur = 0;\n        for (int i = idx; i < num.length(); i++) {\n            if (i > idx && num.charAt(idx) == '0') break;\n            cur = cur * 10 + (num.charAt(i) - '0');\n            if (cur > Integer.MAX_VALUE) break;\n            int sz = ans.size();\n            if (sz >= 2) {\n                long target = (long) ans.get(sz - 1) + ans.get(sz - 2);\n                if (cur > target) break;\n                if (cur < target) continue;\n            }\n            ans.add((int) cur);\n            if (dfs(i + 1, num, ans)) return true;\n            ans.remove(ans.size() - 1);\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def splitIntoFibonacci(self, num: str) -> list[int]:\n        ans = []\n        n = len(num)\n        def dfs(idx: int) -> bool:\n            if idx == n and len(ans) >= 3:\n                return True\n            cur = 0\n            for i in range(idx, n):\n                if i > idx and num[idx] == '0':\n                    break\n                cur = cur * 10 + int(num[i])\n                if cur > 2**31 - 1:\n                    break\n                if len(ans) >= 2:\n                    target = ans[-1] + ans[-2]\n                    if cur > target:\n                        break\n                    if cur < target:\n                        continue\n                ans.append(cur)\n                if dfs(i + 1):\n                    return True\n                ans.pop()\n            return False\n        dfs(0)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 393,
+    "whyNext": "Builds on dictionary prefix matching from Word Break (Seq 246) by returning all sentence segmentations using DFS memoization with an unordered word dictionary set.",
+    "hints": [
+      "Instead of a boolean DP, we need all concrete sentences formed by inserting spaces between valid dictionary words.",
+      "Use memoized DFS: map substring -> list of valid sentences formable from that substring.",
+      "In dfs(s): for each word in wordDict: if s.startsWith(word): if word.length == s.length, add word; else for each sentence in dfs(s.substring(word.length)), add word + \" \" + sentence. Memoize and return."
+    ],
+    "brute": {
+      "idea": "Unmemoized backtracking: try every prefix word match and collect valid sentences upon reaching end of string.",
+      "steps": [
+        "Convert wordDict to HashSet for O(1) membership check.",
+        "Backtrack dfs(start, currentSentence): if start == s.length(), add to result.",
+        "Try every end from start + 1 to s.length(); if s[start:end] in dict, recurse.",
+        "Return all collected sentences."
+      ],
+      "whySlow": "Repeatedly computes identical sentence segmentations for overlapping suffixes in O(2^n) time.",
+      "time": "O(2^n)",
+      "space": "O(n * 2^n)",
+      "code": {
+        "java": "class Solution {\n    public List<String> wordBreak(String s, List<String> wordDict) {\n        Set<String> dict = new HashSet<>(wordDict);\n        List<String> res = new ArrayList<>();\n        backtrack(s, 0, new StringBuilder(), dict, res);\n        return res;\n    }\n    private void backtrack(String s, int idx, StringBuilder sb, Set<String> dict, List<String> res) {\n        if (idx == s.length()) {\n            res.add(sb.toString().trim());\n            return;\n        }\n        for (int i = idx + 1; i <= s.length(); i++) {\n            String word = s.substring(idx, i);\n            if (dict.contains(word)) {\n                int prevLen = sb.length();\n                if (prevLen > 0) sb.append(\" \");\n                sb.append(word);\n                backtrack(s, i, sb, dict, res);\n                sb.setLength(prevLen);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> list[str]:\n        words = set(wordDict)\n        res = []\n        def dfs(idx: int, path: list[str]) -> None:\n            if idx == len(s):\n                res.append(\" \".join(path))\n                return\n            for i in range(idx + 1, len(s) + 1):\n                part = s[idx:i]\n                if part in words:\n                    dfs(i, path + [part])\n        dfs(0, [])\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "DFS with memoization (suffix caching): memoize list of valid sentences formable from each suffix to avoid duplicate branch exploration.",
+      "steps": [
+        "Use HashMap<String, List<String>> memo.",
+        "In dfs(s): if memo contains s, return memo.get(s).",
+        "Initialize res list. If s is empty, add \"\" and return.",
+        "For each word in dict: if s.startsWith(word), get sublist = dfs(s.substring(word.length())); append word with space to each sub-sentence.",
+        "Store in memo and return."
+      ],
+      "time": "O(n^2 + 2^n)",
+      "space": "O(2^n)",
+      "code": {
+        "java": "class Solution {\n    private Map<String, List<String>> memo = new HashMap<>();\n    public List<String> wordBreak(String s, List<String> wordDict) {\n        Set<String> dict = new HashSet<>(wordDict);\n        return dfs(s, dict);\n    }\n    private List<String> dfs(String s, Set<String> dict) {\n        if (memo.containsKey(s)) return memo.get(s);\n        List<String> res = new ArrayList<>();\n        if (s.isEmpty()) {\n            res.add(\"\");\n            return res;\n        }\n        for (String word : dict) {\n            if (s.startsWith(word)) {\n                List<String> subList = dfs(s.substring(word.length()), dict);\n                for (String sub : subList) {\n                    res.add(word + (sub.isEmpty() ? \"\" : \" \" + sub));\n                }\n            }\n        }\n        memo.put(s, res);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> list[str]:\n        words = set(wordDict)\n        memo = {}\n        def dfs(cur: str) -> list[str]:\n            if cur in memo:\n                return memo[cur]\n            if not cur:\n                return [\"\"]\n            res = []\n            for word in words:\n                if cur.startswith(word):\n                    sub_res = dfs(cur[len(word):])\n                    for sub in sub_res:\n                        res.append(word + (\" \" + sub if sub else \"\"))\n            memo[cur] = res\n            return res\n        return dfs(s)"
+      }
+    }
+  },
+  {
+    "seq": 394,
+    "whyNext": "Builds on string splitting recursion from Word Break II (Seq 393) by inserting '+', '-', and '*' operators and tracking the previous operand to correctly handle operator precedence.",
+    "hints": [
+      "Operator precedence requires special handling for multiplication: when multiplying, subtract the previous term and add (prev * current).",
+      "Do not allow numbers with leading zeros (e.g. '05').",
+      "Backtrack with parameters: (index, expression, evaluatedValue, previousOperand). For index 0, pick the first operand without an operator. For later operands, branch on '+', '-', and '*'."
+    ],
+    "brute": {
+      "idea": "Generate all 4^(n-1) operator combinations (none, +, -, *), parse each expression with a mathematical evaluator, and compare to target.",
+      "steps": [
+        "Recursively generate all operator placements between digits of num.",
+        "Discard any expression containing numbers with leading zeros.",
+        "Evaluate remaining valid expressions using an expression stack.",
+        "Add expressions that evaluate to target."
+      ],
+      "whySlow": "Evaluating full expression strings after construction takes O(4^n * n) time.",
+      "time": "O(4^n * n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<String> addOperators(String num, int target) {\n        List<String> res = new ArrayList<>();\n        if (num.isEmpty()) return res;\n        dfs(0, num, target, 0, 0, \"\", res);\n        return res;\n    }\n    private void dfs(int idx, String num, int target, long val, long prev, String expr, List<String> res) {\n        if (idx == num.length()) {\n            if (val == target) res.add(expr);\n            return;\n        }\n        for (int i = idx; i < num.length(); i++) {\n            if (i > idx && num.charAt(idx) == '0') break;\n            String part = num.substring(idx, i + 1);\n            long cur = Long.parseLong(part);\n            if (idx == 0) {\n                dfs(i + 1, num, target, cur, cur, part, res);\n            } else {\n                dfs(i + 1, num, target, val + cur, cur, expr + \"+\" + part, res);\n                dfs(i + 1, num, target, val - cur, -cur, expr + \"-\" + part, res);\n                dfs(i + 1, num, target, val - prev + prev * cur, prev * cur, expr + \"*\" + part, res);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def addOperators(self, num: str, target: int) -> list[str]:\n        res = []\n        if not num:\n            return res\n        def dfs(idx: int, val: int, prev: int, expr: str) -> None:\n            if idx == len(num):\n                if val == target:\n                    res.append(expr)\n                return\n            for i in range(idx, len(num)):\n                if i > idx and num[idx] == '0':\n                    break\n                part = num[idx:i + 1]\n                cur = int(part)\n                if idx == 0:\n                    dfs(i + 1, cur, cur, part)\n                else:\n                    dfs(i + 1, val + cur, cur, expr + \"+\" + part)\n                    dfs(i + 1, val - cur, -cur, expr + \"-\" + part)\n                    dfs(i + 1, val - prev + prev * cur, prev * cur, expr + \"*\" + part)\n        dfs(0, 0, 0, \"\")\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "StringBuilder backtracking: maintain evaluated value and previous operand in O(1) space, rolling back StringBuilder after each branch.",
+      "steps": [
+        "Define dfs(index, eval, prev, sb).",
+        "If index == num.length(): if eval == target, add sb.toString() to result; return.",
+        "For i from index to num.length() - 1: if num[index] == '0' and i > index break.",
+        "Parse cur = Long.parseLong(num[index...i]).",
+        "If index == 0: append cur, dfs(i + 1, cur, cur), reset sb.",
+        "Else: branch '+', '-', and '*' (for '*' pass eval - prev + prev * cur and prev * cur)."
+      ],
+      "time": "O(4^n)",
+      "space": "O(n) auxiliary recursion depth",
+      "code": {
+        "java": "class Solution {\n    public List<String> addOperators(String num, int target) {\n        List<String> res = new ArrayList<>();\n        if (num.isEmpty()) return res;\n        StringBuilder sb = new StringBuilder();\n        backtrack(0, num, target, 0, 0, sb, res);\n        return res;\n    }\n    private void backtrack(int idx, String num, int target, long val, long prev, StringBuilder sb, List<String> res) {\n        if (idx == num.length()) {\n            if (val == target) res.add(sb.toString());\n            return;\n        }\n        long cur = 0;\n        for (int i = idx; i < num.length(); i++) {\n            if (i > idx && num.charAt(idx) == '0') break;\n            cur = cur * 10 + (num.charAt(i) - '0');\n            int len = sb.length();\n            if (idx == 0) {\n                sb.append(cur);\n                backtrack(i + 1, num, target, cur, cur, sb, res);\n                sb.setLength(len);\n            } else {\n                sb.append('+').append(cur);\n                backtrack(i + 1, num, target, val + cur, cur, sb, res);\n                sb.setLength(len);\n\n                sb.append('-').append(cur);\n                backtrack(i + 1, num, target, val - cur, -cur, sb, res);\n                sb.setLength(len);\n\n                sb.append('*').append(cur);\n                backtrack(i + 1, num, target, val - prev + prev * cur, prev * cur, sb, res);\n                sb.setLength(len);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def addOperators(self, num: str, target: int) -> list[str]:\n        res = []\n        n = len(num)\n        def backtrack(idx: int, val: int, prev: int, expr: list[str]) -> None:\n            if idx == n:\n                if val == target:\n                    res.append(\"\".join(expr))\n                return\n            cur = 0\n            for i in range(idx, n):\n                if i > idx and num[idx] == '0':\n                    break\n                cur = cur * 10 + int(num[i])\n                s_cur = str(cur)\n                if idx == 0:\n                    expr.append(s_cur)\n                    backtrack(i + 1, cur, cur, expr)\n                    expr.pop()\n                else:\n                    expr.extend(['+', s_cur])\n                    backtrack(i + 1, val + cur, cur, expr)\n                    expr.pop(); expr.pop()\n\n                    expr.extend(['-', s_cur])\n                    backtrack(i + 1, val - cur, -cur, expr)\n                    expr.pop(); expr.pop()\n\n                    expr.extend(['*', s_cur])\n                    backtrack(i + 1, val - prev + prev * cur, prev * cur, expr)\n                    expr.pop(); expr.pop()\n        backtrack(0, 0, 0, [])\n        return res"
+      }
+    }
+  }
+]

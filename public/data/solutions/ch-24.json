@@ -284,5 +284,207 @@
         "python": "class Solution:\n    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:\n        dummy = ListNode(0, head)\n        prev = dummy\n        for _ in range(left - 1):\n            prev = prev.next\n        cur = prev.next\n        for _ in range(right - left):\n            move = cur.next\n            cur.next = move.next\n            move.next = prev.next\n            prev.next = move\n        return dummy.next"
       }
     }
+  },
+  {
+    "seq": 376,
+    "whyNext": "Builds on two-pointer distance spacing from Reorder List (Seq 89) by finding the k-th node from start and k-th node from end using a fixed k-distance window, then swapping their values.",
+    "hints": [
+      "Find the k-th node from the beginning by traversing k - 1 steps from head.",
+      "To find the k-th node from the end in the same pass, start a second pointer from the head when the first pointer reaches node k, and move both until the first reaches the last node.",
+      "Save references to firstNode (k-th from start) and secondNode (k-th from end). Swap their integer values: tmp = firstNode.val; firstNode.val = secondNode.val; secondNode.val = tmp. Return head."
+    ],
+    "brute": {
+      "idea": "Convert the linked list into an ArrayList of nodes, swap values at index k - 1 and index n - k, and return head.",
+      "steps": [
+        "Traverse linked list and append every node reference to an ArrayList.",
+        "Let n be list size; locate node1 at k - 1 and node2 at n - k.",
+        "Swap values: int tmp = node1.val; node1.val = node2.val; node2.val = tmp.",
+        "Return original head."
+      ],
+      "whySlow": "Requires O(n) auxiliary memory to store all node references.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode swapNodes(ListNode head, int k) {\n        List<ListNode> nodes = new ArrayList<>();\n        ListNode cur = head;\n        while (cur != null) {\n            nodes.add(cur);\n            cur = cur.next;\n        }\n        int n = nodes.size();\n        ListNode n1 = nodes.get(k - 1);\n        ListNode n2 = nodes.get(n - k);\n        int tmp = n1.val;\n        n1.val = n2.val;\n        n2.val = tmp;\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def swapNodes(self, head: ListNode, k: int) -> ListNode:\n        nodes = []\n        cur = head\n        while cur:\n            nodes.append(cur)\n            cur = cur.next\n        n = len(nodes)\n        n1 = nodes[k - 1]\n        n2 = nodes[n - k]\n        n1.val, n2.val = n2.val, n1.val\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "One-pass two-pointer technique: locate k-th from start, then move a second pointer alongside from head until end to locate k-th from end in O(1) space.",
+      "steps": [
+        "Traverse k - 1 steps to locate first node.",
+        "Start second node from head and cur from first.next; move both one step at a time until cur is null.",
+        "Swap the values of first node and second node.",
+        "Return head."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode swapNodes(ListNode head, int k) {\n        ListNode first = head;\n        for (int i = 1; i < k; i++) {\n            first = first.next;\n        }\n        ListNode cur = first;\n        ListNode second = head;\n        while (cur.next != null) {\n            cur = cur.next;\n            second = second.next;\n        }\n        int temp = first.val;\n        first.val = second.val;\n        second.val = temp;\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def swapNodes(self, head: ListNode, k: int) -> ListNode:\n        first = head\n        for _ in range(k - 1):\n            first = first.next\n        cur = first\n        second = head\n        while cur.next:\n            cur = cur.next\n            second = second.next\n        first.val, second.val = second.val, first.val\n        return head"
+      }
+    }
+  },
+  {
+    "seq": 377,
+    "whyNext": "Builds on singly-linked list node manipulation from Swapping Nodes in a Linked List (Seq 376) by implementing a full singly/doubly linked list with indexed access, insertion, and deletion.",
+    "hints": [
+      "Use sentinel dummy head (and dummy tail if doubly linked) to avoid special edge casing on head/tail operations.",
+      "Track size variable to easily validate whether index is within [0, size).",
+      "get(index): if index < 0 or index >= size return -1. Otherwise traverse index steps from dummy.next. addAtIndex(index, val): traverse index steps from dummy to predecessor, insert new node between pred and succ, size++."
+    ],
+    "brute": {
+      "idea": "Implement using an ArrayList backing store to satisfy all list interface methods.",
+      "steps": [
+        "Back list using a dynamic ArrayList<Integer>.",
+        "get(index): bounds check and return list.get(index).",
+        "addAtHead(val): list.add(0, val).",
+        "addAtTail(val): list.add(val).",
+        "addAtIndex(index, val): bounds check and list.add(index, val).",
+        "deleteAtIndex(index): bounds check and list.remove(index)."
+      ],
+      "whySlow": "Array insertions and removals at index 0 or arbitrary indices require O(n) element shifting.",
+      "time": "O(n) per insertion/deletion, O(1) get",
+      "space": "O(n)",
+      "code": {
+        "java": "class MyLinkedList {\n    private List<Integer> list;\n    public MyLinkedList() {\n        this.list = new ArrayList<>();\n    }\n    public int get(int index) {\n        if (index < 0 || index >= list.size()) return -1;\n        return list.get(index);\n    }\n    public void addAtHead(int val) {\n        list.add(0, val);\n    }\n    public void addAtTail(int val) {\n        list.add(val);\n    }\n    public void addAtIndex(int index, int val) {\n        if (index < 0 || index > list.size()) return;\n        list.add(index, val);\n    }\n    public void deleteAtIndex(int index) {\n        if (index < 0 || index >= list.size()) return;\n        list.remove(index);\n    }\n}",
+        "python": "class MyLinkedList:\n    def __init__(self):\n        self.data = []\n\n    def get(self, index: int) -> int:\n        if 0 <= index < len(self.data):\n            return self.data[index]\n        return -1\n\n    def addAtHead(self, val: int) -> None:\n        self.data.insert(0, val)\n\n    def addAtTail(self, val: int) -> None:\n        self.data.append(val)\n\n    def addAtIndex(self, index: int, val: int) -> None:\n        if 0 <= index <= len(self.data):\n            self.data.insert(index, val)\n\n    def deleteAtIndex(self, index: int) -> None:\n        if 0 <= index < len(self.data):\n            self.data.pop(index)"
+      }
+    },
+    "optimal": {
+      "idea": "Doubly linked list with dummy head and dummy tail sentinels for O(1) head/tail insertions and O(min(k, n-k)) indexed lookups.",
+      "steps": [
+        "Define Node with prev, next, and val.",
+        "Initialize dummy head and tail connected to each other, with size = 0.",
+        "For index operations, traverse from head if index < size / 2, else from tail.",
+        "Link/unlink pointers directly in O(1) time once predecessor is reached."
+      ],
+      "time": "O(index) for get/addAtIndex/deleteAtIndex, O(1) for head/tail",
+      "space": "O(n)",
+      "code": {
+        "java": "class MyLinkedList {\n    static class Node {\n        int val;\n        Node prev, next;\n        Node(int val) { this.val = val; }\n    }\n    private Node head, tail;\n    private int size;\n    public MyLinkedList() {\n        this.head = new Node(0);\n        this.tail = new Node(0);\n        this.head.next = this.tail;\n        this.tail.prev = this.head;\n        this.size = 0;\n    }\n    public int get(int index) {\n        if (index < 0 || index >= size) return -1;\n        Node cur = head.next;\n        for (int i = 0; i < index; i++) cur = cur.next;\n        return cur.val;\n    }\n    public void addAtHead(int val) {\n        addAtIndex(0, val);\n    }\n    public void addAtTail(int val) {\n        addAtIndex(size, val);\n    }\n    public void addAtIndex(int index, int val) {\n        if (index < 0 || index > size) return;\n        Node pred = head;\n        for (int i = 0; i < index; i++) pred = pred.next;\n        Node succ = pred.next;\n        Node node = new Node(val);\n        node.prev = pred;\n        node.next = succ;\n        pred.next = node;\n        succ.prev = node;\n        size++;\n    }\n    public void deleteAtIndex(int index) {\n        if (index < 0 || index >= size) return;\n        Node pred = head;\n        for (int i = 0; i < index; i++) pred = pred.next;\n        Node toDelete = pred.next;\n        pred.next = toDelete.next;\n        toDelete.next.prev = pred;\n        size--;\n    }\n}",
+        "python": "class MyLinkedList:\n    class Node:\n        def __init__(self, val=0):\n            self.val = val\n            self.prev = None\n            self.next = None\n\n    def __init__(self):\n        self.head = self.Node(0)\n        self.tail = self.Node(0)\n        self.head.next = self.tail\n        self.tail.prev = self.head\n        self.size = 0\n\n    def get(self, index: int) -> int:\n        if index < 0 or index >= self.size:\n            return -1\n        cur = self.head.next\n        for _ in range(index):\n            cur = cur.next\n        return cur.val\n\n    def addAtHead(self, val: int) -> None:\n        self.addAtIndex(0, val)\n\n    def addAtTail(self, val: int) -> None:\n        self.addAtIndex(self.size, val)\n\n    def addAtIndex(self, index: int, val: int) -> None:\n        if index < 0 or index > self.size:\n            return\n        pred = self.head\n        for _ in range(index):\n            pred = pred.next\n        succ = pred.next\n        node = self.Node(val)\n        node.prev = pred\n        node.next = succ\n        pred.next = node\n        succ.prev = node\n        self.size += 1\n\n    def deleteAtIndex(self, index: int) -> None:\n        if index < 0 or index >= self.size:\n            return\n        pred = self.head\n        for _ in range(index):\n            pred = pred.next\n        to_delete = pred.next\n        pred.next = to_delete.next\n        to_delete.next.prev = pred\n        self.size -= 1"
+      }
+    }
+  },
+  {
+    "seq": 378,
+    "whyNext": "Builds on linked list node chaining from Design Linked List (Seq 377) by constructing an array of linked list buckets with hash modulo addressing to resolve collisions.",
+    "hints": [
+      "Use separate chaining: an array of linked lists (or lists of key-value pairs).",
+      "Pick a prime bucket count like 10007 and hash keys using key % bucketCount.",
+      "put(key, value): locate bucket, if key exists update value, else add new pair. get(key): scan bucket for key, return value or -1. remove(key): scan bucket and remove pair if present."
+    ],
+    "brute": {
+      "idea": "Use a flat array of size 1,000,001 initialized to -1 for direct key indexing.",
+      "steps": [
+        "Initialize an int array table of size 1000001 with -1.",
+        "put(key, value): table[key] = value.",
+        "get(key): return table[key].",
+        "remove(key): table[key] = -1."
+      ],
+      "whySlow": "Requires fixed 1,000,001 memory footprint regardless of actual number of stored keys.",
+      "time": "O(1) per operation",
+      "space": "O(max key) = O(10^6)",
+      "code": {
+        "java": "class MyHashMap {\n    private int[] data;\n    public MyHashMap() {\n        this.data = new int[1000001];\n        Arrays.fill(this.data, -1);\n    }\n    public void put(int key, int value) {\n        data[key] = value;\n    }\n    public int get(int key) {\n        return data[key];\n    }\n    public void remove(int key) {\n        data[key] = -1;\n    }\n}",
+        "python": "class MyHashMap:\n    def __init__(self):\n        self.data = [-1] * 1000001\n\n    def put(self, key: int, value: int) -> None:\n        self.data[key] = value\n\n    def get(self, key: int) -> int:\n        return self.data[key]\n\n    def remove(self, key: int) -> None:\n        self.data[key] = -1"
+      }
+    },
+    "optimal": {
+      "idea": "Separate chaining hash table: array of prime size (e.g. 2069) holding linked lists of (key, val) nodes.",
+      "steps": [
+        "Choose bucket count K = 2069.",
+        "Create buckets array of size K, each holding a linked list.",
+        "Compute bucket index: hash = key % K.",
+        "Search bucket: if found, get/update/remove node; if not found on put, append new node."
+      ],
+      "time": "O(N/K) amortized O(1) per operation",
+      "space": "O(N + K)",
+      "code": {
+        "java": "class MyHashMap {\n    static class Node {\n        int key, val;\n        Node next;\n        Node(int k, int v) { this.key = k; this.val = v; }\n    }\n    private static final int SIZE = 2069;\n    private Node[] buckets;\n    public MyHashMap() {\n        this.buckets = new Node[SIZE];\n        for (int i = 0; i < SIZE; i++) {\n            this.buckets[i] = new Node(-1, -1);\n        }\n    }\n    public void put(int key, int value) {\n        int idx = key % SIZE;\n        Node cur = buckets[idx];\n        while (cur.next != null) {\n            if (cur.next.key == key) {\n                cur.next.val = value;\n                return;\n            }\n            cur = cur.next;\n        }\n        cur.next = new Node(key, value);\n    }\n    public int get(int key) {\n        int idx = key % SIZE;\n        Node cur = buckets[idx].next;\n        while (cur != null) {\n            if (cur.key == key) return cur.val;\n            cur = cur.next;\n        }\n        return -1;\n    }\n    public void remove(int key) {\n        int idx = key % SIZE;\n        Node cur = buckets[idx];\n        while (cur.next != null) {\n            if (cur.next.key == key) {\n                cur.next = cur.next.next;\n                return;\n            }\n            cur = cur.next;\n        }\n    }\n}",
+        "python": "class MyHashMap:\n    def __init__(self):\n        self.size = 2069\n        self.buckets = [[] for _ in range(self.size)]\n\n    def _hash(self, key: int) -> int:\n        return key % self.size\n\n    def put(self, key: int, value: int) -> None:\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for i, (k, v) in enumerate(bucket):\n            if k == key:\n                bucket[i] = (key, value)\n                return\n        bucket.append((key, value))\n\n    def get(self, key: int) -> int:\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for k, v in bucket:\n            if k == key:\n                return v\n        return -1\n\n    def remove(self, key: int) -> None:\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for i, (k, v) in enumerate(bucket):\n            if k == key:\n                del bucket[i]\n                return"
+      }
+    }
+  },
+  {
+    "seq": 379,
+    "whyNext": "Builds on HashMap key indexing from Design HashMap (Seq 378) by combining a dynamic ArrayList with a value-to-index HashMap, swapping elements to the tail for O(1) removal.",
+    "hints": [
+      "An array allows O(1) random access via index, but deletion takes O(n). A hash map allows O(1) lookup and deletion, but random access is not O(1).",
+      "Combine both: store values in an ArrayList, and store val -> arrayIndex in a HashMap.",
+      "To remove val in O(1): look up its index, swap it with the last element of the list, update the moved element's index in the map, and pop the tail of the list."
+    ],
+    "brute": {
+      "idea": "Store unique elements in a HashSet and convert to array for getRandom.",
+      "steps": [
+        "Use HashSet<Integer> set.",
+        "insert(val): return set.add(val).",
+        "remove(val): return set.remove(val).",
+        "getRandom(): convert set to array or iterate to random index."
+      ],
+      "whySlow": "Converting HashSet to array takes O(n) time on every getRandom call.",
+      "time": "O(1) insert/remove, O(n) getRandom",
+      "space": "O(n)",
+      "code": {
+        "java": "class RandomizedSet {\n    private Set<Integer> set;\n    private Random rand;\n    public RandomizedSet() {\n        this.set = new HashSet<>();\n        this.rand = new Random();\n    }\n    public boolean insert(int val) {\n        return set.add(val);\n    }\n    public boolean remove(int val) {\n        return set.remove(val);\n    }\n    public int getRandom() {\n        int idx = rand.nextInt(set.size());\n        int i = 0;\n        for (int num : set) {\n            if (i++ == idx) return num;\n        }\n        return -1;\n    }\n}",
+        "python": "import random\n\nclass RandomizedSet:\n    def __init__(self):\n        self.set_data = set()\n\n    def insert(self, val: int) -> bool:\n        if val in self.set_data:\n            return False\n        self.set_data.add(val)\n        return True\n\n    def remove(self, val: int) -> bool:\n        if val not in self.set_data:\n            return False\n        self.set_data.remove(val)\n        return True\n\n    def getRandom(self) -> int:\n        return random.choice(list(self.set_data))"
+      }
+    },
+    "optimal": {
+      "idea": "ArrayList + HashMap: swap element with last item for O(1) deletion and use list index for O(1) uniform getRandom.",
+      "steps": [
+        "Maintain ArrayList<Integer> list and HashMap<Integer, Integer> map (val -> index).",
+        "insert(val): if map contains val return false. Append val to list, map.put(val, list.size() - 1), return true.",
+        "remove(val): if map doesn't contain val return false. Get val index, swap with last element in list, update last element index in map, remove last element from list and map, return true.",
+        "getRandom(): pick random index in [0, list.size() - 1] and return list.get(index)."
+      ],
+      "time": "O(1) average for all operations",
+      "space": "O(n)",
+      "code": {
+        "java": "class RandomizedSet {\n    private List<Integer> list;\n    private Map<Integer, Integer> map;\n    private Random rand;\n    public RandomizedSet() {\n        this.list = new ArrayList<>();\n        this.map = new HashMap<>();\n        this.rand = new Random();\n    }\n    public boolean insert(int val) {\n        if (map.containsKey(val)) return false;\n        map.put(val, list.size());\n        list.add(val);\n        return true;\n    }\n    public boolean remove(int val) {\n        if (!map.containsKey(val)) return false;\n        int idx = map.get(val);\n        int lastVal = list.get(list.size() - 1);\n        list.set(idx, lastVal);\n        map.put(lastVal, idx);\n        list.remove(list.size() - 1);\n        map.remove(val);\n        return true;\n    }\n    public int getRandom() {\n        return list.get(rand.nextInt(list.size()));\n    }\n}",
+        "python": "import random\n\nclass RandomizedSet:\n    def __init__(self):\n        self.nums = []\n        self.pos = {}\n\n    def insert(self, val: int) -> bool:\n        if val in self.pos:\n            return False\n        self.pos[val] = len(self.nums)\n        self.nums.append(val)\n        return True\n\n    def remove(self, val: int) -> bool:\n        if val not in self.pos:\n            return False\n        idx = self.pos[val]\n        last_val = self.nums[-1]\n        self.nums[idx] = last_val\n        self.pos[last_val] = idx\n        self.nums.pop()\n        del self.pos[val]\n        return True\n\n    def getRandom(self) -> int:\n        return random.choice(self.nums)"
+      }
+    }
+  },
+  {
+    "seq": 380,
+    "whyNext": "Builds on dynamic array index management from Insert Delete GetRandom O(1) (Seq 379) by tracking current position and maximum forward boundary in a dynamic list of URLs.",
+    "hints": [
+      "You need to navigate backwards and forwards through visited URLs, truncating forward history whenever a new page is visited.",
+      "A dynamic array with a current index and a maximum boundary index allows O(1) forward, back, and visit.",
+      "visit(url): increment cur, set history[cur] = url, update maxBound = cur. back(steps): cur = max(0, cur - steps), return history[cur]. forward(steps): cur = min(maxBound, cur + steps), return history[cur]."
+    ],
+    "brute": {
+      "idea": "Use two stacks (historyStack and forwardStack) to simulate browser navigation.",
+      "steps": [
+        "In visit(url): push current url to historyStack, set current url = url, clear forwardStack.",
+        "In back(steps): while steps > 0 and historyStack is not empty, push current to forwardStack, pop from historyStack to current.",
+        "In forward(steps): while steps > 0 and forwardStack is not empty, push current to historyStack, pop from forwardStack to current.",
+        "Return current url."
+      ],
+      "whySlow": "Simulating back and forward step-by-step with stack pops takes O(steps) time.",
+      "time": "O(steps) per back/forward, O(1) visit",
+      "space": "O(n)",
+      "code": {
+        "java": "class BrowserHistory {\n    private Stack<String> backStack;\n    private Stack<String> forwardStack;\n    private String current;\n    public BrowserHistory(String homepage) {\n        this.backStack = new Stack<>();\n        this.forwardStack = new Stack<>();\n        this.current = homepage;\n    }\n    public void visit(String url) {\n        backStack.push(current);\n        current = url;\n        forwardStack.clear();\n    }\n    public String back(int steps) {\n        while (steps > 0 && !backStack.isEmpty()) {\n            forwardStack.push(current);\n            current = backStack.pop();\n            steps--;\n        }\n        return current;\n    }\n    public String forward(int steps) {\n        while (steps > 0 && !forwardStack.isEmpty()) {\n            backStack.push(current);\n            current = forwardStack.pop();\n            steps--;\n        }\n        return current;\n    }\n}",
+        "python": "class BrowserHistory:\n    def __init__(self, homepage: str):\n        self.back_stack = []\n        self.forward_stack = []\n        self.cur = homepage\n\n    def visit(self, url: str) -> None:\n        self.back_stack.append(self.cur)\n        self.cur = url\n        self.forward_stack.clear()\n\n    def back(self, steps: int) -> str:\n        while steps > 0 and self.back_stack:\n            self.forward_stack.append(self.cur)\n            self.cur = self.back_stack.pop()\n            steps -= 1\n        return self.cur\n\n    def forward(self, steps: int) -> str:\n        while steps > 0 and self.forward_stack:\n            self.back_stack.append(self.cur)\n            self.cur = self.forward_stack.pop()\n            steps -= 1\n        return self.cur"
+      }
+    },
+    "optimal": {
+      "idea": "Single dynamic array with current index and upper bound for O(1) jump navigation on back and forward.",
+      "steps": [
+        "Maintain ArrayList<String> history, cur index = 0, and maxBound = 0.",
+        "visit(url): cur++, ensure capacity, history.set(cur, url), maxBound = cur.",
+        "back(steps): cur = Math.max(0, cur - steps); return history.get(cur).",
+        "forward(steps): cur = Math.min(maxBound, cur + steps); return history.get(cur)."
+      ],
+      "time": "O(1) per operation",
+      "space": "O(n)",
+      "code": {
+        "java": "class BrowserHistory {\n    private List<String> history;\n    private int cur;\n    private int maxBound;\n    public BrowserHistory(String homepage) {\n        this.history = new ArrayList<>();\n        this.history.add(homepage);\n        this.cur = 0;\n        this.maxBound = 0;\n    }\n    public void visit(String url) {\n        cur++;\n        if (cur < history.size()) {\n            history.set(cur, url);\n        } else {\n            history.add(url);\n        }\n        maxBound = cur;\n    }\n    public String back(int steps) {\n        cur = Math.max(0, cur - steps);\n        return history.get(cur);\n    }\n    public String forward(int steps) {\n        cur = Math.min(maxBound, cur + steps);\n        return history.get(cur);\n    }\n}",
+        "python": "class BrowserHistory:\n    def __init__(self, homepage: str):\n        self.history = [homepage]\n        self.cur = 0\n        self.max_bound = 0\n\n    def visit(self, url: str) -> None:\n        self.cur += 1\n        if self.cur < len(self.history):\n            self.history[self.cur] = url\n        else:\n            self.history.append(url)\n        self.max_bound = self.cur\n\n    def back(self, steps: int) -> str:\n        self.cur = max(0, self.cur - steps)\n        return self.history[self.cur]\n\n    def forward(self, steps: int) -> str:\n        self.cur = min(self.max_bound, self.cur + steps)\n        return self.history[self.cur]"
+      }
+    }
   }
 ]
