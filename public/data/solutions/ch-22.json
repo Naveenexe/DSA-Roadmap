@@ -1,0 +1,329 @@
+[
+  {
+    "seq": 343,
+    "whyNext": "Builds on exact binary search from Binary Search (Seq 51) by implementing upper-bound binary search with modular wrap-around to find the smallest character strictly greater than target.",
+    "hints": [
+      "Use binary search over the sorted characters to find the first character strictly greater than target.",
+      "If target is greater than or equal to the last character, the answer wraps around to letters[0].",
+      "Initialize l = 0, r = letters.length - 1. While l <= r: mid = (l + r) / 2. If letters[mid] <= target, l = mid + 1; else r = mid - 1. Return letters[l % letters.length]."
+    ],
+    "brute": {
+      "idea": "Iterate linearly through letters from left to right to find the first character strictly greater than target.",
+      "steps": [
+        "Iterate through each character c in letters.",
+        "If c > target, return c immediately.",
+        "If no character is strictly greater, return letters[0] (wrap-around)."
+      ],
+      "whySlow": "Linear search inspects up to n characters instead of bisecting the sorted array.",
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public char nextGreatestLetter(char[] letters, char target) {\n        for (char c : letters) {\n            if (c > target) return c;\n        }\n        return letters[0];\n    }\n}",
+        "python": "class Solution:\n    def nextGreatestLetter(self, letters: list[str], target: str) -> str:\n        for c in letters:\n            if c > target:\n                return c\n        return letters[0]"
+      }
+    },
+    "optimal": {
+      "idea": "Upper-bound binary search finding the insertion index, wrapping around with modulo in O(log n) time.",
+      "steps": [
+        "Initialize l = 0 and r = letters.length - 1.",
+        "While l <= r: let mid = l + (r - l) / 2.",
+        "If letters[mid] <= target, set l = mid + 1; else set r = mid - 1.",
+        "Return letters[l % letters.length]."
+      ],
+      "time": "O(log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public char nextGreatestLetter(char[] letters, char target) {\n        int l = 0, r = letters.length - 1;\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            if (letters[mid] <= target) {\n                l = mid + 1;\n            } else {\n                r = mid - 1;\n            }\n        }\n        return letters[l % letters.length];\n    }\n}",
+        "python": "class Solution:\n    def nextGreatestLetter(self, letters: list[str], target: str) -> str:\n        l, r = 0, len(letters) - 1\n        while l <= r:\n            mid = (l + r) // 2\n            if letters[mid] <= target:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return letters[l % len(letters)]"
+      }
+    }
+  },
+  {
+    "seq": 344,
+    "whyNext": "Builds on binary search boundary seeking from Search Insert Position (Seq 54) by searching the monotonic staircase formula k * (k + 1) / 2 <= n for the largest complete row count.",
+    "hints": [
+      "A staircase of k complete rows requires k * (k + 1) / 2 coins.",
+      "Binary search for the maximum integer k in [0, n] such that k * (k + 1) / 2 <= n.",
+      "Set l = 0, r = n. While l <= r: mid = l + (r - l) / 2. Compute coins = mid * (mid + 1) / 2. If coins <= n: ans = mid, l = mid + 1; else r = mid - 1. Return ans."
+    ],
+    "brute": {
+      "idea": "Simulate row by row, subtracting row number i from n until remaining coins are insufficient.",
+      "steps": [
+        "Initialize row = 1.",
+        "While n >= row: subtract row from n, then increment row.",
+        "Return row - 1 as the number of complete rows."
+      ],
+      "whySlow": "Simulating row by row takes O(sqrt(n)) time.",
+      "time": "O(sqrt(n))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int arrangeCoins(int n) {\n        int row = 1;\n        while (n >= row) {\n            n -= row;\n            row++;\n        }\n        return row - 1;\n    }\n}",
+        "python": "class Solution:\n    def arrangeCoins(self, n: int) -> int:\n        row = 1\n        while n >= row:\n            n -= row\n            row += 1\n        return row - 1"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search on complete row count k in range [0, n] checking k * (k + 1) / 2 <= n in O(log n) time.",
+      "steps": [
+        "Initialize l = 0 and r = n.",
+        "While l <= r: calculate mid = l + (r - l) / 2 and total = (long) mid * (mid + 1) / 2.",
+        "If total == n, return (int) mid.",
+        "If total < n, set l = (int) mid + 1; else set r = (int) mid - 1.",
+        "Return (int) r."
+      ],
+      "time": "O(log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int arrangeCoins(int n) {\n        long l = 0, r = n;\n        while (l <= r) {\n            long mid = l + (r - l) / 2;\n            long cur = mid * (mid + 1) / 2;\n            if (cur == n) return (int) mid;\n            if (cur < n) l = mid + 1;\n            else r = mid - 1;\n        }\n        return (int) r;\n    }\n}",
+        "python": "class Solution:\n    def arrangeCoins(self, n: int) -> int:\n        l, r = 0, n\n        while l <= r:\n            mid = (l + r) // 2\n            cur = mid * (mid + 1) // 2\n            if cur == n:\n                return mid\n            elif cur < n:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return r"
+      }
+    }
+  },
+  {
+    "seq": 345,
+    "whyNext": "Builds on binary search over sorted indices from Find Smallest Letter (Seq 343) by computing the count of missing numbers before index mid (arr[mid] - (mid + 1)) to locate the kth missing positive.",
+    "hints": [
+      "At any index mid, the number of positive integers missing before arr[mid] is arr[mid] - (mid + 1).",
+      "Binary search for the index where missing count changes relative to k.",
+      "Initialize l = 0, r = arr.length - 1. While l <= r: mid = (l + r) / 2. If arr[mid] - (mid + 1) < k: l = mid + 1; else: r = mid - 1. The answer is l + k."
+    ],
+    "brute": {
+      "idea": "Iterate positive integers starting from 1; check if each is in arr, decrementing k on missing until k hits 0.",
+      "steps": [
+        "Initialize cur = 1, idx = 0.",
+        "While k > 0: if idx < arr.length and arr[idx] == cur, idx++; else decrement k.",
+        "If k == 0, return cur.",
+        "Increment cur and repeat."
+      ],
+      "whySlow": "Iterating every positive integer takes O(n + k) time.",
+      "time": "O(n + k)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int findKthPositive(int[] arr, int k) {\n        int cur = 1, idx = 0;\n        while (k > 0) {\n            if (idx < arr.length && arr[idx] == cur) {\n                idx++;\n            } else {\n                k--;\n                if (k == 0) return cur;\n            }\n            cur++;\n        }\n        return cur;\n    }\n}",
+        "python": "class Solution:\n    def findKthPositive(self, arr: list[int], k: int) -> int:\n        cur = 1\n        idx = 0\n        while k > 0:\n            if idx < len(arr) and arr[idx] == cur:\n                idx += 1\n            else:\n                k -= 1\n                if k == 0:\n                    return cur\n            cur += 1\n        return cur"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search on array indices using the invariant missingCount(mid) = arr[mid] - (mid + 1) in O(log n) time.",
+      "steps": [
+        "Initialize l = 0 and r = arr.length - 1.",
+        "While l <= r: let mid = l + (r - l) / 2.",
+        "If arr[mid] - (mid + 1) < k, set l = mid + 1; else set r = mid - 1.",
+        "Return l + k."
+      ],
+      "time": "O(log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int findKthPositive(int[] arr, int k) {\n        int l = 0, r = arr.length - 1;\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            int missing = arr[mid] - (mid + 1);\n            if (missing < k) {\n                l = mid + 1;\n            } else {\n                r = mid - 1;\n            }\n        }\n        return l + k;\n    }\n}",
+        "python": "class Solution:\n    def findKthPositive(self, arr: list[int], k: int) -> int:\n        l, r = 0, len(arr) - 1\n        while l <= r:\n            mid = (l + r) // 2\n            missing = arr[mid] - (mid + 1)\n            if missing < k:\n                l = mid + 1\n            else:\n                r = mid - 1\n        return l + k"
+      }
+    }
+  },
+  {
+    "seq": 346,
+    "whyNext": "Builds on gradient bisection from Find Peak Element (Seq 59) by leveraging the strict bitonic structure of mountain arrays to locate the peak index in O(log n) time.",
+    "hints": [
+      "Compare arr[mid] with arr[mid + 1] to determine which slope of the mountain you are on.",
+      "If arr[mid] < arr[mid + 1], you are on the ascending slope and the peak lies to the right.",
+      "Initialize l = 0, r = arr.length - 1. While l < r: mid = (l + r) / 2. If arr[mid] < arr[mid + 1], l = mid + 1; else r = mid. Return l."
+    ],
+    "brute": {
+      "idea": "Linearly scan the array to find the index of the maximum element.",
+      "steps": [
+        "Iterate i from 1 to arr.length - 2.",
+        "If arr[i] > arr[i - 1] and arr[i] > arr[i + 1], return i.",
+        "Return peak index."
+      ],
+      "whySlow": "Linear scan inspects up to n elements in O(n) time.",
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int peakIndexInMountainArray(int[] arr) {\n        for (int i = 1; i < arr.length - 1; i++) {\n            if (arr[i] > arr[i + 1]) return i;\n        }\n        return 0;\n    }\n}",
+        "python": "class Solution:\n    def peakIndexInMountainArray(self, arr: list[int]) -> int:\n        for i in range(1, len(arr) - 1):\n            if arr[i] > arr[i + 1]:\n                return i\n        return 0"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search comparing arr[mid] and arr[mid + 1] to climb the mountain gradient in O(log n) time.",
+      "steps": [
+        "Initialize l = 0 and r = arr.length - 1.",
+        "While l < r: calculate mid = l + (r - l) / 2.",
+        "If arr[mid] < arr[mid + 1], peak is to the right: set l = mid + 1.",
+        "Else: peak is at or to the left of mid: set r = mid.",
+        "Return l."
+      ],
+      "time": "O(log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int peakIndexInMountainArray(int[] arr) {\n        int l = 0, r = arr.length - 1;\n        while (l < r) {\n            int mid = l + (r - l) / 2;\n            if (arr[mid] < arr[mid + 1]) {\n                l = mid + 1;\n            } else {\n                r = mid;\n            }\n        }\n        return l;\n    }\n}",
+        "python": "class Solution:\n    def peakIndexInMountainArray(self, arr: list[int]) -> int:\n        l, r = 0, len(arr) - 1\n        while l < r:\n            mid = (l + r) // 2\n            if arr[mid] < arr[mid + 1]:\n                l = mid + 1\n            else:\n                r = mid\n        return l"
+      }
+    }
+  },
+  {
+    "seq": 347,
+    "whyNext": "Builds on binary search boundary navigation from Peak Index in a Mountain Array (Seq 346) by bisecting the starting index of a k-length window comparing distance to x from window endpoints.",
+    "hints": [
+      "Instead of searching for elements directly, binary search for the left boundary of the k-element window.",
+      "The window can start anywhere from index 0 to n - k.",
+      "Set l = 0, r = arr.length - k. While l < r: mid = (l + r) / 2. If x - arr[mid] > arr[mid + k] - x, set l = mid + 1; else set r = mid. Return arr[l .. l + k - 1]."
+    ],
+    "brute": {
+      "idea": "Sort elements by absolute difference from x, take the first k elements, and sort them back into natural order.",
+      "steps": [
+        "Box array elements into a list.",
+        "Sort list using comparator: compare abs(a - x) and abs(b - x); tie-break with a - b.",
+        "Take first k elements from the sorted list.",
+        "Sort the k elements ascending and return."
+      ],
+      "whySlow": "Sorting the whole array takes O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> findClosestElements(int[] arr, int k, int x) {\n        List<Integer> list = new ArrayList<>();\n        for (int num : arr) list.add(num);\n        list.sort((a, b) -> {\n            int d1 = Math.abs(a - x);\n            int d2 = Math.abs(b - x);\n            if (d1 != d2) return Integer.compare(d1, d2);\n            return Integer.compare(a, b);\n        });\n        List<Integer> res = list.subList(0, k);\n        Collections.sort(res);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findClosestElements(self, arr: list[int], k: int, x: int) -> list[int]:\n        def distance_key(num: int):\n            return (abs(num - x), num)\n        sorted_by_dist = sorted(arr, key=distance_key)\n        closest_k = sorted_by_dist[:k]\n        return sorted(closest_k)"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search on the window start index in range [0, n - k] comparing x - arr[mid] with arr[mid + k] - x in O(log(n - k) + k) time.",
+      "steps": [
+        "Initialize l = 0 and r = arr.length - k.",
+        "While l < r: let mid = l + (r - l) / 2.",
+        "If x - arr[mid] > arr[mid + k] - x, window must shift right: l = mid + 1.",
+        "Else: window can remain at or left of mid: r = mid.",
+        "Collect elements arr[l .. l + k - 1] into a list and return."
+      ],
+      "time": "O(log(n - k) + k)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> findClosestElements(int[] arr, int k, int x) {\n        int l = 0, r = arr.length - k;\n        while (l < r) {\n            int mid = l + (r - l) / 2;\n            if (x - arr[mid] > arr[mid + k] - x) {\n                l = mid + 1;\n            } else {\n                r = mid;\n            }\n        }\n        List<Integer> res = new ArrayList<>();\n        for (int i = l; i < l + k; i++) res.add(arr[i]);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findClosestElements(self, arr: list[int], k: int, x: int) -> list[int]:\n        l, r = 0, len(arr) - k\n        while l < r:\n            mid = (l + r) // 2\n            if x - arr[mid] > arr[mid + k] - x:\n                l = mid + 1\n            else:\n                r = mid\n        return arr[l:l + k]"
+      }
+    }
+  },
+  {
+    "seq": 348,
+    "whyNext": "Builds on binary search on the answer from Koko Eating Bananas (Seq 63) by bisecting the divisor candidate range [1, max(nums)] to find the minimum divisor satisfying sum(ceil(num / d)) <= threshold.",
+    "hints": [
+      "The answer is monotonic: larger divisors produce smaller sum totals.",
+      "Binary search the divisor d in range [1, max(nums)].",
+      "For a candidate mid, compute sum of (x + mid - 1) / mid. If sum <= threshold, try smaller divisor (r = mid - 1); else try larger (l = mid + 1)."
+    ],
+    "brute": {
+      "idea": "Try every possible divisor starting from d = 1 upwards until sum(ceil(x / d)) <= threshold.",
+      "steps": [
+        "Initialize d = 1.",
+        "Loop indefinitely: compute total = sum(ceil(x / d)) across all x in nums.",
+        "If total <= threshold, return d.",
+        "Increment d."
+      ],
+      "whySlow": "Iterating divisors linearly up to max(nums) takes O(max(nums) * n) time.",
+      "time": "O(max(nums) * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int smallestDivisor(int[] nums, int threshold) {\n        int d = 1;\n        while (true) {\n            int sum = 0;\n            for (int x : nums) {\n                sum += (x + d - 1) / d;\n            }\n            if (sum <= threshold) return d;\n            d++;\n        }\n    }\n}",
+        "python": "class Solution:\n    def smallestDivisor(self, nums: list[int], threshold: int) -> int:\n        d = 1\n        while True:\n            total = sum((x + d - 1) // d for x in nums)\n            if total <= threshold:\n                return d\n            d += 1"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search the divisor range [1, max(nums)] with integer ceiling division in O(n log(max)) time.",
+      "steps": [
+        "Find maxVal in nums.",
+        "Initialize l = 1, r = maxVal, ans = maxVal.",
+        "While l <= r: let mid = l + (r - l) / 2.",
+        "Compute sum of (x + mid - 1) / mid for all x in nums.",
+        "If sum <= threshold: ans = mid, r = mid - 1; else l = mid + 1.",
+        "Return ans."
+      ],
+      "time": "O(n log(max))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int smallestDivisor(int[] nums, int threshold) {\n        int l = 1, r = 1;\n        for (int x : nums) if (x > r) r = x;\n        int ans = r;\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            int sum = 0;\n            for (int x : nums) {\n                sum += (x + mid - 1) / mid;\n            }\n            if (sum <= threshold) {\n                ans = mid;\n                r = mid - 1;\n            } else {\n                l = mid + 1;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def smallestDivisor(self, nums: list[int], threshold: int) -> int:\n        l, r = 1, max(nums)\n        ans = r\n        while l <= r:\n            mid = (l + r) // 2\n            total = sum((x + mid - 1) // mid for x in nums)\n            if total <= threshold:\n                ans = mid\n                r = mid - 1\n            else:\n                l = mid + 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 349,
+    "whyNext": "Builds on binary search on the answer from Smallest Divisor Given a Threshold (Seq 348) by bisecting the maximum allowed bag size M to verify if required split operations (ceil(balls / M) - 1) remain <= maxOperations.",
+    "hints": [
+      "Binary search on the penalty (maximum balls in any bag) in range [1, max(nums)].",
+      "For a target bag size mid, the operations required to divide a bag with x balls is (x - 1) / mid.",
+      "Set l = 1, r = max(nums). While l <= r: mid = (l + r) / 2. If sum((x - 1) / mid) <= maxOperations: ans = mid, r = mid - 1; else l = mid + 1. Return ans."
+    ],
+    "brute": {
+      "idea": "Linear search testing each penalty size starting from 1 upwards until operations <= maxOperations.",
+      "steps": [
+        "Initialize penalty = 1.",
+        "Compute operations needed: sum((x - 1) / penalty) for each x in nums.",
+        "If operations <= maxOperations, return penalty.",
+        "Increment penalty and repeat."
+      ],
+      "whySlow": "Testing all penalties linearly up to 10^9 takes O(max(nums) * n) time.",
+      "time": "O(max(nums) * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minimumSize(int[] nums, int maxOperations) {\n        int penalty = 1;\n        while (true) {\n            long ops = 0;\n            for (int x : nums) {\n                ops += (x - 1) / penalty;\n            }\n            if (ops <= maxOperations) return penalty;\n            penalty++;\n        }\n    }\n}",
+        "python": "class Solution:\n    def minimumSize(self, nums: list[int], maxOperations: int) -> int:\n        penalty = 1\n        while True:\n            ops = sum((x - 1) // penalty for x in nums)\n            if ops <= maxOperations:\n                return penalty\n            penalty += 1"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search on the penalty range [1, max(nums)] with operations formula (x - 1) / mid in O(n log(max)) time.",
+      "steps": [
+        "Find maxVal in nums.",
+        "Initialize l = 1, r = maxVal, ans = maxVal.",
+        "While l <= r: mid = l + (r - l) / 2.",
+        "Compute totalOps = sum((x - 1) / mid) for all x in nums.",
+        "If totalOps <= maxOperations: ans = mid, r = mid - 1; else l = mid + 1.",
+        "Return ans."
+      ],
+      "time": "O(n log(max))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minimumSize(int[] nums, int maxOperations) {\n        int l = 1, r = 1;\n        for (int x : nums) if (x > r) r = x;\n        int ans = r;\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            long ops = 0;\n            for (int x : nums) {\n                ops += (x - 1) / mid;\n            }\n            if (ops <= maxOperations) {\n                ans = mid;\n                r = mid - 1;\n            } else {\n                l = mid + 1;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def minimumSize(self, nums: list[int], maxOperations: int) -> int:\n        l, r = 1, max(nums)\n        ans = r\n        while l <= r:\n            mid = (l + r) // 2\n            ops = sum((x - 1) // mid for x in nums)\n            if ops <= maxOperations:\n                ans = mid\n                r = mid - 1\n            else:\n                l = mid + 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 350,
+    "whyNext": "Combines array sorting with binary search thresholding from Find Smallest Letter (Seq 343) by sorting potions and using lower-bound binary search to count valid potion pairings for each spell.",
+    "hints": [
+      "Sorting potions enables binary search to find the minimum potion strength needed for each spell.",
+      "For a spell with strength s, the minimum potion required is ceil(success / s).",
+      "Sort potions. For each spell: target = (success + spell - 1) / spell. Binary search for first potion >= target. Valid count is potions.length - idx."
+    ],
+    "brute": {
+      "idea": "For each spell, iterate through all potions and count how many produce a product >= success.",
+      "steps": [
+        "Allocate result array pairs of size spells.length.",
+        "For each spell at index i, loop j through potions.",
+        "If (long) spells[i] * potions[j] >= success, increment count.",
+        "Assign pairs[i] = count.",
+        "Return pairs."
+      ],
+      "whySlow": "Scanning all potions for every spell takes O(n * m) time.",
+      "time": "O(n * m)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] successfulPairs(int[] spells, int[] potions, long success) {\n        int n = spells.length, m = potions.length;\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) {\n            int count = 0;\n            for (int j = 0; j < m; j++) {\n                if ((long) spells[i] * potions[j] >= success) count++;\n            }\n            res[i] = count;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def successfulPairs(self, spells: list[int], potions: list[int], success: int) -> list[int]:\n        res = []\n        for s in spells:\n            cnt = sum(1 for p in potions if s * p >= success)\n            res.append(cnt)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Sort potions, then for each spell use binary search to locate the first potion >= ceil(success / spell) in O((m + n) log m) time.",
+      "steps": [
+        "Sort potions in ascending order.",
+        "Initialize result array res of size spells.length.",
+        "For each spell: compute minPotion = (success + spell - 1) / spell.",
+        "Binary search in potions for the first index idx where potions[idx] >= minPotion.",
+        "Set res[i] = potions.length - idx.",
+        "Return res."
+      ],
+      "time": "O((m + n) log m)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] successfulPairs(int[] spells, int[] potions, long success) {\n        Arrays.sort(potions);\n        int m = potions.length;\n        int[] res = new int[spells.length];\n        for (int i = 0; i < spells.length; i++) {\n            long minPotion = (success + spells[i] - 1) / spells[i];\n            int l = 0, r = m - 1, idx = m;\n            while (l <= r) {\n                int mid = l + (r - l) / 2;\n                if (potions[mid] >= minPotion) {\n                    idx = mid;\n                    r = mid - 1;\n                } else {\n                    l = mid + 1;\n                }\n            }\n            res[i] = m - idx;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def successfulPairs(self, spells: list[int], potions: list[int], success: int) -> list[int]:\n        import bisect\n        potions.sort()\n        m = len(potions)\n        res = []\n        for s in spells:\n            min_potion = (success + s - 1) // s\n            idx = bisect.bisect_left(potions, min_potion)\n            res.append(m - idx)\n        return res"
+      }
+    }
+  }
+]

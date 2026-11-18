@@ -5658,15 +5658,15 @@
     "title": "Reverse Words in a String",
     "slug": "reverse-words-in-a-string",
     "difficulty": "Medium",
-    "buildsOn": 320,
     "chapter": "ch-20",
+    "buildsOn": 320,
     "brute": {
-      "idea": "Split, reverse list, join with space",
-      "time": "O(n) space"
+      "idea": "Trim input, split by whitespace regex, collect words into a list, reverse the list, and join with a single space.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Reverse whole string, then reverse each word",
-      "time": "O(1) extra space"
+      "idea": "Scan backwards using two pointers to locate word boundaries directly without regex or full split array allocation.",
+      "time": "O(n)"
     },
     "companies": [
       "microsoft",
@@ -5681,14 +5681,14 @@
     "title": "Zigzag Conversion",
     "slug": "zigzag-conversion",
     "difficulty": "Medium",
-    "buildsOn": 326,
     "chapter": "ch-20",
+    "buildsOn": 326,
     "brute": {
-      "idea": "Build full 2D grid matrix",
-      "time": "O(n·rows)"
+      "idea": "Simulate a full 2D grid matrix of size numRows x n, place characters along the zigzag trajectory, and read row by row.",
+      "time": "O(numRows * n)"
     },
     "optimal": {
-      "idea": "One string builder per row, bouncing direction index",
+      "idea": "Track the current row index and oscillate direction, appending each character directly to its designated row buffer.",
       "time": "O(n)"
     },
     "companies": [
@@ -5703,15 +5703,15 @@
     "title": "Find the Index of the First Occurrence in a String",
     "slug": "find-the-index-of-the-first-occurrence-in-a-string",
     "difficulty": "Easy",
-    "buildsOn": 327,
     "chapter": "ch-20",
+    "buildsOn": 327,
     "brute": {
-      "idea": "Substring match at every index",
-      "time": "O(nm)"
+      "idea": "Compare needle with every window of length needle.length() starting at index i.",
+      "time": "O(n * m)"
     },
     "optimal": {
-      "idea": "KMP prefix failure table algorithm",
-      "time": "O(n+m)"
+      "idea": "Knuth-Morris-Pratt (KMP) pattern matching algorithm utilizing a precomputed longest prefix-suffix (LPS) array for linear time search.",
+      "time": "O(n + m)"
     },
     "companies": [
       "amazon",
@@ -5726,15 +5726,15 @@
     "title": "Reverse String",
     "slug": "reverse-string",
     "difficulty": "Easy",
-    "buildsOn": 22,
     "chapter": "ch-21",
+    "buildsOn": 22,
     "brute": {
-      "idea": "Copy into new reversed array",
-      "time": "O(n) space"
+      "idea": "Create an auxiliary array of the same length, copy elements in reverse order, and write back.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Two pointers converging inward with swaps",
-      "time": "O(1) space"
+      "idea": "Converging two pointers swapping elements in-place with O(1) auxiliary space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -5748,15 +5748,15 @@
     "title": "Reverse Vowels of a String",
     "slug": "reverse-vowels-of-a-string",
     "difficulty": "Easy",
-    "buildsOn": 329,
     "chapter": "ch-21",
+    "buildsOn": 329,
     "brute": {
-      "idea": "Collect vowels to array and refill in reverse",
-      "time": "O(n) space"
+      "idea": "Collect all vowels into a list, reverse the list, and replace vowels in the string in a second pass.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Two pointers inward skipping consonants",
-      "time": "O(1) extra"
+      "idea": "Two-pointer approach converging from both ends, advancing past non-vowels and swapping vowels in-place.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -5770,15 +5770,15 @@
     "title": "Remove Element",
     "slug": "remove-element",
     "difficulty": "Easy",
-    "buildsOn": 30,
     "chapter": "ch-21",
+    "buildsOn": 30,
     "brute": {
-      "idea": "Copy matching elements to a new array",
-      "time": "O(n) space"
+      "idea": "Whenever val is encountered, shift all subsequent elements to the left by one position.",
+      "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Fast and slow runner pointers in place",
-      "time": "O(1) space"
+      "idea": "Fast and slow pointer: copy elements not equal to val to the slow write pointer in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -5792,15 +5792,15 @@
     "title": "Merge Sorted Array",
     "slug": "merge-sorted-array",
     "difficulty": "Easy",
-    "buildsOn": 84,
     "chapter": "ch-21",
+    "buildsOn": 84,
     "brute": {
-      "idea": "Copy all elements and sort",
-      "time": "O((m+n) log(m+n))"
+      "idea": "Copy elements of nums2 into the end of nums1 and sort the entire combined array.",
+      "time": "O((m + n) log(m + n))"
     },
     "optimal": {
-      "idea": "Three pointers placing largest elements from back",
-      "time": "O(m+n)"
+      "idea": "Three pointers starting from the ends of nums1 and nums2, filling nums1 backwards from index m + n - 1 in O(m + n) time.",
+      "time": "O(m + n)"
     },
     "companies": [
       "meta",
@@ -5815,15 +5815,15 @@
     "title": "Is Subsequence",
     "slug": "is-subsequence",
     "difficulty": "Easy",
-    "buildsOn": 331,
     "chapter": "ch-21",
+    "buildsOn": 331,
     "brute": {
-      "idea": "Generate all subsequences",
-      "time": "O(2ⁿ)"
+      "idea": "Generate all subsequences of string t and check if string s is among them.",
+      "time": "O(2^m)"
     },
     "optimal": {
-      "idea": "Two pointers advancing when characters match",
-      "time": "O(n)"
+      "idea": "Two pointers scanning greedily: advance pattern pointer i on match, always advance text pointer j.",
+      "time": "O(n + m)"
     },
     "companies": [
       "amazon",
@@ -5837,14 +5837,14 @@
     "title": "Max Number of K-Sum Pairs",
     "slug": "max-number-of-k-sum-pairs",
     "difficulty": "Medium",
-    "buildsOn": 24,
     "chapter": "ch-21",
+    "buildsOn": 24,
     "brute": {
-      "idea": "Check every pair and remove",
+      "idea": "Use a boolean array to mark used elements and find pairs summing to k with nested loops.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Sort and two pointers, or hash count map",
+      "idea": "Sort the array and use two pointers converging from both ends to match pairs summing to k in O(n log n) time.",
       "time": "O(n log n)"
     },
     "companies": [
@@ -5858,14 +5858,14 @@
     "title": "Boats to Save People",
     "slug": "boats-to-save-people",
     "difficulty": "Medium",
-    "buildsOn": 334,
     "chapter": "ch-21",
+    "buildsOn": 334,
     "brute": {
-      "idea": "Try all combinations of pairings",
-      "time": "exponential"
+      "idea": "Try all combinations of pairing people together using backtracking to find minimum boats.",
+      "time": "O(2ⁿ)"
     },
     "optimal": {
-      "idea": "Sort, pair heaviest with lightest if weight allows",
+      "idea": "Sort people and greedily pair the heaviest with lightest using two pointers in O(n log n) time.",
       "time": "O(n log n)"
     },
     "companies": [
@@ -5880,15 +5880,15 @@
     "title": "Sum of Square Numbers",
     "slug": "sum-of-square-numbers",
     "difficulty": "Medium",
-    "buildsOn": 24,
     "chapter": "ch-21",
+    "buildsOn": 24,
     "brute": {
-      "idea": "Try every pair a and b up to c",
-      "time": "O(c)"
+      "idea": "Iterate all candidate integers a from 0 up to sqrt(c) and check if c - a² is a perfect square.",
+      "time": "O(sqrt(c))"
     },
     "optimal": {
-      "idea": "Two pointers from 0 and sqrt(c)",
-      "time": "O(√c)"
+      "idea": "Two pointers converging from 0 and floor(sqrt(c)) using 64-bit integer arithmetic to prevent overflow.",
+      "time": "O(sqrt(c))"
     },
     "companies": [
       "google",
@@ -5901,14 +5901,14 @@
     "title": "Maximum Number of Vowels in a Substring of Given Length",
     "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
     "difficulty": "Medium",
-    "buildsOn": 37,
     "chapter": "ch-21",
+    "buildsOn": 37,
     "brute": {
-      "idea": "Count vowels in every window from scratch",
-      "time": "O(nk)"
+      "idea": "Inspect every possible substring of length k and count its vowels linearly.",
+      "time": "O(n * k)"
     },
     "optimal": {
-      "idea": "Fixed-size sliding window maintaining vowel count",
+      "idea": "Sliding window of fixed size k updating vowel count in O(1) time per step.",
       "time": "O(n)"
     },
     "companies": [
@@ -5922,14 +5922,14 @@
     "title": "Maximum Points You Can Obtain from Cards",
     "slug": "maximum-points-you-can-obtain-from-cards",
     "difficulty": "Medium",
-    "buildsOn": 337,
     "chapter": "ch-21",
+    "buildsOn": 337,
     "brute": {
-      "idea": "Recursion trying left and right picks",
-      "time": "O(2ᵏ)"
+      "idea": "Compute all k + 1 combinations of taking i cards from the left and (k - i) cards from the right.",
+      "time": "O(k²)"
     },
     "optimal": {
-      "idea": "Find minimum subarray sum of length n - k",
+      "idea": "Sliding window of size n - k to find the minimum sum subarray left behind, maximizing card score.",
       "time": "O(n)"
     },
     "companies": [
@@ -5943,14 +5943,14 @@
     "title": "Longest Subarray of 1's After Deleting One Element",
     "slug": "longest-subarray-of-1s-after-deleting-one-element",
     "difficulty": "Medium",
-    "buildsOn": 45,
     "chapter": "ch-21",
+    "buildsOn": 45,
     "brute": {
-      "idea": "Try deleting each element and scan",
+      "idea": "Test every index i: simulate deleting nums[i] and count the maximum streak of ones.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Sliding window with at most one zero allowed",
+      "idea": "Sliding window allowing at most one zero: length of window minus one is the maximum consecutive ones.",
       "time": "O(n)"
     },
     "companies": [
@@ -5965,14 +5965,14 @@
     "title": "Maximum Erasure Value",
     "slug": "maximum-erasure-value",
     "difficulty": "Medium",
-    "buildsOn": 38,
     "chapter": "ch-21",
+    "buildsOn": 38,
     "brute": {
-      "idea": "Check every subarray for duplicates",
+      "idea": "Examine all subarrays: check if elements are unique using a set, and sum them to find the maximum erasure value.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Sliding window set with running sum",
+      "idea": "Sliding window with a HashSet and running sum: expand right, contract left on duplicate in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -5986,14 +5986,14 @@
     "title": "Minimum Operations to Reduce X to Zero",
     "slug": "minimum-operations-to-reduce-x-to-zero",
     "difficulty": "Medium",
-    "buildsOn": 42,
     "chapter": "ch-21",
+    "buildsOn": 42,
     "brute": {
-      "idea": "Recursion picking from left or right",
-      "time": "O(2ⁿ)"
+      "idea": "Test all combinations of taking i elements from the left and j elements from the right that sum to x.",
+      "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Longest middle subarray with sum equal to total - x",
+      "idea": "Find the maximum length of a subarray whose sum equals total - x using a linear sliding window.",
       "time": "O(n)"
     },
     "companies": [
@@ -6008,14 +6008,14 @@
     "title": "Frequency of the Most Frequent Element",
     "slug": "frequency-of-the-most-frequent-element",
     "difficulty": "Medium",
-    "buildsOn": 341,
     "chapter": "ch-21",
+    "buildsOn": 341,
     "brute": {
-      "idea": "Try making each element target",
+      "idea": "For every element nums[i], count how many other elements can be incremented to nums[i] using at most k operations.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Sort and sliding window where cost <= k",
+      "idea": "Sort array and use a sliding window to maintain (r - l + 1) * nums[r] - windowSum <= k in O(n log n) time.",
       "time": "O(n log n)"
     },
     "companies": [
@@ -6029,14 +6029,14 @@
     "title": "Find Smallest Letter Greater Than Target",
     "slug": "find-smallest-letter-greater-than-target",
     "difficulty": "Easy",
-    "buildsOn": 51,
     "chapter": "ch-22",
+    "buildsOn": 51,
     "brute": {
-      "idea": "Linear scan through letters",
+      "idea": "Iterate linearly through letters from left to right to find the first character strictly greater than target.",
       "time": "O(n)"
     },
     "optimal": {
-      "idea": "Upper bound binary search with wrap-around",
+      "idea": "Upper-bound binary search finding the insertion index, wrapping around with modulo in O(log n) time.",
       "time": "O(log n)"
     },
     "companies": [
@@ -6050,14 +6050,14 @@
     "title": "Arranging Coins",
     "slug": "arranging-coins",
     "difficulty": "Easy",
-    "buildsOn": 54,
     "chapter": "ch-22",
+    "buildsOn": 54,
     "brute": {
-      "idea": "Subtract row by row",
-      "time": "O(√n)"
+      "idea": "Simulate row by row, subtracting row number i from n until remaining coins are insufficient.",
+      "time": "O(sqrt(n))"
     },
     "optimal": {
-      "idea": "Binary search on k*(k+1)/2 <= n or math formula",
+      "idea": "Binary search on complete row count k in range [0, n] checking k * (k + 1) / 2 <= n in O(log n) time.",
       "time": "O(log n)"
     },
     "companies": [
@@ -6071,14 +6071,14 @@
     "title": "Kth Missing Positive Number",
     "slug": "kth-missing-positive-number",
     "difficulty": "Easy",
-    "buildsOn": 343,
     "chapter": "ch-22",
+    "buildsOn": 343,
     "brute": {
-      "idea": "Walk numbers from 1 counting missing ones",
-      "time": "O(n+k)"
+      "idea": "Iterate positive integers starting from 1; check if each is in arr, decrementing k on missing until k hits 0.",
+      "time": "O(n + k)"
     },
     "optimal": {
-      "idea": "Binary search on missing count at each index",
+      "idea": "Binary search on array indices using the invariant missingCount(mid) = arr[mid] - (mid + 1) in O(log n) time.",
       "time": "O(log n)"
     },
     "companies": [
@@ -6093,14 +6093,14 @@
     "title": "Peak Index in a Mountain Array",
     "slug": "peak-index-in-a-mountain-array",
     "difficulty": "Medium",
-    "buildsOn": 59,
     "chapter": "ch-22",
+    "buildsOn": 59,
     "brute": {
-      "idea": "Linear scan to find maximum",
+      "idea": "Linearly scan the array to find the index of the maximum element.",
       "time": "O(n)"
     },
     "optimal": {
-      "idea": "Binary search on positive slope arr[m] < arr[m+1]",
+      "idea": "Binary search comparing arr[mid] and arr[mid + 1] to climb the mountain gradient in O(log n) time.",
       "time": "O(log n)"
     },
     "companies": [
@@ -6115,15 +6115,15 @@
     "title": "Find K Closest Elements",
     "slug": "find-k-closest-elements",
     "difficulty": "Medium",
-    "buildsOn": 346,
     "chapter": "ch-22",
+    "buildsOn": 346,
     "brute": {
-      "idea": "Sort array by distance to x",
+      "idea": "Sort elements by absolute difference from x, take the first k elements, and sort them back into natural order.",
       "time": "O(n log n)"
     },
     "optimal": {
-      "idea": "Binary search left boundary of size-k window",
-      "time": "O(log(n-k) + k)"
+      "idea": "Binary search on the window start index in range [0, n - k] comparing x - arr[mid] with arr[mid + k] - x in O(log(n - k) + k) time.",
+      "time": "O(log(n - k) + k)"
     },
     "companies": [
       "meta",
@@ -6137,15 +6137,15 @@
     "title": "Find the Smallest Divisor Given a Threshold",
     "slug": "find-the-smallest-divisor-given-a-threshold",
     "difficulty": "Medium",
-    "buildsOn": 63,
     "chapter": "ch-22",
+    "buildsOn": 63,
     "brute": {
-      "idea": "Try every divisor up to max element",
-      "time": "O(n·max)"
+      "idea": "Try every possible divisor starting from d = 1 upwards until sum(ceil(x / d)) <= threshold.",
+      "time": "O(max(nums) * n)"
     },
     "optimal": {
-      "idea": "Binary search on divisor with sum threshold check",
-      "time": "O(n log max)"
+      "idea": "Binary search the divisor range [1, max(nums)] with integer ceiling division in O(n log(max)) time.",
+      "time": "O(n log(max))"
     },
     "companies": [
       "amazon",
@@ -6158,15 +6158,15 @@
     "title": "Minimum Limit of Balls in a Bag",
     "slug": "minimum-limit-of-balls-in-a-bag",
     "difficulty": "Medium",
-    "buildsOn": 348,
     "chapter": "ch-22",
+    "buildsOn": 348,
     "brute": {
-      "idea": "Try every bag penalty limit",
-      "time": "O(n·max)"
+      "idea": "Linear search testing each penalty size starting from 1 upwards until operations <= maxOperations.",
+      "time": "O(max(nums) * n)"
     },
     "optimal": {
-      "idea": "Binary search on penalty with operations check",
-      "time": "O(n log max)"
+      "idea": "Binary search on the penalty range [1, max(nums)] with operations formula (x - 1) / mid in O(n log(max)) time.",
+      "time": "O(n log(max))"
     },
     "companies": [
       "google",
@@ -6179,15 +6179,15 @@
     "title": "Successful Pairs of Spells and Potions",
     "slug": "successful-pairs-of-spells-and-potions",
     "difficulty": "Medium",
-    "buildsOn": 343,
     "chapter": "ch-22",
+    "buildsOn": 343,
     "brute": {
-      "idea": "Check every spell against every potion",
-      "time": "O(nm)"
+      "idea": "For each spell, iterate through all potions and count how many produce a product >= success.",
+      "time": "O(n * m)"
     },
     "optimal": {
-      "idea": "Sort potions, binary search threshold for each spell",
-      "time": "O((n+m) log m)"
+      "idea": "Sort potions, then for each spell use binary search to locate the first potion >= ceil(success / spell) in O((m + n) log m) time.",
+      "time": "O((m + n) log m)"
     },
     "companies": [
       "microsoft",

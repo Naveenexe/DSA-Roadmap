@@ -1,0 +1,581 @@
+[
+  {
+    "seq": 329,
+    "whyNext": "Builds on two-pointer symmetry checking from Valid Palindrome (Seq 22) by swapping characters between converging left and right pointers to reverse an array in-place.",
+    "hints": [
+      "Use two pointers starting at the opposite ends of the character array.",
+      "Swap the elements at the pointers and move them toward the center until they meet.",
+      "Initialize left = 0, right = s.length - 1. While left < right, swap s[left] and s[right], then increment left and decrement right."
+    ],
+    "brute": {
+      "idea": "Create an auxiliary array of the same length, copy elements in reverse order, and write back.",
+      "steps": [
+        "Allocate a new character array copy of size s.length.",
+        "Loop i from 0 to s.length - 1: copy[i] = s[s.length - 1 - i].",
+        "Copy elements from copy back into s.",
+        "Finish with reversed s in place."
+      ],
+      "whySlow": "Allocates O(n) auxiliary memory instead of swapping elements directly in-place.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public void reverseString(char[] s) {\n        char[] temp = new char[s.length];\n        for (int i = 0; i < s.length; i++) {\n            temp[i] = s[s.length - 1 - i];\n        }\n        for (int i = 0; i < s.length; i++) {\n            s[i] = temp[i];\n        }\n    }\n}",
+        "python": "class Solution:\n    def reverseString(self, s: list[str]) -> None:\n        copy = list(s)\n        n = len(s)\n        for i in range(n):\n            s[i] = copy[n - 1 - i]"
+      }
+    },
+    "optimal": {
+      "idea": "Converging two pointers swapping elements in-place with O(1) auxiliary space.",
+      "steps": [
+        "Initialize left = 0 and right = s.length - 1.",
+        "While left < right: swap s[left] and s[right].",
+        "Increment left and decrement right.",
+        "Termination occurs when pointers cross at the center."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void reverseString(char[] s) {\n        int l = 0, r = s.length - 1;\n        while (l < r) {\n            char tmp = s[l];\n            s[l] = s[r];\n            s[r] = tmp;\n            l++;\n            r--;\n        }\n    }\n}",
+        "python": "class Solution:\n    def reverseString(self, s: list[str]) -> None:\n        l, r = 0, len(s) - 1\n        while l < r:\n            s[l], s[r] = s[r], s[l]\n            l += 1\n            r -= 1"
+      }
+    }
+  },
+  {
+    "seq": 330,
+    "whyNext": "Builds on two-pointer in-place reversal from Reverse String (Seq 329) by advancing pointers conditionally to only swap vowels while leaving consonants in their original positions.",
+    "hints": [
+      "Use two pointers, but only swap when both pointers are positioned at vowel characters.",
+      "Check if each character is in the set of vowels ('a', 'e', 'i', 'o', 'u', case-insensitive); skip non-vowels.",
+      "Initialize left = 0, right = s.length - 1. While left < right: increment left while s[left] is not a vowel; decrement right while s[right] is not a vowel; swap if left < right; advance both."
+    ],
+    "brute": {
+      "idea": "Collect all vowels into a list, reverse the list, and replace vowels in the string in a second pass.",
+      "steps": [
+        "Iterate through s and collect all vowel characters into a list.",
+        "Reverse the vowels list.",
+        "Iterate through s again; whenever a vowel is encountered, replace it with the next vowel from the list.",
+        "Return the reconstructed string."
+      ],
+      "whySlow": "Requires two passes and O(n) auxiliary storage for the collected vowel list.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String reverseVowels(String s) {\n        List<Character> vowels = new ArrayList<>();\n        String vStr = \"aeiouAEIOU\";\n        for (char c : s.toCharArray()) {\n            if (vStr.indexOf(c) != -1) vowels.add(c);\n        }\n        Collections.reverse(vowels);\n        StringBuilder sb = new StringBuilder();\n        int vIdx = 0;\n        for (char c : s.toCharArray()) {\n            if (vStr.indexOf(c) != -1) {\n                sb.append(vowels.get(vIdx++));\n            } else {\n                sb.append(c);\n            }\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def reverseVowels(self, s: str) -> str:\n        vowels = set(\"aeiouAEIOU\")\n        extracted = [c for c in s if c in vowels]\n        res = []\n        for c in s:\n            if c in vowels:\n                res.append(extracted.pop())\n            else:\n                res.append(c)\n        return \"\".join(res)"
+      }
+    },
+    "optimal": {
+      "idea": "Two-pointer approach converging from both ends, advancing past non-vowels and swapping vowels in-place.",
+      "steps": [
+        "Convert string to a char array.",
+        "Initialize left = 0 and right = arr.length - 1.",
+        "While left < right: advance left while left < right and arr[left] is not vowel.",
+        "Advance right while left < right and arr[right] is not vowel.",
+        "Swap arr[left] and arr[right], then increment left and decrement right.",
+        "Convert char array back to String and return."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String reverseVowels(String s) {\n        char[] chars = s.toCharArray();\n        int l = 0, r = chars.length - 1;\n        String v = \"aeiouAEIOU\";\n        while (l < r) {\n            while (l < r && v.indexOf(chars[l]) == -1) l++;\n            while (l < r && v.indexOf(chars[r]) == -1) r--;\n            if (l < r) {\n                char tmp = chars[l];\n                chars[l] = chars[r];\n                chars[r] = tmp;\n                l++;\n                r--;\n            }\n        }\n        return new String(chars);\n    }\n}",
+        "python": "class Solution:\n    def reverseVowels(self, s: str) -> str:\n        chars = list(s)\n        vowels = set(\"aeiouAEIOU\")\n        l, r = 0, len(chars) - 1\n        while l < r:\n            while l < r and chars[l] not in vowels:\n                l += 1\n            while l < r and chars[r] not in vowels:\n                r -= 1\n            chars[l], chars[r] = chars[r], chars[l]\n            l += 1\n            r -= 1\n        return \"\".join(chars)"
+      }
+    }
+  },
+  {
+    "seq": 331,
+    "whyNext": "Builds on in-place array modification from Remove Duplicates from Sorted Array (Seq 30) by maintaining a write pointer that retains only values not matching val.",
+    "hints": [
+      "Use a slow pointer for the write index and a fast pointer to inspect each element.",
+      "Whenever the current element is not equal to val, copy it to the write index and advance the write index.",
+      "Initialize k = 0. Iterate i through nums; if nums[i] != val, set nums[k] = nums[i] and increment k. Return k."
+    ],
+    "brute": {
+      "idea": "Whenever val is encountered, shift all subsequent elements to the left by one position.",
+      "steps": [
+        "Let n = nums.length.",
+        "Iterate i from 0 to n - 1.",
+        "If nums[i] == val, shift elements from i + 1 to n - 1 left by 1, decrement n and decrement i.",
+        "Return n as the new length."
+      ],
+      "whySlow": "Shifting elements for every occurrence of val takes O(n²) worst-case time.",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int removeElement(int[] nums, int val) {\n        int n = nums.length;\n        int i = 0;\n        while (i < n) {\n            if (nums[i] == val) {\n                for (int j = i; j < n - 1; j++) {\n                    nums[j] = nums[j + 1];\n                }\n                n--;\n            } else {\n                i++;\n            }\n        }\n        return n;\n    }\n}",
+        "python": "class Solution:\n    def removeElement(self, nums: list[int], val: int) -> int:\n        n = len(nums)\n        i = 0\n        while i < n:\n            if nums[i] == val:\n                for j in range(i, n - 1):\n                    nums[j] = nums[j + 1]\n                n -= 1\n            else:\n                i += 1\n        return n"
+      }
+    },
+    "optimal": {
+      "idea": "Fast and slow pointer: copy elements not equal to val to the slow write pointer in O(n) time.",
+      "steps": [
+        "Initialize write pointer k = 0.",
+        "Iterate read pointer i from 0 to nums.length - 1.",
+        "If nums[i] != val, assign nums[k] = nums[i] and increment k.",
+        "Return k as the count of elements remaining."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int removeElement(int[] nums, int val) {\n        int k = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] != val) {\n                nums[k++] = nums[i];\n            }\n        }\n        return k;\n    }\n}",
+        "python": "class Solution:\n    def removeElement(self, nums: list[int], val: int) -> int:\n        k = 0\n        for x in nums:\n            if x != val:\n                nums[k] = x\n                k += 1\n        return k"
+      }
+    }
+  },
+  {
+    "seq": 332,
+    "whyNext": "Builds on merging two sorted sequences from Merge Two Sorted Lists (Seq 84) by merging backwards from the end of nums1 to avoid overwriting unread elements.",
+    "hints": [
+      "Instead of inserting from the front which requires shifting, insert the largest elements from the back.",
+      "Compare nums1[p1] and nums2[p2], placing the larger value at index p = m + n - 1.",
+      "Initialize p1 = m - 1, p2 = n - 1, p = m + n - 1. While p2 >= 0: if p1 >= 0 and nums1[p1] > nums2[p2], nums1[p--] = nums1[p1--]; else nums1[p--] = nums2[p2--]."
+    ],
+    "brute": {
+      "idea": "Copy elements of nums2 into the end of nums1 and sort the entire combined array.",
+      "steps": [
+        "Copy elements from nums2 into nums1 starting at index m.",
+        "Call Arrays.sort(nums1) or sort(nums1) on the combined array.",
+        "nums1 is now fully sorted."
+      ],
+      "whySlow": "Sorting an array that is already mostly sorted takes O((m + n) log(m + n)) time.",
+      "time": "O((m + n) log(m + n))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void merge(int[] nums1, int m, int[] nums2, int n) {\n        for (int i = 0; i < n; i++) {\n            nums1[m + i] = nums2[i];\n        }\n        Arrays.sort(nums1);\n    }\n}",
+        "python": "class Solution:\n    def merge(self, nums1: list[int], m: int, nums2: list[int], n: int) -> None:\n        for i in range(n):\n            nums1[m + i] = nums2[i]\n        nums1.sort()"
+      }
+    },
+    "optimal": {
+      "idea": "Three pointers starting from the ends of nums1 and nums2, filling nums1 backwards from index m + n - 1 in O(m + n) time.",
+      "steps": [
+        "Initialize p1 = m - 1, p2 = n - 1, and p = m + n - 1.",
+        "While p2 >= 0: if p1 >= 0 and nums1[p1] > nums2[p2], place nums1[p--] = nums1[p1--].",
+        "Else place nums1[p--] = nums2[p2--].",
+        "All elements are merged in sorted order in-place."
+      ],
+      "time": "O(m + n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void merge(int[] nums1, int m, int[] nums2, int n) {\n        int p1 = m - 1, p2 = n - 1, p = m + n - 1;\n        while (p2 >= 0) {\n            if (p1 >= 0 && nums1[p1] > nums2[p2]) {\n                nums1[p--] = nums1[p1--];\n            } else {\n                nums1[p--] = nums2[p2--];\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def merge(self, nums1: list[int], m: int, nums2: list[int], n: int) -> None:\n        p1, p2, p = m - 1, n - 1, m + n - 1\n        while p2 >= 0:\n            if p1 >= 0 and nums1[p1] > nums2[p2]:\n                nums1[p] = nums1[p1]\n                p1 -= 1\n            else:\n                nums1[p] = nums2[p2]\n                p2 -= 1\n            p -= 1"
+      }
+    }
+  },
+  {
+    "seq": 333,
+    "whyNext": "Builds on two-pointer reading from Remove Element (Seq 331) by advancing a source pointer whenever a character in the target string matches the current sequence character.",
+    "hints": [
+      "Iterate through string t and advance a pointer in s whenever characters match.",
+      "If the pointer in s reaches s.length(), then all characters of s appeared in order within t.",
+      "Initialize i = 0, j = 0. While i < s.length() and j < t.length(): if s[i] == t[j], increment i. In all cases, increment j. Return i == s.length()."
+    ],
+    "brute": {
+      "idea": "Generate all subsequences of string t and check if string s is among them.",
+      "steps": [
+        "Generate all 2^len(t) subsequences of string t.",
+        "Check if s exists in the generated set of subsequences.",
+        "Return true if found, false otherwise."
+      ],
+      "whySlow": "Generating all subsequences takes exponential O(2^len(t)) time.",
+      "time": "O(2^m)",
+      "space": "O(2^m)",
+      "code": {
+        "java": "class Solution {\n    public boolean isSubsequence(String s, String t) {\n        if (s.isEmpty()) return true;\n        int i = 0;\n        for (int j = 0; j < t.length(); j++) {\n            if (i < s.length() && s.charAt(i) == t.charAt(j)) {\n                i++;\n            }\n        }\n        return i == s.length();\n    }\n}",
+        "python": "class Solution:\n    def isSubsequence(self, s: str, t: str) -> bool:\n        if not s:\n            return True\n        i = 0\n        for char in t:\n            if i < len(s) and s[i] == char:\n                i += 1\n        return i == len(s)"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers scanning greedily: advance pattern pointer i on match, always advance text pointer j.",
+      "steps": [
+        "Initialize i = 0 and j = 0.",
+        "While i < s.length() and j < t.length(): if s.charAt(i) == t.charAt(j), increment i.",
+        "Increment j regardless.",
+        "Return i == s.length()."
+      ],
+      "time": "O(n + m)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isSubsequence(String s, String t) {\n        int i = 0, j = 0;\n        while (i < s.length() && j < t.length()) {\n            if (s.charAt(i) == t.charAt(j)) {\n                i++;\n            }\n            j++;\n        }\n        return i == s.length();\n    }\n}",
+        "python": "class Solution:\n    def isSubsequence(self, s: str, t: str) -> bool:\n        i = j = 0\n        while i < len(s) and j < len(t):\n            if s[i] == t[j]:\n                i += 1\n            j += 1\n        return i == len(s)"
+      }
+    }
+  },
+  {
+    "seq": 334,
+    "whyNext": "Builds on Two Sum II (Seq 24) two-pointer pair searching by sorting the array and pairing smallest and largest elements that sum to k, removing paired elements.",
+    "hints": [
+      "Sorting the array allows two pointers from opposite ends to find pairs that sum to k.",
+      "If nums[left] + nums[right] == k, increment count, advance left, and decrement right.",
+      "Sort nums. Initialize l = 0, r = nums.length - 1, count = 0. While l < r: sum = nums[l] + nums[r]. If sum == k: count++, l++, r--; else if sum < k: l++; else r--. Return count."
+    ],
+    "brute": {
+      "idea": "Use a boolean array to mark used elements and find pairs summing to k with nested loops.",
+      "steps": [
+        "Create boolean visited array of size n.",
+        "Iterate i from 0 to n - 1.",
+        "If visited[i] is true, continue.",
+        "Search j from i + 1 to n - 1: if !visited[j] and nums[i] + nums[j] == k, mark visited[i] and visited[j], increment count, and break.",
+        "Return count."
+      ],
+      "whySlow": "Nested loop pair searching with visited tracking takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maxOperations(int[] nums, int k) {\n        boolean[] used = new boolean[nums.length];\n        int count = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) continue;\n            for (int j = i + 1; j < nums.length; j++) {\n                if (!used[j] && nums[i] + nums[j] == k) {\n                    used[i] = true;\n                    used[j] = true;\n                    count++;\n                    break;\n                }\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def maxOperations(self, nums: list[int], k: int) -> int:\n        used = [False] * len(nums)\n        count = 0\n        n = len(nums)\n        for i in range(n):\n            if used[i]:\n                continue\n            for j in range(i + 1, n):\n                if not used[j] and nums[i] + nums[j] == k:\n                    used[i] = used[j] = True\n                    count += 1\n                    break\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Sort the array and use two pointers converging from both ends to match pairs summing to k in O(n log n) time.",
+      "steps": [
+        "Sort nums in ascending order.",
+        "Initialize l = 0, r = nums.length - 1, ops = 0.",
+        "While l < r: calculate sum = nums[l] + nums[r].",
+        "If sum == k: increment ops, l++, r--.",
+        "Else if sum < k: increment l.",
+        "Else: decrement r.",
+        "Return ops."
+      ],
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxOperations(int[] nums, int k) {\n        Arrays.sort(nums);\n        int l = 0, r = nums.length - 1;\n        int ops = 0;\n        while (l < r) {\n            int sum = nums[l] + nums[r];\n            if (sum == k) {\n                ops++;\n                l++;\n                r--;\n            } else if (sum < k) {\n                l++;\n            } else {\n                r--;\n            }\n        }\n        return ops;\n    }\n}",
+        "python": "class Solution:\n    def maxOperations(self, nums: list[int], k: int) -> int:\n        nums.sort()\n        l, r = 0, len(nums) - 1\n        ops = 0\n        while l < r:\n            cur = nums[l] + nums[r]\n            if cur == k:\n                ops += 1\n                l += 1\n                r -= 1\n            elif cur < k:\n                l += 1\n            else:\n                r -= 1\n        return ops"
+      }
+    }
+  },
+  {
+    "seq": 335,
+    "whyNext": "Builds on two-pointer pair matching from Max Number of K-Sum Pairs (Seq 334) by pairing the heaviest and lightest individuals under a boat capacity limit.",
+    "hints": [
+      "Greedily pair the heaviest person with the lightest person if their combined weight fits in the boat.",
+      "If the heaviest person cannot share a boat with the lightest person, they must take a boat alone.",
+      "Sort people. Set l = 0, r = people.length - 1, boats = 0. While l <= r: if people[l] + people[r] <= limit, l++; r--; boats++; return boats."
+    ],
+    "brute": {
+      "idea": "Try all combinations of pairing people together using backtracking to find minimum boats.",
+      "steps": [
+        "Sort people array.",
+        "Try putting pairs together or single individuals in boats recursively.",
+        "Track minimum boat count across all valid assignments.",
+        "Return the minimal count."
+      ],
+      "whySlow": "Backtracking all partitionings takes exponential time O(2ⁿ).",
+      "time": "O(2ⁿ)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int numRescueBoats(int[] people, int limit) {\n        Arrays.sort(people);\n        int l = 0, r = people.length - 1;\n        int boats = 0;\n        while (l <= r) {\n            if (l < r && people[l] + people[r] <= limit) {\n                l++;\n                r--;\n            } else {\n                r--;\n            }\n            boats++;\n        }\n        return boats;\n    }\n}",
+        "python": "class Solution:\n    def numRescueBoats(self, people: list[int], limit: int) -> int:\n        people.sort()\n        l, r = 0, len(people) - 1\n        boats = 0\n        while l <= r:\n            if l < r and people[l] + people[r] <= limit:\n                l += 1\n                r -= 1\n            else:\n                r -= 1\n            boats += 1\n        return boats"
+      }
+    },
+    "optimal": {
+      "idea": "Sort people and greedily pair the heaviest with lightest using two pointers in O(n log n) time.",
+      "steps": [
+        "Sort people in ascending order.",
+        "Initialize l = 0, r = people.length - 1, boats = 0.",
+        "While l <= r: if people[l] + people[r] <= limit, l++ (lightest joins).",
+        "Decrement r (heaviest always boards a boat).",
+        "Increment boats counter.",
+        "Return boats."
+      ],
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numRescueBoats(int[] people, int limit) {\n        Arrays.sort(people);\n        int l = 0, r = people.length - 1;\n        int boats = 0;\n        while (l <= r) {\n            if (people[l] + people[r] <= limit) {\n                l++;\n            }\n            r--;\n            boats++;\n        }\n        return boats;\n    }\n}",
+        "python": "class Solution:\n    def numRescueBoats(self, people: list[int], limit: int) -> int:\n        people.sort()\n        l, r = 0, len(people) - 1\n        boats = 0\n        while l <= r:\n            if people[l] + people[r] <= limit:\n                l += 1\n            r -= 1\n            boats += 1\n        return boats"
+      }
+    }
+  },
+  {
+    "seq": 336,
+    "whyNext": "Builds on Two Sum II (Seq 24) two-pointer search by testing integer candidate squares a² + b² = c with pointers running from 0 and floor(sqrt(c)).",
+    "hints": [
+      "The value of a can start at 0, and the value of b can start at integer floor of sqrt(c).",
+      "Calculate a * a + b * b; if sum == c, return true; if sum < c, increment a; if sum > c, decrement b.",
+      "Initialize a = 0, b = (long) Math.sqrt(c). While a <= b: val = a*a + b*b. If val == c return true; else if val < c a++; else b--. Return false."
+    ],
+    "brute": {
+      "idea": "Iterate all candidate integers a from 0 up to sqrt(c) and check if c - a² is a perfect square.",
+      "steps": [
+        "Loop a from 0 up to sqrt(c).",
+        "Let rem = c - a * a.",
+        "Compute b = round(sqrt(rem)).",
+        "If b * b == rem, return true.",
+        "Return false if loop terminates without finding a match."
+      ],
+      "whySlow": "Square root computations inside the loop incur repeated floating point overhead.",
+      "time": "O(sqrt(c))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean judgeSquareSum(int c) {\n        for (long a = 0; a * a <= c; a++) {\n            double b = Math.sqrt(c - a * a);\n            if (b == (int) b) return true;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def judgeSquareSum(self, c: int) -> bool:\n        import math\n        a = 0\n        while a * a <= c:\n            b = math.isqrt(c - a * a)\n            if b * b == c - a * a:\n                return True\n            a += 1\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers converging from 0 and floor(sqrt(c)) using 64-bit integer arithmetic to prevent overflow.",
+      "steps": [
+        "Initialize left = 0 and right = (long) Math.sqrt(c).",
+        "While left <= right: calculate sum = left * left + right * right.",
+        "If sum == c, return true.",
+        "If sum < c, increment left.",
+        "If sum > c, decrement right.",
+        "Return false if pointers cross."
+      ],
+      "time": "O(sqrt(c))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean judgeSquareSum(int c) {\n        long l = 0, r = (long) Math.sqrt(c);\n        while (l <= r) {\n            long sum = l * l + r * r;\n            if (sum == c) return true;\n            if (sum < c) l++;\n            else r--;\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def judgeSquareSum(self, c: int) -> bool:\n        import math\n        l, r = 0, math.isqrt(c)\n        while l <= r:\n            cur = l * l + r * r\n            if cur == c:\n                return True\n            elif cur < c:\n                l += 1\n            else:\n                r -= 1\n        return False"
+      }
+    }
+  },
+  {
+    "seq": 337,
+    "whyNext": "Builds on running window evaluation from Best Time to Buy and Sell Stock (Seq 37) by maintaining a fixed-size sliding window of length k and tracking vowel count updates.",
+    "hints": [
+      "Instead of recounting vowels for every window of size k, adjust the count when sliding.",
+      "Add 1 if the incoming character is a vowel, and subtract 1 if the outgoing character was a vowel.",
+      "Compute vowel count in first k chars. Then loop i from k to s.length(): if s[i] is vowel count++, if s[i-k] is vowel count--, maxVowels = max(maxVowels, count). Return maxVowels."
+    ],
+    "brute": {
+      "idea": "Inspect every possible substring of length k and count its vowels linearly.",
+      "steps": [
+        "Iterate i from 0 to s.length() - k.",
+        "Count the vowels in substring s.substring(i, i + k).",
+        "Update maxCount with the highest count found.",
+        "Return maxCount."
+      ],
+      "whySlow": "Counting vowels in every k-length substring takes O(n * k) time.",
+      "time": "O(n * k)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxVowels(String s, int k) {\n        int max = 0;\n        String v = \"aeiou\";\n        for (int i = 0; i <= s.length() - k; i++) {\n            int cnt = 0;\n            for (int j = i; j < i + k; j++) {\n                if (v.indexOf(s.charAt(j)) != -1) cnt++;\n            }\n            max = Math.max(max, cnt);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxVowels(self, s: str, k: int) -> int:\n        vowels = set(\"aeiou\")\n        max_v = 0\n        for i in range(len(s) - k + 1):\n            cnt = sum(1 for c in s[i:i + k] if c in vowels)\n            if cnt > max_v:\n                max_v = cnt\n        return max_v"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window of fixed size k updating vowel count in O(1) time per step.",
+      "steps": [
+        "Count vowels in the initial window s[0..k-1] to set currentCount.",
+        "Set maxCount = currentCount.",
+        "For i from k to s.length() - 1: if s[i] is vowel, currentCount++; if s[i - k] is vowel, currentCount--.",
+        "Update maxCount = max(maxCount, currentCount).",
+        "Return maxCount."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxVowels(String s, int k) {\n        int cur = 0;\n        for (int i = 0; i < k; i++) {\n            if (isVowel(s.charAt(i))) cur++;\n        }\n        int max = cur;\n        for (int i = k; i < s.length(); i++) {\n            if (isVowel(s.charAt(i))) cur++;\n            if (isVowel(s.charAt(i - k))) cur--;\n            if (cur > max) max = cur;\n        }\n        return max;\n    }\n    private boolean isVowel(char c) {\n        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';\n    }\n}",
+        "python": "class Solution:\n    def maxVowels(self, s: str, k: int) -> int:\n        vowels = {'a', 'e', 'i', 'o', 'u'}\n        cur = sum(1 for i in range(k) if s[i] in vowels)\n        max_v = cur\n        for i in range(k, len(s)):\n            if s[i] in vowels:\n                cur += 1\n            if s[i - k] in vowels:\n                cur -= 1\n            if cur > max_v:\n                max_v = cur\n        return max_v"
+      }
+    }
+  },
+  {
+    "seq": 338,
+    "whyNext": "Inverts fixed-size sliding window logic from Maximum Number of Vowels (Seq 337) by minimizing the sum of an unpicked contiguous window of size n - k to maximize the picked card endpoints.",
+    "hints": [
+      "Taking k cards from the ends is equivalent to leaving behind a contiguous subarray of length n - k.",
+      "To maximize the sum of cards taken, minimize the sum of the remaining subarray of length n - k.",
+      "Calculate totalSum. Let windowSize = n - k. Find minimum subarray sum of size windowSize using sliding window. Return totalSum - minSubarraySum."
+    ],
+    "brute": {
+      "idea": "Compute all k + 1 combinations of taking i cards from the left and (k - i) cards from the right.",
+      "steps": [
+        "Let n = cardPoints.length.",
+        "For i from 0 to k: sum i elements from front and (k - i) elements from back.",
+        "Track the maximum sum over all choices of i.",
+        "Return the maximum sum."
+      ],
+      "whySlow": "Summing left and right slices for each i takes O(k²) time.",
+      "time": "O(k²)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxScore(int[] cardPoints, int k) {\n        int max = 0;\n        int n = cardPoints.length;\n        for (int i = 0; i <= k; i++) {\n            int sum = 0;\n            for (int j = 0; j < i; j++) sum += cardPoints[j];\n            for (int j = 0; j < k - i; j++) sum += cardPoints[n - 1 - j];\n            max = Math.max(max, sum);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxScore(self, cardPoints: list[int], k: int) -> int:\n        n = len(cardPoints)\n        max_s = 0\n        for i in range(k + 1):\n            cur = sum(cardPoints[:i]) + sum(cardPoints[n - (k - i):] if k - i > 0 else [])\n            if cur > max_s:\n                max_s = cur\n        return max_s"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window of size n - k to find the minimum sum subarray left behind, maximizing card score.",
+      "steps": [
+        "Let n = cardPoints.length, windowSize = n - k.",
+        "Compute totalSum of all elements.",
+        "If windowSize == 0, return totalSum.",
+        "Compute initial windowSum of first windowSize elements.",
+        "Slide window across array, updating minWindowSum = min(minWindowSum, windowSum).",
+        "Return totalSum - minWindowSum."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxScore(int[] cardPoints, int k) {\n        int n = cardPoints.length;\n        int total = 0;\n        for (int x : cardPoints) total += x;\n        int wSize = n - k;\n        if (wSize == 0) return total;\n        int cur = 0;\n        for (int i = 0; i < wSize; i++) cur += cardPoints[i];\n        int min = cur;\n        for (int i = wSize; i < n; i++) {\n            cur += cardPoints[i] - cardPoints[i - wSize];\n            if (cur < min) min = cur;\n        }\n        return total - min;\n    }\n}",
+        "python": "class Solution:\n    def maxScore(self, cardPoints: list[int], k: int) -> int:\n        n = len(cardPoints)\n        total = sum(cardPoints)\n        w_size = n - k\n        if w_size == 0:\n            return total\n        cur = sum(cardPoints[:w_size])\n        min_sum = cur\n        for i in range(w_size, n):\n            cur += cardPoints[i] - cardPoints[i - w_size]\n            if cur < min_sum:\n                min_sum = cur\n        return total - min_sum"
+      }
+    }
+  },
+  {
+    "seq": 339,
+    "whyNext": "Adapts flexible sliding window from Max Consecutive Ones III (Seq 45) specifically bounded to at most one zero deletion, measuring the longest resulting span minus one.",
+    "hints": [
+      "Find the longest subarray containing at most one zero.",
+      "Use a sliding window with left and right pointers, expanding right and contracting left whenever zeroes > 1.",
+      "Initialize left = 0, zeroes = 0, maxLen = 0. Iterate right: if nums[right] == 0, zeroes++. While zeroes > 1: if nums[left] == 0 zeroes--, left++. maxLen = max(maxLen, right - left). Return maxLen."
+    ],
+    "brute": {
+      "idea": "Test every index i: simulate deleting nums[i] and count the maximum streak of ones.",
+      "steps": [
+        "For each index i from 0 to n - 1: create a temporary array omitting nums[i].",
+        "Compute the longest consecutive sequence of 1s in the temporary array.",
+        "Track the maximum length across all choices of i.",
+        "Return the maximum length."
+      ],
+      "whySlow": "Simulating deletion for each of n indices takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int longestSubarray(int[] nums) {\n        int max = 0;\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            int streak = 0, cur = 0;\n            for (int j = 0; j < n; j++) {\n                if (i == j) continue;\n                if (nums[j] == 1) {\n                    cur++;\n                    if (cur > streak) streak = cur;\n                } else {\n                    cur = 0;\n                }\n            }\n            if (streak > max) max = streak;\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestSubarray(self, nums: list[int]) -> int:\n        max_len = 0\n        n = len(nums)\n        for i in range(n):\n            arr = nums[:i] + nums[i + 1:]\n            cur = streak = 0\n            for x in arr:\n                if x == 1:\n                    cur += 1\n                    streak = max(streak, cur)\n                else:\n                    cur = 0\n            max_len = max(max_len, streak)\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window allowing at most one zero: length of window minus one is the maximum consecutive ones.",
+      "steps": [
+        "Initialize l = 0, zeroCount = 0, maxLen = 0.",
+        "Iterate r from 0 to nums.length - 1: if nums[r] == 0, increment zeroCount.",
+        "While zeroCount > 1: if nums[l] == 0, decrement zeroCount; increment l.",
+        "Update maxLen = max(maxLen, r - l).",
+        "Return maxLen."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestSubarray(int[] nums) {\n        int l = 0, zeros = 0, max = 0;\n        for (int r = 0; r < nums.length; r++) {\n            if (nums[r] == 0) zeros++;\n            while (zeros > 1) {\n                if (nums[l] == 0) zeros--;\n                l++;\n            }\n            if (r - l > max) max = r - l;\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestSubarray(self, nums: list[int]) -> int:\n        l = zeros = max_len = 0\n        for r, val in enumerate(nums):\n            if val == 0:\n                zeros += 1\n            while zeros > 1:\n                if nums[l] == 0:\n                    zeros -= 1\n                l += 1\n            max_len = max(max_len, r - l)\n        return max_len"
+      }
+    }
+  },
+  {
+    "seq": 340,
+    "whyNext": "Combines unique element sliding window from Longest Substring Without Repeating Characters (Seq 38) with running sum accumulation to maximize score over unique-element subarrays.",
+    "hints": [
+      "Maintain a window with no duplicate elements while tracking the sum of elements currently in the window.",
+      "When a duplicate is encountered at the right edge, shrink the window from the left and subtract elements from running sum until unique.",
+      "Initialize left = 0, curSum = 0, maxSum = 0, and a HashSet. For right from 0 to n-1: while set contains nums[right], remove nums[left], curSum -= nums[left], left++. Add nums[right], curSum += nums[right], maxSum = max(maxSum, curSum)."
+    ],
+    "brute": {
+      "idea": "Examine all subarrays: check if elements are unique using a set, and sum them to find the maximum erasure value.",
+      "steps": [
+        "Iterate i from 0 to n - 1.",
+        "Maintain a HashSet of seen elements and a running sum.",
+        "For j from i to n - 1: if set contains nums[j] break; else add nums[j], update sum, update maxSum.",
+        "Return maxSum."
+      ],
+      "whySlow": "Scanning all subarrays and checking uniqueness takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maximumUniqueSubarray(int[] nums) {\n        int max = 0;\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            Set<Integer> set = new HashSet<>();\n            int sum = 0;\n            for (int j = i; j < n; j++) {\n                if (!set.add(nums[j])) break;\n                sum += nums[j];\n                if (sum > max) max = sum;\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maximumUniqueSubarray(self, nums: list[int]) -> int:\n        max_score = 0\n        n = len(nums)\n        for i in range(n):\n            seen = set()\n            cur = 0\n            for j in range(i, n):\n                if nums[j] in seen:\n                    break\n                seen.add(nums[j])\n                cur += nums[j]\n                if cur > max_score:\n                    max_score = cur\n        return max_score"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window with a HashSet and running sum: expand right, contract left on duplicate in O(n) time.",
+      "steps": [
+        "Initialize Set<Integer> window = new HashSet<>(), left = 0, currentSum = 0, maxSum = 0.",
+        "For right from 0 to nums.length - 1: while window contains nums[right], remove nums[left], subtract nums[left] from currentSum, increment left.",
+        "Add nums[right] to window, add nums[right] to currentSum.",
+        "Update maxSum = max(maxSum, currentSum).",
+        "Return maxSum."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maximumUniqueSubarray(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        int l = 0, sum = 0, max = 0;\n        for (int r = 0; r < nums.length; r++) {\n            while (set.contains(nums[r])) {\n                set.remove(nums[l]);\n                sum -= nums[l];\n                l++;\n            }\n            set.add(nums[r]);\n            sum += nums[r];\n            if (sum > max) max = sum;\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maximumUniqueSubarray(self, nums: list[int]) -> int:\n        seen = set()\n        l = cur = max_val = 0\n        for r in range(len(nums)):\n            while nums[r] in seen:\n                seen.remove(nums[l])\n                cur -= nums[l]\n                l += 1\n            seen.add(nums[r])\n            cur += nums[r]\n            if cur > max_val:\n                max_val = cur\n        return max_val"
+      }
+    }
+  },
+  {
+    "seq": 341,
+    "whyNext": "Transforms the endpoint reduction problem from Minimum Size Subarray Sum (Seq 42) into finding the longest contiguous subarray whose sum equals totalSum - x using a sliding window.",
+    "hints": [
+      "Removing elements from the ends that sum to x is equivalent to finding the longest middle subarray that sums to totalSum - x.",
+      "If target = totalSum - x is negative, return -1; if target == 0, return n.",
+      "Use sliding window to find longest subarray with sum == target. Result is n - maxLen."
+    ],
+    "brute": {
+      "idea": "Test all combinations of taking i elements from the left and j elements from the right that sum to x.",
+      "steps": [
+        "Iterate i from 0 to n.",
+        "Iterate j from 0 to n - i.",
+        "If prefixSum[i] + suffixSum[j] == x, update minOps = min(minOps, i + j).",
+        "Return minOps if found, else -1."
+      ],
+      "whySlow": "Testing all prefix/suffix combinations takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minOperations(int[] nums, int x) {\n        int n = nums.length;\n        int minOps = Integer.MAX_VALUE;\n        for (int i = 0; i <= n; i++) {\n            int leftSum = 0;\n            for (int k = 0; k < i; k++) leftSum += nums[k];\n            if (leftSum > x) break;\n            for (int j = 0; j <= n - i; j++) {\n                int rightSum = 0;\n                for (int k = 0; k < j; k++) rightSum += nums[n - 1 - k];\n                if (leftSum + rightSum == x) {\n                    minOps = Math.min(minOps, i + j);\n                }\n            }\n        }\n        return minOps == Integer.MAX_VALUE ? -1 : minOps;\n    }\n}",
+        "python": "class Solution:\n    def minOperations(self, nums: list[int], x: int) -> int:\n        n = len(nums)\n        min_ops = float('inf')\n        for i in range(n + 1):\n            left = sum(nums[:i])\n            if left > x:\n                break\n            for j in range(n - i + 1):\n                right = sum(nums[n - j:]) if j > 0 else 0\n                if left + right == x:\n                    min_ops = min(min_ops, i + j)\n        return -1 if min_ops == float('inf') else min_ops"
+      }
+    },
+    "optimal": {
+      "idea": "Find the maximum length of a subarray whose sum equals total - x using a linear sliding window.",
+      "steps": [
+        "Compute target = sum(nums) - x. If target < 0 return -1. If target == 0 return nums.length.",
+        "Initialize l = 0, currentSum = 0, maxLen = -1.",
+        "For r from 0 to nums.length - 1: currentSum += nums[r].",
+        "While currentSum > target and l <= r: currentSum -= nums[l++].",
+        "If currentSum == target: maxLen = max(maxLen, r - l + 1).",
+        "Return maxLen == -1 ? -1 : nums.length - maxLen."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minOperations(int[] nums, int x) {\n        int total = 0;\n        for (int num : nums) total += num;\n        int target = total - x;\n        if (target < 0) return -1;\n        if (target == 0) return nums.length;\n        int l = 0, sum = 0, maxLen = -1;\n        for (int r = 0; r < nums.length; r++) {\n            sum += nums[r];\n            while (sum > target && l <= r) {\n                sum -= nums[l++];\n            }\n            if (sum == target) {\n                if (r - l + 1 > maxLen) maxLen = r - l + 1;\n            }\n        }\n        return maxLen == -1 ? -1 : nums.length - maxLen;\n    }\n}",
+        "python": "class Solution:\n    def minOperations(self, nums: list[int], x: int) -> int:\n        target = sum(nums) - x\n        if target < 0:\n            return -1\n        if target == 0:\n            return len(nums)\n        l = cur = 0\n        max_len = -1\n        for r, val in enumerate(nums):\n            cur += val\n            while cur > target and l <= r:\n                cur -= nums[l]\n                l += 1\n            if cur == target:\n                max_len = max(max_len, r - l + 1)\n        return -1 if max_len == -1 else len(nums) - max_len"
+      }
+    }
+  },
+  {
+    "seq": 342,
+    "whyNext": "Builds on sliding window cost bounds from Minimum Operations to Reduce X (Seq 341) by sorting elements and expanding a window where operations needed to match the rightmost element remain <= k.",
+    "hints": [
+      "Sort the array: to maximize frequency, make a group of elements equal to the largest element in that group.",
+      "For a window [l, r], the operations needed to make all elements equal to nums[r] is (r - l + 1) * nums[r] - windowSum.",
+      "Sort nums. Initialize l = 0, windowSum = 0, maxFreq = 0. For r from 0 to n-1: windowSum += nums[r]. While (r - l + 1) * nums[r] - windowSum > k: windowSum -= nums[l++]; maxFreq = max(maxFreq, r - l + 1). Return maxFreq."
+    ],
+    "brute": {
+      "idea": "For every element nums[i], count how many other elements can be incremented to nums[i] using at most k operations.",
+      "steps": [
+        "Sort nums.",
+        "For each index i from 0 to n - 1: initialize budget = k, freq = 1.",
+        "Iterate j from i - 1 down to 0: if budget >= nums[i] - nums[j], subtract cost and increment freq; else break.",
+        "Track maximum freq seen.",
+        "Return maximum freq."
+      ],
+      "whySlow": "Iterating backwards for every element takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxFrequency(int[] nums, int k) {\n        Arrays.sort(nums);\n        int max = 1;\n        for (int i = 0; i < nums.length; i++) {\n            long rem = k;\n            int count = 1;\n            for (int j = i - 1; j >= 0; j--) {\n                if (rem >= nums[i] - nums[j]) {\n                    rem -= (nums[i] - nums[j]);\n                    count++;\n                } else {\n                    break;\n                }\n            }\n            if (count > max) max = count;\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxFrequency(self, nums: list[int], k: int) -> int:\n        nums.sort()\n        max_f = 1\n        n = len(nums)\n        for i in range(n):\n            rem = k\n            count = 1\n            for j in range(i - 1, -1, -1):\n                diff = nums[i] - nums[j]\n                if rem >= diff:\n                    rem -= diff\n                    count += 1\n                else:\n                    break\n            max_f = max(max_f, count)\n        return max_f"
+      }
+    },
+    "optimal": {
+      "idea": "Sort array and use a sliding window to maintain (r - l + 1) * nums[r] - windowSum <= k in O(n log n) time.",
+      "steps": [
+        "Sort nums ascending.",
+        "Initialize l = 0, long sum = 0, maxFreq = 0.",
+        "For r from 0 to nums.length - 1: add nums[r] to sum.",
+        "While (long)(r - l + 1) * nums[r] - sum > k: subtract nums[l++] from sum.",
+        "Update maxFreq = max(maxFreq, r - l + 1).",
+        "Return maxFreq."
+      ],
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxFrequency(int[] nums, int k) {\n        Arrays.sort(nums);\n        int l = 0, max = 0;\n        long sum = 0;\n        for (int r = 0; r < nums.length; r++) {\n            sum += nums[r];\n            while ((long)(r - l + 1) * nums[r] - sum > k) {\n                sum -= nums[l++];\n            }\n            if (r - l + 1 > max) max = r - l + 1;\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxFrequency(self, nums: list[int], k: int) -> int:\n        nums.sort()\n        l = total = max_f = 0\n        for r, val in enumerate(nums):\n            total += val\n            while (r - l + 1) * val - total > k:\n                total -= nums[l]\n                l += 1\n            max_f = max(max_f, r - l + 1)\n        return max_f"
+      }
+    }
+  }
+]

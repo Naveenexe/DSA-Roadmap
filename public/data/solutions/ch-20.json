@@ -447,5 +447,130 @@
         "python": "class Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        if num1 == \"0\" or num2 == \"0\":\n            return \"0\"\n        m, n = len(num1), len(num2)\n        pos = [0] * (m + n)\n        for i in range(m - 1, -1, -1):\n            for j in range(n - 1, -1, -1):\n                mul = (ord(num1[i]) - 48) * (ord(num2[j]) - 48)\n                total = mul + pos[i + j + 1]\n                pos[i + j + 1] = total % 10\n                pos[i + j] += total // 10\n        res = []\n        skip = True\n        for digit in pos:\n            if skip and digit == 0:\n                continue\n            skip = False\n            res.append(str(digit))\n        return \"\".join(res)"
       }
     }
+  },
+  {
+    "seq": 326,
+    "whyNext": "Builds on whitespace parsing from Length of Last Word (Seq 320) by extracting all individual words, trimming extraneous spaces, and reversing word order.",
+    "hints": [
+      "You can either parse word tokens into a list and reverse them, or reverse the entire string and then reverse each individual word.",
+      "Split the string by multiple spaces using two pointers or regex, then rejoin the words in reverse order with a single space.",
+      "Iterate through the string from right to left, identifying word boundaries [start, end]. Whenever a word is extracted, append it to a StringBuilder with a single space separator. Trim trailing space."
+    ],
+    "brute": {
+      "idea": "Trim input, split by whitespace regex, collect words into a list, reverse the list, and join with a single space.",
+      "steps": [
+        "Trim leading and trailing whitespace from string s.",
+        "Split string by whitespace pattern '\\\\s+'.",
+        "Reverse the array of word tokens.",
+        "Join tokens with a single space and return."
+      ],
+      "whySlow": "Splitting and creating intermediate word arrays allocates substantial temporary memory.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String reverseWords(String s) {\n        String[] words = s.trim().split(\"\\\\s+\");\n        StringBuilder sb = new StringBuilder();\n        for (int i = words.length - 1; i >= 0; i--) {\n            sb.append(words[i]);\n            if (i > 0) sb.append(\" \");\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def reverseWords(self, s: str) -> str:\n        words = s.strip().split()\n        words.reverse()\n        return \" \".join(words)"
+      }
+    },
+    "optimal": {
+      "idea": "Scan backwards using two pointers to locate word boundaries directly without regex or full split array allocation.",
+      "steps": [
+        "Initialize pointer i = s.length() - 1 and a StringBuilder.",
+        "While i >= 0: skip spaces by decrementing i.",
+        "If i < 0 break; set end = i, then decrement i while i >= 0 and s[i] != ' '.",
+        "Append substring s[i + 1 .. end] to StringBuilder, followed by a space.",
+        "Delete trailing space from StringBuilder and return string."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String reverseWords(String s) {\n        StringBuilder sb = new StringBuilder();\n        int i = s.length() - 1;\n        while (i >= 0) {\n            while (i >= 0 && s.charAt(i) == ' ') i--;\n            if (i < 0) break;\n            int end = i;\n            while (i >= 0 && s.charAt(i) != ' ') i--;\n            if (sb.length() > 0) sb.append(' ');\n            sb.append(s.substring(i + 1, end + 1));\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def reverseWords(self, s: str) -> str:\n        res = []\n        i = len(s) - 1\n        while i >= 0:\n            while i >= 0 and s[i] == ' ':\n                i -= 1\n            if i < 0:\n                break\n            end = i\n            while i >= 0 and s[i] != ' ':\n                i -= 1\n            res.append(s[i + 1:end + 1])\n        return \" \".join(res)"
+      }
+    }
+  },
+  {
+    "seq": 327,
+    "whyNext": "Builds on string transformation tracking from Reverse Words (Seq 326) by routing characters into row buckets that oscillate up and down in a zigzag pattern.",
+    "hints": [
+      "Characters move row by row down to numRows - 1, then turn and move row by row back up to 0.",
+      "Maintain a list of StringBuilders, one for each row, and a direction flag that flips at row 0 and row numRows - 1.",
+      "Initialize numRows StringBuilders. Iterate through characters of s, append the character to rowBuilders[curRow]. If curRow is 0 or numRows - 1, flip step = -step. Update curRow += step. Concatenate all rows."
+    ],
+    "brute": {
+      "idea": "Simulate a full 2D grid matrix of size numRows x n, place characters along the zigzag trajectory, and read row by row.",
+      "steps": [
+        "If numRows == 1 or numRows >= s.length(), return s.",
+        "Create a 2D char array grid initialized with null characters.",
+        "Simulate moving down and diagonally up, placing each char at grid[r][c].",
+        "Scan all cells row by row and collect non-empty characters into a result string."
+      ],
+      "whySlow": "Allocating and scanning an entire 2D matrix takes O(numRows * n) space and time.",
+      "time": "O(numRows * n)",
+      "space": "O(numRows * n)",
+      "code": {
+        "java": "class Solution {\n    public String convert(String s, int numRows) {\n        if (numRows <= 1 || s.length() <= numRows) return s;\n        char[][] grid = new char[numRows][s.length()];\n        int r = 0, c = 0;\n        boolean down = true;\n        for (int i = 0; i < s.length(); i++) {\n            grid[r][c] = s.charAt(i);\n            if (down) {\n                r++;\n                if (r == numRows) {\n                    r = numRows - 2;\n                    c++;\n                    down = false;\n                }\n            } else {\n                r--;\n                c++;\n                if (r < 0) {\n                    r = 1;\n                    c--;\n                    down = true;\n                }\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < numRows; i++) {\n            for (int j = 0; j < s.length(); j++) {\n                if (grid[i][j] != 0) sb.append(grid[i][j]);\n            }\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def convert(self, s: str, numRows: int) -> str:\n        if numRows <= 1 or len(s) <= numRows:\n            return s\n        rows = [[] for _ in range(numRows)]\n        cur_row = 0\n        going_down = False\n        for c in s:\n            rows[cur_row].append(c)\n            if cur_row == 0 or cur_row == numRows - 1:\n                going_down = not going_down\n            cur_row += 1 if going_down else -1\n        return \"\".join(\"\".join(r) for r in rows)"
+      }
+    },
+    "optimal": {
+      "idea": "Track the current row index and oscillate direction, appending each character directly to its designated row buffer.",
+      "steps": [
+        "If numRows == 1 or numRows >= s.length(), return s immediately.",
+        "Create an array of numRows StringBuilders.",
+        "Initialize curRow = 0 and goingDown = false.",
+        "For each character in s: append to rows[curRow]. If curRow == 0 or curRow == numRows - 1, invert goingDown.",
+        "Update curRow += goingDown ? 1 : -1.",
+        "Concatenate and return all row builders."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String convert(String s, int numRows) {\n        if (numRows <= 1 || s.length() <= numRows) return s;\n        StringBuilder[] rows = new StringBuilder[numRows];\n        for (int i = 0; i < numRows; i++) rows[i] = new StringBuilder();\n        int curRow = 0;\n        boolean goingDown = false;\n        for (int i = 0; i < s.length(); i++) {\n            rows[curRow].append(s.charAt(i));\n            if (curRow == 0 || curRow == numRows - 1) {\n                goingDown = !goingDown;\n            }\n            curRow += goingDown ? 1 : -1;\n        }\n        StringBuilder res = new StringBuilder();\n        for (StringBuilder row : rows) res.append(row);\n        return res.toString();\n    }\n}",
+        "python": "class Solution:\n    def convert(self, s: str, numRows: int) -> str:\n        if numRows <= 1 or len(s) <= numRows:\n            return s\n        rows = [[] for _ in range(numRows)]\n        cur, step = 0, 1\n        for char in s:\n            rows[cur].append(char)\n            if cur == 0:\n                step = 1\n            elif cur == numRows - 1:\n                step = -1\n            cur += step\n        return \"\".join(\"\".join(row) for row in rows)"
+      }
+    }
+  },
+  {
+    "seq": 328,
+    "whyNext": "Builds on string index scanning from Zigzag Conversion (Seq 327) by implementing substring matching to locate needle's first occurrence in haystack.",
+    "hints": [
+      "Check each starting index i in haystack to see if the substring matches needle.",
+      "Use sliding substring comparison or KMP prefix function for linear time search.",
+      "Loop i from 0 up to haystack.length() - needle.length(). If haystack.substring(i, i + needle.length()) equals needle, return i. Return -1 if not found."
+    ],
+    "brute": {
+      "idea": "Compare needle with every window of length needle.length() starting at index i.",
+      "steps": [
+        "Let n = haystack.length() and m = needle.length().",
+        "If m > n, return -1.",
+        "For each i from 0 to n - m: check if substring from i to i + m equals needle.",
+        "If it matches, return i.",
+        "If no match found after checking all positions, return -1."
+      ],
+      "whySlow": "Comparing m characters for each of n - m positions takes O((n - m + 1) * m) time.",
+      "time": "O(n * m)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int strStr(String haystack, String needle) {\n        int n = haystack.length(), m = needle.length();\n        if (m == 0) return 0;\n        for (int i = 0; i <= n - m; i++) {\n            int j = 0;\n            while (j < m && haystack.charAt(i + j) == needle.charAt(j)) {\n                j++;\n            }\n            if (j == m) return i;\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def strStr(self, haystack: str, needle: str) -> int:\n        n, m = len(haystack), len(needle)\n        for i in range(n - m + 1):\n            if haystack[i:i + m] == needle:\n                return i\n        return -1"
+      }
+    },
+    "optimal": {
+      "idea": "Knuth-Morris-Pratt (KMP) pattern matching algorithm utilizing a precomputed longest prefix-suffix (LPS) array for linear time search.",
+      "steps": [
+        "Precompute LPS array for needle where lps[i] stores the length of the longest proper prefix of needle[0..i] that is also a suffix.",
+        "Iterate through haystack with pointer i and needle with pointer j.",
+        "When characters match, increment both pointers. If j == m, return i - m.",
+        "On mismatch: if j > 0, set j = lps[j - 1]; else increment i.",
+        "Return -1 if search completes without finding needle."
+      ],
+      "time": "O(n + m)",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int strStr(String haystack, String needle) {\n        if (needle.isEmpty()) return 0;\n        int[] lps = buildLPS(needle);\n        int i = 0, j = 0;\n        while (i < haystack.length()) {\n            if (haystack.charAt(i) == needle.charAt(j)) {\n                i++;\n                j++;\n                if (j == needle.length()) return i - j;\n            } else if (j > 0) {\n                j = lps[j - 1];\n            } else {\n                i++;\n            }\n        }\n        return -1;\n    }\n    private int[] buildLPS(String pat) {\n        int[] lps = new int[pat.length()];\n        int len = 0, i = 1;\n        while (i < pat.length()) {\n            if (pat.charAt(i) == pat.charAt(len)) {\n                lps[i++] = ++len;\n            } else if (len > 0) {\n                len = lps[len - 1];\n            } else {\n                lps[i++] = 0;\n            }\n        }\n        return lps;\n    }\n}",
+        "python": "class Solution:\n    def strStr(self, haystack: str, needle: str) -> int:\n        if not needle:\n            return 0\n        lps = [0] * len(needle)\n        prev, i = 0, 1\n        while i < len(needle):\n            if needle[i] == needle[prev]:\n                prev += 1\n                lps[i] = prev\n                i += 1\n            elif prev > 0:\n                prev = lps[prev - 1]\n            else:\n                lps[i] = 0\n                i += 1\n        \n        h_idx, n_idx = 0, 0\n        while h_idx < len(haystack):\n            if haystack[h_idx] == needle[n_idx]:\n                h_idx += 1\n                n_idx += 1\n                if n_idx == len(needle):\n                    return h_idx - n_idx\n            elif n_idx > 0:\n                n_idx = lps[n_idx - 1]\n            else:\n                h_idx += 1\n        return -1"
+      }
+    }
   }
 ]
