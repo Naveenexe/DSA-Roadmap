@@ -1,0 +1,720 @@
+[
+  {
+    "seq": 235,
+    "whyNext": "Entry to Chapter 14 (1D Dynamic Programming): dp[i] = dp[i-1] + dp[i-2]; state compression achieves O(1) space.",
+    "brute": {
+      "idea": "Naive recursion: climb(n) = climb(n-1) + climb(n-2).",
+      "steps": [
+        "Base cases: if n <= 2 return n.",
+        "Return climb(n-1) + climb(n-2)."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential redundant subproblem re-computation.",
+      "code": {
+        "java": "class Solution {\n    public int climbStairs(int n) {\n        if (n <= 2) return n;\n        return climbStairs(n - 1) + climbStairs(n - 2);\n    }\n}",
+        "python": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        if n <= 2: return n\n        return self.climbStairs(n - 1) + self.climbStairs(n - 2)"
+      }
+    },
+    "optimal": {
+      "idea": "State compression DP: maintain two variables prev1 = 1, prev2 = 2. Update cur = prev1 + prev2.",
+      "steps": [
+        "If n <= 2 return n.",
+        "a = 1, b = 2.",
+        "For i = 3..n: c = a + b, a = b, b = c.",
+        "Return b."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int climbStairs(int n) {\n        if (n <= 2) return n;\n        int a = 1, b = 2;\n        for (int i = 3; i <= n; i++) {\n            int c = a + b;\n            a = b;\n            b = c;\n        }\n        return b;\n    }\n}",
+        "python": "class Solution:\n    def climbStairs(self, n: int) -> int:\n        if n <= 2:\n            return n\n        a, b = 1, 2\n        for _ in range(3, n + 1):\n            a, b = b, a + b\n        return b"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n time and O 1 auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: If n is at most 2 return n. Then a = 1, b = 2."
+    ]
+  },
+  {
+    "seq": 236,
+    "whyNext": "Builds on Climbing Stairs: dp[i] = cost[i] + min(dp[i-1], dp[i-2]); minimize cost to reach the top.",
+    "brute": {
+      "idea": "Recursive search checking both 1-step and 2-step transitions.",
+      "steps": [
+        "minCost(step): cost[step] + min(minCost(step+1), minCost(step+2))."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Recomputes subtree costs exponentially.",
+      "code": {
+        "java": "class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n        return Math.min(dfs(cost, 0), dfs(cost, 1));\n    }\n    private int dfs(int[] cost, int idx) {\n        if (idx >= cost.length) return 0;\n        return cost[idx] + Math.min(dfs(cost, idx + 1), dfs(cost, idx + 2));\n    }\n}",
+        "python": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:\n        def dfs(i):\n            if i >= len(cost): return 0\n            return cost[i] + min(dfs(i + 1), dfs(i + 2))\n        return min(dfs(0), dfs(1))"
+      }
+    },
+    "optimal": {
+      "idea": "O(1) space DP: prev1 = 0, prev2 = 0; cur = min(prev1 + cost[i-1], prev2 + cost[i-2]).",
+      "steps": [
+        "prev1 = 0, prev2 = 0.",
+        "For i from 2 to cost.length:",
+        "cur = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]).",
+        "prev2 = prev1; prev1 = cur.",
+        "Return prev1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n        int a = 0, b = 0;\n        for (int i = 2; i <= cost.length; i++) {\n            int c = Math.min(a + cost[i - 2], b + cost[i - 1]);\n            a = b;\n            b = c;\n        }\n        return b;\n    }\n}",
+        "python": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:\n        a = b = 0\n        for i in range(2, len(cost) + 1):\n            c = min(a + cost[i - 2], b + cost[i - 1])\n            a, b = b, c\n        return b"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n time and O 1 auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Prev1 = 0, prev2 = 0. Then for i from 2 to the length of cost:."
+    ]
+  },
+  {
+    "seq": 237,
+    "whyNext": "3-term recurrence: T_n = T_{n-1} + T_{n-2} + T_{n-3}; 3 state variables maintain O(1) space.",
+    "brute": {
+      "idea": "Naive 3-way recursion T(n) = T(n-1) + T(n-2) + T(n-3).",
+      "steps": [
+        "Base cases T(0)=0, T(1)=1, T(2)=1.",
+        "Return sum of previous 3 values."
+      ],
+      "time": "O(3^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential 3^n branching.",
+      "code": {
+        "java": "class Solution {\n    public int tribonacci(int n) {\n        if (n == 0) return 0;\n        if (n <= 2) return 1;\n        return tribonacci(n - 1) + tribonacci(n - 2) + tribonacci(n - 3);\n    }\n}",
+        "python": "class Solution:\n    def tribonacci(self, n: int) -> int:\n        if n == 0: return 0\n        if n <= 2: return 1\n        return self.tribonacci(n - 1) + self.tribonacci(n - 2) + self.tribonacci(n - 3)"
+      }
+    },
+    "optimal": {
+      "idea": "Rolling variables a = 0, b = 1, c = 1: update d = a + b + c, a = b, b = c, c = d in O(n) time and O(1) space.",
+      "steps": [
+        "If n == 0 return 0; if n <= 2 return 1.",
+        "a = 0, b = 1, c = 1.",
+        "For i from 3 to n: d = a + b + c, a = b, b = c, c = d.",
+        "Return c."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int tribonacci(int n) {\n        if (n == 0) return 0;\n        if (n <= 2) return 1;\n        int a = 0, b = 1, c = 1;\n        for (int i = 3; i <= n; i++) {\n            int d = a + b + c;\n            a = b;\n            b = c;\n            c = d;\n        }\n        return c;\n    }\n}",
+        "python": "class Solution:\n    def tribonacci(self, n: int) -> int:\n        if n == 0:\n            return 0\n        if n <= 2:\n            return 1\n        a, b, c = 0, 1, 1\n        for _ in range(3, n + 1):\n            a, b, c = b, c, a + b + c\n        return c"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Dynamic Programming 1D . This achieves O n time and O 1 auxiliary space.",
+      "Rolling variables a = 0, b = 1, c = 1: update d = a + b + c, a = b, b = c, c = d in O n time and O 1 space. In detail: If n is equal to 0 return 0 if n is at most 2 return 1. Then a = 0, b = 1, c = 1."
+    ]
+  },
+  {
+    "seq": 238,
+    "whyNext": "Non-adjacent selection DP: rob[i] = max(rob[i-1], rob[i-2] + nums[i]); 2 state variables achieve O(1) space.",
+    "brute": {
+      "idea": "Recursion: at each house, either rob (skip next) or skip (rob next).",
+      "steps": [
+        "dfs(idx): max(nums[idx] + dfs(idx+2), dfs(idx+1))."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "class Solution {\n    public int rob(int[] nums) {\n        return dfs(nums, 0);\n    }\n    private int dfs(int[] nums, int i) {\n        if (i >= nums.length) return 0;\n        return Math.max(nums[i] + dfs(nums, i + 2), dfs(nums, i + 1));\n    }\n}",
+        "python": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        def dfs(i):\n            if i >= len(nums): return 0\n            return max(nums[i] + dfs(i + 2), dfs(i + 1))\n        return dfs(0)"
+      }
+    },
+    "optimal": {
+      "idea": "O(1) space DP: prev1 = max profit up to i-1, prev2 = max profit up to i-2. cur = max(prev1, prev2 + x).",
+      "steps": [
+        "prev1 = 0, prev2 = 0.",
+        "For x in nums: cur = Math.max(prev1, prev2 + x); prev2 = prev1; prev1 = cur.",
+        "Return prev1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int rob(int[] nums) {\n        int prev1 = 0, prev2 = 0;\n        for (int x : nums) {\n            int cur = Math.max(prev1, prev2 + x);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+        "python": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        prev1 = prev2 = 0\n        for x in nums:\n            prev1, prev2 = max(prev1, prev2 + x), prev1\n        return prev1"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n time and O 1 auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Prev1 = 0, prev2 = 0. Then for x in nums: cur = math.max prev1, prev2 + x prev2 = prev1 prev1 = cur."
+    ]
+  },
+  {
+    "seq": 239,
+    "whyNext": "Circular array constraint: first and last houses are adjacent; answer is max(rob(0..n-2), rob(1..n-1)).",
+    "brute": {
+      "idea": "Try both possibilities: rob house 0 (cannot rob house n-1), or skip house 0 (can rob house n-1).",
+      "steps": [
+        "Call linear rob on nums[0..n-2].",
+        "Call linear rob on nums[1..n-1].",
+        "Take maximum."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Allocates sliced sub-arrays instead of pointer bounds.",
+      "code": {
+        "java": "class Solution {\n    public int rob(int[] nums) {\n        if (nums.length == 1) return nums[0];\n        return Math.max(robRange(nums, 0, nums.length - 2), robRange(nums, 1, nums.length - 1));\n    }\n    private int robRange(int[] nums, int l, int r) {\n        int prev1 = 0, prev2 = 0;\n        for (int i = l; i <= r; i++) {\n            int cur = Math.max(prev1, prev2 + nums[i]);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+        "python": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        if len(nums) == 1: return nums[0]\n        def rob_simple(arr):\n            p1 = p2 = 0\n            for x in arr:\n                p1, p2 = max(p1, p2 + x), p1\n            return p1\n        return max(rob_simple(nums[:-1]), rob_simple(nums[1:]))"
+      }
+    },
+    "optimal": {
+      "idea": "Break circular dependency into 2 linear subproblems: robRange(0, n-2) and robRange(1, n-1) with O(1) space.",
+      "steps": [
+        "If nums.length == 1 return nums[0].",
+        "Define helper robRange(nums, start, end) using 2 rolling variables.",
+        "Return Math.max(robRange(nums, 0, n - 2), robRange(nums, 1, n - 1))."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int rob(int[] nums) {\n        if (nums.length == 1) return nums[0];\n        return Math.max(robLinear(nums, 0, nums.length - 2), robLinear(nums, 1, nums.length - 1));\n    }\n    private int robLinear(int[] nums, int start, int end) {\n        int prev1 = 0, prev2 = 0;\n        for (int i = start; i <= end; i++) {\n            int cur = Math.max(prev1, prev2 + nums[i]);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+        "python": "class Solution:\n    def rob(self, nums: list[int]) -> int:\n        if len(nums) == 1:\n            return nums[0]\n        def rob_linear(start: int, end: int) -> int:\n            p1 = p2 = 0\n            for i in range(start, end + 1):\n                p1, p2 = max(p1, p2 + nums[i]), p1\n            return p1\n        return max(rob_linear(0, len(nums) - 2), rob_linear(1, len(nums) - 1))"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Dynamic Programming 1D . This achieves O n time and O 1 auxiliary space.",
+      "Break circular dependency into 2 linear subproblems: robRange 0, n-2 and robRange 1, n-1 with O 1 space. In detail: If the length of nums is equal to 1 return nums at index 0. Then define helper robrange nums, start, end using 2 rolling variables."
+    ]
+  },
+  {
+    "seq": 240,
+    "whyNext": "Reduction to House Robber: taking x deletes x-1 and x+1; points array points[v] = v * count[v] reduces directly to House Robber.",
+    "brute": {
+      "idea": "Recursively decide whether to pick each unique number; if picked, delete num-1 and num+1.",
+      "steps": [
+        "Sort unique numbers.",
+        "Recursive branching with used sets."
+      ],
+      "time": "O(2^u)",
+      "space": "O(u)",
+      "whySlow": "Exponential branching.",
+      "code": {
+        "java": "class Solution {\n    public int deleteAndEarn(int[] nums) {\n        int max = 0;\n        for (int x : nums) max = Math.max(max, x);\n        int[] points = new int[max + 1];\n        for (int x : nums) points[x] += x;\n        int p1 = 0, p2 = 0;\n        for (int p : points) {\n            int cur = Math.max(p1, p2 + p);\n            p2 = p1;\n            p1 = cur;\n        }\n        return p1;\n    }\n}",
+        "python": "class Solution:\n    def deleteAndEarn(self, nums: list[int]) -> int:\n        max_val = max(nums)\n        points = [0] * (max_val + 1)\n        for x in nums: points[x] += x\n        p1 = p2 = 0\n        for p in points:\n            p1, p2 = max(p1, p2 + p), p1\n        return p1"
+      }
+    },
+    "optimal": {
+      "idea": "Map to House Robber: points[v] = v * count[v] for v in 1..max_val. Apply linear House Robber DP on points array.",
+      "steps": [
+        "Find maxVal in nums.",
+        "int[] points = new int[maxVal + 1]; accumulate points[x] += x.",
+        "Apply House Robber with 2 variables on points array.",
+        "Return result."
+      ],
+      "time": "O(n + maxVal)",
+      "space": "O(maxVal)",
+      "code": {
+        "java": "class Solution {\n    public int deleteAndEarn(int[] nums) {\n        int max = 0;\n        for (int x : nums) max = Math.max(max, x);\n        int[] points = new int[max + 1];\n        for (int x : nums) points[x] += x;\n        int prev1 = 0, prev2 = 0;\n        for (int p : points) {\n            int cur = Math.max(prev1, prev2 + p);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+        "python": "class Solution:\n    def deleteAndEarn(self, nums: list[int]) -> int:\n        max_val = max(nums)\n        points = [0] * (max_val + 1)\n        for x in nums:\n            points[x] += x\n        p1 = p2 = 0\n        for p in points:\n            p1, p2 = max(p1, p2 + p), p1\n        return p1"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n + maxVal time and O maxVal auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Find maxVal in nums. Then int points = new int maxval + 1 accumulate points at index x += x."
+    ]
+  },
+  {
+    "seq": 241,
+    "whyNext": "Variable-step DP: single-digit decode (if s[i] != '0') + two-digit decode (if 10 <= s[i-1..i] <= 26).",
+    "brute": {
+      "idea": "Recursive branching: try 1-digit decode if valid, try 2-digit decode if valid.",
+      "steps": [
+        "dfs(index): if index == n return 1.",
+        "Try 1 digit and 2 digits."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "class Solution {\n    public int numDecodings(String s) {\n        return dfs(s, 0);\n    }\n    private int dfs(String s, int idx) {\n        if (idx == s.length()) return 1;\n        if (s.charAt(idx) == '0') return 0;\n        int ways = dfs(s, idx + 1);\n        if (idx + 1 < s.length()) {\n            int val = Integer.parseInt(s.substring(idx, idx + 2));\n            if (val <= 26) ways += dfs(s, idx + 2);\n        }\n        return ways;\n    }\n}",
+        "python": "class Solution:\n    def numDecodings(self, s: str) -> int:\n        def dfs(i):\n            if i == len(s): return 1\n            if s[i] == '0': return 0\n            ways = dfs(i + 1)\n            if i + 1 < len(s) and 10 <= int(s[i:i+2]) <= 26:\n                ways += dfs(i + 2)\n            return ways\n        return dfs(0)"
+      }
+    },
+    "optimal": {
+      "idea": "O(1) space DP: prev1 = ways to decode up to i-1, prev2 = ways to decode up to i-2. Check 1-digit and 2-digit validity.",
+      "steps": [
+        "If s[0] == '0' return 0.",
+        "prev2 = 1, prev1 = 1.",
+        "For i = 1..n-1: cur = 0.",
+        "If s[i] != '0' cur += prev1.",
+        "int twoDigit = Integer.parseInt(s.substring(i - 1, i + 1)); if 10 <= twoDigit <= 26 cur += prev2.",
+        "prev2 = prev1; prev1 = cur.",
+        "Return prev1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numDecodings(String s) {\n        if (s == null || s.length() == 0 || s.charAt(0) == '0') return 0;\n        int n = s.length();\n        int prev2 = 1, prev1 = 1;\n        for (int i = 1; i < n; i++) {\n            int cur = 0;\n            if (s.charAt(i) != '0') {\n                cur += prev1;\n            }\n            int twoDigit = (s.charAt(i - 1) - '0') * 10 + (s.charAt(i) - '0');\n            if (twoDigit >= 10 && twoDigit <= 26) {\n                cur += prev2;\n            }\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+        "python": "class Solution:\n    def numDecodings(self, s: str) -> int:\n        if not s or s[0] == '0':\n            return 0\n        prev2, prev1 = 1, 1\n        for i in range(1, len(s)):\n            cur = 0\n            if s[i] != '0':\n                cur += prev1\n            two_digit = int(s[i-1:i+1])\n            if 10 <= two_digit <= 26:\n                cur += prev2\n            prev2, prev1 = prev1, cur\n        return prev1"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n time and O 1 auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: If s at index 0 is equal to '0' return 0. Then prev2 = 1, prev1 = 1."
+    ]
+  },
+  {
+    "seq": 242,
+    "whyNext": "Unbounded knapsack minimization: dp[a] = min(dp[a], 1 + dp[a - coin]) for each coin in coins.",
+    "brute": {
+      "idea": "Recursively try subtracting every coin from remaining amount, tracking minimum depth.",
+      "steps": [
+        "dfs(rem): 1 + min(dfs(rem - coin))."
+      ],
+      "time": "O(S^n)",
+      "space": "O(amount)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int coinChange(int[] coins, int amount) {\n        int[] dp = new int[amount + 1];\n        Arrays.fill(dp, amount + 1);\n        dp[0] = 0;\n        for (int i = 1; i <= amount; i++) {\n            for (int c : coins) {\n                if (i >= c) dp[i] = Math.min(dp[i], dp[i - c] + 1);\n            }\n        }\n        return dp[amount] > amount ? -1 : dp[amount];\n    }\n}",
+        "python": "class Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        dp = [amount + 1] * (amount + 1)\n        dp[0] = 0\n        for i in range(1, amount + 1):\n            for c in coins:\n                if i >= c:\n                    dp[i] = min(dp[i], dp[i - c] + 1)\n        return dp[amount] if dp[amount] <= amount else -1"
+      }
+    },
+    "optimal": {
+      "idea": "Bottom-up 1D DP: dp[a] = min coins to make amount a. Initialize with amount + 1; dp[0] = 0.",
+      "steps": [
+        "int[] dp = new int[amount + 1]; Arrays.fill(dp, amount + 1); dp[0] = 0.",
+        "For i = 1..amount: for coin in coins: if i >= coin dp[i] = min(dp[i], dp[i - coin] + 1).",
+        "Return dp[amount] > amount ? -1 : dp[amount]."
+      ],
+      "time": "O(amount * n)",
+      "space": "O(amount)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int coinChange(int[] coins, int amount) {\n        int[] dp = new int[amount + 1];\n        Arrays.fill(dp, amount + 1);\n        dp[0] = 0;\n        for (int i = 1; i <= amount; i++) {\n            for (int coin : coins) {\n                if (i >= coin) {\n                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);\n                }\n            }\n        }\n        return dp[amount] > amount ? -1 : dp[amount];\n    }\n}",
+        "python": "class Solution:\n    def coinChange(self, coins: list[int], amount: int) -> int:\n        dp = [amount + 1] * (amount + 1)\n        dp[0] = 0\n        for i in range(1, amount + 1):\n            for coin in coins:\n                if i >= coin:\n                    dp[i] = min(dp[i], dp[i - coin] + 1)\n        return dp[amount] if dp[amount] <= amount else -1"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O amount * n time and O amount auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Int dp = new int amount + 1 Arrays.fill dp, amount + 1 dp at index 0 = 0. Then for i = 1..amount: for coin in coins: if i is at least coin dp at index i = min dp at index i, dp i - coin + 1 ."
+    ]
+  },
+  {
+    "seq": 243,
+    "whyNext": "Unbounded knapsack combinations: loop over coins in outer loop to prevent counting permutations.",
+    "brute": {
+      "idea": "Recursive backtracking: explore combinations of coins summing to amount.",
+      "steps": [
+        "dfs(coinIdx, rem): try taking coin or skipping to next coin."
+      ],
+      "time": "O(2^(amount / minCoin))",
+      "space": "O(amount)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "class Solution {\n    public int change(int amount, int[] coins) {\n        int[] dp = new int[amount + 1];\n        dp[0] = 1;\n        for (int c : coins) {\n            for (int i = c; i <= amount; i++) {\n                dp[i] += dp[i - c];\n            }\n        }\n        return dp[amount];\n    }\n}",
+        "python": "class Solution:\n    def change(self, amount: int, coins: list[int]) -> int:\n        dp = [0] * (amount + 1)\n        dp[0] = 1\n        for c in coins:\n            for i in range(c, amount + 1):\n                dp[i] += dp[i - c]\n        return dp[amount]"
+      }
+    },
+    "optimal": {
+      "idea": "1D DP with coins in outer loop: dp[i] += dp[i - coin] ensures each coin is processed in order, generating combinations only.",
+      "steps": [
+        "int[] dp = new int[amount + 1]; dp[0] = 1.",
+        "For coin in coins: for i from coin to amount: dp[i] += dp[i - coin].",
+        "Return dp[amount]."
+      ],
+      "time": "O(amount * n)",
+      "space": "O(amount)",
+      "code": {
+        "java": "class Solution {\n    public int change(int amount, int[] coins) {\n        int[] dp = new int[amount + 1];\n        dp[0] = 1;\n        for (int coin : coins) {\n            for (int i = coin; i <= amount; i++) {\n                dp[i] += dp[i - coin];\n            }\n        }\n        return dp[amount];\n    }\n}",
+        "python": "class Solution:\n    def change(self, amount: int, coins: list[int]) -> int:\n        dp = [0] * (amount + 1)\n        dp[0] = 1\n        for coin in coins:\n            for i in range(coin, amount + 1):\n                dp[i] += dp[i - coin]\n        return dp[amount]"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O amount * n time and O amount auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Int dp = new int amount + 1 dp at index 0 = 1. Then for coin in coins: for i from coin to amount: dp at index i += dp i - coin ."
+    ]
+  },
+  {
+    "seq": 244,
+    "whyNext": "Unbounded knapsack permutations: target in outer loop and numbers in inner loop counts ordered arrangements (1+2 != 2+1).",
+    "brute": {
+      "idea": "Backtracking / recursion: at current target sum, try adding each num in nums.",
+      "steps": [
+        "dfs(rem): sum of dfs(rem - num) for num in nums."
+      ],
+      "time": "O(N^target)",
+      "space": "O(target)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "class Solution {\n    public int combinationSum4(int[] nums, int target) {\n        int[] dp = new int[target + 1];\n        dp[0] = 1;\n        for (int i = 1; i <= target; i++) {\n            for (int num : nums) {\n                if (i >= num) dp[i] += dp[i - num];\n            }\n        }\n        return dp[target];\n    }\n}",
+        "python": "class Solution:\n    def combinationSum4(self, nums: list[int], target: int) -> int:\n        dp = [0] * (target + 1)\n        dp[0] = 1\n        for i in range(1, target + 1):\n            for num in nums:\n                if i >= num: dp[i] += dp[i - num]\n        return dp[target]"
+      }
+    },
+    "optimal": {
+      "idea": "Target outer loop: dp[i] = sum of dp[i - num] for all num <= i. Counts distinct permutation orders.",
+      "steps": [
+        "int[] dp = new int[target + 1]; dp[0] = 1.",
+        "For i = 1..target: for num in nums: if (i >= num) dp[i] += dp[i - num].",
+        "Return dp[target]."
+      ],
+      "time": "O(target * n)",
+      "space": "O(target)",
+      "code": {
+        "java": "class Solution {\n    public int combinationSum4(int[] nums, int target) {\n        int[] dp = new int[target + 1];\n        dp[0] = 1;\n        for (int i = 1; i <= target; i++) {\n            for (int num : nums) {\n                if (i >= num) {\n                    dp[i] += dp[i - num];\n                }\n            }\n        }\n        return dp[target];\n    }\n}",
+        "python": "class Solution:\n    def combinationSum4(self, nums: list[int], target: int) -> int:\n        dp = [0] * (target + 1)\n        dp[0] = 1\n        for i in range(1, target + 1):\n            for num in nums:\n                if i >= num:\n                    dp[i] += dp[i - num]\n        return dp[target]"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O target * n time and O target auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Int dp = new int target + 1 dp at index 0 = 1. Then for i = 1..target: for num in nums: if i is at least num dp at index i += dp i - num ."
+    ]
+  },
+  {
+    "seq": 245,
+    "whyNext": "Unbounded knapsack on square numbers: dp[i] = 1 + min(dp[i - j*j]) for j*j <= i.",
+    "brute": {
+      "idea": "Recursively try subtracting every perfect square j*j <= n, keeping minimum depth.",
+      "steps": [
+        "dfs(rem): 1 + min(dfs(rem - j*j))."
+      ],
+      "time": "O(sqrt(n)^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int numSquares(int n) {\n        int[] dp = new int[n + 1];\n        Arrays.fill(dp, n);\n        dp[0] = 0;\n        for (int i = 1; i <= n; i++) {\n            for (int j = 1; j * j <= i; j++) {\n                dp[i] = Math.min(dp[i], dp[i - j * j] + 1);\n            }\n        }\n        return dp[n];\n    }\n}",
+        "python": "class Solution:\n    def numSquares(self, n: int) -> int:\n        dp = [n] * (n + 1)\n        dp[0] = 0\n        for i in range(1, n + 1):\n            j = 1\n            while j * j <= i:\n                dp[i] = min(dp[i], dp[i - j * j] + 1)\n                j += 1\n        return dp[n]"
+      }
+    },
+    "optimal": {
+      "idea": "Bottom-up 1D DP: dp[i] = min(dp[i], dp[i - j*j] + 1) for j*j <= i.",
+      "steps": [
+        "int[] dp = new int[n + 1]; Arrays.fill(dp, Integer.MAX_VALUE); dp[0] = 0.",
+        "For i = 1..n: for j = 1; j*j <= i; j++: dp[i] = Math.min(dp[i], dp[i - j*j] + 1).",
+        "Return dp[n]."
+      ],
+      "time": "O(n * sqrt(n))",
+      "space": "O(n)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int numSquares(int n) {\n        int[] dp = new int[n + 1];\n        Arrays.fill(dp, Integer.MAX_VALUE);\n        dp[0] = 0;\n        for (int i = 1; i <= n; i++) {\n            for (int j = 1; j * j <= i; j++) {\n                dp[i] = Math.min(dp[i], dp[i - j * j] + 1);\n            }\n        }\n        return dp[n];\n    }\n}",
+        "python": "class Solution:\n    def numSquares(self, n: int) -> int:\n        dp = [float('inf')] * (n + 1)\n        dp[0] = 0\n        for i in range(1, n + 1):\n            j = 1\n            while j * j <= i:\n                dp[i] = min(dp[i], dp[i - j * j] + 1)\n                j += 1\n        return dp[n]"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n * sqrt n time and O n auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Int dp = new int n + 1 Arrays.fill dp, Integer.MAX VALUE dp at index 0 = 0. Then for i = 1..n: for j = 1 j*j is at most i j++: dp at index i = math.min dp at index i, dp i - j*j + 1 ."
+    ]
+  },
+  {
+    "seq": 246,
+    "whyNext": "Boolean prefix DP: dp[i] = true if any j < i has dp[j] == true and s[j..i] in wordDict.",
+    "brute": {
+      "idea": "Recursively check if any word in wordDict matches the prefix; recurse on suffix.",
+      "steps": [
+        "dfs(start): try all words matching prefix s[start..start+len].",
+        "Recurse on remaining substring."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n        Set<String> set = new HashSet<>(wordDict);\n        boolean[] dp = new boolean[s.length() + 1];\n        dp[0] = true;\n        for (int i = 1; i <= s.length(); i++) {\n            for (int j = 0; j < i; j++) {\n                if (dp[j] && set.contains(s.substring(j, i))) {\n                    dp[i] = true;\n                    break;\n                }\n            }\n        }\n        return dp[s.length()];\n    }\n}",
+        "python": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)\n        dp = [False] * (len(s) + 1)\n        dp[0] = True\n        for i in range(1, len(s) + 1):\n            for j in range(i):\n                if dp[j] and s[j:i] in words:\n                    dp[i] = True\n                    break\n        return dp[len(s)]"
+      }
+    },
+    "optimal": {
+      "idea": "Boolean 1D DP: dp[i] is true if prefix of length i can be segmented into dictionary words; check j < i with dp[j] == true.",
+      "steps": [
+        "Set<String> set = new HashSet<>(wordDict);",
+        "boolean[] dp = new boolean[n + 1]; dp[0] = true.",
+        "For i = 1..n: for j = 0..i-1: if dp[j] && set.contains(s.substring(j, i)) { dp[i] = true; break; }",
+        "Return dp[n]."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n        Set<String> set = new HashSet<>(wordDict);\n        int n = s.length();\n        boolean[] dp = new boolean[n + 1];\n        dp[0] = true;\n        for (int i = 1; i <= n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (dp[j] && set.contains(s.substring(j, i))) {\n                    dp[i] = true;\n                    break;\n                }\n            }\n        }\n        return dp[n];\n    }\n}",
+        "python": "class Solution:\n    def wordBreak(self, s: str, wordDict: list[str]) -> bool:\n        words = set(wordDict)\n        n = len(s)\n        dp = [False] * (n + 1)\n        dp[0] = True\n        for i in range(1, n + 1):\n            for j in range(i):\n                if dp[j] and s[j:i] in words:\n                    dp[i] = True\n                    break\n        return dp[n]"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n^2 time and O n auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Set is less than String is greater than set = new HashSet is less than is greater than wordDict. Then boolean dp = new boolean n + 1 dp at index 0 = true."
+    ]
+  },
+  {
+    "seq": 247,
+    "whyNext": "Patience Sorting / Binary Search: maintain tails array where tails[len] is smallest tail of LIS of length len; binary search updates in O(n log n).",
+    "brute": {
+      "idea": "O(n^2) DP: dp[i] = 1 + max(dp[j]) for all j < i where nums[j] < nums[i].",
+      "steps": [
+        "Initialize dp array of 1s.",
+        "Nested loop for each i and j < i.",
+        "Return max(dp)."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "whySlow": "Linear scan for previous smaller elements.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int lengthOfLIS(int[] nums) {\n        int n = nums.length;\n        int[] dp = new int[n];\n        Arrays.fill(dp, 1);\n        int max = 1;\n        for (int i = 1; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[j] < nums[i]) {\n                    dp[i] = Math.max(dp[i], dp[j] + 1);\n                }\n            }\n            max = Math.max(max, dp[i]);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        dp = [1] * len(nums)\n        for i in range(len(nums)):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    dp[i] = max(dp[i], dp[j] + 1)\n        return max(dp)"
+      }
+    },
+    "optimal": {
+      "idea": "Patience sorting with binary search: maintain tails array; for each x, binary search first tail >= x. If not found, append; else replace.",
+      "steps": [
+        "int[] tails = new int[nums.length]; int size = 0.",
+        "For x in nums: binary search index i in tails[0..size-1].",
+        "If i < 0 i = -(i + 1); tails[i] = x.",
+        "If i == size size++.",
+        "Return size."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int lengthOfLIS(int[] nums) {\n        int[] tails = new int[nums.length];\n        int size = 0;\n        for (int x : nums) {\n            int l = 0, r = size;\n            while (l < r) {\n                int m = l + (r - l) / 2;\n                if (tails[m] < x) l = m + 1;\n                else r = m;\n            }\n            tails[l] = x;\n            if (l == size) size++;\n        }\n        return size;\n    }\n}",
+        "python": "import bisect\n\nclass Solution:\n    def lengthOfLIS(self, nums: list[int]) -> int:\n        tails = []\n        for x in nums:\n            idx = bisect.bisect_left(tails, x)\n            if idx == len(tails):\n                tails.append(x)\n            else:\n                tails[idx] = x\n        return len(tails)"
+      }
+    },
+    "hints": [
+      "Look for monotonicity: can you test the midpoint of your search range and discard half of all remaining candidates on every step?.",
+      "Apply Binary Search. This achieves O n log n time and O n auxiliary space.",
+      "Compute the midpoint between the search bounds, test whether it satisfies your condition, and adjust the left or right boundary accordingly to narrow the range logarithmically. In detail: Int tails = new int the length of nums int size = 0. Then for x in nums: binary search index i in tails 0..size-1 ."
+    ]
+  },
+  {
+    "seq": 248,
+    "whyNext": "Builds on LIS: simultaneously track length len[i] and count count[i] of LIS ending at index i.",
+    "brute": {
+      "idea": "Generate all subsequences, filter those that are strictly increasing and of maximum length, and count them.",
+      "steps": [
+        "Generate all 2^n subsequences.",
+        "Track maximum length and count."
+      ],
+      "time": "O(2^n * n)",
+      "space": "O(n)",
+      "whySlow": "Exponential enumeration.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int findNumberOfLIS(int[] nums) {\n        int n = nums.length;\n        int[] len = new int[n];\n        int[] count = new int[n];\n        Arrays.fill(len, 1);\n        Arrays.fill(count, 1);\n        int maxLen = 1;\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[j] < nums[i]) {\n                    if (len[j] + 1 > len[i]) {\n                        len[i] = len[j] + 1;\n                        count[i] = count[j];\n                    } else if (len[j] + 1 == len[i]) {\n                        count[i] += count[j];\n                    }\n                }\n            }\n            maxLen = Math.max(maxLen, len[i]);\n        }\n        int total = 0;\n        for (int i = 0; i < n; i++) {\n            if (len[i] == maxLen) total += count[i];\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def findNumberOfLIS(self, nums: list[int]) -> int:\n        n = len(nums)\n        length = [1] * n\n        count = [1] * n\n        for i in range(n):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    if length[j] + 1 > length[i]:\n                        length[i] = length[j] + 1\n                        count[i] = count[j]\n                    elif length[j] + 1 == length[i]:\n                        count[i] += count[j]\n        max_l = max(length)\n        return sum(c for l, c in zip(length, count) if l == max_l)"
+      }
+    },
+    "optimal": {
+      "idea": "Two 1D DP arrays: len[i] and count[i]. If len[j] + 1 > len[i]: len[i] = len[j] + 1, count[i] = count[j]; else if equal: count[i] += count[j].",
+      "steps": [
+        "int[] len = new int[n], count = new int[n]; Arrays.fill to 1.",
+        "For i = 0..n-1: for j = 0..i-1: if nums[j] < nums[i]:",
+        "If len[j] + 1 > len[i] { len[i] = len[j] + 1; count[i] = count[j]; }",
+        "Else if len[j] + 1 == len[i] count[i] += count[j].",
+        "maxLen = max(len); return sum of count[i] for all i where len[i] == maxLen."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int findNumberOfLIS(int[] nums) {\n        int n = nums.length;\n        int[] len = new int[n];\n        int[] count = new int[n];\n        Arrays.fill(len, 1);\n        Arrays.fill(count, 1);\n        int maxLen = 1;\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[j] < nums[i]) {\n                    if (len[j] + 1 > len[i]) {\n                        len[i] = len[j] + 1;\n                        count[i] = count[j];\n                    } else if (len[j] + 1 == len[i]) {\n                        count[i] += count[j];\n                    }\n                }\n            }\n            maxLen = Math.max(maxLen, len[i]);\n        }\n        int total = 0;\n        for (int i = 0; i < n; i++) {\n            if (len[i] == maxLen) total += count[i];\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def findNumberOfLIS(self, nums: list[int]) -> int:\n        n = len(nums)\n        length = [1] * n\n        count = [1] * n\n        for i in range(n):\n            for j in range(i):\n                if nums[j] < nums[i]:\n                    if length[j] + 1 > length[i]:\n                        length[i] = length[j] + 1\n                        count[i] = count[j]\n                    elif length[j] + 1 == length[i]:\n                        count[i] += count[j]\n        max_len = max(length)\n        return sum(c for l, c in zip(length, count) if l == max_len)"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n^2 time and O n auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Int len = new int at index n, count = new int at index n Arrays.fill to 1. Then for i = 0..n-1: for j = 0..i-1: if nums at index j is less than nums at index i:."
+    ]
+  },
+  {
+    "seq": 249,
+    "whyNext": "2D LIS reduction: sort width ascending, height descending; LIS on heights automatically guarantees valid Russian doll nesting.",
+    "brute": {
+      "idea": "Sort envelopes; run O(n^2) LIS checking w[j] < w[i] && h[j] < h[i].",
+      "steps": [
+        "Sort envelopes by width.",
+        "Compute dp[i] = 1 + max(dp[j]) where both dimensions are strictly smaller."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "whySlow": "Quadratic dynamic programming gets TLE for n = 100,000.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int maxEnvelopes(int[][] envelopes) {\n        Arrays.sort(envelopes, (a, b) -> a[0] != b[0] ? a[0] - b[0] : b[1] - a[1]);\n        int[] dp = new int[envelopes.length];\n        int size = 0;\n        for (int[] env : envelopes) {\n            int h = env[1];\n            int l = 0, r = size;\n            while (l < r) {\n                int m = l + (r - l) / 2;\n                if (dp[m] < h) l = m + 1;\n                else r = m;\n            }\n            dp[l] = h;\n            if (l == size) size++;\n        }\n        return size;\n    }\n}",
+        "python": "import bisect\n\nclass Solution:\n    def maxEnvelopes(self, envelopes: list[list[int]]) -> int:\n        envelopes.sort(key=lambda x: (x[0], -x[1]))\n        tails = []\n        for _, h in envelopes:\n            idx = bisect.bisect_left(tails, h)\n            if idx == len(tails):\n                tails.append(h)\n            else:\n                tails[idx] = h\n        return len(tails)"
+      }
+    },
+    "optimal": {
+      "idea": "Sort by width ascending, height descending (w asc, h desc). Height descending prevents picking envelopes with identical width; run O(n log n) LIS on heights.",
+      "steps": [
+        "Arrays.sort(envelopes, (a, b) -> a[0] != b[0] ? a[0] - b[0] : b[1] - a[1]).",
+        "int[] dp = new int[n]; size = 0.",
+        "For [w, h] in envelopes: binary search position of h in dp[0..size-1].",
+        "dp[idx] = h; if idx == size size++.",
+        "Return size."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int maxEnvelopes(int[][] envelopes) {\n        Arrays.sort(envelopes, (a, b) -> a[0] != b[0] ? a[0] - b[0] : b[1] - a[1]);\n        int[] dp = new int[envelopes.length];\n        int size = 0;\n        for (int[] env : envelopes) {\n            int h = env[1];\n            int l = 0, r = size;\n            while (l < r) {\n                int m = l + (r - l) / 2;\n                if (dp[m] < h) l = m + 1;\n                else r = m;\n            }\n            dp[l] = h;\n            if (l == size) size++;\n        }\n        return size;\n    }\n}",
+        "python": "import bisect\n\nclass Solution:\n    def maxEnvelopes(self, envelopes: list[list[int]]) -> int:\n        envelopes.sort(key=lambda x: (x[0], -x[1]))\n        tails = []\n        for _, h in envelopes:\n            idx = bisect.bisect_left(tails, h)\n            if idx == len(tails):\n                tails.append(h)\n            else:\n                tails[idx] = h\n        return len(tails)"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Dynamic Programming 1D . This achieves O n log n time and O n auxiliary space.",
+      "Sort by width ascending, height descending w asc, h desc . Height descending prevents picking envelopes with identical width run O n log n LIS on heights. In detail: Arrays.sort envelopes, a, b - is greater than a at index 0 is not equal to b at index 0 ? a at index 0 - b at index 0 : b at index 1 - a at index 1 . Then int dp = new int at index n size = 0."
+    ]
+  },
+  {
+    "seq": 250,
+    "whyNext": "Double state tracking: multiplying by a negative flips min and max; track curMax and curMin at each step in O(1) space.",
+    "brute": {
+      "idea": "Test all O(n^2) subarrays by fixing start index and computing product to end.",
+      "steps": [
+        "Nested loops computing subarray products.",
+        "Track maximum product."
+      ],
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "whySlow": "Examines all quadratic subarray products.",
+      "code": {
+        "java": "class Solution {\n    public int maxProduct(int[] nums) {\n        int max = nums[0];\n        for (int i = 0; i < nums.length; i++) {\n            int prod = 1;\n            for (int j = i; j < nums.length; j++) {\n                prod *= nums[j];\n                max = Math.max(max, prod);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maxProduct(self, nums: list[int]) -> int:\n        ans = nums[0]\n        for i in range(len(nums)):\n            prod = 1\n            for j in range(i, len(nums)):\n                prod *= nums[j]\n                ans = max(ans, prod)\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Kadane with min and max: if num < 0, swap curMax and curMin. curMax = max(num, curMax * num), curMin = min(num, curMin * num).",
+      "steps": [
+        "curMax = nums[0], curMin = nums[0], ans = nums[0].",
+        "For i = 1..n-1: num = nums[i].",
+        "If num < 0 swap(curMax, curMin).",
+        "curMax = max(num, curMax * num); curMin = min(num, curMin * num).",
+        "ans = max(ans, curMax).",
+        "Return ans."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxProduct(int[] nums) {\n        int curMax = nums[0], curMin = nums[0], ans = nums[0];\n        for (int i = 1; i < nums.length; i++) {\n            int num = nums[i];\n            if (num < 0) {\n                int temp = curMax;\n                curMax = curMin;\n                curMin = temp;\n            }\n            curMax = Math.max(num, curMax * num);\n            curMin = Math.min(num, curMin * num);\n            ans = Math.max(ans, curMax);\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def maxProduct(self, nums: list[int]) -> int:\n        cur_max = cur_min = ans = nums[0]\n        for num in nums[1:]:\n            if num < 0:\n                cur_max, cur_min = cur_min, cur_max\n            cur_max = max(num, cur_max * num)\n            cur_min = min(num, cur_min * num)\n            ans = max(ans, cur_max)\n        return ans"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Dynamic Programming 1D . This achieves O n time and O 1 auxiliary space.",
+      "Kadane with min and max: if num is less than 0, swap curMax and curMin. curMax = max num, curMax * num , curMin = min num, curMin * num . In detail: CurMax = nums at index 0, curMin = nums at index 0, ans = nums at index 0. Then for i = 1..n-1: num = nums at index i."
+    ]
+  },
+  {
+    "seq": 251,
+    "whyNext": "0/1 Knapsack boolean subset sum: if totalSum % 2 != 0 return false; target = totalSum / 2; backwards 1D DP.",
+    "brute": {
+      "idea": "Recursively test all subsets to see if any sums to totalSum / 2.",
+      "steps": [
+        "dfs(index, target): include or exclude nums[index]."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "class Solution {\n    public boolean canPartition(int[] nums) {\n        int sum = 0;\n        for (int x : nums) sum += x;\n        if (sum % 2 != 0) return false;\n        int target = sum / 2;\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int num : nums) {\n            for (int j = target; j >= num; j--) {\n                dp[j] = dp[j] || dp[j - num];\n            }\n        }\n        return dp[target];\n    }\n}",
+        "python": "class Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        total = sum(nums)\n        if total % 2 != 0: return False\n        target = total // 2\n        dp = [False] * (target + 1)\n        dp[0] = True\n        for num in nums:\n            for j in range(target, num - 1, -1):\n                dp[j] = dp[j] or dp[j - num]\n        return dp[target]"
+      }
+    },
+    "optimal": {
+      "idea": "0/1 Knapsack with 1D boolean array: loop backwards from target down to num: dp[j] |= dp[j - num].",
+      "steps": [
+        "Sum all elements. If sum % 2 != 0 return false.",
+        "target = sum / 2; boolean[] dp = new boolean[target + 1]; dp[0] = true.",
+        "For num in nums: for j from target down to num: dp[j] |= dp[j - num].",
+        "Return dp[target]."
+      ],
+      "time": "O(n * target)",
+      "space": "O(target)",
+      "code": {
+        "java": "class Solution {\n    public boolean canPartition(int[] nums) {\n        int sum = 0;\n        for (int x : nums) sum += x;\n        if (sum % 2 != 0) return false;\n        int target = sum / 2;\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int num : nums) {\n            for (int j = target; j >= num; j--) {\n                dp[j] = dp[j] || dp[j - num];\n            }\n        }\n        return dp[target];\n    }\n}",
+        "python": "class Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        total = sum(nums)\n        if total % 2 != 0:\n            return False\n        target = total // 2\n        dp = [False] * (target + 1)\n        dp[0] = True\n        for num in nums:\n            for j in range(target, num - 1, -1):\n                dp[j] = dp[j] or dp[j - num]\n        return dp[target]"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n * target time and O target auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Sum all elements. If sum % 2 is not equal to 0 return false. Then target = sum / 2 boolean dp = new boolean target + 1 dp at index 0 = true."
+    ]
+  },
+  {
+    "seq": 252,
+    "whyNext": "Builds on Partition Equal Subset Sum: smash stones into two subsets S1 and S2; minimize |S1 - S2| <=> maximize S1 <= total / 2.",
+    "brute": {
+      "idea": "Explore all 2^n partitions of signs (+/-) and find minimum non-negative sum.",
+      "steps": [
+        "dfs(idx, sum): try adding or subtracting stones[idx]."
+      ],
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "whySlow": "Exponential recursion.",
+      "code": {
+        "java": "class Solution {\n    public int lastStoneWeightII(int[] stones) {\n        int sum = 0;\n        for (int s : stones) sum += s;\n        int target = sum / 2;\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int s : stones) {\n            for (int j = target; j >= s; j--) {\n                dp[j] = dp[j] || dp[j - s];\n            }\n        }\n        for (int j = target; j >= 0; j--) {\n            if (dp[j]) return sum - 2 * j;\n        }\n        return 0;\n    }\n}",
+        "python": "class Solution:\n    def lastStoneWeightII(self, stones: list[int]) -> int:\n        total = sum(stones)\n        target = total // 2\n        dp = [False] * (target + 1)\n        dp[0] = True\n        for s in stones:\n            for j in range(target, s - 1, -1):\n                dp[j] = dp[j] or dp[j - s]\n        for j in range(target, -1, -1):\n            if dp[j]:\n                return total - 2 * j\n        return 0"
+      }
+    },
+    "optimal": {
+      "idea": "Find largest subset sum <= sum / 2 using 0/1 knapsack. Min weight remaining is total - 2 * max_subset_sum.",
+      "steps": [
+        "Calculate totalSum and target = totalSum / 2.",
+        "boolean[] dp = new boolean[target + 1]; dp[0] = true.",
+        "For stone in stones: for j from target down to stone: dp[j] |= dp[j - stone].",
+        "Find largest j where dp[j] == true; return totalSum - 2 * j."
+      ],
+      "time": "O(n * target)",
+      "space": "O(target)",
+      "code": {
+        "java": "class Solution {\n    public int lastStoneWeightII(int[] stones) {\n        int total = 0;\n        for (int s : stones) total += s;\n        int target = total / 2;\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int s : stones) {\n            for (int j = target; j >= s; j--) {\n                dp[j] = dp[j] || dp[j - s];\n            }\n        }\n        for (int j = target; j >= 0; j--) {\n            if (dp[j]) return total - 2 * j;\n        }\n        return 0;\n    }\n}",
+        "python": "class Solution:\n    def lastStoneWeightII(self, stones: list[int]) -> int:\n        total = sum(stones)\n        target = total // 2\n        dp = [False] * (target + 1)\n        dp[0] = True\n        for s in stones:\n            for j in range(target, s - 1, -1):\n                dp[j] = dp[j] or dp[j - s]\n        for j in range(target, -1, -1):\n            if dp[j]:\n                return total - 2 * j\n        return 0"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Dynamic Programming 1D . This achieves O n * target time and O target auxiliary space.",
+      "Find largest subset sum is at most sum / 2 using 0/1 knapsack. Min weight remaining is total - 2 * max subset sum. In detail: Calculate totalSum and target = totalSum / 2. Then boolean dp = new boolean target + 1 dp at index 0 = true."
+    ]
+  },
+  {
+    "seq": 253,
+    "whyNext": "Mathematical integer division: break into maximum number of 3s; if remainder is 1, take 2*2 instead of 3*1; if 2, take 2.",
+    "brute": {
+      "idea": "DP: dp[i] = max(j * (i - j), j * dp[i - j]) for j from 1 to i - 1.",
+      "steps": [
+        "Compute dp[i] for i = 2..n."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "whySlow": "Quadratic dynamic programming when math solution runs in O(log n) or O(1).",
+      "code": {
+        "java": "class Solution {\n    public int integerBreak(int n) {\n        int[] dp = new int[n + 1];\n        dp[1] = 1;\n        for (int i = 2; i <= n; i++) {\n            for (int j = 1; j < i; j++) {\n                dp[i] = Math.max(dp[i], Math.max(j * (i - j), j * dp[i - j]));\n            }\n        }\n        return dp[n];\n    }\n}",
+        "python": "class Solution:\n    def integerBreak(self, n: int) -> int:\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        for i in range(2, n + 1):\n            for j in range(1, i):\n                dp[i] = max(dp[i], j * (i - j), j * dp[i - j])\n        return dp[n]"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy factors of 3: base cases n <= 3 return n - 1. For n > 3: multiply by 3 while n > 4; multiply remaining n.",
+      "steps": [
+        "If n <= 3 return n - 1.",
+        "prod = 1.",
+        "While n > 4: prod *= 3, n -= 3.",
+        "Return prod * n."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int integerBreak(int n) {\n        if (n <= 3) return n - 1;\n        int prod = 1;\n        while (n > 4) {\n            prod *= 3;\n            n -= 3;\n        }\n        return prod * n;\n    }\n}",
+        "python": "class Solution:\n    def integerBreak(self, n: int) -> int:\n        if n <= 3:\n            return n - 1\n        prod = 1\n        while n > 4:\n            prod *= 3\n            n -= 3\n        return prod * n"
+      }
+    },
+    "hints": [
+      "Can you prove that making the locally optimal choice at each step will never prevent you from reaching the global optimal solution?.",
+      "Apply a Greedy Strategy. This achieves O n time and O 1 auxiliary space.",
+      "Sort or process elements in a priority order, greedily taking the most beneficial available choice at every iteration. In detail: If n is at most 3 return n - 1. Then prod = 1."
+    ]
+  }
+]

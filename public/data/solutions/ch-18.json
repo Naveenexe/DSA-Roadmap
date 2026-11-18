@@ -1,0 +1,526 @@
+[
+  {
+    "seq": 287,
+    "whyNext": "Entry to Chapter 17 (Bit Manipulation): XOR property x ^ x = 0 and x ^ 0 = x isolates the single element in O(1) space.",
+    "brute": {
+      "idea": "HashSet: add if not present, remove if present; remaining element in set is the single number.",
+      "steps": [
+        "Set contains numbers.",
+        "Return remaining element."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Allocates O(n) hash set memory.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int singleNumber(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) {\n            if (!set.add(x)) set.remove(x);\n        }\n        return set.iterator().next();\n    }\n}",
+        "python": "class Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        s = set()\n        for x in nums:\n            if x in s: s.remove(x)\n            else: s.add(x)\n        return s.pop()"
+      }
+    },
+    "optimal": {
+      "idea": "Bitwise XOR: a ^ b ^ a = b. Running XOR of all numbers cancels all duplicates.",
+      "steps": [
+        "ans = 0.",
+        "For x in nums: ans ^= x.",
+        "Return ans."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int singleNumber(int[] nums) {\n        int ans = 0;\n        for (int x : nums) ans ^= x;\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        ans = 0\n        for x in nums:\n            ans ^= x\n        return ans"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O n time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space. In detail: Ans = 0. Then for x in nums: ans ^= x."
+    ]
+  },
+  {
+    "seq": 288,
+    "whyNext": "Modulo-3 bit counter: elements appear 3 times; track bits appearing 1 and 2 times using bitwise ones and twos.",
+    "brute": {
+      "idea": "Count frequency of each element using HashMap.",
+      "steps": [
+        "Map frequencies; return key with count == 1."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Allocates O(n) map.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int singleNumber(int[] nums) {\n        Map<Integer, Integer> counts = new HashMap<>();\n        for (int x : nums) counts.put(x, counts.getOrDefault(x, 0) + 1);\n        for (int k : counts.keySet()) if (counts.get(k) == 1) return k;\n        return 0;\n    }\n}",
+        "python": "from collections import Counter\n\nclass Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        c = Counter(nums)\n        for k, v in c.items():\n            if v == 1: return k\n        return 0"
+      }
+    },
+    "optimal": {
+      "idea": "State machine bitwise counters: ones = (ones ^ x) & ~twos; twos = (twos ^ x) & ~ones.",
+      "steps": [
+        "int ones = 0, twos = 0.",
+        "For x in nums:",
+        "ones = (ones ^ x) & ~twos;",
+        "twos = (twos ^ x) & ~ones;",
+        "Return ones."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int singleNumber(int[] nums) {\n        int ones = 0, twos = 0;\n        for (int x : nums) {\n            ones = (ones ^ x) & ~twos;\n            twos = (twos ^ x) & ~ones;\n        }\n        return ones;\n    }\n}",
+        "python": "class Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        ones = twos = 0\n        for x in nums:\n            ones = (ones ^ x) & ~twos\n            twos = (twos ^ x) & ~ones\n        return ones"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O n time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space. In detail: Int ones = 0, twos = 0. Then for x in nums:."
+    ]
+  },
+  {
+    "seq": 289,
+    "whyNext": "Two unique numbers: XOR sum = a ^ b; isolate lowest set bit diff = xor & (-xor) to partition array into two subsets containing a and b.",
+    "brute": {
+      "idea": "HashMap/HashSet tracking elements appearing once.",
+      "steps": [
+        "HashSet toggling."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "whySlow": "Allocates extra memory.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int[] singleNumber(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) {\n            if (!set.add(x)) set.remove(x);\n        }\n        int[] res = new int[2];\n        int i = 0;\n        for (int v : set) res[i++] = v;\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def singleNumber(self, nums: list[int]) -> list[int]:\n        s = set()\n        for x in nums:\n            if x in s: s.remove(x)\n            else: s.add(x)\n        return list(s)"
+      }
+    },
+    "optimal": {
+      "idea": "Bit partition: diff = xor & (-xor) isolates a bit where the two numbers differ. Partition nums into two groups by that bit.",
+      "steps": [
+        "int diff = 0; for x in nums diff ^= x.",
+        "diff &= -diff (isolate rightmost set bit).",
+        "int[] res = new int[2];",
+        "For x in nums: if (x & diff) == 0 res[0] ^= x; else res[1] ^= x.",
+        "Return res."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int[] singleNumber(int[] nums) {\n        int diff = 0;\n        for (int x : nums) diff ^= x;\n        diff &= -diff;\n        int[] res = new int[2];\n        for (int x : nums) {\n            if ((x & diff) == 0) {\n                res[0] ^= x;\n            } else {\n                res[1] ^= x;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def singleNumber(self, nums: list[int]) -> list[int]:\n        diff = 0\n        for x in nums:\n            diff ^= x\n        diff &= -diff\n        a = b = 0\n        for x in nums:\n            if x & diff:\n                a ^= x\n            else:\n                b ^= x\n        return [a, b]"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O n time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space. In detail: Int diff = 0 for x in nums diff ^= x. Then diff &= -diff isolate rightmost set bit ."
+    ]
+  },
+  {
+    "seq": 290,
+    "whyNext": "Brian Kernighan's algorithm: n & (n - 1) flips the lowest set bit to 0; loops exactly set-bit count times.",
+    "brute": {
+      "idea": "Loop through all 32 bit positions checking (n >> i) & 1.",
+      "steps": [
+        "Test all 32 bits."
+      ],
+      "time": "O(32)",
+      "space": "O(1)",
+      "whySlow": "Always takes 32 iterations even if only one bit is set.",
+      "code": {
+        "java": "class Solution {\n    public int hammingWeight(int n) {\n        int count = 0;\n        for (int i = 0; i < 32; i++) {\n            if (((n >> i) & 1) == 1) count++;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def hammingWeight(self, n: int) -> int:\n        return bin(n).count('1')"
+      }
+    },
+    "optimal": {
+      "idea": "Brian Kernighan: while n != 0: n &= n - 1, count++. Iterates only over set bits.",
+      "steps": [
+        "count = 0.",
+        "While n != 0: n &= (n - 1); count++.",
+        "Return count."
+      ],
+      "time": "O(k) where k is number of 1s",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int hammingWeight(int n) {\n        int count = 0;\n        while (n != 0) {\n            n &= (n - 1);\n            count++;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def hammingWeight(self, n: int) -> int:\n        count = 0\n        while n:\n            n &= n - 1\n            count += 1\n        return count"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O k where k is number of 1s time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space. In detail: Count = 0. Then while n is not equal to 0: n &= n - 1 count++."
+    ]
+  },
+  {
+    "seq": 291,
+    "whyNext": "Bit DP: ans[i] = ans[i >> 1] + (i & 1); builds on Number of 1 Bits in linear O(n) time.",
+    "brute": {
+      "idea": "For every number from 0 to n, call Integer.bitCount(i).",
+      "steps": [
+        "Call bitCount on each integer."
+      ],
+      "time": "O(n * 32)",
+      "space": "O(1) auxiliary",
+      "whySlow": "Calculates bit count independently for each number without reusing subproblems.",
+      "code": {
+        "java": "class Solution {\n    public int[] countBits(int n) {\n        int[] ans = new int[n + 1];\n        for (int i = 0; i <= n; i++) ans[i] = Integer.bitCount(i);\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def countBits(self, n: int) -> list[int]:\n        return [bin(i).count('1') for i in range(n + 1)]"
+      }
+    },
+    "optimal": {
+      "idea": "1D DP: ans[i] = ans[i >> 1] + (i & 1). Shifting right removes LSB; add back (i & 1).",
+      "steps": [
+        "int[] ans = new int[n + 1];",
+        "For i = 1..n: ans[i] = ans[i >> 1] + (i & 1).",
+        "Return ans."
+      ],
+      "time": "O(n)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public int[] countBits(int n) {\n        int[] ans = new int[n + 1];\n        for (int i = 1; i <= n; i++) {\n            ans[i] = ans[i >> 1] + (i & 1);\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def countBits(self, n: int) -> list[int]:\n        ans = [0] * (n + 1)\n        for i in range(1, n + 1):\n            ans[i] = ans[i >> 1] + (i & 1)\n        return ans"
+      }
+    },
+    "hints": [
+      "Identify the overlapping subproblems: how can the answer to state i be computed using previously calculated answers to smaller states?.",
+      "Apply Dynamic Programming DP . This achieves O n time and O 1 auxiliary auxiliary space.",
+      "Define a DP state representing the optimal answer up to index i, establish the base cases, and transition forward using the recurrence relation. In detail: Int ans = new int n + 1. Then for i = 1..n: ans at index i = ans i is greater than is greater than 1 + i & 1 ."
+    ]
+  },
+  {
+    "seq": 292,
+    "whyNext": "Bitmask trick: n > 0 && (n & (n - 1)) == 0 has exactly one 1 bit in binary representation.",
+    "brute": {
+      "idea": "Repeatedly divide n by 2 while n is even; check if final quotient is 1.",
+      "steps": [
+        "While n > 0 and n % 2 == 0: n /= 2.",
+        "Return n == 1."
+      ],
+      "time": "O(log n)",
+      "space": "O(1)",
+      "whySlow": "Loop iterations when bitwise test is O(1).",
+      "code": {
+        "java": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        if (n <= 0) return false;\n        while (n % 2 == 0) n /= 2;\n        return n == 1;\n    }\n}",
+        "python": "class Solution:\n    def isPowerOfTwo(self, n: int) -> bool:\n        if n <= 0: return False\n        while n % 2 == 0: n //= 2\n        return n == 1"
+      }
+    },
+    "optimal": {
+      "idea": "Single bit check: n > 0 && (n & (n - 1)) == 0 in O(1) time.",
+      "steps": [
+        "Return n > 0 && (n & (n - 1)) == 0."
+      ],
+      "time": "O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return n > 0 && (n & (n - 1)) == 0;\n    }\n}",
+        "python": "class Solution:\n    def isPowerOfTwo(self, n: int) -> bool:\n        return n > 0 and (n & (n - 1)) == 0"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O 1 time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space."
+    ]
+  },
+  {
+    "seq": 293,
+    "whyNext": "Gauss summation or XOR cancellation: XOR indices 0..n and all nums[i]; cancel duplicates to find missing number.",
+    "brute": {
+      "idea": "Sort array; check if nums[i] != i.",
+      "steps": [
+        "Sort nums.",
+        "Find first index where nums[i] != i."
+      ],
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "whySlow": "Sorting is unnecessary when sum or XOR runs in O(n).",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public int missingNumber(int[] nums) {\n        Arrays.sort(nums);\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] != i) return i;\n        }\n        return nums.length;\n    }\n}",
+        "python": "class Solution:\n    def missingNumber(self, nums: list[int]) -> int:\n        nums.sort()\n        for i, x in enumerate(nums):\n            if i != x: return i\n        return len(nums)"
+      }
+    },
+    "optimal": {
+      "idea": "Gauss sum formula: expected = n * (n + 1) / 2; missing = expected - actual_sum.",
+      "steps": [
+        "n = nums.length; expected = n * (n + 1) / 2.",
+        "Subtract all elements in nums from expected.",
+        "Return result."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int missingNumber(int[] nums) {\n        int n = nums.length;\n        int expected = n * (n + 1) / 2;\n        int sum = 0;\n        for (int x : nums) sum += x;\n        return expected - sum;\n    }\n}",
+        "python": "class Solution:\n    def missingNumber(self, nums: list[int]) -> int:\n        n = len(nums)\n        return n * (n + 1) // 2 - sum(nums)"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Bit Manipulation and Math. This achieves O n time and O 1 auxiliary space.",
+      "Gauss sum formula: expected = n * n + 1 / 2 missing = expected - actual sum. In detail: N = the length of nums expected = n * n + 1 / 2. Then subtract all elements in nums from expected."
+    ]
+  },
+  {
+    "seq": 294,
+    "whyNext": "Bit reversal: iterate 32 times; res = (res << 1) | (n & 1); n >>= 1.",
+    "brute": {
+      "idea": "Convert to 32-character binary string, reverse string, parse back as unsigned int.",
+      "steps": [
+        "Format binary string.",
+        "Reverse string.",
+        "Parse integer."
+      ],
+      "time": "O(32)",
+      "space": "O(32)",
+      "whySlow": "String allocations.",
+      "code": {
+        "java": "class Solution {\n    public int reverseBits(int n) {\n        int res = 0;\n        for (int i = 0; i < 32; i++) {\n            res = (res << 1) | (n & 1);\n            n >>>= 1;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def reverseBits(self, n: int) -> int:\n        res = 0\n        for _ in range(32):\n            res = (res << 1) | (n & 1)\n            n >>= 1\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Bitwise shift: res = (res << 1) | (n & 1); n >>>= 1 over 32 iterations in O(1) space.",
+      "steps": [
+        "res = 0.",
+        "For i = 0..31: res = (res << 1) | (n & 1); n >>>= 1.",
+        "Return res."
+      ],
+      "time": "O(1) (fixed 32 loops)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int reverseBits(int n) {\n        int res = 0;\n        for (int i = 0; i < 32; i++) {\n            res = (res << 1) | (n & 1);\n            n >>>= 1;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def reverseBits(self, n: int) -> int:\n        res = 0\n        for _ in range(32):\n            res = (res << 1) | (n & 1)\n            n >>= 1\n        return res"
+      }
+    },
+    "hints": [
+      "Remember that XORing a number with itself yields 0, and XORing any number with 0 preserves that number.",
+      "Apply Bitwise Operations such as XOR . This achieves O 1 fixed 32 loops time and O 1 auxiliary space.",
+      "Apply bitwise operations across all values so duplicate numbers cancel each other out, isolating the unique answer in O 1 space. In detail: Res = 0. Then for i = 0..31: res = res is less than is less than 1 | n & 1 n is greater than is greater than is at least 1."
+    ]
+  },
+  {
+    "seq": 295,
+    "whyNext": "Full adder without + or -: sum without carry is a ^ b; carry is (a & b) << 1; loop until carry == 0.",
+    "brute": {
+      "idea": "Simulate bit-by-bit addition using bitwise carry and sum.",
+      "steps": [
+        "While carry b != 0: sum = a ^ b, carry = (a & b) << 1."
+      ],
+      "time": "O(32)",
+      "space": "O(1)",
+      "whySlow": "Standard bitwise adder is already optimal.",
+      "code": {
+        "java": "class Solution {\n    public int getSum(int a, int b) {\n        while (b != 0) {\n            int carry = (a & b) << 1;\n            a = a ^ b;\n            b = carry;\n        }\n        return a;\n    }\n}",
+        "python": "class Solution:\n    def getSum(self, a: int, b: int) -> int:\n        mask = 0xFFFFFFFF\n        while b & mask != 0:\n            carry = (a & b) << 1\n            a = a ^ b\n            b = carry\n        return (a & mask) if b > 0 else a"
+      }
+    },
+    "optimal": {
+      "idea": "Hardware adder simulation: while b != 0: carry = (a & b) << 1, a = a ^ b, b = carry.",
+      "steps": [
+        "While b != 0:",
+        "carry = (a & b) << 1.",
+        "a = a ^ b.",
+        "b = carry.",
+        "Return a."
+      ],
+      "time": "O(1) (max 32 loops)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int getSum(int a, int b) {\n        while (b != 0) {\n            int carry = (a & b) << 1;\n            a = a ^ b;\n            b = carry;\n        }\n        return a;\n    }\n}",
+        "python": "class Solution:\n    def getSum(self, a: int, b: int) -> int:\n        mask = 0xFFFFFFFF\n        max_int = 0x7FFFFFFF\n        while (b & mask) != 0:\n            carry = (a & b) << 1\n            a = (a ^ b) & mask\n            b = carry & mask\n        return a if a <= max_int else ~(a ^ mask)"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Bit Manipulation and Math. This achieves O 1 max 32 loops time and O 1 auxiliary space.",
+      "Hardware adder simulation: while b is not equal to 0: carry = a & b is less than is less than 1, a = a ^ b, b = carry. In detail: While b is not equal to 0:. Then carry = a & b is less than is less than 1."
+    ]
+  },
+  {
+    "seq": 296,
+    "whyNext": "32-bit signed integer overflow guard: check rev > Integer.MAX_VALUE / 10 before rev = rev * 10 + pop.",
+    "brute": {
+      "idea": "Convert to string, reverse, parse with Long to detect overflow.",
+      "steps": [
+        "String reversal.",
+        "Check 32-bit bounds."
+      ],
+      "time": "O(log x)",
+      "space": "O(log x)",
+      "whySlow": "String allocations instead of mathematical arithmetic.",
+      "code": {
+        "java": "class Solution {\n    public int reverse(int x) {\n        long rev = 0;\n        while (x != 0) {\n            rev = rev * 10 + x % 10;\n            x /= 10;\n        }\n        if (rev > Integer.MAX_VALUE || rev < Integer.MIN_VALUE) return 0;\n        return (int) rev;\n    }\n}",
+        "python": "class Solution:\n    def reverse(self, x: int) -> int:\n        sign = -1 if x < 0 else 1\n        x = abs(x)\n        rev = int(str(x)[::-1]) * sign\n        return rev if -2**31 <= rev <= 2**31 - 1 else 0"
+      }
+    },
+    "optimal": {
+      "idea": "Mathematical pop and push with overflow check before multiplication: if rev > Integer.MAX_VALUE / 10 return 0.",
+      "steps": [
+        "rev = 0.",
+        "While x != 0:",
+        "pop = x % 10; x /= 10.",
+        "If rev > Integer.MAX_VALUE / 10 || rev < Integer.MIN_VALUE / 10 return 0.",
+        "rev = rev * 10 + pop.",
+        "Return rev."
+      ],
+      "time": "O(log x)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int reverse(int x) {\n        int rev = 0;\n        while (x != 0) {\n            int pop = x % 10;\n            x /= 10;\n            if (rev > Integer.MAX_VALUE / 10 || (rev == Integer.MAX_VALUE / 10 && pop > 7)) return 0;\n            if (rev < Integer.MIN_VALUE / 10 || (rev == Integer.MIN_VALUE / 10 && pop < -8)) return 0;\n            rev = rev * 10 + pop;\n        }\n        return rev;\n    }\n}",
+        "python": "class Solution:\n    def reverse(self, x: int) -> int:\n        rev = 0\n        sign = -1 if x < 0 else 1\n        x = abs(x)\n        while x:\n            pop = x % 10\n            x //= 10\n            rev = rev * 10 + pop\n        rev *= sign\n        return rev if -2**31 <= rev <= 2**31 - 1 else 0"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Bit Manipulation and Math. This achieves O log x time and O 1 auxiliary space.",
+      "Mathematical pop and push with overflow check before multiplication: if rev is greater than Integer.MAX VALUE / 10 return 0. In detail: Rev = 0. Then while x is not equal to 0:."
+    ]
+  },
+  {
+    "seq": 297,
+    "whyNext": "Builds on Reverse Integer: negative numbers cannot be palindromes; reverse only the second half of digits to avoid overflow entirely.",
+    "brute": {
+      "idea": "Convert integer to string and check if str == reverse(str).",
+      "steps": [
+        "s = String.valueOf(x).",
+        "Two pointers check palindrome."
+      ],
+      "time": "O(log x)",
+      "space": "O(log x)",
+      "whySlow": "Allocates string.",
+      "code": {
+        "java": "class Solution {\n    public boolean isPalindrome(int x) {\n        if (x < 0) return false;\n        String s = String.valueOf(x);\n        int l = 0, r = s.length() - 1;\n        while (l < r) {\n            if (s.charAt(l++) != s.charAt(r--)) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        if x < 0: return False\n        s = str(x)\n        return s == s[::-1]"
+      }
+    },
+    "optimal": {
+      "idea": "Reversing half of number: when x <= revertedNumber, half is reached. Check x == revertedNumber || x == revertedNumber / 10.",
+      "steps": [
+        "If x < 0 || (x % 10 == 0 && x != 0) return false.",
+        "rev = 0.",
+        "While x > rev: rev = rev * 10 + x % 10; x /= 10.",
+        "Return x == rev || x == rev / 10."
+      ],
+      "time": "O(log x)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPalindrome(int x) {\n        if (x < 0 || (x % 10 == 0 && x != 0)) return false;\n        int rev = 0;\n        while (x > rev) {\n            rev = rev * 10 + x % 10;\n            x /= 10;\n        }\n        return x == rev || x == rev / 10;\n    }\n}",
+        "python": "class Solution:\n    def isPalindrome(self, x: int) -> bool:\n        if x < 0 or (x % 10 == 0 and x != 0):\n            return False\n        rev = 0\n        while x > rev:\n            rev = rev * 10 + x % 10\n            x //= 10\n        return x == rev or x == rev // 10"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Bit Manipulation and Math. This achieves O log x time and O 1 auxiliary space.",
+      "Reversing half of number: when x is at most revertedNumber, half is reached. Check x is equal to revertedNumber || x is equal to revertedNumber / 10. In detail: If x is less than 0 || x % 10 is equal to 0 && x is not equal to 0 return false. Then rev = 0."
+    ]
+  },
+  {
+    "seq": 298,
+    "whyNext": "Cycle detection on digit transformations: Floyd's tortoise and hare detects loop in next_number sequence.",
+    "brute": {
+      "idea": "Keep a HashSet of visited numbers; loop until reaching 1 or revisiting a number.",
+      "steps": [
+        "HashSet tracks seen sums of squares.",
+        "If sum == 1 return true; if seen return false."
+      ],
+      "time": "O(log n)",
+      "space": "O(log n)",
+      "whySlow": "Allocates set.",
+      "code": {
+        "java": "import java.util.*;\nclass Solution {\n    public boolean isHappy(int n) {\n        Set<Integer> seen = new HashSet<>();\n        while (n != 1 && !seen.contains(n)) {\n            seen.add(n);\n            n = getNext(n);\n        }\n        return n == 1;\n    }\n    private int getNext(int n) {\n        int sum = 0;\n        while (n > 0) {\n            int d = n % 10;\n            sum += d * d;\n            n /= 10;\n        }\n        return sum;\n    }\n}",
+        "python": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        seen = set()\n        while n != 1 and n not in seen:\n            seen.add(n)\n            n = sum(int(d)**2 for d in str(n))\n        return n == 1"
+      }
+    },
+    "optimal": {
+      "idea": "Floyd's Cycle Finding (Tortoise and Hare): slow advances 1 step, fast advances 2 steps. If fast reaches 1 return true; if slow == fast cycle exists.",
+      "steps": [
+        "slow = n, fast = getNext(n).",
+        "While fast != 1 && slow != fast: slow = getNext(slow), fast = getNext(getNext(fast)).",
+        "Return fast == 1."
+      ],
+      "time": "O(log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean isHappy(int n) {\n        int slow = n, fast = getNext(n);\n        while (fast != 1 && slow != fast) {\n            slow = getNext(slow);\n            fast = getNext(getNext(fast));\n        }\n        return fast == 1;\n    }\n    private int getNext(int n) {\n        int total = 0;\n        while (n > 0) {\n            int d = n % 10;\n            total += d * d;\n            n /= 10;\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        def get_next(val):\n            total = 0\n            while val > 0:\n                d = val % 10\n                total += d * d\n                val //= 10\n            return total\n        slow = n\n        fast = get_next(n)\n        while fast != 1 and slow != fast:\n            slow = get_next(slow)\n            fast = get_next(get_next(fast))\n        return fast == 1"
+      }
+    },
+    "hints": [
+      "If one pointer moves one step at a time while another moves two steps at a time, will they ever collide if a loop exists?.",
+      "Apply Floyd's Cycle Detection Fast and Slow Pointers . This achieves O log n time and O 1 auxiliary space.",
+      "Advance a slow pointer by one node and a fast pointer by two nodes if they meet, a cycle exists, and the cycle start can be located by resetting one pointer to the head. In detail: Slow = n, fast = getNext n . Then while fast is not equal to 1 && slow is not equal to fast: slow = getnext slow , fast = getnext getnext fast ."
+    ]
+  },
+  {
+    "seq": 299,
+    "whyNext": "Sieve of Eratosthenes: mark multiples of primes starting from p*p in boolean array; counts primes < n in O(n log log n).",
+    "brute": {
+      "idea": "For every number 2..n-1, test trial division up to sqrt(i).",
+      "steps": [
+        "isPrime(x): loop 2..sqrt(x).",
+        "Count primes."
+      ],
+      "time": "O(n * sqrt(n))",
+      "space": "O(1)",
+      "whySlow": "Trial division on all numbers is significantly slower than Sieve of Eratosthenes.",
+      "code": {
+        "java": "class Solution {\n    public int countPrimes(int n) {\n        int count = 0;\n        for (int i = 2; i < n; i++) {\n            if (isPrime(i)) count++;\n        }\n        return count;\n    }\n    private boolean isPrime(int x) {\n        for (int i = 2; i * i <= x; i++) {\n            if (x % i == 0) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def countPrimes(self, n: int) -> int:\n        def is_prime(x):\n            i = 2\n            while i * i <= x:\n                if x % i == 0: return False\n                i += 1\n            return True\n        return sum(1 for i in range(2, n) if is_prime(i))"
+      }
+    },
+    "optimal": {
+      "idea": "Sieve of Eratosthenes: boolean[] notPrime = new boolean[n]; for i = 2..sqrt(n), if !notPrime[i], mark all i*i, i*i + i, ... as true.",
+      "steps": [
+        "if n <= 2 return 0.",
+        "boolean[] notPrime = new boolean[n]; int count = 0.",
+        "For i = 2..sqrt(n): if !notPrime[i]: for j = i * i; j < n; j += i notPrime[j] = true.",
+        "For i = 2..n-1: if !notPrime[i] count++.",
+        "Return count."
+      ],
+      "time": "O(n log log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int countPrimes(int n) {\n        if (n <= 2) return 0;\n        boolean[] notPrime = new boolean[n];\n        for (int i = 2; i * i < n; i++) {\n            if (!notPrime[i]) {\n                for (int j = i * i; j < n; j += i) {\n                    notPrime[j] = true;\n                }\n            }\n        }\n        int count = 0;\n        for (int i = 2; i < n; i++) {\n            if (!notPrime[i]) count++;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def countPrimes(self, n: int) -> int:\n        if n <= 2:\n            return 0\n        not_prime = [False] * n\n        i = 2\n        while i * i < n:\n            if not not_prime[i]:\n                for j in range(i * i, n, i):\n                    not_prime[j] = True\n            i += 1\n        return sum(1 for x in range(2, n) if not not_prime[x])"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Bit Manipulation and Math. This achieves O n log log n time and O n auxiliary space.",
+      "Sieve of Eratosthenes: boolean notPrime = new boolean at index n for i = 2..sqrt n , if !notPrime at index i, mark all i*i, i*i + i, ... as true. In detail: If n is at most 2 return 0. Then boolean notprime = new boolean at index n int count = 0."
+    ]
+  },
+  {
+    "seq": 300,
+    "whyNext": "Grand finale: Legendre's formula counts factors of 5 in n! (since 2s outnumber 5s): zeros = n/5 + n/25 + n/125 + ... in O(log_5 n).",
+    "brute": {
+      "idea": "Compute full factorial BigInteger and count trailing zeroes in string representation.",
+      "steps": [
+        "Compute n! using BigInteger.",
+        "Count trailing '0' characters."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "whySlow": "Factorial grows factorially large exceeding 10,000 digits.",
+      "code": {
+        "java": "import java.math.BigInteger;\nclass Solution {\n    public int trailingZeroes(int n) {\n        BigInteger fact = BigInteger.ONE;\n        for (int i = 2; i <= n; i++) fact = fact.multiply(BigInteger.valueOf(i));\n        int count = 0;\n        while (fact.mod(BigInteger.TEN).equals(BigInteger.ZERO)) {\n            count++;\n            fact = fact.divide(BigInteger.TEN);\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def trailingZeroes(self, n: int) -> int:\n        import math\n        fact = math.factorial(n)\n        s = str(fact)\n        return len(s) - len(s.rstrip('0'))"
+      }
+    },
+    "optimal": {
+      "idea": "Legendre's Formula: count prime factor 5s: count = n/5 + n/25 + n/125 + ... in O(log_5 n) time and O(1) space.",
+      "steps": [
+        "count = 0.",
+        "While n >= 5: count += n / 5; n /= 5.",
+        "Return count."
+      ],
+      "time": "O(log_5 n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int trailingZeroes(int n) {\n        int count = 0;\n        while (n >= 5) {\n            count += n / 5;\n            n /= 5;\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def trailingZeroes(self, n: int) -> int:\n        count = 0\n        while n >= 5:\n            count += n // 5\n            n //= 5\n        return count"
+      }
+    },
+    "hints": [
+      "Break down the core constraints and observe what invariant remains unchanged as you step through the input.",
+      "Apply a structured approach tailored for Bit Manipulation and Math. This achieves O log 5 n time and O 1 auxiliary space.",
+      "Legendre's Formula: count prime factor 5s: count = n/5 + n/25 + n/125 + ... in O log 5 n time and O 1 space. In detail: Count = 0. Then while n is at least 5: count += n / 5 n /= 5."
+    ]
+  }
+]
