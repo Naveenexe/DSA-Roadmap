@@ -8854,19 +8854,19 @@
   },
   {
     "seq": 476,
-    "lc": 1406,
-    "title": "Stone Game III",
-    "slug": "stone-game-iii",
-    "difficulty": "Hard",
-    "buildsOn": 475,
+    "lc": 368,
+    "title": "Largest Divisible Subset",
+    "slug": "largest-divisible-subset",
+    "difficulty": "Medium",
     "chapter": "ch-31",
+    "buildsOn": 247,
     "brute": {
-      "idea": "Minimax game tree search",
-      "time": "O(3ⁿ)"
+      "idea": "Generate all 2^n subsets, verify if every pair satisfies divisibility, and return the largest qualifying subset.",
+      "time": "O(2^n * n^2)"
     },
     "optimal": {
-      "idea": "1D DP from right to left: dp[i] = max over k (sum - dp[i+k])",
-      "time": "O(n)"
+      "idea": "Sort + LIS DP with parent pointer reconstruction: compute max subset in O(n^2) time and rebuild list in O(n) time.",
+      "time": "O(n^2)"
     },
     "companies": [
       "google",
@@ -8875,19 +8875,19 @@
   },
   {
     "seq": 477,
-    "lc": 474,
-    "title": "Ones and Zeroes",
-    "slug": "ones-and-zeroes",
+    "lc": 983,
+    "title": "Minimum Cost For Tickets",
+    "slug": "minimum-cost-for-tickets",
     "difficulty": "Medium",
-    "buildsOn": 476,
     "chapter": "ch-31",
+    "buildsOn": 242,
     "brute": {
-      "idea": "All subsets of strings",
-      "time": "O(2ⁿ)"
+      "idea": "Recursively choose 1-day, 7-day, or 30-day pass starting from the first travel day.",
+      "time": "O(3^n)"
     },
     "optimal": {
-      "idea": "2D 0/1 knapsack dp[zeros][ones] iterating backward",
-      "time": "O(L · m · n)"
+      "idea": "Calendar day DP: iterate from day 1 to lastDay, choosing min pass covering day d in O(lastDay) = O(1) time.",
+      "time": "O(W) where W = 365 = O(1)"
     },
     "companies": [
       "google",
@@ -8896,19 +8896,19 @@
   },
   {
     "seq": 478,
-    "lc": 877,
-    "title": "Stone Game",
-    "slug": "stone-game",
+    "lc": 2140,
+    "title": "Solving Questions With Brainpower",
+    "slug": "solving-questions-with-brainpower",
     "difficulty": "Medium",
-    "buildsOn": 476,
     "chapter": "ch-31",
+    "buildsOn": 238,
     "brute": {
-      "idea": "Minimax game tree recursion",
-      "time": "O(2ⁿ)"
+      "idea": "Forward recursion trying both choices (skip or solve) at each question.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Always true (first player picks all even or all odd piles)",
-      "time": "O(1)"
+      "idea": "Backward 1D dynamic programming: compute dp[i] = max(dp[i + 1], points[i] + dp[i + brainpower[i] + 1]) in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -8917,19 +8917,19 @@
   },
   {
     "seq": 479,
-    "lc": 1140,
-    "title": "Stone Game II",
-    "slug": "stone-game-ii",
+    "lc": 1155,
+    "title": "Number of Dice Rolls With Target Sum",
+    "slug": "number-of-dice-rolls-with-target-sum",
     "difficulty": "Medium",
-    "buildsOn": 478,
     "chapter": "ch-31",
+    "buildsOn": 243,
     "brute": {
-      "idea": "Minimax game tree",
-      "time": "exponential"
+      "idea": "Recursive backtracking: roll each die choosing face from 1 to k, counting paths that total target.",
+      "time": "O(k^n)"
     },
     "optimal": {
-      "idea": "DP memoization dp[i][M] suffix sum minus opponent maximum",
-      "time": "O(n³)"
+      "idea": "2D / 1D rolling array dynamic programming: dp[t] = sum(prevDp[t - face]) in O(n * target * k) time.",
+      "time": "O(n * target * k)"
     },
     "companies": [
       "google",
@@ -8938,19 +8938,19 @@
   },
   {
     "seq": 480,
-    "lc": 983,
-    "title": "Minimum Cost For Tickets",
-    "slug": "minimum-cost-for-tickets",
+    "lc": 474,
+    "title": "Ones and Zeroes",
+    "slug": "ones-and-zeroes",
     "difficulty": "Medium",
-    "buildsOn": 473,
     "chapter": "ch-31",
+    "buildsOn": 251,
     "brute": {
-      "idea": "Try all pass combinations for 365 days",
-      "time": "O(3³⁶⁵)"
+      "idea": "Recursively decide to take or skip each string, tracking consumed zeros and ones.",
+      "time": "O(2^L)"
     },
     "optimal": {
-      "idea": "1D DP over travel days comparing 1, 7, and 30 day passes",
-      "time": "O(365)"
+      "idea": "2D backward knapsack DP: update dp[i][j] from (m, n) down to (zeros, ones) in O(L * m * n) time.",
+      "time": "O(L * m * n)"
     },
     "companies": [
       "amazon",
@@ -8959,18 +8959,18 @@
   },
   {
     "seq": 481,
-    "lc": 1218,
-    "title": "Longest Arithmetic Subsequence of Given Difference",
-    "slug": "longest-arithmetic-subsequence-of-given-difference",
+    "lc": 790,
+    "title": "Domino and Tromino Tiling",
+    "slug": "domino-and-tromino-tiling",
     "difficulty": "Medium",
-    "buildsOn": 475,
     "chapter": "ch-31",
+    "buildsOn": 235,
     "brute": {
-      "idea": "Check every subsequence",
-      "time": "O(2ⁿ)"
+      "idea": "Mutual state recursion: full(n) calls full and partial state transitions recursively.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Hash map DP: dp[x] = dp[x - diff] + 1 in one pass",
+      "idea": "Single simplified recurrence relation dp[i] = 2*dp[i-1] + dp[i-3] in O(n) time and O(1) space.",
       "time": "O(n)"
     },
     "companies": [
@@ -8980,19 +8980,19 @@
   },
   {
     "seq": 482,
-    "lc": 1027,
-    "title": "Longest Arithmetic Subsequence",
-    "slug": "longest-arithmetic-subsequence",
+    "lc": 1043,
+    "title": "Partition Array for Maximum Sum",
+    "slug": "partition-array-for-maximum-sum",
     "difficulty": "Medium",
-    "buildsOn": 481,
     "chapter": "ch-31",
+    "buildsOn": 478,
     "brute": {
-      "idea": "Try all subsequences",
-      "time": "O(2ⁿ)"
+      "idea": "Recursive backtracking trying all partition lengths from 1 to k starting from index 0.",
+      "time": "O(k^n)"
     },
     "optimal": {
-      "idea": "2D DP array dp[index][diff] = dp[prev][diff] + 1",
-      "time": "O(n²)"
+      "idea": "Forward 1D DP with k-window scanning: dp[i] = max(dp[i - len] + maxVal * len) in O(n * k) time.",
+      "time": "O(n * k)"
     },
     "companies": [
       "meta",
@@ -9002,19 +9002,19 @@
   },
   {
     "seq": 483,
-    "lc": 1235,
-    "title": "Maximum Profit in Job Scheduling",
-    "slug": "maximum-profit-in-job-scheduling",
-    "difficulty": "Hard",
-    "buildsOn": 480,
+    "lc": 1262,
+    "title": "Greatest Sum Divisible by Three",
+    "slug": "greatest-sum-divisible-by-three",
+    "difficulty": "Medium",
     "chapter": "ch-31",
+    "buildsOn": 251,
     "brute": {
-      "idea": "Try all non-overlapping job combinations",
-      "time": "O(2ⁿ)"
+      "idea": "Compute total sum; if total % 3 != 0, find and remove smallest elements with remainder 1 or 2.",
+      "time": "O(n log n)"
     },
     "optimal": {
-      "idea": "Sort by end time, binary search previous non-conflicting job + DP",
-      "time": "O(n log n)"
+      "idea": "3-state modular DP: dp[0, 1, 2] tracks maximum sum with remainder r, running in O(n) time and O(1) space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -9024,19 +9024,19 @@
   },
   {
     "seq": 484,
-    "lc": 1751,
-    "title": "Maximum Number of Events That Can Be Attended II",
-    "slug": "maximum-number-of-events-that-can-be-attended-ii",
-    "difficulty": "Hard",
-    "buildsOn": 483,
+    "lc": 1186,
+    "title": "Maximum Subarray Sum with One Deletion",
+    "slug": "maximum-subarray-sum-with-one-deletion",
+    "difficulty": "Medium",
     "chapter": "ch-31",
+    "buildsOn": 176,
     "brute": {
-      "idea": "Try all subsets of at most k events",
-      "time": "O(C(n, k))"
+      "idea": "Compute standard Kadane's sum, then test deleting each element one by one and finding max subarray.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Sort by end time, DP dp[i][count] with binary search",
-      "time": "O(k · n log n)"
+      "idea": "2-state Kadane dynamic programming: track noDel and oneDel in O(1) space and O(n) linear time.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -9045,19 +9045,19 @@
   },
   {
     "seq": 485,
-    "lc": 688,
-    "title": "Knight Probability in Chessboard",
-    "slug": "knight-probability-in-chessboard",
-    "difficulty": "Medium",
-    "buildsOn": 477,
+    "lc": 1235,
+    "title": "Maximum Profit in Job Scheduling",
+    "slug": "maximum-profit-in-job-scheduling",
+    "difficulty": "Hard",
     "chapter": "ch-31",
+    "buildsOn": 424,
     "brute": {
-      "idea": "Simulate all 8^k knight moves",
-      "time": "O(8^k)"
+      "idea": "Recursively explore all subsets of mutually non-overlapping jobs and track the maximum profit.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "2D grid DP transition over k steps",
-      "time": "O(k · n²)"
+      "idea": "Sort jobs by end time and use dynamic programming with binary search to find the latest non-conflicting job in O(n log n) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "amazon",
@@ -9066,19 +9066,19 @@
   },
   {
     "seq": 486,
-    "lc": 650,
-    "title": "2 Keys Keyboard",
-    "slug": "2-keys-keyboard",
-    "difficulty": "Medium",
-    "buildsOn": 435,
+    "lc": 639,
+    "title": "Decode Ways II",
+    "slug": "decode-ways-ii",
+    "difficulty": "Hard",
     "chapter": "ch-31",
+    "buildsOn": 241,
     "brute": {
-      "idea": "Backtrack all Copy All and Paste sequences",
-      "time": "exponential"
+      "idea": "Recursively branch on 1-digit and 2-digit interpretations, expanding '*' to all possible valid digits 1-9.",
+      "time": "O(9^n)"
     },
     "optimal": {
-      "idea": "Sum of prime factors of n",
-      "time": "O(√n)"
+      "idea": "Space-optimized dynamic programming maintaining the previous two decoding counts modulo 10^9+7.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -9087,19 +9087,19 @@
   },
   {
     "seq": 487,
-    "lc": 1312,
-    "title": "Minimum Insertion Steps to Make a String Palindrome",
-    "slug": "minimum-insertion-steps-to-make-a-string-palindrome",
-    "difficulty": "Hard",
-    "buildsOn": 240,
+    "lc": 1277,
+    "title": "Count Square Submatrices with All Ones",
+    "slug": "count-square-submatrices-with-all-ones",
+    "difficulty": "Medium",
     "chapter": "ch-32",
+    "buildsOn": 259,
     "brute": {
-      "idea": "Try inserting characters recursively",
-      "time": "exponential"
+      "idea": "For every cell (r, c), test all possible square side lengths k extending down and right, verifying all cells contain 1.",
+      "time": "O(m * n * min(m, n)^2)"
     },
     "optimal": {
-      "idea": "String length minus Longest Palindromic Subsequence",
-      "time": "O(n²)"
+      "idea": "Dynamic programming where dp[i][j] is the largest square ending at (i, j); summing dp[i][j] counts all squares in O(m * n) time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "amazon",
@@ -9108,19 +9108,19 @@
   },
   {
     "seq": 488,
-    "lc": 1039,
-    "title": "Minimum Score Triangulation of Polygon",
-    "slug": "minimum-score-triangulation-of-polygon",
+    "lc": 1594,
+    "title": "Maximum Non Negative Product in a Matrix",
+    "slug": "maximum-non-negative-product-in-a-matrix",
     "difficulty": "Medium",
-    "buildsOn": 487,
     "chapter": "ch-32",
+    "buildsOn": 487,
     "brute": {
-      "idea": "Catalan number of triangulation combinations",
-      "time": "exponential"
+      "idea": "DFS traversal exploring all right and down paths to cell (m-1, n-1), computing the product along each path.",
+      "time": "O(2^(m+n))"
     },
     "optimal": {
-      "idea": "Interval DP: dp[i][j] = min over k (dp[i][k] + dp[k][j] + A[i]*A[k]*A[j])",
-      "time": "O(n³)"
+      "idea": "2D dynamic programming maintaining maxDp[i][j] and minDp[i][j] in 64-bit integers to prevent overflow during calculations.",
+      "time": "O(m * n)"
     },
     "companies": [
       "google",
@@ -9129,19 +9129,19 @@
   },
   {
     "seq": 489,
-    "lc": 1547,
-    "title": "Minimum Cost to Cut a Stick",
-    "slug": "minimum-cost-to-cut-a-stick",
-    "difficulty": "Hard",
-    "buildsOn": 488,
+    "lc": 576,
+    "title": "Out of Boundary Paths",
+    "slug": "out-of-boundary-paths",
+    "difficulty": "Medium",
     "chapter": "ch-32",
+    "buildsOn": 254,
     "brute": {
-      "idea": "Try all cut orderings",
-      "time": "O(k!)"
+      "idea": "Recursive DFS exploring up to maxMove steps in 4 cardinal directions, tallying moves that step out of grid bounds.",
+      "time": "O(4^maxMove)"
     },
     "optimal": {
-      "idea": "Sort cuts, interval DP dp[i][j] finding cheapest pivot k",
-      "time": "O(k³)"
+      "idea": "Iterative dynamic programming updating a 2D matrix of reach counts across maxMove steps in O(maxMove * m * n) time.",
+      "time": "O(maxMove * m * n)"
     },
     "companies": [
       "google",
@@ -9150,19 +9150,19 @@
   },
   {
     "seq": 490,
-    "lc": 1000,
-    "title": "Minimum Cost to Merge Stones",
-    "slug": "minimum-cost-to-merge-stones",
+    "lc": 1463,
+    "title": "Cherry Pickup II",
+    "slug": "cherry-pickup-ii",
     "difficulty": "Hard",
-    "buildsOn": 489,
     "chapter": "ch-32",
+    "buildsOn": 489,
     "brute": {
-      "idea": "Try all merge sequences",
-      "time": "exponential"
+      "idea": "Recursively simulate all 9 simultaneous moves per row until reaching the bottom row.",
+      "time": "O(9^rows)"
     },
     "optimal": {
-      "idea": "Interval 3D DP dp[i][j][m] with step k - 1 and prefix sums",
-      "time": "O(n³ / k)"
+      "idea": "3D Dynamic Programming (or bottom-up 2D DP) storing maximum cherries for each (col1, col2) pair at each row in O(rows * cols^2) time.",
+      "time": "O(m * n^2)"
     },
     "companies": [
       "amazon",
@@ -9171,19 +9171,19 @@
   },
   {
     "seq": 491,
-    "lc": 712,
-    "title": "Minimum ASCII Delete Sum for Two Strings",
-    "slug": "minimum-ascii-delete-sum-for-two-strings",
+    "lc": 718,
+    "title": "Maximum Length of Repeated Subarray",
+    "slug": "maximum-length-of-repeated-subarray",
     "difficulty": "Medium",
-    "buildsOn": 490,
     "chapter": "ch-32",
+    "buildsOn": 261,
     "brute": {
-      "idea": "Try all delete combinations",
-      "time": "O(2^(m+n))"
+      "idea": "Compare all pairs of start indices (i, j) in nums1 and nums2, extending matching contiguous elements.",
+      "time": "O(n * m * min(n, m))"
     },
     "optimal": {
-      "idea": "2D DP table matching characters or taking min ASCII deletion cost",
-      "time": "O(mn)"
+      "idea": "2D dynamic programming storing matching suffix lengths in O(n * m) time and O(m) space.",
+      "time": "O(n * m)"
     },
     "companies": [
       "google",
@@ -9192,19 +9192,19 @@
   },
   {
     "seq": 492,
-    "lc": 1092,
-    "title": "Shortest Common Supersequence",
-    "slug": "shortest-common-supersequence",
-    "difficulty": "Hard",
-    "buildsOn": 491,
+    "lc": 712,
+    "title": "Minimum ASCII Delete Sum for Two Strings",
+    "slug": "minimum-ascii-delete-sum-for-two-strings",
+    "difficulty": "Medium",
     "chapter": "ch-32",
+    "buildsOn": 263,
     "brute": {
-      "idea": "All possible supersequences",
-      "time": "exponential"
+      "idea": "Recursively check matching characters from indices (i, j) and branch into deleting from s1 or deleting from s2.",
+      "time": "O(2^(n+m))"
     },
     "optimal": {
-      "idea": "LCS DP table reconstruction tracing common characters",
-      "time": "O(mn)"
+      "idea": "2D dynamic programming filling a cost table of size (n+1) x (m+1) in O(n * m) time and O(m) space.",
+      "time": "O(n * m)"
     },
     "companies": [
       "google",
@@ -9213,19 +9213,19 @@
   },
   {
     "seq": 493,
-    "lc": 1335,
-    "title": "Minimum Difficulty of a Job Schedule",
-    "slug": "minimum-difficulty-of-a-job-schedule",
+    "lc": 1312,
+    "title": "Minimum Insertion Steps to Make a String Palindrome",
+    "slug": "minimum-insertion-steps-to-make-a-string-palindrome",
     "difficulty": "Hard",
-    "buildsOn": 480,
     "chapter": "ch-32",
+    "buildsOn": 269,
     "brute": {
-      "idea": "Try all partitions into d days",
-      "time": "O(C(n, d))"
+      "idea": "Recursively compare outer characters: if they match, shrink both ends; otherwise, try inserting a character to match either end and take the minimum insertions.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "DP dp[day][job] = min over k (dp[day-1][k] + maxJob(k+1, job))",
-      "time": "O(d · n²)"
+      "idea": "Interval dynamic programming computing the minimum insertion cost for substrings of increasing length in O(n^2) time and O(n) space.",
+      "time": "O(n^2)"
     },
     "companies": [
       "amazon",
@@ -9234,19 +9234,19 @@
   },
   {
     "seq": 494,
-    "lc": 1277,
-    "title": "Count Square Submatrices with All Ones",
-    "slug": "count-square-submatrices-with-all-ones",
-    "difficulty": "Medium",
-    "buildsOn": 236,
+    "lc": 1092,
+    "title": "Shortest Common Supersequence",
+    "slug": "shortest-common-supersequence",
+    "difficulty": "Hard",
     "chapter": "ch-32",
+    "buildsOn": 261,
     "brute": {
-      "idea": "Check every possible square",
-      "time": "O(mn · min(m,n))"
+      "idea": "Recursive backtracking exploring all possible interleaved supersequence characters until both strings are consumed.",
+      "time": "O(2^(n+m))"
     },
     "optimal": {
-      "idea": "2D DP in place: dp[i][j] = 1 + min(top, left, diag)",
-      "time": "O(mn)"
+      "idea": "Compute 2D LCS table in O(n * m) time, then trace back from (n, m) to build the shortest supersequence in O(n + m) time.",
+      "time": "O(n * m)"
     },
     "companies": [
       "google",
@@ -9255,19 +9255,19 @@
   },
   {
     "seq": 495,
-    "lc": 1478,
-    "title": "Allocate Mailboxes",
-    "slug": "allocate-mailboxes",
-    "difficulty": "Hard",
-    "buildsOn": 493,
+    "lc": 877,
+    "title": "Stone Game",
+    "slug": "stone-game",
+    "difficulty": "Medium",
     "chapter": "ch-32",
+    "buildsOn": 494,
     "brute": {
-      "idea": "Try all mailbox allocations",
-      "time": "exponential"
+      "idea": "Minimax DFS exploring picking from left vs right end recursively to check if player 1 can achieve a strictly positive score advantage.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Sort houses, precalculate median distance costs, 2D DP dp[i][k]",
-      "time": "O(k · n²)"
+      "idea": "Interval dynamic programming calculating max differential across all subarray intervals in O(n^2) time and O(n) space.",
+      "time": "O(n^2)"
     },
     "companies": [
       "google",
@@ -9276,19 +9276,19 @@
   },
   {
     "seq": 496,
-    "lc": 813,
-    "title": "Largest Sum of Averages",
-    "slug": "largest-sum-of-averages",
+    "lc": 486,
+    "title": "Predict the Winner",
+    "slug": "predict-the-winner",
     "difficulty": "Medium",
-    "buildsOn": 495,
     "chapter": "ch-32",
+    "buildsOn": 495,
     "brute": {
-      "idea": "Try all partitionings into at most k groups",
-      "time": "exponential"
+      "idea": "Recursively evaluate all combinations of choices by both players using pure minimax.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "DP dp[i][k] = max over j (dp[j][k-1] + average(j, i))",
-      "time": "O(k · n²)"
+      "idea": "Interval dynamic programming optimized to a 1D array representing score differences in O(n^2) time and O(n) space.",
+      "time": "O(n^2)"
     },
     "companies": [
       "google",
@@ -9297,19 +9297,19 @@
   },
   {
     "seq": 497,
-    "lc": 1473,
-    "title": "Paint House III",
-    "slug": "paint-house-iii",
-    "difficulty": "Hard",
-    "buildsOn": 496,
+    "lc": 1140,
+    "title": "Stone Game II",
+    "slug": "stone-game-ii",
+    "difficulty": "Medium",
     "chapter": "ch-32",
+    "buildsOn": 496,
     "brute": {
-      "idea": "Try all color combinations for unpainted houses",
-      "time": "O(n^m)"
+      "idea": "Recursively try every valid pile count X from 1 to 2M, computing opponent's optimal response.",
+      "time": "O((2M)^n)"
     },
     "optimal": {
-      "idea": "3D DP dp[house][target][prevColor] = min cost",
-      "time": "O(m · target · n²)"
+      "idea": "Memoized 2D dynamic programming storing max stones for state (index i, parameter M) in O(n^3) time.",
+      "time": "O(n^3)"
     },
     "companies": [
       "google",
@@ -9318,19 +9318,19 @@
   },
   {
     "seq": 498,
-    "lc": 887,
-    "title": "Super Egg Drop",
-    "slug": "super-egg-drop",
-    "difficulty": "Hard",
-    "buildsOn": 497,
+    "lc": 375,
+    "title": "Guess Number Higher or Lower II",
+    "slug": "guess-number-higher-or-lower-ii",
+    "difficulty": "Medium",
     "chapter": "ch-32",
+    "buildsOn": 497,
     "brute": {
-      "idea": "Simulate all drop strategies",
-      "time": "exponential"
+      "idea": "Recursively explore picking every number k in [i..j] as the first guess, taking the worst branch and minimizing over k.",
+      "time": "O(4^n / n^(3/2))"
     },
     "optimal": {
-      "idea": "DP on number of moves m and eggs k: dp[m][k] = dp[m-1][k-1] + dp[m-1][k] + 1",
-      "time": "O(k log n)"
+      "idea": "Interval dynamic programming building min-max costs for increasing range lengths in O(n^3) time and O(n^2) space.",
+      "time": "O(n^3)"
     },
     "companies": [
       "google",
@@ -9339,19 +9339,19 @@
   },
   {
     "seq": 499,
-    "lc": 1043,
-    "title": "Partition Array for Maximum Sum",
-    "slug": "partition-array-for-maximum-sum",
+    "lc": 1130,
+    "title": "Minimum Cost Tree From Leaf Values",
+    "slug": "minimum-cost-tree-from-leaf-values",
     "difficulty": "Medium",
-    "buildsOn": 487,
     "chapter": "ch-32",
+    "buildsOn": 273,
     "brute": {
-      "idea": "Backtrack all valid partitionings up to length k",
-      "time": "O(kⁿ)"
+      "idea": "Recursively try every split index k in [i, j-1] to partition the interval into left and right subtrees.",
+      "time": "O(4^n / n^(3/2))"
     },
     "optimal": {
-      "idea": "1D DP: dp[i] = max over j <= k (dp[i-j] + j * max_val)",
-      "time": "O(nk)"
+      "idea": "Monotonic decreasing stack greedily pairing smaller adjacent leaves with the minimum of their neighbors in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -9360,19 +9360,19 @@
   },
   {
     "seq": 500,
-    "lc": 87,
-    "title": "Scramble String",
-    "slug": "scramble-string",
+    "lc": 1547,
+    "title": "Minimum Cost to Cut a Stick",
+    "slug": "minimum-cost-to-cut-a-stick",
     "difficulty": "Hard",
-    "buildsOn": 499,
     "chapter": "ch-32",
+    "buildsOn": 273,
     "brute": {
-      "idea": "Try all binary tree partitions recursively",
-      "time": "exponential"
+      "idea": "Recursively attempt every available cut within the current stick segment, paying the current segment length each time.",
+      "time": "O(4^m / m^(3/2))"
     },
     "optimal": {
-      "idea": "Memoized recursion with character frequency pruning",
-      "time": "O(n⁴)"
+      "idea": "Interval dynamic programming calculating minimum cutting cost for segments of increasing length in O(m^3) time and O(m^2) space.",
+      "time": "O(m^3)"
     },
     "companies": [
       "google",

@@ -117,5 +117,447 @@
         "python": "class Solution:\n    def longestArithSeqLength(self, nums: list[int]) -> int:\n        dp = {}\n        for i in range(len(nums)):\n            for j in range(i):\n                diff = nums[i] - nums[j]\n                dp[(i, diff)] = dp.get((j, diff), 1) + 1\n        return max(dp.values())"
       }
     }
+  },
+  {
+    "seq": 476,
+    "whyNext": "Builds on LIS predecessor chaining from Longest Increasing Subsequence (Seq 247) by sorting nums and finding the longest chain where nums[i] % nums[j] == 0, reconstructing the subset via parent pointers.",
+    "hints": [
+      "Sort nums ascending: if a divides b and b divides c, then a divides c transitively.",
+      "Maintain dp[i] as the size of the largest divisible subset ending at index i, and parent[i] pointing to the predecessor index.",
+      "For each i: for each j < i: if nums[i] % nums[j] == 0 and dp[j] + 1 > dp[i]: dp[i] = dp[j] + 1, parent[i] = j. Backtrack from the index with maximum dp to reconstruct the subset."
+    ],
+    "brute": {
+      "idea": "Generate all 2^n subsets, verify if every pair satisfies divisibility, and return the largest qualifying subset.",
+      "steps": [
+        "Generate all possible subsets of nums.",
+        "Check each subset: for all pairs (a, b), verify a % b == 0 or b % a == 0.",
+        "Keep track of the largest valid subset.",
+        "Return largest subset found."
+      ],
+      "whySlow": "Exponential 2^n subset generation.",
+      "time": "O(2^n * n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> largestDivisibleSubset(int[] nums) {\n        Arrays.sort(nums);\n        List<Integer> best = new ArrayList<>();\n        backtrack(nums, 0, new ArrayList<>(), best);\n        return best;\n    }\n    private void backtrack(int[] nums, int idx, List<Integer> cur, List<Integer> best) {\n        if (cur.size() > best.size()) {\n            best.clear();\n            best.addAll(cur);\n        }\n        for (int i = idx; i < nums.length; i++) {\n            if (cur.isEmpty() || nums[i] % cur.get(cur.size() - 1) == 0) {\n                cur.add(nums[i]);\n                backtrack(nums, i + 1, cur, best);\n                cur.remove(cur.size() - 1);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def largestDivisibleSubset(self, nums: list[int]) -> list[int]:\n        nums.sort()\n        best = []\n        def dfs(idx: int, cur: list[int]) -> None:\n            nonlocal best\n            if len(cur) > len(best):\n                best = list(cur)\n            for i in range(idx, len(nums)):\n                if not cur or nums[i] % cur[-1] == 0:\n                    dfs(i + 1, cur + [nums[i]])\n        dfs(0, [])\n        return best"
+      }
+    },
+    "optimal": {
+      "idea": "Sort + LIS DP with parent pointer reconstruction: compute max subset in O(n^2) time and rebuild list in O(n) time.",
+      "steps": [
+        "Sort nums ascending.",
+        "int[] dp = new int[n]; int[] parent = new int[n]; Arrays.fill(dp, 1); Arrays.fill(parent, -1);",
+        "int maxIdx = 0, maxVal = 1;",
+        "For i from 0 to n - 1: for j from 0 to i - 1: if nums[i] % nums[j] == 0 and dp[j] + 1 > dp[i]: dp[i] = dp[j] + 1; parent[i] = j; if dp[i] > maxVal: maxVal = dp[i]; maxIdx = i;",
+        "Reconstruct subset by following parent pointers from maxIdx.",
+        "Return subset list."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<Integer> largestDivisibleSubset(int[] nums) {\n        int n = nums.length;\n        Arrays.sort(nums);\n        int[] dp = new int[n];\n        int[] parent = new int[n];\n        Arrays.fill(dp, 1);\n        Arrays.fill(parent, -1);\n        int maxLen = 1, maxIdx = 0;\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[i] % nums[j] == 0 && dp[j] + 1 > dp[i]) {\n                    dp[i] = dp[j] + 1;\n                    parent[i] = j;\n                }\n            }\n            if (dp[i] > maxLen) {\n                maxLen = dp[i];\n                maxIdx = i;\n            }\n        }\n        List<Integer> res = new ArrayList<>();\n        int curr = maxIdx;\n        while (curr != -1) {\n            res.add(nums[curr]);\n            curr = parent[curr];\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def largestDivisibleSubset(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        nums.sort()\n        dp = [1] * n\n        parent = [-1] * n\n        max_idx = 0\n        for i in range(n):\n            for j in range(i):\n                if nums[i] % nums[j] == 0 and dp[j] + 1 > dp[i]:\n                    dp[i] = dp[j] + 1\n                    parent[i] = j\n            if dp[i] > dp[max_idx]:\n                max_idx = i\n        res = []\n        curr = max_idx\n        while curr != -1:\n            res.append(nums[curr])\n            curr = parent[curr]\n        return res[::-1]"
+      }
+    }
+  },
+  {
+    "seq": 477,
+    "whyNext": "Builds on multi-choice transition DP from Coin Change (Seq 242) by comparing 1-day, 7-day, and 30-day passes at each travel day to minimize cumulative transit cost.",
+    "hints": [
+      "Track travel days using a boolean array or HashSet for O(1) travel day checks.",
+      "dp[d] represents minimum cost to travel up through day d (from day 1 to 365).",
+      "If day d is not a travel day, dp[d] = dp[d - 1]. If d is a travel day, dp[d] = min(dp[d - 1] + costs[0], dp[max(0, d - 7)] + costs[1], dp[max(0, d - 30)] + costs[2])."
+    ],
+    "brute": {
+      "idea": "Recursively choose 1-day, 7-day, or 30-day pass starting from the first travel day.",
+      "steps": [
+        "Define dfs(dayIndex): if dayIndex >= days.length return 0.",
+        "Branch 1: buy 1-day pass, advance to next travel day.",
+        "Branch 2: buy 7-day pass, advance to first travel day >= days[dayIndex] + 7.",
+        "Branch 3: buy 30-day pass, advance to first travel day >= days[dayIndex] + 30.",
+        "Return minimum across the 3 branches."
+      ],
+      "whySlow": "3^n branching explores overlapping subproblems.",
+      "time": "O(3^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int mincostTickets(int[] days, int[] costs) {\n        return dfs(days, costs, 0);\n    }\n    private int dfs(int[] days, int[] costs, int idx) {\n        if (idx >= days.length) return 0;\n        int c1 = costs[0] + dfs(days, costs, idx + 1);\n        int i7 = idx;\n        while (i7 < days.length && days[i7] < days[idx] + 7) i7++;\n        int c7 = costs[1] + dfs(days, costs, i7);\n        int i30 = idx;\n        while (i30 < days.length && days[i30] < days[idx] + 30) i30++;\n        int c30 = costs[2] + dfs(days, costs, i30);\n        return Math.min(c1, Math.min(c7, c30));\n    }\n}",
+        "python": "class Solution:\n    def mincostTickets(self, days: list[int], costs: list[int]) -> int:\n        n = len(days)\n        def dfs(idx: int) -> int:\n            if idx >= n:\n                return 0\n            c1 = costs[0] + dfs(idx + 1)\n            i7 = idx\n            while i7 < n and days[i7] < days[idx] + 7:\n                i7 += 1\n            c7 = costs[1] + dfs(i7)\n            i30 = idx\n            while i30 < n and days[i30] < days[idx] + 30:\n                i30 += 1\n            c30 = costs[2] + dfs(i30)\n            return min(c1, c7, c30)\n        return dfs(0)"
+      }
+    },
+    "optimal": {
+      "idea": "Calendar day DP: iterate from day 1 to lastDay, choosing min pass covering day d in O(lastDay) = O(1) time.",
+      "steps": [
+        "boolean[] isTravel = new boolean[366]; for (int d : days) isTravel[d] = true;",
+        "int[] dp = new int[366];",
+        "For d from 1 to 365: if (!isTravel[d]) dp[d] = dp[d - 1]; else dp[d] = min(dp[d - 1] + costs[0], dp[max(0, d - 7)] + costs[1], dp[max(0, d - 30)] + costs[2]);",
+        "Return dp[days[days.length - 1]]."
+      ],
+      "time": "O(W) where W = 365 = O(1)",
+      "space": "O(365) = O(1)",
+      "code": {
+        "java": "class Solution {\n    public int mincostTickets(int[] days, int[] costs) {\n        int lastDay = days[days.length - 1];\n        boolean[] travel = new boolean[lastDay + 1];\n        for (int d : days) travel[d] = true;\n        int[] dp = new int[lastDay + 1];\n        for (int i = 1; i <= lastDay; i++) {\n            if (!travel[i]) {\n                dp[i] = dp[i - 1];\n            } else {\n                int cost1 = dp[i - 1] + costs[0];\n                int cost7 = dp[Math.max(0, i - 7)] + costs[1];\n                int cost30 = dp[Math.max(0, i - 30)] + costs[2];\n                dp[i] = Math.min(cost1, Math.min(cost7, cost30));\n            }\n        }\n        return dp[lastDay];\n    }\n}",
+        "python": "class Solution:\n    def mincostTickets(self, days: list[int], costs: list[int]) -> int:\n        last_day = days[-1]\n        travel = set(days)\n        dp = [0] * (last_day + 1)\n        for i in range(1, last_day + 1):\n            if i not in travel:\n                dp[i] = dp[i - 1]\n            else:\n                c1 = dp[i - 1] + costs[0]\n                c7 = dp[max(0, i - 7)] + costs[1]\n                c30 = dp[max(0, i - 30)] + costs[2]\n                dp[i] = min(c1, c7, c30)\n        return dp[last_day]"
+      }
+    }
+  },
+  {
+    "seq": 478,
+    "whyNext": "Builds on skip-or-take backward DP from House Robber (Seq 238) by choosing between skipping question i (dp[i+1]) or solving it (points[i] + dp[i + brainpower[i] + 1]).",
+    "hints": [
+      "Process questions backwards from index n - 1 down to 0.",
+      "At question i, you have two choices: skip it (score dp[i + 1]), or solve it (score points[i] + dp[next], where next = i + brainpower[i] + 1).",
+      "If next >= n, score from solving is simply points[i]. Set dp[i] = max(dp[i + 1], points[i] + (next < n ? dp[next] : 0))."
+    ],
+    "brute": {
+      "idea": "Forward recursion trying both choices (skip or solve) at each question.",
+      "steps": [
+        "In dfs(i): if i >= n return 0.",
+        "skip = dfs(i + 1).",
+        "solve = points[i] + dfs(i + brainpower[i] + 1).",
+        "Return max(skip, solve)."
+      ],
+      "whySlow": "Exponential 2^n subproblem branching.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public long mostPoints(int[][] questions) {\n        return dfs(questions, 0);\n    }\n    private long dfs(int[][] q, int i) {\n        if (i >= q.length) return 0;\n        long skip = dfs(q, i + 1);\n        long solve = q[i][0] + dfs(q, i + q[i][1] + 1);\n        return Math.max(skip, solve);\n    }\n}",
+        "python": "class Solution:\n    def mostPoints(self, questions: list[list[int]]) -> int:\n        n = len(questions)\n        def dfs(i: int) -> int:\n            if i >= n:\n                return 0\n            skip = dfs(i + 1)\n            solve = questions[i][0] + dfs(i + questions[i][1] + 1)\n            return max(skip, solve)\n        return dfs(0)"
+      }
+    },
+    "optimal": {
+      "idea": "Backward 1D dynamic programming: compute dp[i] = max(dp[i + 1], points[i] + dp[i + brainpower[i] + 1]) in O(n) time.",
+      "steps": [
+        "int n = questions.length; long[] dp = new long[n + 1];",
+        "Loop i from n - 1 down to 0: int next = i + questions[i][1] + 1; long solve = questions[i][0] + (next < n ? dp[next] : 0); dp[i] = Math.max(dp[i + 1], solve);",
+        "Return dp[0]."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public long mostPoints(int[][] questions) {\n        int n = questions.length;\n        long[] dp = new long[n + 1];\n        for (int i = n - 1; i >= 0; i--) {\n            int points = questions[i][0];\n            int power = questions[i][1];\n            int next = i + power + 1;\n            long solve = points + (next < n ? dp[next] : 0);\n            dp[i] = Math.max(dp[i + 1], solve);\n        }\n        return dp[0];\n    }\n}",
+        "python": "class Solution:\n    def mostPoints(self, questions: list[list[int]]) -> int:\n        n = len(questions)\n        dp = [0] * (n + 1)\n        for i in range(n - 1, -1, -1):\n            pts, bp = questions[i]\n            nxt = i + bp + 1\n            solve = pts + (dp[nxt] if nxt < n else 0)\n            dp[i] = max(dp[i + 1], solve)\n        return dp[0]"
+      }
+    }
+  },
+  {
+    "seq": 479,
+    "whyNext": "Builds on target sum DP from Combination Sum IV (Seq 243) by rolling n identical k-sided dice to reach exact target sum modulo 10^9+7.",
+    "hints": [
+      "dp[d][t] represents the number of ways to reach sum t using exactly d dice.",
+      "Base case: dp[0][0] = 1, all other dp[0][t] = 0.",
+      "For each die d from 1 to n: for each sum t from d to target: dp[d][t] = sum(dp[d - 1][t - face]) for face in [1, k] where t - face >= 0, modulo 10^9+7."
+    ],
+    "brute": {
+      "idea": "Recursive backtracking: roll each die choosing face from 1 to k, counting paths that total target.",
+      "steps": [
+        "In dfs(diceLeft, targetLeft): if diceLeft == 0 return targetLeft == 0 ? 1 : 0.",
+        "Sum dfs(diceLeft - 1, targetLeft - face) for face from 1 to k.",
+        "Return sum modulo 10^9+7."
+      ],
+      "whySlow": "O(k^n) exponential tree expansion.",
+      "time": "O(k^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int numRollsToTarget(int n, int k, int target) {\n        int[][] memo = new int[n + 1][target + 1];\n        for (int[] row : memo) Arrays.fill(row, -1);\n        return dfs(n, k, target, memo);\n    }\n    private int dfs(int d, int k, int t, int[][] memo) {\n        if (d == 0) return t == 0 ? 1 : 0;\n        if (t < 0) return 0;\n        if (memo[d][t] != -1) return memo[d][t];\n        long ways = 0;\n        for (int f = 1; f <= k; f++) {\n            ways = (ways + dfs(d - 1, k, t - f, memo)) % 1_000_000_007;\n        }\n        return memo[d][t] = (int) ways;\n    }\n}",
+        "python": "class Solution:\n    def numRollsToTarget(self, n: int, k: int, target: int) -> int:\n        memo = {}\n        MOD = 1_000_000_007\n        def dfs(d: int, t: int) -> int:\n            if d == 0:\n                return 1 if t == 0 else 0\n            if t < 0:\n                return 0\n            if (d, t) in memo:\n                return memo[(d, t)]\n            ways = 0\n            for f in range(1, k + 1):\n                ways = (ways + dfs(d - 1, t - f)) % MOD\n            memo[(d, t)] = ways\n            return ways\n        return dfs(n, target)"
+      }
+    },
+    "optimal": {
+      "idea": "2D / 1D rolling array dynamic programming: dp[t] = sum(prevDp[t - face]) in O(n * target * k) time.",
+      "steps": [
+        "int MOD = 1_000_000_007; int[] dp = new int[target + 1]; dp[0] = 1;",
+        "For die from 1 to n: int[] nextDp = new int[target + 1];",
+        "For t from die to target: for face from 1 to min(k, t): nextDp[t] = (nextDp[t] + dp[t - face]) % MOD;",
+        "dp = nextDp; Return dp[target]."
+      ],
+      "time": "O(n * target * k)",
+      "space": "O(target)",
+      "code": {
+        "java": "class Solution {\n    public int numRollsToTarget(int n, int k, int target) {\n        int MOD = 1_000_000_007;\n        int[] dp = new int[target + 1];\n        dp[0] = 1;\n        for (int d = 1; d <= n; d++) {\n            int[] next = new int[target + 1];\n            for (int t = d; t <= target; t++) {\n                for (int f = 1; f <= k && f <= t; f++) {\n                    next[t] = (next[t] + dp[t - f]) % MOD;\n                }\n            }\n            dp = next;\n        }\n        return dp[target];\n    }\n}",
+        "python": "class Solution:\n    def numRollsToTarget(self, n: int, k: int, target: int) -> int:\n        MOD = 1_000_000_007\n        dp = [0] * (target + 1)\n        dp[0] = 1\n        for d in range(1, n + 1):\n            next_dp = [0] * (target + 1)\n            for t in range(d, target + 1):\n                for f in range(1, min(k, t) + 1):\n                    next_dp[t] = (next_dp[t] + dp[t - f]) % MOD\n            dp = next_dp\n        return dp[target]"
+      }
+    }
+  },
+  {
+    "seq": 480,
+    "whyNext": "Builds on 2D 0-1 Knapsack from Target Sum (Seq 251) by extending knapsack capacity to two independent resource constraints: m zeros and n ones.",
+    "hints": [
+      "Each string costs zeros 0s and ones 1s, and yields a value of 1 string.",
+      "dp[i][j] represents the maximum number of strings formed using at most i zeros and j ones.",
+      "Traverse backwards to reuse 2D array: for i from m down to zeros: for j from n down to ones: dp[i][j] = max(dp[i][j], dp[i - zeros][j - ones] + 1)."
+    ],
+    "brute": {
+      "idea": "Recursively decide to take or skip each string, tracking consumed zeros and ones.",
+      "steps": [
+        "In dfs(idx, zerosLeft, onesLeft): if idx == strs.length return 0.",
+        "skip = dfs(idx + 1, zerosLeft, onesLeft).",
+        "Count zeros and ones in strs[idx]. If affordable, take = 1 + dfs(idx + 1, zerosLeft - zeros, onesLeft - ones).",
+        "Return max(skip, take)."
+      ],
+      "whySlow": "2^L exponential string combination search.",
+      "time": "O(2^L)",
+      "space": "O(L)",
+      "code": {
+        "java": "class Solution {\n    public int findMaxForm(String[] strs, int m, int n) {\n        int[][][] memo = new int[strs.length][m + 1][n + 1];\n        return dfs(strs, 0, m, n, memo);\n    }\n    private int dfs(String[] s, int idx, int m, int n, int[][][] memo) {\n        if (idx == s.length) return 0;\n        if (memo[idx][m][n] != 0) return memo[idx][m][n];\n        int skip = dfs(s, idx + 1, m, n, memo);\n        int take = 0;\n        int zeros = 0, ones = 0;\n        for (char c : s[idx].toCharArray()) {\n            if (c == '0') zeros++; else ones++;\n        }\n        if (m >= zeros && n >= ones) {\n            take = 1 + dfs(s, idx + 1, m - zeros, n - ones, memo);\n        }\n        return memo[idx][m][n] = Math.max(skip, take);\n    }\n}",
+        "python": "class Solution:\n    def findMaxForm(self, strs: list[str], m: int, n: int) -> int:\n        memo = {}\n        def dfs(idx: int, z: int, o: int) -> int:\n            if idx == len(strs):\n                return 0\n            if (idx, z, o) in memo:\n                return memo[(idx, z, o)]\n            skip = dfs(idx + 1, z, o)\n            zeros = strs[idx].count('0')\n            ones = strs[idx].count('1')\n            take = 0\n            if z >= zeros and o >= ones:\n                take = 1 + dfs(idx + 1, z - zeros, o - ones)\n            res = max(skip, take)\n            memo[(idx, z, o)] = res\n            return res\n        return dfs(0, m, n)"
+      }
+    },
+    "optimal": {
+      "idea": "2D backward knapsack DP: update dp[i][j] from (m, n) down to (zeros, ones) in O(L * m * n) time.",
+      "steps": [
+        "int[][] dp = new int[m + 1][n + 1];",
+        "For each string s: count zeros and ones in s.",
+        "For i from m down to zeros: for j from n down to ones: dp[i][j] = Math.max(dp[i][j], dp[i - zeros][j - ones] + 1);",
+        "Return dp[m][n]."
+      ],
+      "time": "O(L * m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int findMaxForm(String[] strs, int m, int n) {\n        int[][] dp = new int[m + 1][n + 1];\n        for (String s : strs) {\n            int zeros = 0, ones = 0;\n            for (char c : s.toCharArray()) {\n                if (c == '0') zeros++;\n                else ones++;\n            }\n            for (int i = m; i >= zeros; i--) {\n                for (int j = n; j >= ones; j--) {\n                    dp[i][j] = Math.max(dp[i][j], dp[i - zeros][j - ones] + 1);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+        "python": "class Solution:\n    def findMaxForm(self, strs: list[str], m: int, n: int) -> int:\n        dp = [[0] * (n + 1) for _ in range(m + 1)]\n        for s in strs:\n            zeros = s.count('0')\n            ones = s.count('1')\n            for i in range(m, zeros - 1, -1):\n                for j in range(n, ones - 1, -1):\n                    dp[i][j] = max(dp[i][j], dp[i - zeros][j - ones] + 1)\n        return dp[m][n]"
+      }
+    }
+  },
+  {
+    "seq": 481,
+    "whyNext": "Builds on recurrence relations from Climbing Stairs (Seq 235) by modeling state transitions across fully covered and partially covered 2xn grid columns (dp[i] = 2*dp[i-1] + dp[i-3]).",
+    "hints": [
+      "Track full tilings and partial tilings with one square sticking out.",
+      "Full tiling recurrence simplifies to: dp[i] = (2 * dp[i - 1] + dp[i - 3]) % 10^9+7.",
+      "Base cases: dp[0] = 1, dp[1] = 1, dp[2] = 2, dp[3] = 5. Compute iteratively up to n."
+    ],
+    "brute": {
+      "idea": "Mutual state recursion: full(n) calls full and partial state transitions recursively.",
+      "steps": [
+        "full(n) = full(n-1) + full(n-2) + 2*partial(n-1).",
+        "partial(n) = full(n-2) + partial(n-1).",
+        "Compute with memoization modulo 10^9+7."
+      ],
+      "whySlow": "Mutual recursion with two state functions.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int numTilings(int n) {\n        if (n <= 1) return 1;\n        long[] dp = new long[Math.max(n + 1, 4)];\n        dp[0] = 1; dp[1] = 1; dp[2] = 2; dp[3] = 5;\n        int MOD = 1_000_000_007;\n        for (int i = 4; i <= n; i++) {\n            dp[i] = (2 * dp[i - 1] + dp[i - 3]) % MOD;\n        }\n        return (int) dp[n];\n    }\n}",
+        "python": "class Solution:\n    def numTilings(self, n: int) -> int:\n        if n <= 1:\n            return 1\n        MOD = 1_000_000_007\n        dp = [0] * max(n + 1, 4)\n        dp[0], dp[1], dp[2], dp[3] = 1, 1, 2, 5\n        for i in range(4, n + 1):\n            dp[i] = (2 * dp[i - 1] + dp[i - 3]) % MOD\n        return dp[n]"
+      }
+    },
+    "optimal": {
+      "idea": "Single simplified recurrence relation dp[i] = 2*dp[i-1] + dp[i-3] in O(n) time and O(1) space.",
+      "steps": [
+        "If n <= 1 return 1; if n == 2 return 2; if n == 3 return 5.",
+        "Rolling variables: p3 = 1, p2 = 1, p1 = 2, cur = 5.",
+        "Loop i from 4 to n: next = (2 * cur + p3) % MOD; p3 = p2; p2 = p1; p1 = cur; cur = next;",
+        "Return (int) cur."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numTilings(int n) {\n        if (n <= 1) return 1;\n        if (n == 2) return 2;\n        if (n == 3) return 5;\n        int MOD = 1_000_000_007;\n        long p3 = 1, p2 = 1, p1 = 2, cur = 5;\n        for (int i = 4; i <= n; i++) {\n            long next = (2 * cur + p3) % MOD;\n            p3 = p2;\n            p2 = p1;\n            p1 = cur;\n            cur = next;\n        }\n        return (int) cur;\n    }\n}",
+        "python": "class Solution:\n    def numTilings(self, n: int) -> int:\n        if n <= 1:\n            return 1\n        if n == 2:\n            return 2\n        if n == 3:\n            return 5\n        MOD = 1_000_000_007\n        p3, p2, p1, cur = 1, 1, 2, 5\n        for _ in range(4, n + 1):\n            nxt = (2 * cur + p3) % MOD\n            p3, p2, p1, cur = p2, p1, cur, nxt\n        return cur"
+      }
+    }
+  },
+  {
+    "seq": 482,
+    "whyNext": "Builds on partition window decisions from Solving Questions With Brainpower (Seq 478) by trying each partition size len from 1 to k, changing all elements in the window to max(window) to maximize total sum.",
+    "hints": [
+      "dp[i] represents the maximum sum possible partitioning the prefix arr[0..i-1].",
+      "For each index i from 1 to n: consider the last partition starting at index i - len for len in [1, k].",
+      "Track maxVal in the window arr[i - len..i - 1]. dp[i] = max(dp[i], dp[i - len] + maxVal * len)."
+    ],
+    "brute": {
+      "idea": "Recursive backtracking trying all partition lengths from 1 to k starting from index 0.",
+      "steps": [
+        "In dfs(i): if i == n return 0.",
+        "Loop len from 1 to min(k, n - i).",
+        "Track max in arr[i..i+len-1].",
+        "Take max of maxVal * len + dfs(i + len).",
+        "Return best sum."
+      ],
+      "whySlow": "O(k^n) exponential partitioning tree.",
+      "time": "O(k^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maxSumAfterPartitioning(int[] arr, int k) {\n        int[] memo = new int[arr.length];\n        return dfs(arr, 0, k, memo);\n    }\n    private int dfs(int[] arr, int idx, int k, int[] memo) {\n        if (idx == arr.length) return 0;\n        if (memo[idx] != 0) return memo[idx];\n        int maxVal = 0, best = 0;\n        for (int len = 1; len <= k && idx + len <= arr.length; len++) {\n            maxVal = Math.max(maxVal, arr[idx + len - 1]);\n            best = Math.max(best, maxVal * len + dfs(arr, idx + len, k, memo));\n        }\n        return memo[idx] = best;\n    }\n}",
+        "python": "class Solution:\n    def maxSumAfterPartitioning(self, arr: list[int], k: int) -> int:\n        n = len(arr)\n        memo = {}\n        def dfs(idx: int) -> int:\n            if idx == n:\n                return 0\n            if idx in memo:\n                return memo[idx]\n            max_v = best = 0\n            for l in range(1, min(k, n - idx) + 1):\n                max_v = max(max_v, arr[idx + l - 1])\n                best = max(best, max_v * l + dfs(idx + l))\n            memo[idx] = best\n            return best\n        return dfs(0)"
+      }
+    },
+    "optimal": {
+      "idea": "Forward 1D DP with k-window scanning: dp[i] = max(dp[i - len] + maxVal * len) in O(n * k) time.",
+      "steps": [
+        "int n = arr.length; int[] dp = new int[n + 1];",
+        "For i from 1 to n: int maxVal = 0;",
+        "For len from 1 to min(k, i): maxVal = max(maxVal, arr[i - len]); dp[i] = max(dp[i], dp[i - len] + maxVal * len);",
+        "Return dp[n]."
+      ],
+      "time": "O(n * k)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maxSumAfterPartitioning(int[] arr, int k) {\n        int n = arr.length;\n        int[] dp = new int[n + 1];\n        for (int i = 1; i <= n; i++) {\n            int maxVal = 0;\n            for (int len = 1; len <= k && i - len >= 0; len++) {\n                maxVal = Math.max(maxVal, arr[i - len]);\n                dp[i] = Math.max(dp[i], dp[i - len] + maxVal * len);\n            }\n        }\n        return dp[n];\n    }\n}",
+        "python": "class Solution:\n    def maxSumAfterPartitioning(self, arr: list[int], k: int) -> int:\n        n = len(arr)\n        dp = [0] * (n + 1)\n        for i in range(1, n + 1):\n            max_v = 0\n            for l in range(1, min(k, i) + 1):\n                max_v = max(max_v, arr[i - l])\n                dp[i] = max(dp[i], dp[i - l] + max_v * l)\n        return dp[n]"
+      }
+    }
+  },
+  {
+    "seq": 483,
+    "whyNext": "Builds on modular remainder states from Target Sum (Seq 251) by maintaining maximum subarray sums under modulo 3 (reminders 0, 1, 2) in O(n) time.",
+    "hints": [
+      "dp[r] represents the maximum sum achieved so far with sum % 3 == r.",
+      "Initialize dp[0] = 0, dp[1] = -infinity, dp[2] = -infinity.",
+      "For each num: clone dp into next; for r in {0, 1, 2}: next[(r + num) % 3] = max(next[(r + num) % 3], dp[r] + num). Set dp = next. Return dp[0]."
+    ],
+    "brute": {
+      "idea": "Compute total sum; if total % 3 != 0, find and remove smallest elements with remainder 1 or 2.",
+      "steps": [
+        "Calculate total sum.",
+        "Sort elements with rem 1 and rem 2.",
+        "If sum % 3 == 1: remove 1 smallest from rem1, or 2 smallest from rem2.",
+        "If sum % 3 == 2: remove 1 smallest from rem2, or 2 smallest from rem1.",
+        "Return maximum resulting sum."
+      ],
+      "whySlow": "Requires collecting and sorting modulo buckets.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maxSumDivThree(int[] nums) {\n        int sum = 0;\n        List<Integer> r1 = new ArrayList<>(), r2 = new ArrayList<>();\n        for (int x : nums) {\n            sum += x;\n            if (x % 3 == 1) r1.add(x);\n            else if (x % 3 == 2) r2.add(x);\n        }\n        Collections.sort(r1);\n        Collections.sort(r2);\n        if (sum % 3 == 0) return sum;\n        int remove = Integer.MAX_VALUE;\n        if (sum % 3 == 1) {\n            if (!r1.isEmpty()) remove = Math.min(remove, r1.get(0));\n            if (r2.size() >= 2) remove = Math.min(remove, r2.get(0) + r2.get(1));\n        } else {\n            if (!r2.isEmpty()) remove = Math.min(remove, r2.get(0));\n            if (r1.size() >= 2) remove = Math.min(remove, r1.get(0) + r1.get(1));\n        }\n        return remove == Integer.MAX_VALUE ? 0 : sum - remove;\n    }\n}",
+        "python": "class Solution:\n    def maxSumDivThree(self, nums: list[int]) -> int:\n        total = sum(nums)\n        r1 = sorted(x for x in nums if x % 3 == 1)\n        r2 = sorted(x for x in nums if x % 3 == 2)\n        if total % 3 == 0:\n            return total\n        rem = float('inf')\n        if total % 3 == 1:\n            if r1:\n                rem = min(rem, r1[0])\n            if len(r2) >= 2:\n                rem = min(rem, r2[0] + r2[1])\n        else:\n            if r2:\n                rem = min(rem, r2[0])\n            if len(r1) >= 2:\n                rem = min(rem, r1[0] + r1[1])\n        return 0 if rem == float('inf') else total - rem"
+      }
+    },
+    "optimal": {
+      "idea": "3-state modular DP: dp[0, 1, 2] tracks maximum sum with remainder r, running in O(n) time and O(1) space.",
+      "steps": [
+        "int[] dp = new int[]{0, -1000000, -1000000};",
+        "For each x in nums: int[] next = dp.clone(); for r in 0..2: next[(r + x) % 3] = max(next[(r + x) % 3], dp[r] + x); dp = next;",
+        "Return dp[0]."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maxSumDivThree(int[] nums) {\n        int[] dp = new int[]{0, Integer.MIN_VALUE, Integer.MIN_VALUE};\n        for (int x : nums) {\n            int[] next = dp.clone();\n            for (int r = 0; r < 3; r++) {\n                if (dp[r] != Integer.MIN_VALUE) {\n                    int nr = (r + x) % 3;\n                    next[nr] = Math.max(next[nr], dp[r] + x);\n                }\n            }\n            dp = next;\n        }\n        return dp[0];\n    }\n}",
+        "python": "class Solution:\n    def maxSumDivThree(self, nums: list[int]) -> int:\n        dp = [0, float('-inf'), float('-inf')]\n        for x in nums:\n            next_dp = list(dp)\n            for r in range(3):\n                nr = (r + x) % 3\n                next_dp[nr] = max(next_dp[nr], dp[r] + x)\n            dp = next_dp\n        return dp[0]"
+      }
+    }
+  },
+  {
+    "seq": 484,
+    "whyNext": "Builds on Kadane's maximum subarray algorithm from Maximum Subarray (Seq 176) by maintaining two states: noDel (max subarray ending at i without deletion) and oneDel (max subarray ending at i with exactly one deletion).",
+    "hints": [
+      "noDel is standard Kadane: noDel = max(num, noDel + num).",
+      "oneDel can either delete current num (inheriting previous noDel) or keep current num after an earlier deletion: oneDel = max(prevNoDel, oneDel + num).",
+      "Update global max with max(noDel, oneDel) at each step."
+    ],
+    "brute": {
+      "idea": "Compute standard Kadane's sum, then test deleting each element one by one and finding max subarray.",
+      "steps": [
+        "Compute max subarray sum without any deletion.",
+        "For each index i: test removing nums[i], compute Kadane's algorithm on remaining array.",
+        "Return maximum found."
+      ],
+      "whySlow": "O(n^2) nested Kadane runs.",
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maximumSum(int[] arr) {\n        int n = arr.length;\n        int max = arr[0];\n        int cur = arr[0];\n        for (int i = 1; i < n; i++) {\n            cur = Math.max(arr[i], cur + arr[i]);\n            max = Math.max(max, cur);\n        }\n        for (int del = 0; del < n; del++) {\n            int subMax = Integer.MIN_VALUE, subCur = 0;\n            boolean has = false;\n            for (int i = 0; i < n; i++) {\n                if (i == del) continue;\n                subCur = Math.max(arr[i], subCur + arr[i]);\n                subMax = Math.max(subMax, subCur);\n                has = true;\n            }\n            if (has) max = Math.max(max, subMax);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maximumSum(self, arr: list[int]) -> int:\n        n = len(arr)\n        max_val = max(arr)\n        if max_val < 0:\n            return max_val\n        no_del = arr[0]\n        one_del = 0\n        res = arr[0]\n        for i in range(1, n):\n            one_del = max(no_del, one_del + arr[i])\n            no_del = max(arr[i], no_del + arr[i])\n            res = max(res, no_del, one_del)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "2-state Kadane dynamic programming: track noDel and oneDel in O(1) space and O(n) linear time.",
+      "steps": [
+        "int noDel = arr[0], oneDel = 0, ans = arr[0];",
+        "For i from 1 to arr.length - 1: int x = arr[i]; oneDel = max(noDel, oneDel + x); noDel = max(x, noDel + x); ans = max(ans, max(noDel, oneDel));",
+        "Return ans."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maximumSum(int[] arr) {\n        int noDel = arr[0];\n        int oneDel = 0;\n        int max = arr[0];\n        for (int i = 1; i < arr.length; i++) {\n            int x = arr[i];\n            oneDel = Math.max(noDel, oneDel + x);\n            noDel = Math.max(x, noDel + x);\n            max = Math.max(max, Math.max(noDel, oneDel));\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def maximumSum(self, arr: list[int]) -> int:\n        no_del = arr[0]\n        one_del = 0\n        ans = arr[0]\n        for i in range(1, len(arr)):\n            x = arr[i]\n            one_del = max(no_del, one_del + x)\n            no_del = max(x, no_del + x)\n            ans = max(ans, no_del, one_del)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 485,
+    "whyNext": "Builds on interval scheduling from Non-overlapping Intervals (Seq 424) by associating each interval with a profit and finding the maximum profit subset of non-overlapping jobs using sorting, DP, and binary search.",
+    "hints": [
+      "Combine startTime, endTime, and profit into job objects and sort them by endTime.",
+      "Define dp[i] as the maximum profit achievable considering a subset of the first i jobs.",
+      "For job i, either skip it (dp[i-1]) or take it: add its profit to dp[j], where j is the latest job finishing on or before job i starts, found via binary search."
+    ],
+    "brute": {
+      "idea": "Recursively explore all subsets of mutually non-overlapping jobs and track the maximum profit.",
+      "steps": [
+        "Sort jobs by start time.",
+        "Use recursion: at each job, decide whether to include it (if compatible with the previous included job) or skip it.",
+        "Track max profit across all valid combination paths.",
+        "Return maximum profit."
+      ],
+      "whySlow": "Exponential 2^n combinations without memoization.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {\n        int n = startTime.length;\n        int[][] jobs = new int[n][3];\n        for (int i = 0; i < n; i++) {\n            jobs[i] = new int[]{startTime[i], endTime[i], profit[i]};\n        }\n        Arrays.sort(jobs, (a, b) -> Integer.compare(a[0], b[0]));\n        return backtrack(jobs, 0, 0);\n    }\n    private int backtrack(int[][] jobs, int idx, int lastEnd) {\n        if (idx == jobs.length) return 0;\n        int skip = backtrack(jobs, idx + 1, lastEnd);\n        int take = 0;\n        if (jobs[idx][0] >= lastEnd) {\n            take = jobs[idx][2] + backtrack(jobs, idx + 1, jobs[idx][1]);\n        }\n        return Math.max(skip, take);\n    }\n}",
+        "python": "class Solution:\n    def jobScheduling(self, startTime: list[int], endTime: list[int], profit: list[int]) -> int:\n        jobs = sorted(zip(startTime, endTime, profit))\n        n = len(jobs)\n        def backtrack(idx: int, last_end: int) -> int:\n            if idx == n:\n                return 0\n            skip = backtrack(idx + 1, last_end)\n            take = 0\n            if jobs[idx][0] >= last_end:\n                take = jobs[idx][2] + backtrack(idx + 1, jobs[idx][1])\n            return max(skip, take)\n        return backtrack(0, 0)"
+      }
+    },
+    "optimal": {
+      "idea": "Sort jobs by end time and use dynamic programming with binary search to find the latest non-conflicting job in O(n log n) time.",
+      "steps": [
+        "Combine startTime, endTime, and profit into a 2D array and sort by endTime ascending.",
+        "Create dp array where dp[i] is the max profit using a subset of the first i jobs (1-indexed).",
+        "For job i (0-indexed): binary search for the largest j (0 to i-1) where jobs[j].endTime <= jobs[i].startTime.",
+        "dp[i+1] = max(dp[i], jobs[i].profit + dp[j+1]).",
+        "Return dp[n]."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int jobScheduling(int[] startTime, int[] endTime, int[] profit) {\n        int n = startTime.length;\n        int[][] jobs = new int[n][3];\n        for (int i = 0; i < n; i++) {\n            jobs[i] = new int[]{startTime[i], endTime[i], profit[i]};\n        }\n        Arrays.sort(jobs, (a, b) -> Integer.compare(a[1], b[1]));\n        int[] dp = new int[n + 1];\n        for (int i = 0; i < n; i++) {\n            int low = 0, high = i - 1;\n            int lastCompatible = -1;\n            while (low <= high) {\n                int mid = (low + high) >>> 1;\n                if (jobs[mid][1] <= jobs[i][0]) {\n                    lastCompatible = mid;\n                    low = mid + 1;\n                } else {\n                    high = mid - 1;\n                }\n            }\n            int take = jobs[i][2] + (lastCompatible != -1 ? dp[lastCompatible + 1] : 0);\n            dp[i + 1] = Math.max(dp[i], take);\n        }\n        return dp[n];\n    }\n}",
+        "python": "class Solution:\n    def jobScheduling(self, startTime: list[int], endTime: list[int], profit: list[int]) -> int:\n        jobs = sorted(zip(endTime, startTime, profit))\n        n = len(jobs)\n        dp = [0] * (n + 1)\n        for i in range(n):\n            end, start, p = jobs[i]\n            low, high = 0, i - 1\n            last = -1\n            while low <= high:\n                mid = (low + high) // 2\n                if jobs[mid][0] <= start:\n                    last = mid\n                    low = mid + 1\n                else:\n                    high = mid - 1\n            dp[i + 1] = max(dp[i], p + (dp[last + 1] if last != -1 else 0))\n        return dp[n]"
+      }
+    }
+  },
+  {
+    "seq": 486,
+    "whyNext": "Builds on single-string prefix parsing from Decode Ways (Seq 241) by introducing the wildcard character '*' which can represent any digit 1-9, requiring case-by-case transition counting modulo 10^9+7.",
+    "hints": [
+      "Track dp[i]: the number of decodings for prefix s[0..i).",
+      "Single char transitions: '1'-'9' give 1 way; '*' gives 9 ways; '0' gives 0 ways.",
+      "Two char transitions: analyze s[i-2] and s[i-1] considering digits and '*' (e.g., '**' can form 11-19 and 21-26, giving 15 combinations; '*7' gives 2 ways: 17, 27)."
+    ],
+    "brute": {
+      "idea": "Recursively branch on 1-digit and 2-digit interpretations, expanding '*' to all possible valid digits 1-9.",
+      "steps": [
+        "Recursive function dfs(idx) returns number of ways to decode from idx.",
+        "If idx == s.length(), return 1.",
+        "Branch on 1-digit possibilities (1-9 or '*' -> 9).",
+        "Branch on 2-digit possibilities (10-26 or '*' expanding).",
+        "Sum valid branches modulo 10^9 + 7."
+      ],
+      "whySlow": "Exponential branching O(9^n).",
+      "time": "O(9^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    private static final int MOD = 1_000_000_007;\n    public int numDecodings(String s) {\n        return (int) dfs(s, 0);\n    }\n    private long dfs(String s, int idx) {\n        if (idx == s.length()) return 1;\n        if (s.charAt(idx) == '0') return 0;\n        long ways = (s.charAt(idx) == '*' ? 9 : 1) * dfs(s, idx + 1) % MOD;\n        if (idx + 1 < s.length()) {\n            char c1 = s.charAt(idx), c2 = s.charAt(idx + 1);\n            ways = (ways + ways2(c1, c2) * dfs(s, idx + 2)) % MOD;\n        }\n        return ways;\n    }\n    private int ways2(char c1, char c2) {\n        if (c1 == '*' && c2 == '*') return 15;\n        if (c1 == '*') return (c2 <= '6') ? 2 : 1;\n        if (c2 == '*') {\n            if (c1 == '1') return 9;\n            if (c1 == '2') return 6;\n            return 0;\n        }\n        int val = (c1 - '0') * 10 + (c2 - '0');\n        return (val >= 10 && val <= 26) ? 1 : 0;\n    }\n}",
+        "python": "class Solution:\n    def numDecodings(self, s: str) -> int:\n        MOD = 10**9 + 7\n        def dfs(idx: int) -> int:\n            if idx == len(s):\n                return 1\n            if s[idx] == '0':\n                return 0\n            ways = (9 if s[idx] == '*' else 1) * dfs(idx + 1) % MOD\n            if idx + 1 < len(s):\n                c1, c2 = s[idx], s[idx + 1]\n                cnt2 = 0\n                if c1 == '*' and c2 == '*':\n                    cnt2 = 15\n                elif c1 == '*':\n                    cnt2 = 2 if c2 <= '6' else 1\n                elif c2 == '*':\n                    cnt2 = 9 if c1 == '1' else (6 if c1 == '2' else 0)\n                else:\n                    cnt2 = 1 if 10 <= int(c1 + c2) <= 26 else 0\n                ways = (ways + cnt2 * dfs(idx + 2)) % MOD\n            return ways\n        return dfs(0)"
+      }
+    },
+    "optimal": {
+      "idea": "Space-optimized dynamic programming maintaining the previous two decoding counts modulo 10^9+7.",
+      "steps": [
+        "Initialize prev2 = 1 (empty string), prev1 = ways to decode s[0].",
+        "For each index i from 1 to n-1: calculate 1-character transition count and 2-character transition count.",
+        "curr = (ways1 * prev1 + ways2 * prev2) % 1_000_000_007.",
+        "Shift variables: prev2 = prev1, prev1 = curr.",
+        "Return (int) prev1."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numDecodings(String s) {\n        long MOD = 1_000_000_007;\n        int n = s.length();\n        long prev2 = 1;\n        long prev1 = s.charAt(0) == '*' ? 9 : (s.charAt(0) == '0' ? 0 : 1);\n        for (int i = 1; i < n; i++) {\n            char c1 = s.charAt(i - 1), c2 = s.charAt(i);\n            long ways1 = c2 == '*' ? 9 : (c2 == '0' ? 0 : 1);\n            long ways2 = 0;\n            if (c1 == '*' && c2 == '*') {\n                ways2 = 15;\n            } else if (c1 == '*') {\n                ways2 = (c2 <= '6') ? 2 : 1;\n            } else if (c2 == '*') {\n                if (c1 == '1') ways2 = 9;\n                else if (c1 == '2') ways2 = 6;\n            } else {\n                int val = (c1 - '0') * 10 + (c2 - '0');\n                if (val >= 10 && val <= 26) ways2 = 1;\n            }\n            long curr = (ways1 * prev1 + ways2 * prev2) % MOD;\n            prev2 = prev1;\n            prev1 = curr;\n        }\n        return (int) prev1;\n    }\n}",
+        "python": "class Solution:\n    def numDecodings(self, s: str) -> int:\n        MOD = 10**9 + 7\n        n = len(s)\n        prev2 = 1\n        prev1 = 9 if s[0] == '*' else (0 if s[0] == '0' else 1)\n        for i in range(1, n):\n            c1, c2 = s[i - 1], s[i]\n            ways1 = 9 if c2 == '*' else (0 if c2 == '0' else 1)\n            ways2 = 0\n            if c1 == '*' and c2 == '*':\n                ways2 = 15\n            elif c1 == '*':\n                ways2 = 2 if c2 <= '6' else 1\n            elif c2 == '*':\n                ways2 = 9 if c1 == '1' else (6 if c1 == '2' else 0)\n            else:\n                ways2 = 1 if 10 <= int(c1 + c2) <= 26 else 0\n            curr = (ways1 * prev1 + ways2 * prev2) % MOD\n            prev2, prev1 = prev1, curr\n        return prev1"
+      }
+    }
   }
 ]

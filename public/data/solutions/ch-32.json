@@ -1,0 +1,586 @@
+[
+  {
+    "seq": 487,
+    "whyNext": "Builds on side-length extension from Maximal Square (Seq 259) by recognizing that if a cell is the bottom-right corner of a square of size k, it also forms squares of sizes 1 through k, so summing all dp[i][j] gives the total count.",
+    "hints": [
+      "Let dp[i][j] be the side length of the largest square of all 1s whose bottom-right corner is at (i, j).",
+      "If matrix[i][j] == 1, dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]).",
+      "The value of dp[i][j] is precisely the number of squares with bottom-right corner at (i, j); sum all dp[i][j] across the grid."
+    ],
+    "brute": {
+      "idea": "For every cell (r, c), test all possible square side lengths k extending down and right, verifying all cells contain 1.",
+      "steps": [
+        "Iterate over each top-left cell (r, c).",
+        "For each possible side length k: check if all elements in grid[r..r+k-1][c..c+k-1] are 1.",
+        "Increment total count if valid; break as soon as a 0 is found.",
+        "Return total count."
+      ],
+      "whySlow": "Checks O(m*n*min(m, n)) squares taking O(min(m, n)^2) per verification.",
+      "time": "O(m * n * min(m, n)^2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int countSquares(int[][] matrix) {\n        int m = matrix.length, n = matrix[0].length;\n        int count = 0;\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                int maxK = Math.min(m - r, n - c);\n                for (int k = 1; k <= maxK; k++) {\n                    boolean ok = true;\n                    for (int dr = 0; dr < k && ok; dr++) {\n                        for (int dc = 0; dc < k && ok; dc++) {\n                            if (matrix[r + dr][c + dc] == 0) ok = false;\n                        }\n                    }\n                    if (ok) count++;\n                    else break;\n                }\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def countSquares(self, matrix: list[list[int]]) -> int:\n        m, n = len(matrix), len(matrix[0])\n        count = 0\n        for r in range(m):\n            for c in range(n):\n                max_k = min(m - r, n - c)\n                for k in range(1, max_k + 1):\n                    ok = True\n                    for dr in range(k):\n                        for dc in range(k):\n                            if matrix[r + dr][c + dc] == 0:\n                                ok = False\n                                break\n                        if not ok:\n                            break\n                    if ok:\n                        count += 1\n                    else:\n                        break\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Dynamic programming where dp[i][j] is the largest square ending at (i, j); summing dp[i][j] counts all squares in O(m * n) time.",
+      "steps": [
+        "Initialize dp array of dimensions m x n (or reuse matrix).",
+        "For each cell (i, j): if matrix[i][j] == 1, if i == 0 or j == 0, dp[i][j] = 1, else dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]).",
+        "Add dp[i][j] to total answer.",
+        "Return total count."
+      ],
+      "time": "O(m * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int countSquares(int[][] matrix) {\n        int m = matrix.length, n = matrix[0].length;\n        int total = 0;\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (matrix[i][j] == 1 && i > 0 && j > 0) {\n                    int top = matrix[i - 1][j];\n                    int left = matrix[i][j - 1];\n                    int diag = matrix[i - 1][j - 1];\n                    matrix[i][j] = 1 + Math.min(top, Math.min(left, diag));\n                }\n                total += matrix[i][j];\n            }\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def countSquares(self, matrix: list[list[int]]) -> int:\n        m, n = len(matrix), len(matrix[0])\n        total = 0\n        for i in range(m):\n            for j in range(n):\n                if matrix[i][j] == 1 and i > 0 and j > 0:\n                    top = matrix[i - 1][j]\n                    left = matrix[i][j - 1]\n                    diag = matrix[i - 1][j - 1]\n                    matrix[i][j] = 1 + min(top, left, diag)\n                total += matrix[i][j]\n        return total"
+      }
+    }
+  },
+  {
+    "seq": 488,
+    "whyNext": "Builds on grid dynamic programming from Count Square Submatrices with All Ones (Seq 487) by tracking both maximum and minimum path products at each cell because multiplying by a negative cell can turn a minimum into a maximum.",
+    "hints": [
+      "Any path from (0, 0) to (m-1, n-1) can only move right and down.",
+      "Because grid numbers can be negative, keep track of both the maximum product and the minimum product reachable at each cell (i, j).",
+      "If grid[i][j] is negative, the new maximum product comes from min(prev) * grid[i][j] and the new minimum comes from max(prev) * grid[i][j]."
+    ],
+    "brute": {
+      "idea": "DFS traversal exploring all right and down paths to cell (m-1, n-1), computing the product along each path.",
+      "steps": [
+        "Recursive function dfs(r, c, currentProduct).",
+        "If (r, c) == (m-1, n-1), update global maxProduct with currentProduct.",
+        "Branch to (r+1, c) and (r, c+1) if within grid bounds.",
+        "Return global maxProduct % 1_000_000_007 (or -1 if strictly negative)."
+      ],
+      "whySlow": "Explores all C(m+n-2, m-1) grid paths exponentially.",
+      "time": "O(2^(m+n))",
+      "space": "O(m + n)",
+      "code": {
+        "java": "class Solution {\n    private long maxProd = -1;\n    public int maxProductPath(int[][] grid) {\n        dfs(grid, 0, 0, grid[0][0]);\n        return (int) (maxProd < 0 ? -1 : maxProd % 1_000_000_007);\n    }\n    private void dfs(int[][] grid, int r, int c, long prod) {\n        if (r == grid.length - 1 && c == grid[0].length - 1) {\n            maxProd = Math.max(maxProd, prod);\n            return;\n        }\n        if (r + 1 < grid.length) dfs(grid, r + 1, c, prod * grid[r + 1][c]);\n        if (c + 1 < grid[0].length) dfs(grid, r, c + 1, prod * grid[r][c + 1]);\n    }\n}",
+        "python": "class Solution:\n    def maxProductPath(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        max_prod = -1\n        def dfs(r: int, c: int, prod: int) -> None:\n            nonlocal max_prod\n            if r == m - 1 and c == n - 1:\n                max_prod = max(max_prod, prod)\n                return\n            if r + 1 < m:\n                dfs(r + 1, c, prod * grid[r + 1][c])\n            if c + 1 < n:\n                dfs(r, c + 1, prod * grid[r][c + 1])\n        dfs(0, 0, grid[0][0])\n        return max_prod % (10**9 + 7) if max_prod >= 0 else -1"
+      }
+    },
+    "optimal": {
+      "idea": "2D dynamic programming maintaining maxDp[i][j] and minDp[i][j] in 64-bit integers to prevent overflow during calculations.",
+      "steps": [
+        "Create maxDp and minDp of size m x n initialized with grid[0][0].",
+        "Fill first row and first column using products from adjacent cells.",
+        "For each cell (i, j): consider candidates from top (maxDp[i-1][j]*val, minDp[i-1][j]*val) and left (maxDp[i][j-1]*val, minDp[i][j-1]*val).",
+        "Set maxDp[i][j] to max candidate and minDp[i][j] to min candidate.",
+        "If maxDp[m-1][n-1] < 0 return -1; else return maxDp[m-1][n-1] % 1_000_000_007."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int maxProductPath(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        long[][] maxDp = new long[m][n];\n        long[][] minDp = new long[m][n];\n        maxDp[0][0] = grid[0][0];\n        minDp[0][0] = grid[0][0];\n        for (int i = 1; i < m; i++) {\n            maxDp[i][0] = maxDp[i - 1][0] * grid[i][0];\n            minDp[i][0] = minDp[i - 1][0] * grid[i][0];\n        }\n        for (int j = 1; j < n; j++) {\n            maxDp[0][j] = maxDp[0][j - 1] * grid[0][j];\n            minDp[0][j] = minDp[0][j - 1] * grid[0][j];\n        }\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                long val = grid[i][j];\n                long a = maxDp[i - 1][j] * val;\n                long b = minDp[i - 1][j] * val;\n                long c = maxDp[i][j - 1] * val;\n                long d = minDp[i][j - 1] * val;\n                maxDp[i][j] = Math.max(Math.max(a, b), Math.max(c, d));\n                minDp[i][j] = Math.min(Math.min(a, b), Math.min(c, d));\n            }\n        }\n        long res = maxDp[m - 1][n - 1];\n        return res < 0 ? -1 : (int) (res % 1_000_000_007);\n    }\n}",
+        "python": "class Solution:\n    def maxProductPath(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        max_dp = [[0] * n for _ in range(m)]\n        min_dp = [[0] * n for _ in range(m)]\n        max_dp[0][0] = min_dp[0][0] = grid[0][0]\n        for i in range(1, m):\n            max_dp[i][0] = min_dp[i][0] = max_dp[i - 1][0] * grid[i][0]\n        for j in range(1, n):\n            max_dp[0][j] = min_dp[0][j] = max_dp[0][j - 1] * grid[0][j]\n        for i in range(1, m):\n            for j in range(1, n):\n                val = grid[i][j]\n                cands = [\n                    max_dp[i - 1][j] * val,\n                    min_dp[i - 1][j] * val,\n                    max_dp[i][j - 1] * val,\n                    min_dp[i][j - 1] * val\n                ]\n                max_dp[i][j] = max(cands)\n                min_dp[i][j] = min(cands)\n        res = max_dp[m - 1][n - 1]\n        return res % (10**9 + 7) if res >= 0 else -1"
+      }
+    }
+  },
+  {
+    "seq": 489,
+    "whyNext": "Builds on 2D grid path counting from Unique Paths (Seq 254) by introducing boundary escape conditions and a maximum step budget, requiring 3D state dp[k][i][j] representing remaining moves.",
+    "hints": [
+      "Let dp[k][r][c] be the number of paths that start at (r, c) and exit the boundary in at most k moves.",
+      "Base cases: when a move lands outside [0, m-1] x [0, n-1], it counts as 1 valid path out.",
+      "Transitions: sum ways to exit from the four neighbors with k-1 moves remaining, modulo 10^9+7."
+    ],
+    "brute": {
+      "idea": "Recursive DFS exploring up to maxMove steps in 4 cardinal directions, tallying moves that step out of grid bounds.",
+      "steps": [
+        "Recursive dfs(r, c, movesLeft).",
+        "If r < 0 or r >= m or c < 0 or c >= n: return 1 (escaped).",
+        "If movesLeft == 0: return 0 (trapped).",
+        "Sum results from dfs on 4 adjacent cells with movesLeft - 1.",
+        "Return sum % 1_000_000_007."
+      ],
+      "whySlow": "Explores 4^maxMove branches without memoization.",
+      "time": "O(4^maxMove)",
+      "space": "O(maxMove)",
+      "code": {
+        "java": "class Solution {\n    private static final int MOD = 1_000_000_007;\n    public int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {\n        return (int) dfs(m, n, startRow, startColumn, maxMove);\n    }\n    private long dfs(int m, int n, int r, int c, int moves) {\n        if (r < 0 || r >= m || c < 0 || c >= n) return 1;\n        if (moves == 0) return 0;\n        long ways = 0;\n        ways = (ways + dfs(m, n, r - 1, c, moves - 1)) % MOD;\n        ways = (ways + dfs(m, n, r + 1, c, moves - 1)) % MOD;\n        ways = (ways + dfs(m, n, r, c - 1, moves - 1)) % MOD;\n        ways = (ways + dfs(m, n, r, c + 1, moves - 1)) % MOD;\n        return ways;\n    }\n}",
+        "python": "class Solution:\n    def findPaths(self, m: int, n: int, maxMove: int, startRow: int, startColumn: int) -> int:\n        MOD = 10**9 + 7\n        def dfs(r: int, c: int, moves: int) -> int:\n            if r < 0 or r >= m or c < 0 or c >= n:\n                return 1\n            if moves == 0:\n                return 0\n            ways = (\n                dfs(r - 1, c, moves - 1) +\n                dfs(r + 1, c, moves - 1) +\n                dfs(r, c - 1, moves - 1) +\n                dfs(r, c + 1, moves - 1)\n            ) % MOD\n            return ways\n        return dfs(startRow, startColumn, maxMove)"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative dynamic programming updating a 2D matrix of reach counts across maxMove steps in O(maxMove * m * n) time.",
+      "steps": [
+        "Initialize dp[m][n] with 0, and dp[startRow][startColumn] = 1.",
+        "For step 1 to maxMove: create nextDp[m][n] = 0.",
+        "For each cell (r, c) with dp[r][c] > 0, consider moving to all 4 neighbors.",
+        "If neighbor is out of bounds, add dp[r][c] to total paths out.",
+        "Otherwise, add dp[r][c] to nextDp[nr][nc].",
+        "Set dp = nextDp.",
+        "Return total % 1_000_000_007."
+      ],
+      "time": "O(maxMove * m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {\n        int MOD = 1_000_000_007;\n        int[][] dp = new int[m][n];\n        dp[startRow][startColumn] = 1;\n        int total = 0;\n        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};\n        for (int move = 0; move < maxMove; move++) {\n            int[][] nextDp = new int[m][n];\n            for (int r = 0; r < m; r++) {\n                for (int c = 0; c < n; c++) {\n                    int count = dp[r][c];\n                    if (count == 0) continue;\n                    for (int[] d : dirs) {\n                        int nr = r + d[0], nc = c + d[1];\n                        if (nr < 0 || nr >= m || nc < 0 || nc >= n) {\n                            total = (total + count) % MOD;\n                        } else {\n                            nextDp[nr][nc] = (nextDp[nr][nc] + count) % MOD;\n                        }\n                    }\n                }\n            }\n            dp = nextDp;\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def findPaths(self, m: int, n: int, maxMove: int, startRow: int, startColumn: int) -> int:\n        MOD = 10**9 + 7\n        dp = [[0] * n for _ in range(m)]\n        dp[startRow][startColumn] = 1\n        total = 0\n        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n        for _ in range(maxMove):\n            next_dp = [[0] * n for _ in range(m)]\n            for r in range(m):\n                for c in range(n):\n                    cnt = dp[r][c]\n                    if not cnt:\n                        continue\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if nr < 0 or nr >= m or nc < 0 or nc >= n:\n                            total = (total + cnt) % MOD\n                        else:\n                            next_dp[nr][nc] = (next_dp[nr][nc] + cnt) % MOD\n            dp = next_dp\n        return total"
+      }
+    }
+  },
+  {
+    "seq": 490,
+    "whyNext": "Builds on multi-dimensional grid DP from Out of Boundary Paths (Seq 489) by coordinating two robots moving simultaneously row-by-row with state dp[r][c1][c2], avoiding double-counting when they land on the same cell.",
+    "hints": [
+      "Both robots advance one row downward simultaneously at each step, so state only needs (row, col1, col2).",
+      "From state (r, c1, c2), each robot has 3 choices (-1, 0, +1), yielding 3 x 3 = 9 possible transitions for the next row.",
+      "If c1 == c2, cherries are collected only once: grid[r][c1]; otherwise: grid[r][c1] + grid[r][c2]."
+    ],
+    "brute": {
+      "idea": "Recursively simulate all 9 simultaneous moves per row until reaching the bottom row.",
+      "steps": [
+        "Recursive dfs(r, c1, c2).",
+        "If c1 or c2 is outside [0, cols-1], return invalid (-infinity).",
+        "Compute current cherries: grid[r][c1] + (c1 != c2 ? grid[r][c2] : 0).",
+        "If r == rows - 1, return current cherries.",
+        "Explore all combinations of dc1 in {-1, 0, 1} and dc2 in {-1, 0, 1} on r + 1.",
+        "Return cherries + max child result."
+      ],
+      "whySlow": "Explores 9^rows states exponentially.",
+      "time": "O(9^rows)",
+      "space": "O(rows)",
+      "code": {
+        "java": "class Solution {\n    public int cherryPickup(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        return dfs(grid, 0, 0, n - 1);\n    }\n    private int dfs(int[][] grid, int r, int c1, int c2) {\n        int m = grid.length, n = grid[0].length;\n        if (c1 < 0 || c1 >= n || c2 < 0 || c2 >= n) return -1_000_000;\n        int cherries = grid[r][c1] + (c1 != c2 ? grid[r][c2] : 0);\n        if (r == m - 1) return cherries;\n        int maxNext = -1_000_000;\n        for (int dc1 = -1; dc1 <= 1; dc1++) {\n            for (int dc2 = -1; dc2 <= 1; dc2++) {\n                maxNext = Math.max(maxNext, dfs(grid, r + 1, c1 + dc1, c2 + dc2));\n            }\n        }\n        return cherries + maxNext;\n    }\n}",
+        "python": "class Solution:\n    def cherryPickup(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        def dfs(r: int, c1: int, c2: int) -> int:\n            if c1 < 0 or c1 >= n or c2 < 0 or c2 >= n:\n                return -10**9\n            cherries = grid[r][c1] + (grid[r][c2] if c1 != c2 else 0)\n            if r == m - 1:\n                return cherries\n            best = -10**9\n            for dc1 in (-1, 0, 1):\n                for dc2 in (-1, 0, 1):\n                    best = max(best, dfs(r + 1, c1 + dc1, c2 + dc2))\n            return cherries + best\n        return dfs(0, 0, n - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "3D Dynamic Programming (or bottom-up 2D DP) storing maximum cherries for each (col1, col2) pair at each row in O(rows * cols^2) time.",
+      "steps": [
+        "Initialize dp[n][n] table with -1, dp[0][n-1] = grid[0][0] + grid[0][n-1].",
+        "For row r from 1 to m-1: create nextDp initialized with -1.",
+        "For each reachable (c1, c2) in dp: iterate through all 9 move pairs (dc1, dc2) for nc1 = c1 + dc1, nc2 = c2 + dc2.",
+        "If nc1 and nc2 in bounds: gain = grid[r][nc1] + (nc1 != nc2 ? grid[r][nc2] : 0); nextDp[nc1][nc2] = max(nextDp[nc1][nc2], dp[c1][c2] + gain).",
+        "Set dp = nextDp.",
+        "Return maximum value in dp after processing all rows."
+      ],
+      "time": "O(m * n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int cherryPickup(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[][] dp = new int[n][n];\n        for (int[] row : dp) Arrays.fill(row, -1);\n        dp[0][n - 1] = grid[0][0] + (n > 1 ? grid[0][n - 1] : 0);\n        for (int r = 1; r < m; r++) {\n            int[][] nextDp = new int[n][n];\n            for (int[] row : nextDp) Arrays.fill(row, -1);\n            for (int c1 = 0; c1 < n; c1++) {\n                for (int c2 = 0; c2 < n; c2++) {\n                    if (dp[c1][c2] < 0) continue;\n                    for (int dc1 = -1; dc1 <= 1; dc1++) {\n                        for (int dc2 = -1; dc2 <= 1; dc2++) {\n                            int nc1 = c1 + dc1, nc2 = c2 + dc2;\n                            if (nc1 >= 0 && nc1 < n && nc2 >= 0 && nc2 < n) {\n                                int gain = grid[r][nc1] + (nc1 != nc2 ? grid[r][nc2] : 0);\n                                nextDp[nc1][nc2] = Math.max(nextDp[nc1][nc2], dp[c1][c2] + gain);\n                            }\n                        }\n                    }\n                }\n            }\n            dp = nextDp;\n        }\n        int maxCherries = 0;\n        for (int c1 = 0; c1 < n; c1++) {\n            for (int c2 = 0; c2 < n; c2++) {\n                maxCherries = Math.max(maxCherries, dp[c1][c2]);\n            }\n        }\n        return maxCherries;\n    }\n}",
+        "python": "class Solution:\n    def cherryPickup(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        dp = [[-1] * n for _ in range(n)]\n        dp[0][n - 1] = grid[0][0] + (grid[0][n - 1] if n > 1 else 0)\n        for r in range(1, m):\n            next_dp = [[-1] * n for _ in range(n)]\n            for c1 in range(n):\n                for c2 in range(n):\n                    if dp[c1][c2] < 0:\n                        continue\n                    for dc1 in (-1, 0, 1):\n                        for dc2 in (-1, 0, 1):\n                            nc1, nc2 = c1 + dc1, c2 + dc2\n                            if 0 <= nc1 < n and 0 <= nc2 < n:\n                                gain = grid[r][nc1] + (grid[r][nc2] if nc1 != nc2 else 0)\n                                next_dp[nc1][nc2] = max(next_dp[nc1][nc2], dp[c1][c2] + gain)\n            dp = next_dp\n        max_cherries = 0\n        for row in dp:\n            max_cherries = max(max_cherries, max(row))\n        return max_cherries"
+      }
+    }
+  },
+  {
+    "seq": 491,
+    "whyNext": "Builds on 2D string comparison DP from Longest Common Subsequence (Seq 261) with the contiguous subarray requirement, resetting the DP cell to 0 whenever elements differ instead of taking max(dp[i-1][j], dp[i][j-1]).",
+    "hints": [
+      "Subarrays must be contiguous, so when nums1[i] != nums2[j], the repeated length resets to 0.",
+      "Let dp[i][j] be the length of the longest common suffix of prefixes nums1[0..i-1] and nums2[0..j-1].",
+      "If nums1[i-1] == nums2[j-1]: dp[i][j] = dp[i-1][j-1] + 1; track the overall maximum."
+    ],
+    "brute": {
+      "idea": "Compare all pairs of start indices (i, j) in nums1 and nums2, extending matching contiguous elements.",
+      "steps": [
+        "Iterate i through all indices of nums1.",
+        "Iterate j through all indices of nums2.",
+        "While i + k < len(nums1) and j + k < len(nums2) and nums1[i+k] == nums2[j+k]: increment k.",
+        "Track the maximum k achieved.",
+        "Return maximum length."
+      ],
+      "whySlow": "O(n^3) cubic time complexity.",
+      "time": "O(n * m * min(n, m))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int findLength(int[] nums1, int[] nums2) {\n        int maxLen = 0;\n        for (int i = 0; i < nums1.length; i++) {\n            for (int j = 0; j < nums2.length; j++) {\n                int k = 0;\n                while (i + k < nums1.length && j + k < nums2.length && nums1[i + k] == nums2[j + k]) {\n                    k++;\n                }\n                maxLen = Math.max(maxLen, k);\n            }\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def findLength(self, nums1: list[int], nums2: list[int]) -> int:\n        max_len = 0\n        n1, n2 = len(nums1), len(nums2)\n        for i in range(n1):\n            for j in range(n2):\n                k = 0\n                while i + k < n1 and j + k < n2 and nums1[i + k] == nums2[j + k]:\n                    k += 1\n                max_len = max(max_len, k)\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "2D dynamic programming storing matching suffix lengths in O(n * m) time and O(m) space.",
+      "steps": [
+        "Create dp array of size m+1 where dp[j] holds matching suffix length ending at nums2[j-1].",
+        "Iterate i from 1 to n: iterate j from m down to 1.",
+        "If nums1[i-1] == nums2[j-1]: dp[j] = dp[j-1] + 1, maxLen = max(maxLen, dp[j]).",
+        "Else: dp[j] = 0.",
+        "Return maxLen."
+      ],
+      "time": "O(n * m)",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int findLength(int[] nums1, int[] nums2) {\n        int n = nums1.length, m = nums2.length;\n        int[] dp = new int[m + 1];\n        int maxLen = 0;\n        for (int i = 1; i <= n; i++) {\n            for (int j = m; j >= 1; j--) {\n                if (nums1[i - 1] == nums2[j - 1]) {\n                    dp[j] = dp[j - 1] + 1;\n                    maxLen = Math.max(maxLen, dp[j]);\n                } else {\n                    dp[j] = 0;\n                }\n            }\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def findLength(self, nums1: list[int], nums2: list[int]) -> int:\n        n, m = len(nums1), len(nums2)\n        dp = [0] * (m + 1)\n        max_len = 0\n        for i in range(1, n + 1):\n            for j in range(m, 0, -1):\n                if nums1[i - 1] == nums2[j - 1]:\n                    dp[j] = dp[j - 1] + 1\n                    max_len = max(max_len, dp[j])\n                else:\n                    dp[j] = 0\n        return max_len"
+      }
+    }
+  },
+  {
+    "seq": 492,
+    "whyNext": "Builds on cost-weighted character alignment from Edit Distance (Seq 263) by replacing uniform edit costs with the ASCII code point values of deleted characters to find the minimum deletion cost to equalize two strings.",
+    "hints": [
+      "Let dp[i][j] be the minimum ASCII deletion cost to make prefixes s1[0..i) and s2[0..j) equal.",
+      "Base cases: dp[i][0] is the sum of ASCII values in s1[0..i); dp[0][j] is the sum in s2[0..j).",
+      "If s1[i-1] == s2[j-1]: dp[i][j] = dp[i-1][j-1]; else: min(dp[i-1][j] + ascii(s1[i-1]), dp[i][j-1] + ascii(s2[j-1]))."
+    ],
+    "brute": {
+      "idea": "Recursively check matching characters from indices (i, j) and branch into deleting from s1 or deleting from s2.",
+      "steps": [
+        "Recursive dfs(i, j):",
+        "If i == 0, return sum of ASCII values of s2[0..j).",
+        "If j == 0, return sum of ASCII values of s1[0..i).",
+        "If s1[i-1] == s2[j-1], return dfs(i-1, j-1).",
+        "Else return min(dfs(i-1, j) + s1[i-1], dfs(i, j-1) + s2[j-1])."
+      ],
+      "whySlow": "Exponential 2^(n+m) recursion without caching.",
+      "time": "O(2^(n+m))",
+      "space": "O(n + m)",
+      "code": {
+        "java": "class Solution {\n    public int minimumDeleteSum(String s1, String s2) {\n        return dfs(s1, s2, s1.length(), s2.length());\n    }\n    private int dfs(String s1, String s2, int i, int j) {\n        if (i == 0) {\n            int sum = 0;\n            for (int k = 0; k < j; k++) sum += s2.charAt(k);\n            return sum;\n        }\n        if (j == 0) {\n            int sum = 0;\n            for (int k = 0; k < i; k++) sum += s1.charAt(k);\n            return sum;\n        }\n        if (s1.charAt(i - 1) == s2.charAt(j - 1)) {\n            return dfs(s1, s2, i - 1, j - 1);\n        }\n        int del1 = dfs(s1, s2, i - 1, j) + (int) s1.charAt(i - 1);\n        int del2 = dfs(s1, s2, i, j - 1) + (int) s2.charAt(j - 1);\n        return Math.min(del1, del2);\n    }\n}",
+        "python": "class Solution:\n    def minimumDeleteSum(self, s1: str, s2: str) -> int:\n        def dfs(i: int, j: int) -> int:\n            if i == 0:\n                return sum(ord(c) for c in s2[:j])\n            if j == 0:\n                return sum(ord(c) for c in s1[:i])\n            if s1[i - 1] == s2[j - 1]:\n                return dfs(i - 1, j - 1)\n            del1 = dfs(i - 1, j) + ord(s1[i - 1])\n            del2 = dfs(i, j - 1) + ord(s2[j - 1])\n            return min(del1, del2)\n        return dfs(len(s1), len(s2))"
+      }
+    },
+    "optimal": {
+      "idea": "2D dynamic programming filling a cost table of size (n+1) x (m+1) in O(n * m) time and O(m) space.",
+      "steps": [
+        "Initialize dp array of size m+1 where dp[j] is the delete cost for s2[0..j) against an empty s1.",
+        "Populate base case dp[j] = dp[j-1] + s2[j-1].",
+        "For each character s1[i-1]: update dp row using a prevDiag variable to hold dp[i-1][j-1].",
+        "If s1[i-1] == s2[j-1]: dp[j] = prevDiag; else: dp[j] = min(dp[j] + s1[i-1], dp[j-1] + s2[j-1]).",
+        "Return dp[m]."
+      ],
+      "time": "O(n * m)",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int minimumDeleteSum(String s1, String s2) {\n        int n = s1.length(), m = s2.length();\n        int[] dp = new int[m + 1];\n        for (int j = 1; j <= m; j++) {\n            dp[j] = dp[j - 1] + s2.charAt(j - 1);\n        }\n        for (int i = 1; i <= n; i++) {\n            int prevDiag = dp[0];\n            dp[0] += s1.charAt(i - 1);\n            for (int j = 1; j <= m; j++) {\n                int temp = dp[j];\n                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {\n                    dp[j] = prevDiag;\n                } else {\n                    dp[j] = Math.min(dp[j] + s1.charAt(i - 1), dp[j - 1] + s2.charAt(j - 1));\n                }\n                prevDiag = temp;\n            }\n        }\n        return dp[m];\n    }\n}",
+        "python": "class Solution:\n    def minimumDeleteSum(self, s1: str, s2: str) -> int:\n        n, m = len(s1), len(s2)\n        dp = [0] * (m + 1)\n        for j in range(1, m + 1):\n            dp[j] = dp[j - 1] + ord(s2[j - 1])\n        for i in range(1, n + 1):\n            prev_diag = dp[0]\n            dp[0] += ord(s1[i - 1])\n            for j in range(1, m + 1):\n                temp = dp[j]\n                if s1[i - 1] == s2[j - 1]:\n                    dp[j] = prev_diag\n                else:\n                    dp[j] = min(dp[j] + ord(s1[i - 1]), dp[j - 1] + ord(s2[j - 1]))\n                prev_diag = temp\n        return dp[m]"
+      }
+    }
+  },
+  {
+    "seq": 493,
+    "whyNext": "Builds on palindromic DP from Longest Palindromic Subsequence (Seq 269) by recognizing that the minimum insertions required to make a string palindromic equals the string length minus the length of its longest palindromic subsequence.",
+    "hints": [
+      "Any characters that already form the Longest Palindromic Subsequence (LPS) do not need counterpart insertions.",
+      "The minimum insertions needed is exactly n - LPS(s).",
+      "Compute LPS using 2D DP where dp[i][j] is the LPS length of substring s[i..j]."
+    ],
+    "brute": {
+      "idea": "Recursively compare outer characters: if they match, shrink both ends; otherwise, try inserting a character to match either end and take the minimum insertions.",
+      "steps": [
+        "Recursive helper dfs(i, j):",
+        "If i >= j, return 0 (single char or empty is already a palindrome).",
+        "If s.charAt(i) == s.charAt(j), return dfs(i + 1, j - 1).",
+        "Otherwise, return 1 + min(dfs(i + 1, j), dfs(i, j - 1))."
+      ],
+      "whySlow": "Exponential 2^n recursive branching without memoization.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minInsertions(String s) {\n        return dfs(s, 0, s.length() - 1);\n    }\n    private int dfs(String s, int i, int j) {\n        if (i >= j) return 0;\n        if (s.charAt(i) == s.charAt(j)) {\n            return dfs(s, i + 1, j - 1);\n        }\n        return 1 + Math.min(dfs(s, i + 1, j), dfs(s, i, j - 1));\n    }\n}",
+        "python": "class Solution:\n    def minInsertions(self, s: str) -> int:\n        def dfs(i: int, j: int) -> int:\n            if i >= j:\n                return 0\n            if s[i] == s[j]:\n                return dfs(i + 1, j - 1)\n            return 1 + min(dfs(i + 1, j), dfs(i, j - 1))\n        return dfs(0, len(s) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Interval dynamic programming computing the minimum insertion cost for substrings of increasing length in O(n^2) time and O(n) space.",
+      "steps": [
+        "Let dp[j] store the minimum insertions for substring s[i..j].",
+        "Iterate i from n-1 down to 0, maintaining a prevDiag variable to hold dp[j-1] before update.",
+        "For j from i+1 to n-1: if s[i] == s[j], dp[j] = prevDiag; else dp[j] = 1 + min(dp[j], dp[j-1]).",
+        "prevDiag is updated with old dp[j].",
+        "Return dp[n-1]."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minInsertions(String s) {\n        int n = s.length();\n        int[] dp = new int[n];\n        for (int i = n - 1; i >= 0; i--) {\n            int prevDiag = 0;\n            for (int j = i + 1; j < n; j++) {\n                int temp = dp[j];\n                if (s.charAt(i) == s.charAt(j)) {\n                    dp[j] = prevDiag;\n                } else {\n                    dp[j] = 1 + Math.min(dp[j], dp[j - 1]);\n                }\n                prevDiag = temp;\n            }\n        }\n        return dp[n - 1];\n    }\n}",
+        "python": "class Solution:\n    def minInsertions(self, s: str) -> int:\n        n = len(s)\n        dp = [0] * n\n        for i in range(n - 1, -1, -1):\n            prev_diag = 0\n            for j in range(i + 1, n):\n                temp = dp[j]\n                if s[i] == s[j]:\n                    dp[j] = prev_diag\n                else:\n                    dp[j] = 1 + min(dp[j], dp[j - 1])\n                prev_diag = temp\n        return dp[n - 1]"
+      }
+    }
+  },
+  {
+    "seq": 494,
+    "whyNext": "Builds on common subsequence construction from Longest Common Subsequence (Seq 261) by using the LCS DP table to reconstruct the minimal merged sequence that includes both strings as subsequences.",
+    "hints": [
+      "Compute the standard 2D LCS table dp[i][j] for str1 and str2.",
+      "Backtrack from (len(str1), len(str2)) towards (0, 0): when characters match (str1[i-1] == str2[j-1]), emit that character once and move diagonally.",
+      "When characters differ, emit the character corresponding to the larger dp direction (up or left) and decrement that index."
+    ],
+    "brute": {
+      "idea": "Recursive backtracking exploring all possible interleaved supersequence characters until both strings are consumed.",
+      "steps": [
+        "Recursive dfs(i, j):",
+        "If i == len(str1), return str2[j..end].",
+        "If j == len(str2), return str1[i..end].",
+        "If str1[i] == str2[j], return str1[i] + dfs(i+1, j+1).",
+        "Else branch: cand1 = str1[i] + dfs(i+1, j), cand2 = str2[j] + dfs(i, j+1).",
+        "Return shorter of cand1 and cand2."
+      ],
+      "whySlow": "Exponential 2^(n+m) branch combinations.",
+      "time": "O(2^(n+m))",
+      "space": "O(n + m)",
+      "code": {
+        "java": "class Solution {\n    public String shortestCommonSupersequence(String str1, String str2) {\n        return dfs(str1, str2, 0, 0);\n    }\n    private String dfs(String s1, String s2, int i, int j) {\n        if (i == s1.length()) return s2.substring(j);\n        if (j == s2.length()) return s1.substring(i);\n        if (s1.charAt(i) == s2.charAt(j)) {\n            return s1.charAt(i) + dfs(s1, s2, i + 1, j + 1);\n        }\n        String opt1 = s1.charAt(i) + dfs(s1, s2, i + 1, j);\n        String opt2 = s2.charAt(j) + dfs(s1, s2, i, j + 1);\n        return opt1.length() <= opt2.length() ? opt1 : opt2;\n    }\n}",
+        "python": "class Solution:\n    def shortestCommonSupersequence(self, str1: str, str2: str) -> str:\n        def dfs(i: int, j: int) -> str:\n            if i == len(str1):\n                return str2[j:]\n            if j == len(str2):\n                return str1[i:]\n            if str1[i] == str2[j]:\n                return str1[i] + dfs(i + 1, j + 1)\n            opt1 = str1[i] + dfs(i + 1, j)\n            opt2 = str2[j] + dfs(i, j + 1)\n            return opt1 if len(opt1) <= len(opt2) else opt2\n        return dfs(0, 0)"
+      }
+    },
+    "optimal": {
+      "idea": "Compute 2D LCS table in O(n * m) time, then trace back from (n, m) to build the shortest supersequence in O(n + m) time.",
+      "steps": [
+        "Compute dp[n+1][m+1] where dp[i][j] is the length of LCS of str1[0..i) and str2[0..j).",
+        "Initialize pointers i = n, j = m and StringBuilder res.",
+        "While i > 0 and j > 0: if str1[i-1] == str2[j-1], append str1[i-1] and decrement both i and j; else if dp[i-1][j] >= dp[i][j-1], append str1[i-1] and i--; else append str2[j-1] and j--.",
+        "Append remaining characters from str1 or str2.",
+        "Reverse res and return string."
+      ],
+      "time": "O(n * m)",
+      "space": "O(n * m)",
+      "code": {
+        "java": "class Solution {\n    public String shortestCommonSupersequence(String str1, String str2) {\n        int n = str1.length(), m = str2.length();\n        int[][] dp = new int[n + 1][m + 1];\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < m; j++) {\n                if (str1.charAt(i) == str2.charAt(j)) {\n                    dp[i + 1][j + 1] = dp[i][j] + 1;\n                } else {\n                    dp[i + 1][j + 1] = Math.max(dp[i][j + 1], dp[i + 1][j]);\n                }\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        int i = n, j = m;\n        while (i > 0 && j > 0) {\n            if (str1.charAt(i - 1) == str2.charAt(j - 1)) {\n                sb.append(str1.charAt(i - 1));\n                i--; j--;\n            } else if (dp[i - 1][j] >= dp[i][j - 1]) {\n                sb.append(str1.charAt(i - 1));\n                i--;\n            } else {\n                sb.append(str2.charAt(j - 1));\n                j--;\n            }\n        }\n        while (i > 0) sb.append(str1.charAt(--i));\n        while (j > 0) sb.append(str2.charAt(--j));\n        return sb.reverse().toString();\n    }\n}",
+        "python": "class Solution:\n    def shortestCommonSupersequence(self, str1: str, str2: str) -> str:\n        n, m = len(str1), len(str2)\n        dp = [[0] * (m + 1) for _ in range(n + 1)]\n        for i in range(n):\n            for j in range(m):\n                if str1[i] == str2[j]:\n                    dp[i + 1][j + 1] = dp[i][j] + 1\n                else:\n                    dp[i + 1][j + 1] = max(dp[i][j + 1], dp[i + 1][j])\n        res = []\n        i, j = n, m\n        while i > 0 and j > 0:\n            if str1[i - 1] == str2[j - 1]:\n                res.append(str1[i - 1])\n                i -= 1\n                j -= 1\n            elif dp[i - 1][j] >= dp[i][j - 1]:\n                res.append(str1[i - 1])\n                i -= 1\n            else:\n                res.append(str2[j - 1])\n                j -= 1\n        while i > 0:\n            i -= 1\n            res.append(str1[i])\n        while j > 0:\n            j -= 1\n            res.append(str2[j])\n        return \"\".join(reversed(res))"
+      }
+    }
+  },
+  {
+    "seq": 495,
+    "whyNext": "Builds on interval game theory from Shortest Common Supersequence (Seq 494) context by formulating minimax decisions where each player chooses an outer pile to maximize their net stone differential.",
+    "hints": [
+      "Let dp[i][j] be the maximum relative score difference (current player - opponent) on piles[i..j].",
+      "Current player can pick piles[i] (yielding piles[i] - dp[i+1][j]) or piles[j] (yielding piles[j] - dp[i][j-1]).",
+      "Because the total number of piles is even and sum is odd, Alice can always pick all odd-indexed or all even-indexed piles, guaranteeing a win."
+    ],
+    "brute": {
+      "idea": "Minimax DFS exploring picking from left vs right end recursively to check if player 1 can achieve a strictly positive score advantage.",
+      "steps": [
+        "Recursive minimax(i, j):",
+        "If i == j, return piles[i].",
+        "Return max(piles[i] - minimax(i + 1, j), piles[j] - minimax(i, j - 1)).",
+        "Return true if minimax(0, n-1) > 0."
+      ],
+      "whySlow": "O(2^n) exponential tree traversal.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean stoneGame(int[] piles) {\n        return minimax(piles, 0, piles.length - 1) > 0;\n    }\n    private int minimax(int[] piles, int i, int j) {\n        if (i == j) return piles[i];\n        int pickLeft = piles[i] - minimax(piles, i + 1, j);\n        int pickRight = piles[j] - minimax(piles, i, j - 1);\n        return Math.max(pickLeft, pickRight);\n    }\n}",
+        "python": "class Solution:\n    def stoneGame(self, piles: list[int]) -> bool:\n        def minimax(i: int, j: int) -> int:\n            if i == j:\n                return piles[i]\n            pick_left = piles[i] - minimax(i + 1, j)\n            pick_right = piles[j] - minimax(i, j - 1)\n            return max(pick_left, pick_right)\n        return minimax(0, len(piles) - 1) > 0"
+      }
+    },
+    "optimal": {
+      "idea": "Interval dynamic programming calculating max differential across all subarray intervals in O(n^2) time and O(n) space.",
+      "steps": [
+        "Initialize dp array of size n with dp[i] = piles[i].",
+        "For interval length len from 2 to n: for left index i from 0 to n - len: j = i + len - 1.",
+        "dp[i] = max(piles[i] - dp[i + 1], piles[j] - dp[i]).",
+        "Return dp[0] > 0 (mathematically always true for Alice under the game constraints)."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean stoneGame(int[] piles) {\n        int n = piles.length;\n        int[] dp = piles.clone();\n        for (int len = 2; len <= n; len++) {\n            for (int i = 0; i <= n - len; i++) {\n                int j = i + len - 1;\n                dp[i] = Math.max(piles[i] - dp[i + 1], piles[j] - dp[i]);\n            }\n        }\n        return dp[0] > 0;\n    }\n}",
+        "python": "class Solution:\n    def stoneGame(self, piles: list[int]) -> bool:\n        n = len(piles)\n        dp = list(piles)\n        for length in range(2, n + 1):\n            for i in range(n - length + 1):\n                j = i + length - 1\n                dp[i] = max(piles[i] - dp[i + 1], piles[j] - dp[i])\n        return dp[0] > 0"
+      }
+    }
+  },
+  {
+    "seq": 496,
+    "whyNext": "Builds on game theory minimax DP from Stone Game (Seq 495) by generalizing to any array length and non-odd total sums where ties are allowed and Player 1 wins if final differential >= 0.",
+    "hints": [
+      "Let dp[i][j] be the maximum score margin the current player can achieve from nums[i..j].",
+      "Player chooses nums[i] or nums[j]: dp[i][j] = max(nums[i] - dp[i+1][j], nums[j] - dp[i][j-1]).",
+      "If the final score margin for the whole array dp[0][n-1] >= 0, Player 1 can win or tie."
+    ],
+    "brute": {
+      "idea": "Recursively evaluate all combinations of choices by both players using pure minimax.",
+      "steps": [
+        "Recursive minimax(i, j):",
+        "If i == j, return nums[i].",
+        "Return max(nums[i] - minimax(i + 1, j), nums[j] - minimax(i, j - 1)).",
+        "Return minimax(0, n - 1) >= 0."
+      ],
+      "whySlow": "O(2^n) exponential search.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean predictTheWinner(int[] nums) {\n        return minimax(nums, 0, nums.length - 1) >= 0;\n    }\n    public boolean PredictTheWinner(int[] nums) {\n        return predictTheWinner(nums);\n    }\n    private int minimax(int[] nums, int i, int j) {\n        if (i == j) return nums[i];\n        int chooseLeft = nums[i] - minimax(nums, i + 1, j);\n        int chooseRight = nums[j] - minimax(nums, i, j - 1);\n        return Math.max(chooseLeft, chooseRight);\n    }\n}",
+        "python": "class Solution:\n    def predictTheWinner(self, nums: list[int]) -> bool:\n        def minimax(i: int, j: int) -> int:\n            if i == j:\n                return nums[i]\n            choose_left = nums[i] - minimax(i + 1, j)\n            choose_right = nums[j] - minimax(i, j - 1)\n            return max(choose_left, choose_right)\n        return minimax(0, len(nums) - 1) >= 0"
+      }
+    },
+    "optimal": {
+      "idea": "Interval dynamic programming optimized to a 1D array representing score differences in O(n^2) time and O(n) space.",
+      "steps": [
+        "Initialize dp array of size n with dp[i] = nums[i].",
+        "For length from 2 to n: for i from 0 to n - length: j = i + length - 1.",
+        "dp[i] = max(nums[i] - dp[i + 1], nums[j] - dp[i]).",
+        "Return dp[0] >= 0."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean predictTheWinner(int[] nums) {\n        int n = nums.length;\n        int[] dp = nums.clone();\n        for (int len = 2; len <= n; len++) {\n            for (int i = 0; i <= n - len; i++) {\n                int j = i + len - 1;\n                dp[i] = Math.max(nums[i] - dp[i + 1], nums[j] - dp[i]);\n            }\n        }\n        return dp[0] >= 0;\n    }\n    public boolean PredictTheWinner(int[] nums) {\n        return predictTheWinner(nums);\n    }\n}",
+        "python": "class Solution:\n    def predictTheWinner(self, nums: list[int]) -> bool:\n        n = len(nums)\n        dp = list(nums)\n        for length in range(2, n + 1):\n            for i in range(n - length + 1):\n                j = i + length - 1\n                dp[i] = max(nums[i] - dp[i + 1], nums[j] - dp[i])\n        return dp[0] >= 0"
+      }
+    }
+  },
+  {
+    "seq": 497,
+    "whyNext": "Builds on minimax game choices from Predict the Winner (Seq 496) by allowing a variable number of piles X (1 <= X <= 2M) to be taken from the start, updating M = max(M, X) dynamically.",
+    "hints": [
+      "Let dp(i, M) be the maximum stones the current player can take from suffix piles[i..n-1] with parameter M.",
+      "If 2M >= n - i, the player can take all remaining piles: sum(piles[i..n-1]).",
+      "Otherwise: player tries taking X piles for 1 <= X <= 2M, leaving opponent with dp(i + X, max(M, X)). The player gets suffixSum[i] - dp(i + X, max(M, X))."
+    ],
+    "brute": {
+      "idea": "Recursively try every valid pile count X from 1 to 2M, computing opponent's optimal response.",
+      "steps": [
+        "Precompute suffix sums of piles.",
+        "Recursive dfs(i, M):",
+        "If i + 2*M >= n, return suffixSum[i].",
+        "Try every X in [1, 2*M]: take suffixSum[i] - dfs(i + X, max(M, X)).",
+        "Return maximum stones found."
+      ],
+      "whySlow": "Exponential tree branching without memoization.",
+      "time": "O((2M)^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int stoneGameII(int[] piles) {\n        int n = piles.length;\n        int[] suffixSum = new int[n + 1];\n        for (int i = n - 1; i >= 0; i--) {\n            suffixSum[i] = suffixSum[i + 1] + piles[i];\n        }\n        return dfs(piles, suffixSum, 0, 1);\n    }\n    private int dfs(int[] piles, int[] suffixSum, int i, int M) {\n        int n = piles.length;\n        if (i + 2 * M >= n) return suffixSum[i];\n        int maxStones = 0;\n        for (int X = 1; X <= 2 * M; X++) {\n            int stones = suffixSum[i] - dfs(piles, suffixSum, i + X, Math.max(M, X));\n            maxStones = Math.max(maxStones, stones);\n        }\n        return maxStones;\n    }\n}",
+        "python": "class Solution:\n    def stoneGameII(self, piles: list[int]) -> int:\n        n = len(piles)\n        suffix_sum = [0] * (n + 1)\n        for i in range(n - 1, -1, -1):\n            suffix_sum[i] = suffix_sum[i + 1] + piles[i]\n        def dfs(i: int, M: int) -> int:\n            if i + 2 * M >= n:\n                return suffix_sum[i]\n            best = 0\n            for X in range(1, 2 * M + 1):\n                stones = suffix_sum[i] - dfs(i + X, max(M, X))\n                best = max(best, stones)\n            return best\n        return dfs(0, 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Memoized 2D dynamic programming storing max stones for state (index i, parameter M) in O(n^3) time.",
+      "steps": [
+        "Precalculate suffixSum array where suffixSum[i] is sum of piles[i..n-1].",
+        "Initialize memo table memo[n][n+1] with 0.",
+        "For state (i, M): if i + 2*M >= n, return suffixSum[i].",
+        "Iterate X from 1 to 2*M: best = max(best, suffixSum[i] - dfs(i + X, max(M, X))).",
+        "Memoize and return memo[i][M]."
+      ],
+      "time": "O(n^3)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int stoneGameII(int[] piles) {\n        int n = piles.length;\n        int[] suffixSum = new int[n + 1];\n        for (int i = n - 1; i >= 0; i--) {\n            suffixSum[i] = suffixSum[i + 1] + piles[i];\n        }\n        int[][] memo = new int[n][n + 1];\n        return dfs(piles, suffixSum, memo, 0, 1);\n    }\n    private int dfs(int[] piles, int[] suffixSum, int[][] memo, int i, int M) {\n        int n = piles.length;\n        if (i >= n) return 0;\n        if (i + 2 * M >= n) return suffixSum[i];\n        if (memo[i][M] != 0) return memo[i][M];\n        int best = 0;\n        for (int X = 1; X <= 2 * M; X++) {\n            int stones = suffixSum[i] - dfs(piles, suffixSum, memo, i + X, Math.max(M, X));\n            best = Math.max(best, stones);\n        }\n        return memo[i][M] = best;\n    }\n}",
+        "python": "class Solution:\n    def stoneGameII(self, piles: list[int]) -> int:\n        n = len(piles)\n        suffix_sum = [0] * (n + 1)\n        for i in range(n - 1, -1, -1):\n            suffix_sum[i] = suffix_sum[i + 1] + piles[i]\n        memo = {}\n        def dfs(i: int, M: int) -> int:\n            if i + 2 * M >= n:\n                return suffix_sum[i]\n            if (i, M) in memo:\n                return memo[(i, M)]\n            best = 0\n            for X in range(1, 2 * M + 1):\n                stones = suffix_sum[i] - dfs(i + X, max(M, X))\n                best = max(best, stones)\n            memo[(i, M)] = best\n            return best\n        return dfs(0, 1)"
+      }
+    }
+  },
+  {
+    "seq": 498,
+    "whyNext": "Builds on minimax state search from Stone Game II (Seq 497) by modeling an adversarial guessing scenario where we minimize the worst-case total cost to guarantee guessing a number in range [1..n].",
+    "hints": [
+      "Let dp(i, j) be the minimum cost to guarantee finding the target number in range [i..j].",
+      "Base case: if i >= j, cost is 0 (0 or 1 candidate remaining means no wrong guess penalty).",
+      "For a guess k in [i..j], worst-case penalty is k + max(dp(i, k-1), dp(k+1, j)). Minimize this worst-case over all possible k."
+    ],
+    "brute": {
+      "idea": "Recursively explore picking every number k in [i..j] as the first guess, taking the worst branch and minimizing over k.",
+      "steps": [
+        "Recursive dfs(i, j):",
+        "If i >= j, return 0.",
+        "Set minCost = infinity.",
+        "For k from i to j: cost = k + max(dfs(i, k - 1), dfs(k + 1, j)); minCost = min(minCost, cost).",
+        "Return minCost."
+      ],
+      "whySlow": "Exponential Catalan-number recursive branching.",
+      "time": "O(4^n / n^(3/2))",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int getMoneyAmount(int n) {\n        return dfs(1, n);\n    }\n    private int dfs(int i, int j) {\n        if (i >= j) return 0;\n        int minCost = Integer.MAX_VALUE;\n        for (int k = i; k <= j; k++) {\n            int cost = k + Math.max(dfs(i, k - 1), dfs(k + 1, j));\n            minCost = Math.min(minCost, cost);\n        }\n        return minCost;\n    }\n}",
+        "python": "class Solution:\n    def getMoneyAmount(self, n: int) -> int:\n        def dfs(i: int, j: int) -> int:\n            if i >= j:\n                return 0\n            min_cost = float('inf')\n            for k in range(i, j + 1):\n                cost = k + max(dfs(i, k - 1), dfs(k + 1, j))\n                min_cost = min(min_cost, cost)\n            return min_cost\n        return dfs(1, n)"
+      }
+    },
+    "optimal": {
+      "idea": "Interval dynamic programming building min-max costs for increasing range lengths in O(n^3) time and O(n^2) space.",
+      "steps": [
+        "Initialize dp table of size (n+2) x (n+2) with 0.",
+        "Iterate interval length len from 2 to n.",
+        "For start i from 1 to n - len + 1: end j = i + len - 1.",
+        "dp[i][j] = min over k in [i, j] of (k + max(dp[i][k-1], dp[k+1][j])).",
+        "Return dp[1][n]."
+      ],
+      "time": "O(n^3)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int getMoneyAmount(int n) {\n        int[][] dp = new int[n + 2][n + 2];\n        for (int len = 2; len <= n; len++) {\n            for (int i = 1; i <= n - len + 1; i++) {\n                int j = i + len - 1;\n                int minCost = Integer.MAX_VALUE;\n                for (int k = i; k <= j; k++) {\n                    int cost = k + Math.max(dp[i][k - 1], dp[k + 1][j]);\n                    minCost = Math.min(minCost, cost);\n                }\n                dp[i][j] = minCost;\n            }\n        }\n        return dp[1][n];\n    }\n}",
+        "python": "class Solution:\n    def getMoneyAmount(self, n: int) -> int:\n        dp = [[0] * (n + 2) for _ in range(n + 2)]\n        for length in range(2, n + 1):\n            for i in range(1, n - length + 2):\n                j = i + length - 1\n                min_cost = float('inf')\n                for k in range(i, j + 1):\n                    cost = k + max(dp[i][k - 1], dp[k + 1][j])\n                    min_cost = min(min_cost, cost)\n                dp[i][j] = min_cost\n        return dp[1][n]"
+      }
+    }
+  },
+  {
+    "seq": 499,
+    "whyNext": "Builds on interval partition DP from Matrix Chain Multiplication / Burst Balloons (Seq 273) by choosing split points k that minimize the non-leaf node sum while tracking the max leaf in each partition.",
+    "hints": [
+      "Every non-leaf node equals the product of the largest leaf in its left subtree and the largest leaf in its right subtree.",
+      "Partitioning arr[i..j] into arr[i..k] and arr[k+1..j] contributes max(arr[i..k]) * max(arr[k+1..j]) plus the subproblem costs.",
+      "Can also be solved greedily in O(n) using a monotonic decreasing stack, always multiplying the smallest available leaf by the smaller of its adjacent neighbors."
+    ],
+    "brute": {
+      "idea": "Recursively try every split index k in [i, j-1] to partition the interval into left and right subtrees.",
+      "steps": [
+        "Recursive dfs(i, j):",
+        "If i == j, return 0 (leaves contribute 0 to the sum of non-leaf nodes).",
+        "For each split k from i to j-1: cost = max(arr[i..k]) * max(arr[k+1..j]) + dfs(i, k) + dfs(k+1, j).",
+        "Return minimum cost across all split points."
+      ],
+      "whySlow": "Exponential Catalan number branching.",
+      "time": "O(4^n / n^(3/2))",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int mctFromLeafValues(int[] arr) {\n        return dfs(arr, 0, arr.length - 1);\n    }\n    private int dfs(int[] arr, int i, int j) {\n        if (i >= j) return 0;\n        int minCost = Integer.MAX_VALUE;\n        for (int k = i; k < j; k++) {\n            int maxLeft = 0, maxRight = 0;\n            for (int p = i; p <= k; p++) maxLeft = Math.max(maxLeft, arr[p]);\n            for (int p = k + 1; p <= j; p++) maxRight = Math.max(maxRight, arr[p]);\n            int cost = maxLeft * maxRight + dfs(arr, i, k) + dfs(arr, k + 1, j);\n            minCost = Math.min(minCost, cost);\n        }\n        return minCost;\n    }\n}",
+        "python": "class Solution:\n    def mctFromLeafValues(self, arr: list[int]) -> int:\n        def dfs(i: int, j: int) -> int:\n            if i >= j:\n                return 0\n            min_cost = float('inf')\n            for k in range(i, j):\n                max_left = max(arr[i : k + 1])\n                max_right = max(arr[k + 1 : j + 1])\n                cost = max_left * max_right + dfs(i, k) + dfs(k + 1, j)\n                min_cost = min(min_cost, cost)\n            return min_cost\n        return dfs(0, len(arr) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic decreasing stack greedily pairing smaller adjacent leaves with the minimum of their neighbors in O(n) time.",
+      "steps": [
+        "Initialize stack with Integer.MAX_VALUE.",
+        "For each value x in arr: while stack.peek() <= x: pop mid = stack.pop(); add mid * min(stack.peek(), x) to total.",
+        "Push x onto stack.",
+        "While stack.size() > 2: pop mid = stack.pop(); add mid * stack.peek() to total.",
+        "Return total sum."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int mctFromLeafValues(int[] arr) {\n        int total = 0;\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(Integer.MAX_VALUE);\n        for (int x : arr) {\n            while (stack.peek() <= x) {\n                int mid = stack.pop();\n                total += mid * Math.min(stack.peek(), x);\n            }\n            stack.push(x);\n        }\n        while (stack.size() > 2) {\n            int mid = stack.pop();\n            total += mid * stack.peek();\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def mctFromLeafValues(self, arr: list[int]) -> int:\n        total = 0\n        stack = [float('inf')]\n        for x in arr:\n            while stack[-1] <= x:\n                mid = stack.pop()\n                total += mid * min(stack[-1], x)\n            stack.append(x)\n        while len(stack) > 2:\n            mid = stack.pop()\n            total += mid * stack[-1]\n        return total"
+      }
+    }
+  },
+  {
+    "seq": 500,
+    "whyNext": "Builds on interval DP from Matrix Chain Multiplication / Burst Balloons (Seq 273) by sorting cut points, adding stick boundaries 0 and n, and choosing the optimal first cut k in range (i, j) that incurs cost (cuts[j] - cuts[i]).",
+    "hints": [
+      "Add boundaries 0 and n to the cuts array and sort it ascending.",
+      "Let dp[i][j] be the minimum cost to make all cuts between index i and index j.",
+      "Base case: if j == i + 1, no cuts remain between them, cost = 0. Otherwise, for every k between i and j: cost = (cuts[j] - cuts[i]) + dp[i][k] + dp[k][j]."
+    ],
+    "brute": {
+      "idea": "Recursively attempt every available cut within the current stick segment, paying the current segment length each time.",
+      "steps": [
+        "Augment cuts array with endpoints 0 and n, then sort.",
+        "Recursive dfs(i, j):",
+        "If j <= i + 1, return 0 (no cuts to make).",
+        "For each k from i + 1 to j - 1: cost = (cuts[j] - cuts[i]) + dfs(i, k) + dfs(k, j).",
+        "Return min cost across all cuts k."
+      ],
+      "whySlow": "Exponential Catalan branching.",
+      "time": "O(4^m / m^(3/2))",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int minCost(int n, int[] cuts) {\n        int m = cuts.length;\n        int[] all = new int[m + 2];\n        System.arraycopy(cuts, 0, all, 1, m);\n        all[0] = 0;\n        all[m + 1] = n;\n        Arrays.sort(all);\n        return dfs(all, 0, m + 1);\n    }\n    private int dfs(int[] cuts, int i, int j) {\n        if (j <= i + 1) return 0;\n        int minCost = Integer.MAX_VALUE;\n        for (int k = i + 1; k < j; k++) {\n            int cost = cuts[j] - cuts[i] + dfs(cuts, i, k) + dfs(cuts, k, j);\n            minCost = Math.min(minCost, cost);\n        }\n        return minCost;\n    }\n}",
+        "python": "class Solution:\n    def minCost(self, n: int, cuts: list[int]) -> int:\n        all_cuts = sorted([0] + cuts + [n])\n        def dfs(i: int, j: int) -> int:\n            if j <= i + 1:\n                return 0\n            min_cost = float('inf')\n            for k in range(i + 1, j):\n                cost = all_cuts[j] - all_cuts[i] + dfs(i, k) + dfs(k, j)\n                min_cost = min(min_cost, cost)\n            return min_cost\n        return dfs(0, len(all_cuts) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Interval dynamic programming calculating minimum cutting cost for segments of increasing length in O(m^3) time and O(m^2) space.",
+      "steps": [
+        "Create array all of length m + 2 with 0, cuts, and n, then sort ascending.",
+        "Initialize dp table of size (m+2) x (m+2).",
+        "Iterate interval difference diff from 2 to m + 1: for left index i from 0 to m + 1 - diff: j = i + diff.",
+        "dp[i][j] = (cuts[j] - cuts[i]) + min_{k in (i, j)}(dp[i][k] + dp[k][j]).",
+        "Return dp[0][m + 1]."
+      ],
+      "time": "O(m^3)",
+      "space": "O(m^2)",
+      "code": {
+        "java": "class Solution {\n    public int minCost(int n, int[] cuts) {\n        int m = cuts.length;\n        int[] all = new int[m + 2];\n        System.arraycopy(cuts, 0, all, 1, m);\n        all[0] = 0;\n        all[m + 1] = n;\n        Arrays.sort(all);\n        int[][] dp = new int[m + 2][m + 2];\n        for (int diff = 2; diff <= m + 1; diff++) {\n            for (int i = 0; i <= m + 1 - diff; i++) {\n                int j = i + diff;\n                int minVal = Integer.MAX_VALUE;\n                for (int k = i + 1; k < j; k++) {\n                    minVal = Math.min(minVal, dp[i][k] + dp[k][j]);\n                }\n                dp[i][j] = (all[j] - all[i]) + minVal;\n            }\n        }\n        return dp[0][m + 1];\n    }\n}",
+        "python": "class Solution:\n    def minCost(self, n: int, cuts: list[int]) -> int:\n        all_cuts = sorted([0] + cuts + [n])\n        m = len(all_cuts)\n        dp = [[0] * m for _ in range(m)]\n        for diff in range(2, m):\n            for i in range(m - diff):\n                j = i + diff\n                min_val = min(dp[i][k] + dp[k][j] for k in range(i + 1, j))\n                dp[i][j] = (all_cuts[j] - all_cuts[i]) + min_val\n        return dp[0][m - 1]"
+      }
+    }
+  }
+]
