@@ -319,5 +319,333 @@
         "python": "class Solution:\n    def closedIsland(self, grid: list[list[int]]) -> int:\n        m, n = len(grid), len(grid[0])\n        def dfs(r: int, c: int) -> None:\n            if not (0 <= r < m and 0 <= c < n and grid[r][c] == 0):\n                return\n            grid[r][c] = 1\n            dfs(r + 1, c)\n            dfs(r - 1, c)\n            dfs(r, c + 1)\n            dfs(r, c - 1)\n        for i in range(m):\n            dfs(i, 0)\n            dfs(i, n - 1)\n        for j in range(n):\n            dfs(0, j)\n            dfs(m - 1, j)\n        ans = 0\n        for i in range(1, m - 1):\n            for j in range(1, n - 1):\n                if grid[i][j] == 0:\n                    ans += 1\n                    dfs(i, j)\n        return ans"
       }
     }
+  },
+  {
+    "seq": 451,
+    "whyNext": "Builds on connected component flood fill from Number of Closed Islands (Seq 450) by traversing each island in grid2 and verifying that every single land cell is also land (1) in grid1.",
+    "hints": [
+      "An island in grid2 is a sub-island if and only if EVERY cell of that island is also land (1) in grid1.",
+      "Traverse islands in grid2 using DFS/BFS, marking visited cells as 0.",
+      "Track a boolean isSub = true. During DFS of island in grid2, if grid1[r][c] == 0, set isSub = false. Continue DFS to completely sink the island in grid2 before checking isSub."
+    ],
+    "brute": {
+      "idea": "Find all cells of each grid2 island, then check if all collected cells are 1 in grid1.",
+      "steps": [
+        "Use BFS to collect all coordinate pairs (r, c) of each island in grid2.",
+        "Check every collected cell: if any cell has grid1[r][c] == 0, island is not a sub-island.",
+        "Count qualifying sub-islands."
+      ],
+      "whySlow": "Allocates lists of coordinate pairs for every island.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int countSubIslands(int[][] grid1, int[][] grid2) {\n        int m = grid1.length, n = grid1[0].length;\n        int count = 0;\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid2[i][j] == 1) {\n                    List<int[]> island = new ArrayList<>();\n                    collect(grid2, i, j, island);\n                    boolean isSub = true;\n                    for (int[] cell : island) {\n                        if (grid1[cell[0]][cell[1]] == 0) isSub = false;\n                    }\n                    if (isSub) count++;\n                }\n            }\n        }\n        return count;\n    }\n    private void collect(int[][] g, int r, int c, List<int[]> island) {\n        if (r < 0 || r >= g.length || c < 0 || c >= g[0].length || g[r][c] == 0) return;\n        g[r][c] = 0;\n        island.add(new int[]{r, c});\n        collect(g, r + 1, c, island);\n        collect(g, r - 1, c, island);\n        collect(g, r, c + 1, island);\n        collect(g, r, c - 1, island);\n    }\n}",
+        "python": "class Solution:\n    def countSubIslands(self, grid1: list[list[int]], grid2: list[list[int]]) -> int:\n        m, n = len(grid1), len(grid1[0])\n        count = 0\n        def collect(r: int, c: int, island: list[tuple[int, int]]) -> None:\n            if not (0 <= r < m and 0 <= c < n and grid2[r][c] == 1):\n                return\n            grid2[r][c] = 0\n            island.append((r, c))\n            collect(r + 1, c, island)\n            collect(r - 1, c, island)\n            collect(r, c + 1, island)\n            collect(r, c - 1, island)\n        for i in range(m):\n            for j in range(n):\n                if grid2[i][j] == 1:\n                    cells = []\n                    collect(i, j, cells)\n                    if all(grid1[r][c] == 1 for r, c in cells):\n                        count += 1\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "In-place boolean DFS sinking: sink grid2 island in-place, returning false if any constituent cell lacks grid1 land in O(m * n) time.",
+      "steps": [
+        "In dfs(r, c): if out of bounds or grid2[r][c] == 0 return true.",
+        "grid2[r][c] = 0.",
+        "boolean isSub = grid1[r][c] == 1.",
+        "Recurse in 4 directions, combining results with bitwise & (to avoid short-circuiting so entire island is sunk).",
+        "Return isSub & down & up & right & left."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n) call stack",
+      "code": {
+        "java": "class Solution {\n    public int countSubIslands(int[][] grid1, int[][] grid2) {\n        int m = grid1.length, n = grid1[0].length;\n        int ans = 0;\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid2[i][j] == 1) {\n                    if (dfs(grid1, grid2, i, j, m, n)) {\n                        ans++;\n                    }\n                }\n            }\n        }\n        return ans;\n    }\n    private boolean dfs(int[][] g1, int[][] g2, int r, int c, int m, int n) {\n        if (r < 0 || r >= m || c < 0 || c >= n || g2[r][c] == 0) return true;\n        g2[r][c] = 0;\n        boolean res = g1[r][c] == 1;\n        boolean down = dfs(g1, g2, r + 1, c, m, n);\n        boolean up = dfs(g1, g2, r - 1, c, m, n);\n        boolean right = dfs(g1, g2, r, c + 1, m, n);\n        boolean left = dfs(g1, g2, r, c - 1, m, n);\n        return res && down && up && right && left;\n    }\n}",
+        "python": "class Solution:\n    def countSubIslands(self, grid1: list[list[int]], grid2: list[list[int]]) -> int:\n        m, n = len(grid1), len(grid1[0])\n        def dfs(r: int, c: int) -> bool:\n            if not (0 <= r < m and 0 <= c < n and grid2[r][c] == 1):\n                return True\n            grid2[r][c] = 0\n            res = (grid1[r][c] == 1)\n            d1 = dfs(r + 1, c)\n            d2 = dfs(r - 1, c)\n            d3 = dfs(r, c + 1)\n            d4 = dfs(r, c - 1)\n            return res and d1 and d2 and d3 and d4\n        ans = 0\n        for i in range(m):\n            for j in range(n):\n                if grid2[i][j] == 1:\n                    if dfs(i, j):\n                        ans += 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 452,
+    "whyNext": "Builds on multi-source BFS from 01 Matrix (Seq 204) by enqueueing all land cells (1) simultaneously and expanding outward level by level to find the water cell with maximum Manhattan distance.",
+    "hints": [
+      "If the grid contains all land (1s) or all water (0s), there is no valid distance; return -1.",
+      "Enqueue all land cells (1s) into a BFS queue simultaneously with distance 0.",
+      "Expand outward in 4 directions, marking visited water cells as visited; the number of BFS levels expanded before the queue empties is the maximum distance."
+    ],
+    "brute": {
+      "idea": "For every water cell (0), compute Manhattan distance to every land cell (1), find the min, and maximize across water cells.",
+      "steps": [
+        "Collect coordinates of all 1s (land) and all 0s (water).",
+        "If either list is empty, return -1.",
+        "For each water cell, find min distance to any land cell.",
+        "Return maximum min distance."
+      ],
+      "whySlow": "Comparing every water cell to every land cell takes O((m*n)^2) time.",
+      "time": "O((m * n)^2)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int maxDistance(int[][] grid) {\n        int n = grid.length;\n        List<int[]> land = new ArrayList<>();\n        List<int[]> water = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] == 1) land.add(new int[]{i, j});\n                else water.add(new int[]{i, j});\n            }\n        }\n        if (land.isEmpty() || water.isEmpty()) return -1;\n        int maxDist = -1;\n        for (int[] w : water) {\n            int minDist = Integer.MAX_VALUE;\n            for (int[] l : land) {\n                minDist = Math.min(minDist, Math.abs(w[0] - l[0]) + Math.abs(w[1] - l[1]));\n            }\n            maxDist = Math.max(maxDist, minDist);\n        }\n        return maxDist;\n    }\n}",
+        "python": "class Solution:\n    def maxDistance(self, grid: list[list[int]]) -> int:\n        n = len(grid)\n        land = [(r, c) for r in range(n) for c in range(n) if grid[r][c] == 1]\n        water = [(r, c) for r in range(n) for c in range(n) if grid[r][c] == 0]\n        if not land or not water:\n            return -1\n        max_dist = -1\n        for wr, wc in water:\n            min_d = min(abs(wr - lr) + abs(wc - lc) for lr, lc in land)\n            max_dist = max(max_dist, min_d)\n        return max_dist"
+      }
+    },
+    "optimal": {
+      "idea": "Multi-source BFS from land cells: expand BFS wavefront level by level, returning the number of levels expanded in O(n^2) time.",
+      "steps": [
+        "Queue<int[]> q = new LinkedList<>().",
+        "Add all land cells (value 1) into q.",
+        "If q.size() == 0 || q.size() == n * n return -1.",
+        "int dist = -1; while (!q.isEmpty()): dist++; int sz = q.size(); repeat sz times: pop cell, explore 4 neighbors; if neighbor in bounds and grid == 0: grid = 1, q.offer(neighbor).",
+        "Return dist."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int maxDistance(int[][] grid) {\n        int n = grid.length;\n        Queue<int[]> q = new LinkedList<>();\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] == 1) q.offer(new int[]{i, j});\n            }\n        }\n        if (q.isEmpty() || q.size() == n * n) return -1;\n        int dist = -1;\n        int[] dr = {-1, 1, 0, 0};\n        int[] dc = {0, 0, -1, 1};\n        while (!q.isEmpty()) {\n            dist++;\n            int sz = q.size();\n            for (int k = 0; k < sz; k++) {\n                int[] cur = q.poll();\n                for (int d = 0; d < 4; d++) {\n                    int nr = cur[0] + dr[d], nc = cur[1] + dc[d];\n                    if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] == 0) {\n                        grid[nr][nc] = 1;\n                        q.offer(new int[]{nr, nc});\n                    }\n                }\n            }\n        }\n        return dist;\n    }\n}",
+        "python": "class Solution:\n    def maxDistance(self, grid: list[list[int]]) -> int:\n        from collections import deque\n        n = len(grid)\n        q = deque((r, c) for r in range(n) for c in range(n) if grid[r][c] == 1)\n        if not q or len(q) == n * n:\n            return -1\n        dist = -1\n        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n        while q:\n            dist += 1\n            for _ in range(len(q)):\n                r, c = q.popleft()\n                for dr, dc in dirs:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < n and 0 <= nc < n and grid[nr][nc] == 0:\n                        grid[nr][nc] = 1\n                        q.append((nr, nc))\n        return dist"
+      }
+    }
+  },
+  {
+    "seq": 453,
+    "whyNext": "Builds on shortest path unweighted grid BFS from Shortest Path in Binary Matrix (Seq 205) by identifying border boundary cells (r == 0, r == m-1, c == 0, c == n-1) as exits, excluding the entrance itself.",
+    "hints": [
+      "Use BFS starting at the entrance cell with step count 0.",
+      "An exit is any '.' cell on the border of the maze (row 0 or m-1, or col 0 or n-1) that is NOT the entrance.",
+      "Mark visited cells as '+' immediately when pushed to queue to avoid duplicate processing. Return steps on first valid border exit hit."
+    ],
+    "brute": {
+      "idea": "Find all border exit coordinates first, then run BFS to find the shortest distance from entrance to any exit.",
+      "steps": [
+        "Scan border cells to collect all candidate exits (excluding entrance).",
+        "If no candidate exits exist, return -1.",
+        "Run BFS from entrance until any collected exit is popped.",
+        "Return steps."
+      ],
+      "whySlow": "Preprocessing exits and set lookups add overhead.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int nearestExit(char[][] maze, int[] entrance) {\n        int m = maze.length, n = maze[0].length;\n        Queue<int[]> q = new LinkedList<>();\n        q.offer(new int[]{entrance[0], entrance[1], 0});\n        maze[entrance[0]][entrance[1]] = '+';\n        int[] dr = {-1, 1, 0, 0};\n        int[] dc = {0, 0, -1, 1};\n        while (!q.isEmpty()) {\n            int[] cur = q.poll();\n            int r = cur[0], c = cur[1], steps = cur[2];\n            for (int d = 0; d < 4; d++) {\n                int nr = r + dr[d], nc = c + dc[d];\n                if (nr >= 0 && nr < m && nc >= 0 && nc < n && maze[nr][nc] == '.') {\n                    if (nr == 0 || nr == m - 1 || nc == 0 || nc == n - 1) {\n                        return steps + 1;\n                    }\n                    maze[nr][nc] = '+';\n                    q.offer(new int[]{nr, nc, steps + 1});\n                }\n            }\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def nearestExit(self, maze: list[list[str]], entrance: list[int]) -> int:\n        from collections import deque\n        m, n = len(maze), len(maze[0])\n        q = deque([(entrance[0], entrance[1], 0)])\n        maze[entrance[0]][entrance[1]] = '+'\n        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n        while q:\n            r, c, steps = q.popleft()\n            for dr, dc in dirs:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and maze[nr][nc] == '.':\n                    if nr == 0 or nr == m - 1 or nc == 0 or nc == n - 1:\n                        return steps + 1\n                    maze[nr][nc] = '+'\n                    q.append((nr, nc, steps + 1))\n        return -1"
+      }
+    },
+    "optimal": {
+      "idea": "Direct BFS boundary exit detection: return steps + 1 as soon as any neighboring empty cell touches the grid boundary in O(m * n) time.",
+      "steps": [
+        "Let m = maze.length, n = maze[0].length.",
+        "Queue<int[]> q = new LinkedList<>(); q.offer(new int[]{entrance[0], entrance[1]});",
+        "maze[entrance[0]][entrance[1]] = '+'; int steps = 0;",
+        "While !q.isEmpty(): sz = q.size(); steps++; repeat sz times: pop [r, c], for 4 neighbors: if in bounds and '.': if border cell return steps; maze[nr][nc] = '+'; q.offer([nr, nc]).",
+        "Return -1."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int nearestExit(char[][] maze, int[] entrance) {\n        int m = maze.length, n = maze[0].length;\n        Queue<int[]> q = new LinkedList<>();\n        q.offer(new int[]{entrance[0], entrance[1]});\n        maze[entrance[0]][entrance[1]] = '+';\n        int steps = 0;\n        int[] dr = {-1, 1, 0, 0};\n        int[] dc = {0, 0, -1, 1};\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            steps++;\n            for (int k = 0; k < sz; k++) {\n                int[] cur = q.poll();\n                for (int d = 0; d < 4; d++) {\n                    int nr = cur[0] + dr[d], nc = cur[1] + dc[d];\n                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && maze[nr][nc] == '.') {\n                        if (nr == 0 || nr == m - 1 || nc == 0 || nc == n - 1) {\n                            return steps;\n                        }\n                        maze[nr][nc] = '+';\n                        q.offer(new int[]{nr, nc});\n                    }\n                }\n            }\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def nearestExit(self, maze: list[list[str]], entrance: list[int]) -> int:\n        from collections import deque\n        m, n = len(maze), len(maze[0])\n        q = deque([(entrance[0], entrance[1])])\n        maze[entrance[0]][entrance[1]] = '+'\n        steps = 0\n        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n        while q:\n            steps += 1\n            for _ in range(len(q)):\n                r, c = q.popleft()\n                for dr, dc in dirs:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < m and 0 <= nc < n and maze[nr][nc] == '.':\n                        if nr == 0 or nr == m - 1 or nc == 0 or nc == n - 1:\n                            return steps\n                        maze[nr][nc] = '+'\n                        q.append((nr, nc))\n        return -1"
+      }
+    }
+  },
+  {
+    "seq": 454,
+    "whyNext": "Builds on grid neighbor inspection from Nearest Exit in Maze (Seq 453) by revealing clicked mines ('M' -> 'X'), counting 8-directional adjacent mines, or recursively revealing blank squares ('E' -> 'B').",
+    "hints": [
+      "If click is an unrevealed mine 'M', change it to 'X' and return immediately.",
+      "If click is an unrevealed empty square 'E': count adjacent mines in all 8 directions.",
+      "If adjacent mine count > 0: set board[r][c] to (char) ('0' + count) and stop. If count == 0: set board[r][c] = 'B' and recursively reveal all 8 unrevealed 'E' neighbors."
+    ],
+    "brute": {
+      "idea": "BFS revelation: queue clicked square, count adjacent mines, expand if 0 mines.",
+      "steps": [
+        "If click is 'M', change to 'X' and return.",
+        "Add click to queue.",
+        "While queue not empty: pop cell, count adjacent mines.",
+        "If count > 0, set digit. If 0, set 'B' and enqueue unrevealed neighbors.",
+        "Return board."
+      ],
+      "whySlow": "Queue handling adds allocation overhead compared to direct DFS recursion.",
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public char[][] updateBoard(char[][] board, int[] click) {\n        int r = click[0], c = click[1];\n        if (board[r][c] == 'M') {\n            board[r][c] = 'X';\n            return board;\n        }\n        int m = board.length, n = board[0].length;\n        Queue<int[]> q = new LinkedList<>();\n        q.offer(new int[]{r, c});\n        board[r][c] = 'B';\n        int[] dr = {-1,-1,-1,0,0,1,1,1};\n        int[] dc = {-1,0,1,-1,1,-1,0,1};\n        while (!q.isEmpty()) {\n            int[] cur = q.poll();\n            int cr = cur[0], cc = cur[1];\n            int mines = 0;\n            for (int d = 0; d < 8; d++) {\n                int nr = cr + dr[d], nc = cc + dc[d];\n                if (nr >= 0 && nr < m && nc >= 0 && nc < n && (board[nr][nc] == 'M' || board[nr][nc] == 'X')) {\n                    mines++;\n                }\n            }\n            if (mines > 0) {\n                board[cr][cc] = (char) ('0' + mines);\n            } else {\n                for (int d = 0; d < 8; d++) {\n                    int nr = cr + dr[d], nc = cc + dc[d];\n                    if (nr >= 0 && nr < m && nc >= 0 && nc < n && board[nr][nc] == 'E') {\n                        board[nr][nc] = 'B';\n                        q.offer(new int[]{nr, nc});\n                    }\n                }\n            }\n        }\n        return board;\n    }\n}",
+        "python": "class Solution:\n    def updateBoard(self, board: list[list[str]], click: list[int]) -> list[list[str]]:\n        r, c = click\n        if board[r][c] == 'M':\n            board[r][c] = 'X'\n            return board\n        from collections import deque\n        m, n = len(board), len(board[0])\n        q = deque([(r, c)])\n        board[r][c] = 'B'\n        dirs = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]\n        while q:\n            cr, cc = q.popleft()\n            mines = 0\n            for dr, dc in dirs:\n                nr, nc = cr + dr, cc + dc\n                if 0 <= nr < m and 0 <= nc < n and board[nr][nc] in ('M', 'X'):\n                    mines += 1\n            if mines > 0:\n                board[cr][cc] = str(mines)\n            else:\n                for dr, dc in dirs:\n                    nr, nc = cr + dr, cc + dc\n                    if 0 <= nr < m and 0 <= nc < n and board[nr][nc] == 'E':\n                        board[nr][nc] = 'B'\n                        q.append((nr, nc))\n        return board"
+      }
+    },
+    "optimal": {
+      "idea": "Recursive DFS reveal: directly update board cells in 8 directions when adjacent mine count is 0 in O(m * n) time.",
+      "steps": [
+        "int r = click[0], c = click[1].",
+        "If board[r][c] == 'M': board[r][c] = 'X'; return board.",
+        "In dfs(r, c): count adjacent mines.",
+        "If mines > 0: board[r][c] = (char) ('0' + mines); return.",
+        "board[r][c] = 'B'; for each 8 neighbors: if neighbor == 'E' dfs(nr, nc).",
+        "Return board."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n) recursion stack",
+      "code": {
+        "java": "class Solution {\n    public char[][] updateBoard(char[][] board, int[] click) {\n        int r = click[0], c = click[1];\n        if (board[r][c] == 'M') {\n            board[r][c] = 'X';\n            return board;\n        }\n        dfs(board, r, c);\n        return board;\n    }\n    private void dfs(char[][] b, int r, int c) {\n        if (r < 0 || r >= b.length || c < 0 || c >= b[0].length || b[r][c] != 'E') return;\n        int mines = 0;\n        for (int i = -1; i <= 1; i++) {\n            for (int j = -1; j <= 1; j++) {\n                if (i == 0 && j == 0) continue;\n                int nr = r + i, nc = c + j;\n                if (nr >= 0 && nr < b.length && nc >= 0 && nc < b[0].length && b[nr][nc] == 'M') {\n                    mines++;\n                }\n            }\n        }\n        if (mines > 0) {\n            b[r][c] = (char) ('0' + mines);\n        } else {\n            b[r][c] = 'B';\n            for (int i = -1; i <= 1; i++) {\n                for (int j = -1; j <= 1; j++) {\n                    if (i != 0 || j != 0) dfs(b, r + i, c + j);\n                }\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def updateBoard(self, board: list[list[str]], click: list[int]) -> list[list[str]]:\n        r, c = click\n        if board[r][c] == 'M':\n            board[r][c] = 'X'\n            return board\n        m, n = len(board), len(board[0])\n        def dfs(r: int, c: int) -> None:\n            if not (0 <= r < m and 0 <= c < n and board[r][c] == 'E'):\n                return\n            mines = 0\n            for dr in (-1, 0, 1):\n                for dc in (-1, 0, 1):\n                    if dr == 0 and dc == 0:\n                        continue\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < m and 0 <= nc < n and board[nr][nc] == 'M':\n                        mines += 1\n            if mines > 0:\n                board[r][c] = str(mines)\n            else:\n                board[r][c] = 'B'\n                for dr in (-1, 0, 1):\n                    for dc in (-1, 0, 1):\n                        if dr != 0 or dc != 0:\n                            dfs(r + dr, c + dc)\n        dfs(r, c)\n        return board"
+      }
+    }
+  },
+  {
+    "seq": 455,
+    "whyNext": "Builds on board state BFS navigation from Minesweeper (Seq 454) by converting Boustrophedon board numbers (1 to n^2) into 2D row/col coordinates and finding minimum dice rolls with BFS.",
+    "hints": [
+      "Square numbers 1 to n^2 alternate direction row-by-row starting from the bottom row.",
+      "Coordinate conversion: row from top is n - 1 - (s - 1) / n. If that row from bottom is odd, col is (s - 1) % n; otherwise n - 1 - (s - 1) % n.",
+      "Run standard unweighted BFS from square 1. For each square s, branch to s + 1 through min(s + 6, n^2); if destination has a snake or ladder (board[r][c] != -1), destination jumps to board[r][c]."
+    ],
+    "brute": {
+      "idea": "Dijkstra's shortest path algorithm over the n^2 state graph.",
+      "steps": [
+        "Initialize distances array dist with infinity.",
+        "Priority queue stores (dist, square).",
+        "Pop smallest dist, explore next 1-6 dice moves.",
+        "Return dist[n*n]."
+      ],
+      "whySlow": "Priority queue adds O(log V) overhead compared to standard FIFO BFS queue.",
+      "time": "O(n^2 log n)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int snakesAndLadders(int[][] board) {\n        int n = board.length;\n        int[] dist = new int[n * n + 1];\n        Arrays.fill(dist, -1);\n        Queue<Integer> q = new LinkedList<>();\n        q.offer(1);\n        dist[1] = 0;\n        while (!q.isEmpty()) {\n            int curr = q.poll();\n            if (curr == n * n) return dist[curr];\n            for (int i = 1; i <= 6 && curr + i <= n * n; i++) {\n                int next = curr + i;\n                int[] pos = getCoord(next, n);\n                int dest = board[pos[0]][pos[1]] != -1 ? board[pos[0]][pos[1]] : next;\n                if (dist[dest] == -1) {\n                    dist[dest] = dist[curr] + 1;\n                    q.offer(dest);\n                }\n            }\n        }\n        return -1;\n    }\n    private int[] getCoord(int s, int n) {\n        int r = n - 1 - (s - 1) / n;\n        int c = (s - 1) % n;\n        if ((n - 1 - r) % 2 == 1) c = n - 1 - c;\n        return new int[]{r, c};\n    }\n}",
+        "python": "class Solution:\n    def snakesAndLadders(self, board: list[list[int]]) -> int:\n        from collections import deque\n        n = len(board)\n        def get_coord(s: int) -> tuple[int, int]:\n            r = n - 1 - (s - 1) // n\n            c = (s - 1) % n\n            if (n - 1 - r) % 2 == 1:\n                c = n - 1 - c\n            return r, c\n        dist = {1: 0}\n        q = deque([1])\n        while q:\n            curr = q.popleft()\n            if curr == n * n:\n                return dist[curr]\n            for i in range(1, 7):\n                nxt = curr + i\n                if nxt > n * n:\n                    break\n                r, c = get_coord(nxt)\n                dest = board[r][c] if board[r][c] != -1 else nxt\n                if dest not in dist:\n                    dist[dest] = dist[curr] + 1\n                    q.append(dest)\n        return -1"
+      }
+    },
+    "optimal": {
+      "idea": "Unweighted BFS on 1..n^2: each dice roll has uniform weight 1, so BFS guarantees the minimum moves in O(n^2) time.",
+      "steps": [
+        "Map square s to (r, c) using boustrophedon index arithmetic.",
+        "boolean[] visited = new boolean[n * n + 1]; Queue<Integer> q = new LinkedList<>();",
+        "q.offer(1); visited[1] = true; int moves = 0;",
+        "While !q.isEmpty(): sz = q.size(); moves++; for each square: try rolls 1 to 6; jump snake/ladder if present; if dest == n*n return moves; if !visited[dest] visited[dest] = true, q.offer(dest).",
+        "Return -1."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int snakesAndLadders(int[][] board) {\n        int n = board.length;\n        boolean[] visited = new boolean[n * n + 1];\n        Queue<Integer> q = new LinkedList<>();\n        q.offer(1);\n        visited[1] = true;\n        int moves = 0;\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            for (int k = 0; k < sz; k++) {\n                int cur = q.poll();\n                if (cur == n * n) return moves;\n                for (int d = 1; d <= 6 && cur + d <= n * n; d++) {\n                    int next = cur + d;\n                    int r = n - 1 - (next - 1) / n;\n                    int c = (next - 1) % n;\n                    if ((n - 1 - r) % 2 == 1) c = n - 1 - c;\n                    int dest = board[r][c] != -1 ? board[r][c] : next;\n                    if (!visited[dest]) {\n                        visited[dest] = true;\n                        q.offer(dest);\n                    }\n                }\n            }\n            moves++;\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def snakesAndLadders(self, board: list[list[int]]) -> int:\n        from collections import deque\n        n = len(board)\n        def to_coord(s: int) -> tuple[int, int]:\n            r = n - 1 - (s - 1) // n\n            c = (s - 1) % n\n            if (n - 1 - r) % 2 == 1:\n                c = n - 1 - c\n            return r, c\n        visited = [False] * (n * n + 1)\n        visited[1] = True\n        q = deque([1])\n        moves = 0\n        while q:\n            for _ in range(len(q)):\n                cur = q.popleft()\n                if cur == n * n:\n                    return moves\n                for d in range(1, 7):\n                    nxt = cur + d\n                    if nxt > n * n:\n                        break\n                    r, c = to_coord(nxt)\n                    dest = board[r][c] if board[r][c] != -1 else nxt\n                    if not visited[dest]:\n                        visited[dest] = True\n                        q.append(dest)\n            moves += 1\n        return -1"
+      }
+    }
+  },
+  {
+    "seq": 456,
+    "whyNext": "Builds on multi-state BFS from Snakes and Ladders (Seq 455) by tracking vertex visitations paired with edge color (0 for red, 1 for blue) to enforce strict color alternation.",
+    "hints": [
+      "A node can be visited multiple times as long as it is entered via different edge colors.",
+      "State representation in BFS: (node, lastColor) where color 0 = red and 1 = blue.",
+      "Initialize queue with (0, 0) and (0, 1) at distance 0. If lastColor was red, only traverse blue outgoing edges; if blue, only traverse red outgoing edges."
+    ],
+    "brute": {
+      "idea": "Run separate BFS for each destination node from root 0 tracking alternating colors.",
+      "steps": [
+        "For each destination i from 0 to n - 1: run alternating BFS from 0 to i.",
+        "Store shortest path length in ans[i].",
+        "Return ans array."
+      ],
+      "whySlow": "Running n separate BFS searches takes O(n * (V + E)) time.",
+      "time": "O(n * (V + E))",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int[] shortestAlternatingPaths(int n, int[][] redEdges, int[][] blueEdges) {\n        List<List<Integer>> redAdj = new ArrayList<>();\n        List<List<Integer>> blueAdj = new ArrayList<>();\n        for (int i = 0; i < n; i++) { redAdj.add(new ArrayList<>()); blueAdj.add(new ArrayList<>()); }\n        for (int[] e : redEdges) redAdj.get(e[0]).add(e[1]);\n        for (int[] e : blueEdges) blueAdj.get(e[0]).add(e[1]);\n        int[] ans = new int[n];\n        Arrays.fill(ans, -1);\n        boolean[][] visited = new boolean[n][2];\n        Queue<int[]> q = new LinkedList<>();\n        q.offer(new int[]{0, 0, 0});\n        q.offer(new int[]{0, 1, 0});\n        visited[0][0] = true; visited[0][1] = true;\n        while (!q.isEmpty()) {\n            int[] cur = q.poll();\n            int u = cur[0], color = cur[1], d = cur[2];\n            if (ans[u] == -1) ans[u] = d;\n            if (color == 0) {\n                for (int v : blueAdj.get(u)) {\n                    if (!visited[v][1]) { visited[v][1] = true; q.offer(new int[]{v, 1, d + 1}); }\n                }\n            } else {\n                for (int v : redAdj.get(u)) {\n                    if (!visited[v][0]) { visited[v][0] = true; q.offer(new int[]{v, 0, d + 1}); }\n                }\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def shortestAlternatingPaths(self, n: int, redEdges: list[list[int]], blueEdges: list[list[int]]) -> list[int]:\n        from collections import deque\n        red = [[] for _ in range(n)]\n        blue = [[] for _ in range(n)]\n        for u, v in redEdges:\n            red[u].append(v)\n        for u, v in blueEdges:\n            blue[u].append(v)\n        ans = [-1] * n\n        vis = [[False, False] for _ in range(n)]\n        q = deque([(0, 0, 0), (0, 1, 0)])\n        vis[0][0] = vis[0][1] = True\n        while q:\n            u, color, d = q.popleft()\n            if ans[u] == -1:\n                ans[u] = d\n            if color == 0:\n                for v in blue[u]:\n                    if not vis[v][1]:\n                        vis[v][1] = True\n                        q.append((v, 1, d + 1))\n            else:\n                for v in red[u]:\n                    if not vis[v][0]:\n                        vis[v][0] = True\n                        q.append((v, 0, d + 1))\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Single multi-state BFS: 2 states per node (node, color) finds shortest alternating paths to all nodes in O(V + E) time.",
+      "steps": [
+        "Build red and blue adjacency lists.",
+        "int[] ans = new int[n]; Arrays.fill(ans, -1).",
+        "boolean[][] vis = new boolean[n][2]; Queue<int[]> q = new LinkedList<>();",
+        "Enqueue (0, 0) and (0, 1); vis[0][0] = vis[0][1] = true; steps = 0;",
+        "While !q.isEmpty(): level iteration; if ans[node] == -1 ans[node] = steps; expand alternating edges; steps++.",
+        "Return ans."
+      ],
+      "time": "O(V + E)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int[] shortestAlternatingPaths(int n, int[][] redEdges, int[][] blueEdges) {\n        List<List<Integer>> redAdj = new ArrayList<>();\n        List<List<Integer>> blueAdj = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            redAdj.add(new ArrayList<>());\n            blueAdj.add(new ArrayList<>());\n        }\n        for (int[] e : redEdges) redAdj.get(e[0]).add(e[1]);\n        for (int[] e : blueEdges) blueAdj.get(e[0]).add(e[1]);\n        int[] ans = new int[n];\n        Arrays.fill(ans, -1);\n        boolean[][] vis = new boolean[n][2];\n        Queue<int[]> q = new LinkedList<>();\n        q.offer(new int[]{0, 0});\n        q.offer(new int[]{0, 1});\n        vis[0][0] = true;\n        vis[0][1] = true;\n        int dist = 0;\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            for (int i = 0; i < sz; i++) {\n                int[] cur = q.poll();\n                int u = cur[0], color = cur[1];\n                if (ans[u] == -1) ans[u] = dist;\n                List<Integer> nextNodes = color == 0 ? blueAdj.get(u) : redAdj.get(u);\n                int nextColor = 1 - color;\n                for (int v : nextNodes) {\n                    if (!vis[v][nextColor]) {\n                        vis[v][nextColor] = true;\n                        q.offer(new int[]{v, nextColor});\n                    }\n                }\n            }\n            dist++;\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def shortestAlternatingPaths(self, n: int, redEdges: list[list[int]], blueEdges: list[list[int]]) -> list[int]:\n        from collections import deque\n        red = [[] for _ in range(n)]\n        blue = [[] for _ in range(n)]\n        for u, v in redEdges:\n            red[u].append(v)\n        for u, v in blueEdges:\n            blue[u].append(v)\n        ans = [-1] * n\n        vis = [[False, False] for _ in range(n)]\n        q = deque([(0, 0), (0, 1)])\n        vis[0][0] = vis[0][1] = True\n        dist = 0\n        while q:\n            for _ in range(len(q)):\n                u, color = q.popleft()\n                if ans[u] == -1:\n                    ans[u] = dist\n                nxt_list = blue[u] if color == 0 else red[u]\n                nxt_color = 1 - color\n                for v in nxt_list:\n                    if not vis[v][nxt_color]:\n                        vis[v][nxt_color] = True\n                        q.append((v, nxt_color))\n            dist += 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 457,
+    "whyNext": "Builds on BFS graph traversal from Shortest Path with Alternating Colors (Seq 456) by grouping identical values into a HashMap and clearing each value's index list upon first exploration to avoid O(n^2) edge explosion.",
+    "hints": [
+      "From index i, valid moves are i + 1, i - 1, and any index j where arr[i] == arr[j].",
+      "Map each unique number to a list of its indices in a HashMap<Integer, List<Integer>>.",
+      "CRITICAL: after exploring all indices with value arr[i], immediately clear the list in the map: map.get(arr[i]).clear() to prevent quadratic revisits."
+    ],
+    "brute": {
+      "idea": "Standard BFS exploring all neighbors without clearing mapped value lists.",
+      "steps": [
+        "Map values to index lists.",
+        "BFS from index 0.",
+        "Explore i-1, i+1, and all j where arr[j] == arr[i].",
+        "Return steps to reach n - 1."
+      ],
+      "whySlow": "When all elements have identical values, repeatedly scanning the list takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minJumps(int[] arr) {\n        int n = arr.length;\n        if (n <= 1) return 0;\n        Map<Integer, List<Integer>> map = new HashMap<>();\n        for (int i = 0; i < n; i++) map.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);\n        Queue<Integer> q = new LinkedList<>();\n        boolean[] vis = new boolean[n];\n        q.offer(0);\n        vis[0] = true;\n        int steps = 0;\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            for (int k = 0; k < sz; k++) {\n                int cur = q.poll();\n                if (cur == n - 1) return steps;\n                List<Integer> next = map.get(arr[cur]);\n                next.add(cur + 1);\n                next.add(cur - 1);\n                for (int nxt : next) {\n                    if (nxt >= 0 && nxt < n && !vis[nxt]) {\n                        vis[nxt] = true;\n                        q.offer(nxt);\n                    }\n                }\n                next.clear();\n            }\n            steps++;\n        }\n        return steps;\n    }\n}",
+        "python": "class Solution:\n    def minJumps(self, arr: list[int]) -> int:\n        n = len(arr)\n        if n <= 1:\n            return 0\n        from collections import defaultdict, deque\n        graph = defaultdict(list)\n        for i, x in enumerate(arr):\n            graph[x].append(i)\n        q = deque([0])\n        vis = {0}\n        steps = 0\n        while q:\n            for _ in range(len(q)):\n                cur = q.popleft()\n                if cur == n - 1:\n                    return steps\n                for nxt in (cur - 1, cur + 1):\n                    if 0 <= nxt < n and nxt not in vis:\n                        vis.add(nxt)\n                        q.append(nxt)\n                for nxt in graph[arr[cur]]:\n                    if nxt not in vis:\n                        vis.add(nxt)\n                        q.append(nxt)\n                graph[arr[cur]].clear()\n            steps += 1\n        return steps"
+      }
+    },
+    "optimal": {
+      "idea": "BFS with cleared value buckets: clear the bucket in the map once traversed, guaranteeing O(n) linear execution time.",
+      "steps": [
+        "Build Map<Integer, List<Integer>> graph.",
+        "boolean[] visited = new boolean[n]; visited[0] = true; Queue<Integer> q = new LinkedList<>(); q.offer(0);",
+        "int steps = 0; while (!q.isEmpty()): int sz = q.size();",
+        "For each node: if node == n - 1 return steps; check node - 1 and node + 1; check graph[arr[node]]; then graph.get(arr[node]).clear();",
+        "steps++; Return steps."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minJumps(int[] arr) {\n        int n = arr.length;\n        if (n <= 1) return 0;\n        Map<Integer, List<Integer>> map = new HashMap<>();\n        for (int i = 0; i < n; i++) {\n            map.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);\n        }\n        Queue<Integer> q = new LinkedList<>();\n        boolean[] vis = new boolean[n];\n        q.offer(0);\n        vis[0] = true;\n        int steps = 0;\n        while (!q.isEmpty()) {\n            int sz = q.size();\n            for (int i = 0; i < sz; i++) {\n                int cur = q.poll();\n                if (cur == n - 1) return steps;\n                if (cur - 1 >= 0 && !vis[cur - 1]) {\n                    vis[cur - 1] = true;\n                    q.offer(cur - 1);\n                }\n                if (cur + 1 < n && !vis[cur + 1]) {\n                    vis[cur + 1] = true;\n                    q.offer(cur + 1);\n                }\n                List<Integer> list = map.get(arr[cur]);\n                if (list != null) {\n                    for (int next : list) {\n                        if (!vis[next]) {\n                            vis[next] = true;\n                            q.offer(next);\n                        }\n                    }\n                    list.clear();\n                }\n            }\n            steps++;\n        }\n        return steps;\n    }\n}",
+        "python": "class Solution:\n    def minJumps(self, arr: list[int]) -> int:\n        n = len(arr)\n        if n <= 1:\n            return 0\n        from collections import defaultdict, deque\n        graph = defaultdict(list)\n        for i, val in enumerate(arr):\n            graph[val].append(i)\n        q = deque([0])\n        vis = [False] * n\n        vis[0] = True\n        steps = 0\n        while q:\n            for _ in range(len(q)):\n                cur = q.popleft()\n                if cur == n - 1:\n                    return steps\n                if cur - 1 >= 0 and not vis[cur - 1]:\n                    vis[cur - 1] = True\n                    q.append(cur - 1)\n                if cur + 1 < n and not vis[cur + 1]:\n                    vis[cur + 1] = True\n                    q.append(cur + 1)\n                for nxt in graph[arr[cur]]:\n                    if not vis[nxt]:\n                        vis[nxt] = True\n                        q.append(nxt)\n                graph[arr[cur]].clear()\n            steps += 1\n        return steps"
+      }
+    }
+  },
+  {
+    "seq": 458,
+    "whyNext": "Builds on directed graph reachability from Course Schedule (Seq 212) by creating a directed edge i -> j if bomb i's blast radius covers bomb j's center, finding the start bomb that maximizes DFS reachability.",
+    "hints": [
+      "Bomb i can detonate bomb j if Euclidean distance squared <= radius_i^2: (x1 - x2)^2 + (y1 - y2)^2 <= r1^2.",
+      "Notice this relation is directed: bomb i might reach bomb j, but bomb j might have a smaller radius and not reach bomb i.",
+      "Build a directed adjacency list. Run DFS/BFS from every bomb i to count the total reachable bombs, and return the maximum count."
+    ],
+    "brute": {
+      "idea": "Build directed graph and run BFS from every node, tracking maximum reachable count.",
+      "steps": [
+        "For each pair (i, j): if distSq <= r[i]^2, add edge i -> j.",
+        "Run BFS from every node i.",
+        "Count visited nodes for each BFS run.",
+        "Return maximum count."
+      ],
+      "whySlow": "Straightforward O(n * (V + E)) = O(n^3) graph search.",
+      "time": "O(n^3)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int maximumDetonation(int[][] bombs) {\n        int n = bombs.length;\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int i = 0; i < n; i++) {\n            long r = bombs[i][2];\n            long rSq = r * r;\n            for (int j = 0; j < n; j++) {\n                if (i != j) {\n                    long dx = bombs[i][0] - bombs[j][0];\n                    long dy = bombs[i][1] - bombs[j][1];\n                    if (dx * dx + dy * dy <= rSq) adj.get(i).add(j);\n                }\n            }\n        }\n        int max = 0;\n        for (int i = 0; i < n; i++) {\n            boolean[] vis = new boolean[n];\n            max = Math.max(max, dfs(i, adj, vis));\n        }\n        return max;\n    }\n    private int dfs(int u, List<List<Integer>> adj, boolean[] vis) {\n        vis[u] = true;\n        int count = 1;\n        for (int v : adj.get(u)) {\n            if (!vis[v]) count += dfs(v, adj, vis);\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def maximumDetonation(self, bombs: list[list[int]]) -> int:\n        n = len(bombs)\n        adj = [[] for _ in range(n)]\n        for i in range(n):\n            x1, y1, r1 = bombs[i]\n            r1_sq = r1 * r1\n            for j in range(n):\n                if i != j:\n                    x2, y2, _ = bombs[j]\n                    if (x1 - x2) ** 2 + (y1 - y2) ** 2 <= r1_sq:\n                        adj[i].append(j)\n        def dfs(u: int, vis: set[int]) -> int:\n            vis.add(u)\n            cnt = 1\n            for v in adj[u]:\n                if v not in vis:\n                    cnt += dfs(v, vis)\n            return cnt\n        max_bombs = 0\n        for i in range(n):\n            max_bombs = max(max_bombs, dfs(i, set()))\n        return max_bombs"
+      }
+    },
+    "optimal": {
+      "idea": "Directed adjacency list with bitset/DFS exploration: compute reachability component size for each node in O(n^3) time.",
+      "steps": [
+        "Precalculate directed adjacency list using 64-bit squared distance check.",
+        "For each bomb i from 0 to n - 1: initialize boolean[] vis, call dfs(i) counting reached nodes.",
+        "Track max detonation count.",
+        "Return max count."
+      ],
+      "time": "O(n^3)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int maximumDetonation(int[][] bombs) {\n        int n = bombs.length;\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int i = 0; i < n; i++) {\n            long r = (long) bombs[i][2] * bombs[i][2];\n            long x1 = bombs[i][0], y1 = bombs[i][1];\n            for (int j = 0; j < n; j++) {\n                if (i == j) continue;\n                long dx = x1 - bombs[j][0];\n                long dy = y1 - bombs[j][1];\n                if (dx * dx + dy * dy <= r) {\n                    adj.get(i).add(j);\n                }\n            }\n        }\n        int ans = 0;\n        for (int i = 0; i < n; i++) {\n            boolean[] vis = new boolean[n];\n            ans = Math.max(ans, dfs(i, adj, vis));\n        }\n        return ans;\n    }\n    private int dfs(int u, List<List<Integer>> adj, boolean[] vis) {\n        vis[u] = true;\n        int count = 1;\n        for (int v : adj.get(u)) {\n            if (!vis[v]) {\n                count += dfs(v, adj, vis);\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def maximumDetonation(self, bombs: list[list[int]]) -> int:\n        n = len(bombs)\n        adj = [[] for _ in range(n)]\n        for i in range(n):\n            x1, y1, r1 = bombs[i]\n            r1_sq = r1 * r1\n            for j in range(n):\n                if i != j:\n                    x2, y2, _ = bombs[j]\n                    if (x1 - x2) ** 2 + (y1 - y2) ** 2 <= r1_sq:\n                        adj[i].append(j)\n        ans = 0\n        for i in range(n):\n            vis = [False] * n\n            def dfs(u: int) -> int:\n                vis[u] = True\n                cnt = 1\n                for v in adj[u]:\n                    if not vis[v]:\n                        cnt += dfs(v)\n                return cnt\n            ans = max(ans, dfs(i))\n        return ans"
+      }
+    }
   }
 ]

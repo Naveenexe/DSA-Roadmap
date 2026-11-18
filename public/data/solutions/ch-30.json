@@ -1,0 +1,572 @@
+[
+  {
+    "seq": 459,
+    "whyNext": "Builds on connected component sizing from Number of Connected Components in an Undirected Graph (Seq 211) by calculating the size of each connected component and multiplying each component's size by the remaining unvisited nodes.",
+    "hints": [
+      "Find the size of each connected component in the graph using DFS or Disjoint Set Union (DSU).",
+      "For a component of size S, each of its nodes cannot reach any of the remaining (n - S) nodes.",
+      "Track remainingNodes = n and pairs = 0. For each component size S: pairs += (long) S * (remainingNodes - S); remainingNodes -= S. Return pairs."
+    ],
+    "brute": {
+      "idea": "Run BFS from every node i to count how many nodes cannot be reached from i, then sum and divide by 2.",
+      "steps": [
+        "For each node i from 0 to n - 1: run BFS to find reachable nodes count C.",
+        "Unreachable from i is n - C.",
+        "Sum over all nodes and divide by 2 to prevent double-counting."
+      ],
+      "whySlow": "Running BFS from every node takes O(n * (V + E)) time.",
+      "time": "O(n * (V + E))",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public long countPairs(int n, int[][] edges) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) {\n            adj.get(e[0]).add(e[1]);\n            adj.get(e[1]).add(e[0]);\n        }\n        long total = 0;\n        for (int i = 0; i < n; i++) {\n            boolean[] vis = new boolean[n];\n            int reachable = dfs(i, adj, vis);\n            total += (n - reachable);\n        }\n        return total / 2;\n    }\n    private int dfs(int u, List<List<Integer>> adj, boolean[] vis) {\n        vis[u] = true;\n        int cnt = 1;\n        for (int v : adj.get(u)) {\n            if (!vis[v]) cnt += dfs(v, adj, vis);\n        }\n        return cnt;\n    }\n}",
+        "python": "class Solution:\n    def countPairs(self, n: int, edges: list[list[int]]) -> int:\n        adj = [[] for _ in range(n)]\n        for u, v in edges:\n            adj[u].append(v)\n            adj[v].append(u)\n        total = 0\n        for i in range(n):\n            vis = [False] * n\n            def dfs(u: int) -> int:\n                vis[u] = True\n                cnt = 1\n                for v in adj[u]:\n                    if not vis[v]:\n                        cnt += dfs(v)\n                return cnt\n            reachable = dfs(i)\n            total += (n - reachable)\n        return total // 2"
+      }
+    },
+    "optimal": {
+      "idea": "Component size multiplication: find connected component sizes with DFS, multiplying each size S by remaining unvisited nodes in O(V + E) time.",
+      "steps": [
+        "Build undirected adjacency list.",
+        "boolean[] vis = new boolean[n]; long ans = 0, remaining = n;",
+        "For i from 0 to n - 1: if !vis[i]: long size = dfs(i, adj, vis); ans += size * (remaining - size); remaining -= size;",
+        "Return ans."
+      ],
+      "time": "O(V + E)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public long countPairs(int n, int[][] edges) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) {\n            adj.get(e[0]).add(e[1]);\n            adj.get(e[1]).add(e[0]);\n        }\n        boolean[] vis = new boolean[n];\n        long ans = 0, remaining = n;\n        for (int i = 0; i < n; i++) {\n            if (!vis[i]) {\n                long size = dfs(i, adj, vis);\n                ans += size * (remaining - size);\n                remaining -= size;\n            }\n        }\n        return ans;\n    }\n    private long dfs(int u, List<List<Integer>> adj, boolean[] vis) {\n        vis[u] = true;\n        long cnt = 1;\n        for (int v : adj.get(u)) {\n            if (!vis[v]) {\n                cnt += dfs(v, adj, vis);\n            }\n        }\n        return cnt;\n    }\n}",
+        "python": "class Solution:\n    def countPairs(self, n: int, edges: list[list[int]]) -> int:\n        adj = [[] for _ in range(n)]\n        for u, v in edges:\n            adj[u].append(v)\n            adj[v].append(u)\n        vis = [False] * n\n        ans = 0\n        remaining = n\n        def dfs(u: int) -> int:\n            vis[u] = True\n            cnt = 1\n            for v in adj[u]:\n                if not vis[v]:\n                    cnt += dfs(v)\n            return cnt\n        for i in range(n):\n            if not vis[i]:\n                size = dfs(i)\n                ans += size * (remaining - size)\n                remaining -= size\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 460,
+    "whyNext": "Builds on disjoint set union (DSU) from Redundant Connection (Seq 222) by grouping swap-connected index positions into connected components, sorting characters within each component to minimize lexicographical string order.",
+    "hints": [
+      "Swapping is transitive: if you can swap index a with b, and b with c, you can reorder characters among indices {a, b, c} arbitrarily.",
+      "Use Union-Find to group mutually swappable indices into connected components.",
+      "For each connected component, collect its indices and corresponding characters, sort both, and place sorted characters into sorted index positions."
+    ],
+    "brute": {
+      "idea": "Build graph of swappable index pairs, run DFS for each component to collect characters, sort them, and place them back.",
+      "steps": [
+        "Build adjacency list of index pairs.",
+        "Use visited array to find connected components of indices.",
+        "For each component, sort the indices and sort the characters at those indices.",
+        "Reassign characters into result char array."
+      ],
+      "whySlow": "DFS recursion stack with component sorting takes O(V + E + V log V) with extra object allocations.",
+      "time": "O(V + E + V log V)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {\n        int n = s.length();\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (List<Integer> p : pairs) {\n            adj.get(p.get(0)).add(p.get(1));\n            adj.get(p.get(1)).add(p.get(0));\n        }\n        boolean[] vis = new boolean[n];\n        char[] ans = s.toCharArray();\n        for (int i = 0; i < n; i++) {\n            if (!vis[i]) {\n                List<Integer> indices = new ArrayList<>();\n                List<Character> chars = new ArrayList<>();\n                dfs(i, adj, vis, indices, chars, s);\n                Collections.sort(indices);\n                Collections.sort(chars);\n                for (int k = 0; k < indices.size(); k++) {\n                    ans[indices.get(k)] = chars.get(k);\n                }\n            }\n        }\n        return new String(ans);\n    }\n    private void dfs(int u, List<List<Integer>> adj, boolean[] vis, List<Integer> idx, List<Character> ch, String s) {\n        vis[u] = true;\n        idx.add(u);\n        ch.add(s.charAt(u));\n        for (int v : adj.get(u)) {\n            if (!vis[v]) dfs(v, adj, vis, idx, ch, s);\n        }\n    }\n}",
+        "python": "class Solution:\n    def smallestStringWithSwaps(self, s: str, pairs: list[list[int]]) -> str:\n        n = len(s)\n        adj = [[] for _ in range(n)]\n        for u, v in pairs:\n            adj[u].append(v)\n            adj[v].append(u)\n        vis = [False] * n\n        ans = list(s)\n        for i in range(n):\n            if not vis[i]:\n                idx_list = []\n                def dfs(u: int) -> None:\n                    vis[u] = True\n                    idx_list.append(u)\n                    for v in adj[u]:\n                        if not vis[v]:\n                            dfs(v)\n                dfs(i)\n                idx_list.sort()\n                chars = sorted(s[k] for k in idx_list)\n                for k, pos in enumerate(idx_list):\n                    ans[pos] = chars[k]\n        return \"\".join(ans)"
+      }
+    },
+    "optimal": {
+      "idea": "Disjoint Set Union (DSU) + PriorityQueue grouping: group index components using DSU and greedily extract min characters from min-heaps in O((V + E) α(V) + V log V) time.",
+      "steps": [
+        "Initialize DSU parent array parent[i] = i for all n indices.",
+        "Union index pairs (u, v).",
+        "Map root -> PriorityQueue<Character> storing characters of that component.",
+        "Construct result char array: for each index i from 0 to n - 1, ans[i] = map.get(find(i)).poll().",
+        "Return new String(ans)."
+      ],
+      "time": "O(n log n + pairs * α(n))",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    private int[] parent;\n    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {\n        int n = s.length();\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n        for (List<Integer> p : pairs) union(p.get(0), p.get(1));\n        Map<Integer, PriorityQueue<Character>> map = new HashMap<>();\n        for (int i = 0; i < n; i++) {\n            int root = find(i);\n            map.computeIfAbsent(root, k -> new PriorityQueue<>()).offer(s.charAt(i));\n        }\n        char[] ans = new char[n];\n        for (int i = 0; i < n; i++) {\n            ans[i] = map.get(find(i)).poll();\n        }\n        return new String(ans);\n    }\n    private int find(int i) {\n        if (parent[i] == i) return i;\n        return parent[i] = find(parent[i]);\n    }\n    private void union(int i, int j) {\n        int r1 = find(i), r2 = find(j);\n        if (r1 != r2) parent[r1] = r2;\n    }\n}",
+        "python": "class Solution:\n    def smallestStringWithSwaps(self, s: str, pairs: list[list[int]]) -> str:\n        n = len(s)\n        parent = list(range(n))\n        def find(i: int) -> int:\n            if parent[i] == i:\n                return i\n            parent[i] = find(parent[i])\n            return parent[i]\n        for u, v in pairs:\n            ru, rv = find(u), find(v)\n            if ru != rv:\n                parent[ru] = rv\n        from collections import defaultdict\n        groups = defaultdict(list)\n        for i, ch in enumerate(s):\n            groups[find(i)].append(ch)\n        for root in groups:\n            groups[root].sort(reverse=True)\n        ans = []\n        for i in range(n):\n            ans.append(groups[find(i)].pop())\n        return \"\".join(ans)"
+      }
+    }
+  },
+  {
+    "seq": 461,
+    "whyNext": "Builds on component counting via Union-Find from Smallest String With Swaps (Seq 460) by scaling each 1x1 cell into a 3x3 pixel subgrid and counting 0-pixel connected components using flood fill or DSU.",
+    "hints": [
+      "A 1x1 slash can cut across diagonal corners, which is difficult to model directly as graph blocks.",
+      "Scale each cell to 3x3 subpixels: '/' fills anti-diagonal (0,2), (1,1), (2,0) with 1s; '\\\\' fills main diagonal (0,0), (1,1), (2,2) with 1s.",
+      "The problem now reduces to counting the number of connected components of 0s in the scaled 3n x 3n binary matrix using standard flood fill."
+    ],
+    "brute": {
+      "idea": "Subdivide each 1x1 cell into 4 triangular quadrants (0: top, 1: right, 2: bottom, 3: left) and connect internal and adjacent triangles via DSU.",
+      "steps": [
+        "Represent each cell (r, c) with 4 triangles: 4 * (r * n + c) + {0, 1, 2, 3}.",
+        "Connect adjacent cell boundaries.",
+        "Inside cell: if ' ' union all 4 triangles; if '/' union (0,3) and (1,2); if '\\\\' union (0,1) and (2,3).",
+        "Count distinct disjoint sets."
+      ],
+      "whySlow": "4-triangle DSU requires complex index math and boundary stitching.",
+      "time": "O(n^2 α(n))",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    private int[] parent;\n    private int count;\n    public int regionsBySlashes(String[] grid) {\n        int n = grid.length;\n        count = 4 * n * n;\n        parent = new int[count];\n        for (int i = 0; i < count; i++) parent[i] = i;\n        for (int r = 0; r < n; r++) {\n            for (int c = 0; c < n; c++) {\n                int base = 4 * (r * n + c);\n                char ch = grid[r].charAt(c);\n                if (ch == ' ') {\n                    union(base, base + 1);\n                    union(base + 1, base + 2);\n                    union(base + 2, base + 3);\n                } else if (ch == '/') {\n                    union(base, base + 3);\n                    union(base + 1, base + 2);\n                } else {\n                    union(base, base + 1);\n                    union(base + 2, base + 3);\n                }\n                if (r + 1 < n) union(base + 2, 4 * ((r + 1) * n + c));\n                if (c + 1 < n) union(base + 1, 4 * (r * n + c + 1) + 3);\n            }\n        }\n        return count;\n    }\n    private int find(int i) {\n        if (parent[i] == i) return i;\n        return parent[i] = find(parent[i]);\n    }\n    private void union(int i, int j) {\n        int r1 = find(i), r2 = find(j);\n        if (r1 != r2) { parent[r1] = r2; count--; }\n    }\n}",
+        "python": "class Solution:\n    def regionsBySlashes(self, grid: list[str]) -> int:\n        n = len(grid)\n        parent = list(range(4 * n * n))\n        count = 4 * n * n\n        def find(i: int) -> int:\n            if parent[i] == i:\n                return i\n            parent[i] = find(parent[i])\n            return parent[i]\n        def union(i: int, j: int) -> None:\n            nonlocal count\n            r1, r2 = find(i), find(j)\n            if r1 != r2:\n                parent[r1] = r2\n                count -= 1\n        for r in range(n):\n            for c in range(n):\n                base = 4 * (r * n + c)\n                ch = grid[r][c]\n                if ch == ' ':\n                    union(base, base + 1)\n                    union(base + 1, base + 2)\n                    union(base + 2, base + 3)\n                elif ch == '/':\n                    union(base, base + 3)\n                    union(base + 1, base + 2)\n                else:\n                    union(base, base + 1)\n                    union(base + 2, base + 3)\n                if r + 1 < n:\n                    union(base + 2, 4 * ((r + 1) * n + c))\n                if c + 1 < n:\n                    union(base + 1, 4 * (r * n + c + 1) + 3)\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "3x3 pixel upscaling: scale each cell to 3x3 pixels, drawing slashes as 1-pixels, and count 0-islands with DFS in O(n^2) time.",
+      "steps": [
+        "Create (3*n) x (3*n) int matrix g.",
+        "For each cell (r, c): if grid[r][c] == '/', fill g[3r][3c+2] = g[3r+1][3c+1] = g[3r+2][3c] = 1.",
+        "If '\\\\', fill g[3r][3c] = g[3r+1][3c+1] = g[3r+2][3c+2] = 1.",
+        "Run standard island counting DFS on 0-pixels in the 3n x 3n grid.",
+        "Return total islands."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public int regionsBySlashes(String[] grid) {\n        int n = grid.length;\n        int[][] g = new int[n * 3][n * 3];\n        for (int r = 0; r < n; r++) {\n            for (int c = 0; c < n; c++) {\n                char ch = grid[r].charAt(c);\n                if (ch == '/') {\n                    g[r * 3][c * 3 + 2] = 1;\n                    g[r * 3 + 1][c * 3 + 1] = 1;\n                    g[r * 3 + 2][c * 3] = 1;\n                } else if (ch == '\\\\') {\n                    g[r * 3][c * 3] = 1;\n                    g[r * 3 + 1][c * 3 + 1] = 1;\n                    g[r * 3 + 2][c * 3 + 2] = 1;\n                }\n            }\n        }\n        int regions = 0;\n        for (int i = 0; i < n * 3; i++) {\n            for (int j = 0; j < n * 3; j++) {\n                if (g[i][j] == 0) {\n                    regions++;\n                    dfs(g, i, j);\n                }\n            }\n        }\n        return regions;\n    }\n    private void dfs(int[][] g, int r, int c) {\n        if (r < 0 || r >= g.length || c < 0 || c >= g[0].length || g[r][c] != 0) return;\n        g[r][c] = 1;\n        dfs(g, r + 1, c);\n        dfs(g, r - 1, c);\n        dfs(g, r, c + 1);\n        dfs(g, r, c - 1);\n    }\n}",
+        "python": "class Solution:\n    def regionsBySlashes(self, grid: list[str]) -> int:\n        n = len(grid)\n        g = [[0] * (n * 3) for _ in range(n * 3)]\n        for r in range(n):\n            for c in range(n):\n                if grid[r][c] == '/':\n                    g[r * 3][c * 3 + 2] = 1\n                    g[r * 3 + 1][c * 3 + 1] = 1\n                    g[r * 3 + 2][c * 3] = 1\n                elif grid[r][c] == '\\\\':\n                    g[r * 3][c * 3] = 1\n                    g[r * 3 + 1][c * 3 + 1] = 1\n                    g[r * 3 + 2][c * 3 + 2] = 1\n        def dfs(r: int, c: int) -> None:\n            if not (0 <= r < n * 3 and 0 <= c < n * 3 and g[r][c] == 0):\n                return\n            g[r][c] = 1\n            dfs(r + 1, c)\n            dfs(r - 1, c)\n            dfs(r, c + 1)\n            dfs(r, c - 1)\n        regions = 0\n        for i in range(n * 3):\n            for j in range(n * 3):\n                if g[i][j] == 0:\n                    regions += 1\n                    dfs(i, j)\n        return regions"
+      }
+    }
+  },
+  {
+    "seq": 462,
+    "whyNext": "Builds on DAG topological dependencies from Alien Dictionary (Seq 218) by computing the full transitive closure reachability matrix using Floyd-Warshall or BFS to answer prerequisite queries in O(1) time.",
+    "hints": [
+      "Course u is a prerequisite of v if there is any directed path from u to v in the prerequisite graph.",
+      "Precompute all-pairs reachability using Floyd-Warshall: reachable[i][j] |= (reachable[i][k] && reachable[k][j]).",
+      "For each query [u, v], simply return reachable[u][v]."
+    ],
+    "brute": {
+      "idea": "For each query [u, v], run BFS from u to check if v is reachable.",
+      "steps": [
+        "Build directed adjacency list from prerequisites.",
+        "For each query [u, v]: run BFS starting at u.",
+        "Return true if v visited during BFS, else false."
+      ],
+      "whySlow": "Running BFS per query takes O(Q * (V + E)) time.",
+      "time": "O(Q * (V + E))",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());\n        for (int[] p : prerequisites) adj.get(p[0]).add(p[1]);\n        List<Boolean> ans = new ArrayList<>();\n        for (int[] q : queries) {\n            ans.add(canReach(q[0], q[1], adj, numCourses));\n        }\n        return ans;\n    }\n    private boolean canReach(int src, int target, List<List<Integer>> adj, int n) {\n        boolean[] vis = new boolean[n];\n        Queue<Integer> q = new LinkedList<>();\n        q.offer(src);\n        vis[src] = true;\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            if (u == target) return true;\n            for (int v : adj.get(u)) {\n                if (!vis[v]) {\n                    vis[v] = true;\n                    q.offer(v);\n                }\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def checkIfPrerequisite(self, numCourses: int, prerequisites: list[list[int]], queries: list[list[int]]) -> list[bool]:\n        from collections import deque\n        adj = [[] for _ in range(numCourses)]\n        for u, v in prerequisites:\n            adj[u].append(v)\n        def reach(u: int, target: int) -> bool:\n            q = deque([u])\n            vis = {u}\n            while q:\n                curr = q.popleft()\n                if curr == target:\n                    return True\n                for nxt in adj[curr]:\n                    if nxt not in vis:\n                        vis.add(nxt)\n                        q.append(nxt)\n            return False\n        return [reach(u, v) for u, v in queries]"
+      }
+    },
+    "optimal": {
+      "idea": "Transitive closure via Floyd-Warshall: precompute boolean reachable matrix in O(V^3) time, answering queries in O(1) time.",
+      "steps": [
+        "boolean[][] reachable = new boolean[n][n].",
+        "For each [u, v] in prerequisites: reachable[u][v] = true.",
+        "Triple loop: for k from 0 to n-1, for i from 0 to n-1, for j from 0 to n-1: reachable[i][j] |= reachable[i][k] && reachable[k][j].",
+        "Answer each query [u, v] with reachable[u][v]."
+      ],
+      "time": "O(V^3 + Q)",
+      "space": "O(V^2)",
+      "code": {
+        "java": "class Solution {\n    public List<Boolean> checkIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries) {\n        boolean[][] reachable = new boolean[numCourses][numCourses];\n        for (int[] p : prerequisites) {\n            reachable[p[0]][p[1]] = true;\n        }\n        for (int k = 0; k < numCourses; k++) {\n            for (int i = 0; i < numCourses; i++) {\n                for (int j = 0; j < numCourses; j++) {\n                    if (reachable[i][k] && reachable[k][j]) {\n                        reachable[i][j] = true;\n                    }\n                }\n            }\n        }\n        List<Boolean> ans = new ArrayList<>();\n        for (int[] q : queries) {\n            ans.add(reachable[q[0]][q[1]]);\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def checkIfPrerequisite(self, numCourses: int, prerequisites: list[list[int]], queries: list[list[int]]) -> list[bool]:\n        reachable = [[False] * numCourses for _ in range(numCourses)]\n        for u, v in prerequisites:\n            reachable[u][v] = True\n        for k in range(numCourses):\n            for i in range(numCourses):\n                for j in range(numCourses):\n                    if reachable[i][k] and reachable[k][j]:\n                        reachable[i][j] = True\n        return [reachable[u][v] for u, v in queries]"
+      }
+    }
+  },
+  {
+    "seq": 463,
+    "whyNext": "Builds on DAG reachability matrix from Course Schedule IV (Seq 462) by running DFS from each node i to mark i as an ancestor of all descendants, naturally yielding sorted ancestor lists without post-sorting.",
+    "hints": [
+      "Node u is an ancestor of v if and only if there is a directed path from u to v.",
+      "Instead of finding all ancestors of each node, find all descendants reachable from node i.",
+      "Iterate i from 0 to n - 1: run DFS from i. For every reached node v != i, append i to ans[v]. Since i increases from 0 to n - 1, each node's ancestor list is automatically sorted!"
+    ],
+    "brute": {
+      "idea": "Reverse edges and run BFS from every node to find all its ancestors, then sort each ancestor list.",
+      "steps": [
+        "Build reversed graph: for each edge u -> v, add v -> u.",
+        "For each node i: run BFS on reversed graph to collect all ancestors.",
+        "Sort collected ancestors for each node.",
+        "Return list of lists."
+      ],
+      "whySlow": "Requires sorting ancestor lists explicitly.",
+      "time": "O(n * (V + E) + n^2 log n)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> getAncestors(int n, int[][] edges) {\n        List<List<Integer>> rev = new ArrayList<>();\n        for (int i = 0; i < n; i++) rev.add(new ArrayList<>());\n        for (int[] e : edges) rev.get(e[1]).add(e[0]);\n        List<List<Integer>> ans = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            List<Integer> list = new ArrayList<>();\n            boolean[] vis = new boolean[n];\n            dfs(i, rev, vis, list);\n            Collections.sort(list);\n            ans.add(list);\n        }\n        return ans;\n    }\n    private void dfs(int u, List<List<Integer>> rev, boolean[] vis, List<Integer> list) {\n        vis[u] = true;\n        for (int v : rev.get(u)) {\n            if (!vis[v]) {\n                list.add(v);\n                dfs(v, rev, vis, list);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def getAncestors(self, n: int, edges: list[list[int]]) -> list[list[int]]:\n        rev = [[] for _ in range(n)]\n        for u, v in edges:\n            rev[v].append(u)\n        ans = []\n        for i in range(n):\n            vis = set()\n            def dfs(u: int) -> None:\n                for p in rev[u]:\n                    if p not in vis:\n                        vis.add(p)\n                        dfs(p)\n            dfs(i)\n            ans.append(sorted(vis))\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Forward DFS from 0 to n - 1: whenever visiting a descendant during DFS from i, append i to descendant's list, ensuring sorted order naturally in O(n * (V + E)) time.",
+      "steps": [
+        "Build directed graph from edges.",
+        "Initialize ans list of n ArrayLists.",
+        "For i from 0 to n - 1: boolean[] visited = new boolean[n]; run dfs(i, i, visited, adj, ans).",
+        "In dfs(startNode, currNode): for neighbor in adj[currNode]: if !visited[neighbor]: visited[neighbor] = true; ans[neighbor].add(startNode); dfs(startNode, neighbor).",
+        "Return ans."
+      ],
+      "time": "O(n * (V + E))",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> getAncestors(int n, int[][] edges) {\n        List<List<Integer>> adj = new ArrayList<>();\n        List<List<Integer>> ans = new ArrayList<>();\n        for (int i = 0; i < n; i++) {\n            adj.add(new ArrayList<>());\n            ans.add(new ArrayList<>());\n        }\n        for (int[] e : edges) adj.get(e[0]).add(e[1]);\n        for (int i = 0; i < n; i++) {\n            boolean[] vis = new boolean[n];\n            dfs(i, i, adj, vis, ans);\n        }\n        return ans;\n    }\n    private void dfs(int start, int cur, List<List<Integer>> adj, boolean[] vis, List<List<Integer>> ans) {\n        for (int next : adj.get(cur)) {\n            if (!vis[next]) {\n                vis[next] = true;\n                ans.get(next).add(start);\n                dfs(start, next, adj, vis, ans);\n            }\n        }\n    }\n}",
+        "python": "class Solution:\n    def getAncestors(self, n: int, edges: list[list[int]]) -> list[list[int]]:\n        adj = [[] for _ in range(n)]\n        for u, v in edges:\n            adj[u].append(v)\n        ans = [[] for _ in range(n)]\n        def dfs(start: int, cur: int, vis: list[bool]) -> None:\n            for nxt in adj[cur]:\n                if not vis[nxt]:\n                    vis[nxt] = True\n                    ans[nxt].append(start)\n                    dfs(start, nxt, vis)\n        for i in range(n):\n            dfs(i, i, [False] * n)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 464,
+    "whyNext": "Builds on DAG ancestor exploration from All Ancestors of a Node (Seq 463) by finding the person with minimum quietness among all wealthier ancestors using memoized DFS.",
+    "hints": [
+      "If person u is richer than v, directed edge u -> v means u is an ancestor of v in wealth.",
+      "For each person x, answer is the person in x's richer-ancestor subgraph with minimum quiet[person].",
+      "Use memoized DFS: ans[x] caches the quietest person among x and all people richer than x. Recurse on all direct richer parents."
+    ],
+    "brute": {
+      "idea": "For each person, traverse all richer individuals via BFS/DFS, tracking the one with lowest quiet value.",
+      "steps": [
+        "Build graph: edge richer -> poorer.",
+        "For each person i: run BFS collecting all richer ancestors.",
+        "Find the ancestor with minimum quiet value.",
+        "Store in ans[i]."
+      ],
+      "whySlow": "Recomputing reachability from scratch for each node takes O(n * (V + E)) time.",
+      "time": "O(n * (V + E))",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int[] loudAndRich(int[][] richer, int[] quiet) {\n        int n = quiet.length;\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] r : richer) adj.get(r[1]).add(r[0]);\n        int[] ans = new int[n];\n        for (int i = 0; i < n; i++) {\n            boolean[] vis = new boolean[n];\n            ans[i] = dfs(i, adj, quiet, vis);\n        }\n        return ans;\n    }\n    private int dfs(int u, List<List<Integer>> adj, int[] quiet, boolean[] vis) {\n        vis[u] = true;\n        int best = u;\n        for (int v : adj.get(u)) {\n            if (!vis[v]) {\n                int cand = dfs(v, adj, quiet, vis);\n                if (quiet[cand] < quiet[best]) best = cand;\n            }\n        }\n        return best;\n    }\n}",
+        "python": "class Solution:\n    def loudAndRich(self, richer: list[list[int]], quiet: list[int]) -> list[int]:\n        n = len(quiet)\n        adj = [[] for _ in range(n)]\n        for u, v in richer:\n            adj[v].append(u)\n        ans = [-1] * n\n        for i in range(n):\n            vis = [False] * n\n            def dfs(u: int) -> int:\n                vis[u] = True\n                best = u\n                for v in adj[u]:\n                    if not vis[v]:\n                        cand = dfs(v)\n                        if quiet[cand] < quiet[best]:\n                            best = cand\n                return best\n            ans[i] = dfs(i)\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Memoized DFS / Topological DP: memoize the quietest ancestor for each node, running each edge once in O(V + E) time.",
+      "steps": [
+        "Build directed graph from poorer to richer (adj[v].add(u) for [u, v] in richer).",
+        "int[] ans = new int[n]; Arrays.fill(ans, -1);",
+        "In dfs(node): if ans[node] != -1 return ans[node]; ans[node] = node;",
+        "For each richer neighbor: cand = dfs(richer); if quiet[cand] < quiet[ans[node]] ans[node] = cand;",
+        "Return ans[node]. Call for all nodes 0 to n - 1. Return ans."
+      ],
+      "time": "O(V + E)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int[] loudAndRich(int[][] richer, int[] quiet) {\n        int n = quiet.length;\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] r : richer) adj.get(r[1]).add(r[0]);\n        int[] ans = new int[n];\n        Arrays.fill(ans, -1);\n        for (int i = 0; i < n; i++) {\n            dfs(i, adj, quiet, ans);\n        }\n        return ans;\n    }\n    private int dfs(int u, List<List<Integer>> adj, int[] quiet, int[] ans) {\n        if (ans[u] != -1) return ans[u];\n        ans[u] = u;\n        for (int v : adj.get(u)) {\n            int cand = dfs(v, adj, quiet, ans);\n            if (quiet[cand] < quiet[ans[u]]) {\n                ans[u] = cand;\n            }\n        }\n        return ans[u];\n    }\n}",
+        "python": "class Solution:\n    def loudAndRich(self, richer: list[list[int]], quiet: list[int]) -> list[int]:\n        n = len(quiet)\n        adj = [[] for _ in range(n)]\n        for u, v in richer:\n            adj[v].append(u)\n        ans = [-1] * n\n        def dfs(u: int) -> int:\n            if ans[u] != -1:\n                return ans[u]\n            ans[u] = u\n            for v in adj[u]:\n                cand = dfs(v)\n                if quiet[cand] < quiet[ans[u]]:\n                    ans[u] = cand\n            return ans[u]\n        for i in range(n):\n            dfs(i)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 465,
+    "whyNext": "Builds on Dijkstra's single-source shortest path from Network Delay Time (Seq 227) by maintaining both distance dist[u] and path count ways[u] modulo 10^9+7, accumulating ways when an equal-length path is discovered.",
+    "hints": [
+      "Use Dijkstra's algorithm with a min-heap storing (dist, node).",
+      "Track long[] dist initialized to infinity (dist[0] = 0) and long[] ways initialized to 0 (ways[0] = 1).",
+      "If a strictly shorter path to neighbor is found: update dist, set ways[neighbor] = ways[current], and push to heap. If an equal-length path is found: ways[neighbor] = (ways[neighbor] + ways[current]) % 10^9+7."
+    ],
+    "brute": {
+      "idea": "Find minimum distance using Dijkstra, then count paths matching min distance using DFS.",
+      "steps": [
+        "Run standard Dijkstra to determine min distance from 0 to n - 1.",
+        "Run DFS from 0 to n - 1 exploring paths whose length <= min distance.",
+        "Count paths that reach n - 1 with exact min distance modulo 10^9+7."
+      ],
+      "whySlow": "DFS path counting can visit exponentially many paths.",
+      "time": "O(V! + E log V)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int countPaths(int n, int[][] roads) {\n        List<List<int[]>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] r : roads) {\n            adj.get(r[0]).add(new int[]{r[1], r[2]});\n            adj.get(r[1]).add(new int[]{r[0], r[2]});\n        }\n        long[] dist = new long[n];\n        long[] ways = new long[n];\n        Arrays.fill(dist, Long.MAX_VALUE);\n        dist[0] = 0;\n        ways[0] = 1;\n        PriorityQueue<long[]> pq = new PriorityQueue<>((a, b) -> Long.compare(a[0], b[0]));\n        pq.offer(new long[]{0, 0});\n        int MOD = 1_000_000_007;\n        while (!pq.isEmpty()) {\n            long[] cur = pq.poll();\n            long d = cur[0];\n            int u = (int) cur[1];\n            if (d > dist[u]) continue;\n            for (int[] edge : adj.get(u)) {\n                int v = edge[0], time = edge[1];\n                if (dist[u] + time < dist[v]) {\n                    dist[v] = dist[u] + time;\n                    ways[v] = ways[u];\n                    pq.offer(new long[]{dist[v], v});\n                } else if (dist[u] + time == dist[v]) {\n                    ways[v] = (ways[v] + ways[u]) % MOD;\n                }\n            }\n        }\n        return (int) ways[n - 1];\n    }\n}",
+        "python": "class Solution:\n    def countPaths(self, n: int, roads: list[list[int]]) -> int:\n        import heapq\n        adj = [[] for _ in range(n)]\n        for u, v, w in roads:\n            adj[u].append((v, w))\n            adj[v].append((u, w))\n        dist = [float('inf')] * n\n        ways = [0] * n\n        dist[0] = 0\n        ways[0] = 1\n        pq = [(0, 0)]\n        MOD = 1_000_000_007\n        while pq:\n            d, u = heapq.heappop(pq)\n            if d > dist[u]:\n                continue\n            for v, w in adj[u]:\n                if dist[u] + w < dist[v]:\n                    dist[v] = dist[u] + w\n                    ways[v] = ways[u]\n                    heapq.heappush(pq, (dist[v], v))\n                elif dist[u] + w == dist[v]:\n                    ways[v] = (ways[v] + ways[u]) % MOD\n        return ways[n - 1]"
+      }
+    },
+    "optimal": {
+      "idea": "Dijkstra with path-counting state: update ways and distances simultaneously during heap relaxation in O(E log V) time.",
+      "steps": [
+        "Build undirected weighted adjacency list.",
+        "long[] dist = new long[n]; Arrays.fill(dist, Long.MAX_VALUE); dist[0] = 0;",
+        "long[] ways = new long[n]; ways[0] = 1;",
+        "PriorityQueue<long[]> pq = new PriorityQueue<>((a, b) -> Long.compare(a[0], b[0])); pq.offer(new long[]{0, 0});",
+        "Relax edges: if d + time < dist[v], update dist[v] = d + time, ways[v] = ways[u], push to pq. If d + time == dist[v], ways[v] = (ways[v] + ways[u]) % MOD.",
+        "Return (int) ways[n - 1]."
+      ],
+      "time": "O(E log V)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int countPaths(int n, int[][] roads) {\n        int MOD = 1_000_000_007;\n        List<List<int[]>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] r : roads) {\n            adj.get(r[0]).add(new int[]{r[1], r[2]});\n            adj.get(r[1]).add(new int[]{r[0], r[2]});\n        }\n        long[] dist = new long[n];\n        long[] ways = new long[n];\n        Arrays.fill(dist, Long.MAX_VALUE);\n        dist[0] = 0;\n        ways[0] = 1;\n        PriorityQueue<long[]> pq = new PriorityQueue<>(Comparator.comparingLong(a -> a[0]));\n        pq.offer(new long[]{0, 0});\n        while (!pq.isEmpty()) {\n            long[] cur = pq.poll();\n            long d = cur[0];\n            int u = (int) cur[1];\n            if (d > dist[u]) continue;\n            for (int[] next : adj.get(u)) {\n                int v = next[0], w = next[1];\n                if (d + w < dist[v]) {\n                    dist[v] = d + w;\n                    ways[v] = ways[u];\n                    pq.offer(new long[]{dist[v], v});\n                } else if (d + w == dist[v]) {\n                    ways[v] = (ways[v] + ways[u]) % MOD;\n                }\n            }\n        }\n        return (int) ways[n - 1];\n    }\n}",
+        "python": "class Solution:\n    def countPaths(self, n: int, roads: list[list[int]]) -> int:\n        import heapq\n        MOD = 1_000_000_007\n        adj = [[] for _ in range(n)]\n        for u, v, w in roads:\n            adj[u].append((v, w))\n            adj[v].append((u, w))\n        dist = [float('inf')] * n\n        ways = [0] * n\n        dist[0] = 0\n        ways[0] = 1\n        pq = [(0, 0)]\n        while pq:\n            d, u = heapq.heappop(pq)\n            if d > dist[u]:\n                continue\n            for v, w in adj[u]:\n                if d + w < dist[v]:\n                    dist[v] = d + w\n                    ways[v] = ways[u]\n                    heapq.heappush(pq, (dist[v], v))\n                elif d + w == dist[v]:\n                    ways[v] = (ways[v] + ways[u]) % MOD\n        return ways[n - 1]"
+      }
+    }
+  },
+  {
+    "seq": 466,
+    "whyNext": "Builds on grid BFS pathfinding from Shortest Path in Binary Matrix (Seq 205) by applying 0-1 BFS with an ArrayDeque, adding 0-cost empty cell moves to the head and 1-cost obstacle removals to the tail in O(m * n) time.",
+    "hints": [
+      "Every step to an empty cell (0) has weight 0; every step to an obstacle (1) has weight 1.",
+      "In a graph where edge weights are only 0 or 1, 0-1 BFS with a deque solves shortest path in linear O(V + E) time.",
+      "If move cost is 0, addFirst to deque; if move cost is 1, addLast to deque. Maintain dist[m][n] to record min obstacles removed to reach each cell."
+    ],
+    "brute": {
+      "idea": "Dijkstra's shortest path algorithm using a standard PriorityQueue on grid cells.",
+      "steps": [
+        "PriorityQueue stores (obstacles, r, c).",
+        "Pop smallest obstacles cell.",
+        "If reached (m - 1, n - 1), return obstacles.",
+        "Relax 4 neighbors and push to heap."
+      ],
+      "whySlow": "PriorityQueue introduces O(log(m*n)) factor per step.",
+      "time": "O(m * n log(m * n))",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int minimumObstacles(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);\n        pq.offer(new int[]{0, 0, 0});\n        int[][] dist = new int[m][n];\n        for (int[] row : dist) Arrays.fill(row, Integer.MAX_VALUE);\n        dist[0][0] = 0;\n        int[] dr = {-1, 1, 0, 0};\n        int[] dc = {0, 0, -1, 1};\n        while (!pq.isEmpty()) {\n            int[] cur = pq.poll();\n            int cost = cur[0], r = cur[1], c = cur[2];\n            if (r == m - 1 && c == n - 1) return cost;\n            if (cost > dist[r][c]) continue;\n            for (int d = 0; d < 4; d++) {\n                int nr = r + dr[d], nc = c + dc[d];\n                if (nr >= 0 && nr < m && nc >= 0 && nc < n) {\n                    int nextCost = cost + grid[nr][nc];\n                    if (nextCost < dist[nr][nc]) {\n                        dist[nr][nc] = nextCost;\n                        pq.offer(new int[]{nextCost, nr, nc});\n                    }\n                }\n            }\n        }\n        return dist[m - 1][n - 1];\n    }\n}",
+        "python": "class Solution:\n    def minimumObstacles(self, grid: list[list[int]]) -> int:\n        import heapq\n        m, n = len(grid), len(grid[0])\n        dist = [[float('inf')] * n for _ in range(m)]\n        dist[0][0] = 0\n        pq = [(0, 0, 0)]\n        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n        while pq:\n            cost, r, c = heapq.heappop(pq)\n            if r == m - 1 and c == n - 1:\n                return cost\n            if cost > dist[r][c]:\n                continue\n            for dr, dc in dirs:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n:\n                    nxt = cost + grid[nr][nc]\n                    if nxt < dist[nr][nc]:\n                        dist[nr][nc] = nxt\n                        heapq.heappush(pq, (nxt, nr, nc))\n        return dist[m - 1][n - 1]"
+      }
+    },
+    "optimal": {
+      "idea": "0-1 BFS with ArrayDeque: push 0-cost moves to front and 1-cost moves to back, solving minimum obstacles in O(m * n) linear time.",
+      "steps": [
+        "int[][] dist = new int[m][n]; initialize with infinity; dist[0][0] = 0;",
+        "Deque<int[]> dq = new ArrayDeque<>(); dq.offerFirst(new int[]{0, 0});",
+        "While !dq.isEmpty(): pop [r, c]; if (r == m - 1 && c == n - 1) return dist[r][c];",
+        "For 4 neighbors: if dist[r][c] + grid[nr][nc] < dist[nr][nc]: dist[nr][nc] = dist[r][c] + grid[nr][nc]; if grid[nr][nc] == 0 dq.offerFirst([nr, nc]); else dq.offerLast([nr, nc]);",
+        "Return dist[m - 1][n - 1]."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int minimumObstacles(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[][] dist = new int[m][n];\n        for (int[] row : dist) Arrays.fill(row, Integer.MAX_VALUE);\n        dist[0][0] = 0;\n        Deque<int[]> dq = new ArrayDeque<>();\n        dq.offerFirst(new int[]{0, 0});\n        int[] dr = {-1, 1, 0, 0};\n        int[] dc = {0, 0, -1, 1};\n        while (!dq.isEmpty()) {\n            int[] cur = dq.pollFirst();\n            int r = cur[0], c = cur[1];\n            if (r == m - 1 && c == n - 1) return dist[r][c];\n            for (int d = 0; d < 4; d++) {\n                int nr = r + dr[d], nc = c + dc[d];\n                if (nr >= 0 && nr < m && nc >= 0 && nc < n) {\n                    int w = grid[nr][nc];\n                    if (dist[r][c] + w < dist[nr][nc]) {\n                        dist[nr][nc] = dist[r][c] + w;\n                        if (w == 0) dq.offerFirst(new int[]{nr, nc});\n                        else dq.offerLast(new int[]{nr, nc});\n                    }\n                }\n            }\n        }\n        return dist[m - 1][n - 1];\n    }\n}",
+        "python": "class Solution:\n    def minimumObstacles(self, grid: list[list[int]]) -> int:\n        from collections import deque\n        m, n = len(grid), len(grid[0])\n        dist = [[float('inf')] * n for _ in range(m)]\n        dist[0][0] = 0\n        dq = deque([(0, 0)])\n        dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n        while dq:\n            r, c = dq.popleft()\n            if r == m - 1 and c == n - 1:\n                return dist[r][c]\n            for dr, dc in dirs:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n:\n                    w = grid[nr][nc]\n                    if dist[r][c] + w < dist[nr][nc]:\n                        dist[nr][nc] = dist[r][c] + w\n                        if w == 0:\n                            dq.appendleft((nr, nc))\n                        else:\n                            dq.append((nr, nc))\n        return dist[m - 1][n - 1]"
+      }
+    }
+  },
+  {
+    "seq": 467,
+    "whyNext": "Builds on 0-1 BFS shortest path from Minimum Obstacle Removal to Reach Corner (Seq 466) by assigning weight 0 to edges following the cell's arrow sign and weight 1 to modified direction changes.",
+    "hints": [
+      "Directions 1: right (0,1), 2: left (0,-1), 3: lower (1,0), 4: upper (-1,0).",
+      "Moving in the direction of grid[r][c] costs 0; changing direction to any other valid neighbor costs 1.",
+      "Since edge weights are only 0 or 1, use 0-1 BFS with an ArrayDeque: add cost 0 moves to the front and cost 1 moves to the back."
+    ],
+    "brute": {
+      "idea": "Dijkstra's algorithm using PriorityQueue with edge weights 0 (matching sign) and 1 (different sign).",
+      "steps": [
+        "Initialize dist matrix with infinity, dist[0][0] = 0.",
+        "PriorityQueue stores (cost, r, c).",
+        "Pop smallest cost cell; return cost upon reaching (m-1, n-1).",
+        "Relax 4 neighbors with cost 0 if arrow matches, else cost 1."
+      ],
+      "whySlow": "O(m * n log(m * n)) heap overhead.",
+      "time": "O(m * n log(m * n))",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int minCost(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);\n        pq.offer(new int[]{0, 0, 0});\n        int[][] dist = new int[m][n];\n        for (int[] row : dist) Arrays.fill(row, Integer.MAX_VALUE);\n        dist[0][0] = 0;\n        while (!pq.isEmpty()) {\n            int[] cur = pq.poll();\n            int cost = cur[0], r = cur[1], c = cur[2];\n            if (r == m - 1 && c == n - 1) return cost;\n            if (cost > dist[r][c]) continue;\n            for (int d = 0; d < 4; d++) {\n                int nr = r + dirs[d][0], nc = c + dirs[d][1];\n                if (nr >= 0 && nr < m && nc >= 0 && nc < n) {\n                    int w = (grid[r][c] == d + 1) ? 0 : 1;\n                    if (cost + w < dist[nr][nc]) {\n                        dist[nr][nc] = cost + w;\n                        pq.offer(new int[]{cost + w, nr, nc});\n                    }\n                }\n            }\n        }\n        return dist[m - 1][n - 1];\n    }\n}",
+        "python": "class Solution:\n    def minCost(self, grid: list[list[int]]) -> int:\n        import heapq\n        m, n = len(grid), len(grid[0])\n        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]\n        dist = [[float('inf')] * n for _ in range(m)]\n        dist[0][0] = 0\n        pq = [(0, 0, 0)]\n        while pq:\n            cost, r, c = heapq.heappop(pq)\n            if r == m - 1 and c == n - 1:\n                return cost\n            if cost > dist[r][c]:\n                continue\n            for d, (dr, dc) in enumerate(dirs):\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n:\n                    w = 0 if grid[r][c] == d + 1 else 1\n                    if cost + w < dist[nr][nc]:\n                        dist[nr][nc] = cost + w\n                        heapq.heappush(pq, (cost + w, nr, nc))\n        return dist[m - 1][n - 1]"
+      }
+    },
+    "optimal": {
+      "idea": "0-1 BFS: push 0-cost moves in current arrow direction to deque front and 1-cost turns to back in O(m * n) time.",
+      "steps": [
+        "int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};",
+        "int[][] dist = new int[m][n]; Arrays.fill with infinity; dist[0][0] = 0;",
+        "Deque<int[]> dq = new ArrayDeque<>(); dq.offerFirst(new int[]{0, 0});",
+        "While !dq.isEmpty(): pop [r, c]; if (r == m - 1 && c == n - 1) return dist[r][c];",
+        "For d from 0 to 3: int w = (grid[r][c] == d + 1) ? 0 : 1; if dist[r][c] + w < dist[nr][nc]: dist[nr][nc] = dist[r][c] + w; if w == 0 offerFirst; else offerLast.",
+        "Return dist[m - 1][n - 1]."
+      ],
+      "time": "O(m * n)",
+      "space": "O(m * n)",
+      "code": {
+        "java": "class Solution {\n    public int minCost(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};\n        int[][] dist = new int[m][n];\n        for (int[] row : dist) Arrays.fill(row, Integer.MAX_VALUE);\n        dist[0][0] = 0;\n        Deque<int[]> dq = new ArrayDeque<>();\n        dq.offerFirst(new int[]{0, 0});\n        while (!dq.isEmpty()) {\n            int[] cur = dq.pollFirst();\n            int r = cur[0], c = cur[1];\n            if (r == m - 1 && c == n - 1) return dist[r][c];\n            for (int d = 0; d < 4; d++) {\n                int nr = r + dirs[d][0], nc = c + dirs[d][1];\n                if (nr >= 0 && nr < m && nc >= 0 && nc < n) {\n                    int w = (grid[r][c] == d + 1) ? 0 : 1;\n                    if (dist[r][c] + w < dist[nr][nc]) {\n                        dist[nr][nc] = dist[r][c] + w;\n                        if (w == 0) dq.offerFirst(new int[]{nr, nc});\n                        else dq.offerLast(new int[]{nr, nc});\n                    }\n                }\n            }\n        }\n        return dist[m - 1][n - 1];\n    }\n}",
+        "python": "class Solution:\n    def minCost(self, grid: list[list[int]]) -> int:\n        from collections import deque\n        m, n = len(grid), len(grid[0])\n        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]\n        dist = [[float('inf')] * n for _ in range(m)]\n        dist[0][0] = 0\n        dq = deque([(0, 0)])\n        while dq:\n            r, c = dq.popleft()\n            if r == m - 1 and c == n - 1:\n                return dist[r][c]\n            for d, (dr, dc) in enumerate(dirs):\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n:\n                    w = 0 if grid[r][c] == d + 1 else 1\n                    if dist[r][c] + w < dist[nr][nc]:\n                        dist[nr][nc] = dist[r][c] + w\n                        if w == 0:\n                            dq.appendleft((nr, nc))\n                        else:\n                            dq.append((nr, nc))\n        return dist[m - 1][n - 1]"
+      }
+    }
+  },
+  {
+    "seq": 468,
+    "whyNext": "Builds on DAG topological level scheduling from Sequence Reconstruction (Seq 219) by tracking the maximum completion time to finish all prerequisites before starting each course, returning the maximum finish time across all nodes.",
+    "hints": [
+      "In a DAG where courses can be taken in parallel, a course cannot start until ALL its prerequisite courses have finished.",
+      "The earliest start time of course v is max(earliest_finish_time[u]) across all prerequisites u.",
+      "Earliest finish time of v is earliest_start_time[v] + time[v]. Use Kahn's topological sort (in-degree array + queue) to propagate finish times in O(V + E) time."
+    ],
+    "brute": {
+      "idea": "Find all directed paths from any source node to any sink node, compute path sums of time, and take the maximum.",
+      "steps": [
+        "Find all courses with in-degree 0.",
+        "DFS to explore all paths to sink nodes, summing time[u] along the path.",
+        "Return maximum path duration."
+      ],
+      "whySlow": "Path enumeration in DAG can take exponential time for dense graphs.",
+      "time": "O(2^V)",
+      "space": "O(V)",
+      "code": {
+        "java": "class Solution {\n    public int minimumTime(int n, int[][] relations, int[] time) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i <= n; i++) adj.add(new ArrayList<>());\n        for (int[] r : relations) adj.get(r[0]).add(r[1]);\n        int[] memo = new int[n + 1];\n        int max = 0;\n        for (int i = 1; i <= n; i++) {\n            max = Math.max(max, dfs(i, adj, time, memo));\n        }\n        return max;\n    }\n    private int dfs(int u, List<List<Integer>> adj, int[] time, int[] memo) {\n        if (memo[u] != 0) return memo[u];\n        int maxChild = 0;\n        for (int v : adj.get(u)) {\n            maxChild = Math.max(maxChild, dfs(v, adj, time, memo));\n        }\n        return memo[u] = time[u - 1] + maxChild;\n    }\n}",
+        "python": "class Solution:\n    def minimumTime(self, n: int, relations: list[list[int]], time: list[int]) -> int:\n        adj = [[] for _ in range(n + 1)]\n        for u, v in relations:\n            adj[u].append(v)\n        memo = [0] * (n + 1)\n        def dfs(u: int) -> int:\n            if memo[u] != 0:\n                return memo[u]\n            max_child = 0\n            for v in adj[u]:\n                max_child = max(max_child, dfs(v))\n            memo[u] = time[u - 1] + max_child\n            return memo[u]\n        return max(dfs(i) for i in range(1, n + 1))"
+      }
+    },
+    "optimal": {
+      "idea": "Kahn's topological sort with finish-time DP: propagate dist[v] = max(dist[v], dist[u] + time[v]) in O(V + E) time.",
+      "steps": [
+        "int[] inDegree = new int[n + 1]; int[] maxTime = new int[n + 1];",
+        "Build adjacency list: for [u, v], adj[u].add(v), inDegree[v]++;",
+        "Queue<Integer> q = new LinkedList<>(); for i = 1 to n: if inDegree[i] == 0: q.offer(i); maxTime[i] = time[i - 1];",
+        "While !q.isEmpty(): pop u, for v in adj[u]: maxTime[v] = max(maxTime[v], maxTime[u] + time[v - 1]); if (--inDegree[v] == 0) q.offer(v);",
+        "Return max(maxTime[1..n])."
+      ],
+      "time": "O(V + E)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int minimumTime(int n, int[][] relations, int[] time) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i <= n; i++) adj.add(new ArrayList<>());\n        int[] inDegree = new int[n + 1];\n        for (int[] r : relations) {\n            adj.get(r[0]).add(r[1]);\n            inDegree[r[1]]++;\n        }\n        int[] dist = new int[n + 1];\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 1; i <= n; i++) {\n            if (inDegree[i] == 0) {\n                dist[i] = time[i - 1];\n                q.offer(i);\n            }\n        }\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            for (int v : adj.get(u)) {\n                dist[v] = Math.max(dist[v], dist[u] + time[v - 1]);\n                if (--inDegree[v] == 0) {\n                    q.offer(v);\n                }\n            }\n        }\n        int ans = 0;\n        for (int i = 1; i <= n; i++) ans = Math.max(ans, dist[i]);\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def minimumTime(self, n: int, relations: list[list[int]], time: list[int]) -> int:\n        from collections import deque\n        adj = [[] for _ in range(n + 1)]\n        in_deg = [0] * (n + 1)\n        for u, v in relations:\n            adj[u].append(v)\n            in_deg[v] += 1\n        dist = [0] * (n + 1)\n        q = deque()\n        for i in range(1, n + 1):\n            if in_deg[i] == 0:\n                dist[i] = time[i - 1]\n                q.append(i)\n        while q:\n            u = q.popleft()\n            for v in adj[u]:\n                dist[v] = max(dist[v], dist[u] + time[v - 1])\n                in_deg[v] -= 1\n                if in_deg[v] == 0:\n                    q.append(v)\n        return max(dist[1:])"
+      }
+    }
+  },
+  {
+    "seq": 469,
+    "whyNext": "Builds on topological DP propagation from Parallel Courses III (Seq 468) by maintaining a 26-character color frequency vector per node, updating count[v][c] = max(count[v][c], count[u][c]) along topological order and detecting cycles if processed count < n.",
+    "hints": [
+      "If the directed graph contains any cycle, the answer is -1 because a path can loop infinitely.",
+      "Use Kahn's topological sort: maintain dp[node][26] where dp[u][c] is the max count of color c along any path ending at u.",
+      "When expanding edge u -> v: for each char c in 0..25, dp[v][c] = max(dp[v][c], dp[u][c]). When popping v, increment dp[v][colors[v] - 'a']. If processed count < n return -1, else return max over all dp."
+    ],
+    "brute": {
+      "idea": "Find all simple paths in the directed graph using DFS with cycle detection, counting color frequencies on each path.",
+      "steps": [
+        "Detect cycles with 3-state visited array.",
+        "DFS to explore all paths, keeping track of character counts in frequency map.",
+        "Update max color frequency.",
+        "Return max or -1 if cycle found."
+      ],
+      "whySlow": "Enumerating all paths takes exponential time.",
+      "time": "O(2^V)",
+      "space": "O(V)",
+      "code": {
+        "java": "class Solution {\n    public int largestPathValue(String colors, int[][] edges) {\n        int n = colors.length();\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) adj.get(e[0]).add(e[1]);\n        int[][] memo = new int[n][26];\n        int[] state = new int[n];\n        int max = 0;\n        for (int i = 0; i < n; i++) {\n            if (dfs(i, colors, adj, state, memo) == -1) return -1;\n            for (int c = 0; c < 26; c++) max = Math.max(max, memo[i][c]);\n        }\n        return max;\n    }\n    private int dfs(int u, String col, List<List<Integer>> adj, int[] state, int[][] memo) {\n        if (state[u] == 1) return -1;\n        if (state[u] == 2) return 0;\n        state[u] = 1;\n        for (int v : adj.get(u)) {\n            if (dfs(v, col, adj, state, memo) == -1) return -1;\n            for (int c = 0; c < 26; c++) memo[u][c] = Math.max(memo[u][c], memo[v][c]);\n        }\n        memo[u][col.charAt(u) - 'a']++;\n        state[u] = 2;\n        return 0;\n    }\n}",
+        "python": "class Solution:\n    def largestPathValue(self, colors: str, edges: list[list[int]]) -> int:\n        n = len(colors)\n        adj = [[] for _ in range(n)]\n        for u, v in edges:\n            adj[u].append(v)\n        memo = [[0] * 26 for _ in range(n)]\n        state = [0] * n\n        def dfs(u: int) -> int:\n            if state[u] == 1:\n                return -1\n            if state[u] == 2:\n                return 0\n            state[u] = 1\n            for v in adj[u]:\n                if dfs(v) == -1:\n                    return -1\n                for c in range(26):\n                    memo[u][c] = max(memo[u][c], memo[v][c])\n            memo[u][ord(colors[u]) - ord('a')] += 1\n            state[u] = 2\n            return 0\n        for i in range(n):\n            if dfs(i) == -1:\n                return -1\n        return max(max(row) for row in memo)"
+      }
+    },
+    "optimal": {
+      "idea": "Topological Sort with 26-color DP table: Kahn's algorithm updates dp[v][c] in O(26 * (V + E)) time, returning -1 on cycle.",
+      "steps": [
+        "int[] inDegree = new int[n]; build adjacency list.",
+        "int[][] count = new int[n][26]; Queue<Integer> q = new LinkedList<>();",
+        "Enqueue all nodes with inDegree == 0; processed = 0, maxVal = 0;",
+        "While !q.isEmpty(): pop u, processed++; color = colors[u] - 'a'; count[u][color]++; maxVal = max(maxVal, count[u][color]); for v in adj[u]: for c in 0..25: count[v][c] = max(count[v][c], count[u][c]); if (--inDegree[v] == 0) q.offer(v);",
+        "Return processed < n ? -1 : maxVal."
+      ],
+      "time": "O(26 * (V + E)) = O(V + E)",
+      "space": "O(26 * V) = O(V)",
+      "code": {
+        "java": "class Solution {\n    public int largestPathValue(String colors, int[][] edges) {\n        int n = colors.length();\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        int[] inDegree = new int[n];\n        for (int[] e : edges) {\n            adj.get(e[0]).add(e[1]);\n            inDegree[e[1]]++;\n        }\n        int[][] dp = new int[n][26];\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 0; i < n; i++) {\n            if (inDegree[i] == 0) q.offer(i);\n        }\n        int visited = 0, ans = 0;\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            visited++;\n            int color = colors.charAt(u) - 'a';\n            dp[u][color]++;\n            ans = Math.max(ans, dp[u][color]);\n            for (int v : adj.get(u)) {\n                for (int c = 0; c < 26; c++) {\n                    dp[v][c] = Math.max(dp[v][c], dp[u][c]);\n                }\n                if (--inDegree[v] == 0) {\n                    q.offer(v);\n                }\n            }\n        }\n        return visited < n ? -1 : ans;\n    }\n}",
+        "python": "class Solution:\n    def largestPathValue(self, colors: str, edges: list[list[int]]) -> int:\n        from collections import deque\n        n = len(colors)\n        adj = [[] for _ in range(n)]\n        in_deg = [0] * n\n        for u, v in edges:\n            adj[u].append(v)\n            in_deg[v] += 1\n        dp = [[0] * 26 for _ in range(n)]\n        q = deque(i for i in range(n) if in_deg[i] == 0)\n        seen = 0\n        ans = 0\n        while q:\n            u = q.popleft()\n            seen += 1\n            col = ord(colors[u]) - ord('a')\n            dp[u][col] += 1\n            ans = max(ans, dp[u][col])\n            for v in adj[u]:\n                for c in range(26):\n                    if dp[u][c] > dp[v][c]:\n                        dp[v][c] = dp[u][c]\n                in_deg[v] -= 1\n                if in_deg[v] == 0:\n                    q.append(v)\n        return -1 if seen < n else ans"
+      }
+    }
+  },
+  {
+    "seq": 470,
+    "whyNext": "Builds on topological ordering from Largest Color Value in a Directed Graph (Seq 469) by applying two-level hierarchical topological sort: first ordering groups with respect to inter-group dependencies, then ordering items within each group.",
+    "hints": [
+      "Any item without a group (group[i] == -1) can be assigned to its own unique group: newGroupId++.",
+      "Build two separate dependency graphs: itemGraph between individual items, and groupGraph between different groups.",
+      "Run topological sort on groupGraph to order the groups, and run topological sort on itemGraph to order items. If either sort has a cycle, return empty array. Then concatenate sorted items grouped by sorted group order."
+    ],
+    "brute": {
+      "idea": "Assign singleton groups to unassigned items, build full dependency graph, and attempt global topological sort satisfying group contiguousness.",
+      "steps": [
+        "Assign unique group IDs to group[i] == -1 items.",
+        "Build full item graph.",
+        "Sort topologically and check whether all items belonging to same group form a contiguous subarray.",
+        "Return sorted array or empty array."
+      ],
+      "whySlow": "Standard topological sort does not guarantee grouping constraints without separate group-level ordering.",
+      "time": "O(V + E)",
+      "space": "O(V + E)",
+      "code": {
+        "java": "class Solution {\n    public int[] sortItems(int n, int m, int[] group, List<List<Integer>> beforeItems) {\n        int gId = m;\n        for (int i = 0; i < n; i++) {\n            if (group[i] == -1) group[i] = gId++;\n        }\n        List<List<Integer>> itemAdj = new ArrayList<>();\n        List<List<Integer>> groupAdj = new ArrayList<>();\n        for (int i = 0; i < n; i++) itemAdj.add(new ArrayList<>());\n        for (int i = 0; i < gId; i++) groupAdj.add(new ArrayList<>());\n        int[] itemIn = new int[n], groupIn = new int[gId];\n        for (int i = 0; i < n; i++) {\n            for (int prev : beforeItems.get(i)) {\n                itemAdj.get(prev).add(i);\n                itemIn[i]++;\n                if (group[prev] != group[i]) {\n                    groupAdj.get(group[prev]).add(group[i]);\n                    groupIn[group[i]]++;\n                }\n            }\n        }\n        List<Integer> itemOrder = topo(itemAdj, itemIn, n);\n        List<Integer> groupOrder = topo(groupAdj, groupIn, gId);\n        if (itemOrder.isEmpty() || groupOrder.isEmpty()) return new int[0];\n        Map<Integer, List<Integer>> groupToItems = new HashMap<>();\n        for (int item : itemOrder) {\n            groupToItems.computeIfAbsent(group[item], k -> new ArrayList<>()).add(item);\n        }\n        int[] ans = new int[n];\n        int idx = 0;\n        for (int g : groupOrder) {\n            List<Integer> items = groupToItems.get(g);\n            if (items != null) {\n                for (int it : items) ans[idx++] = it;\n            }\n        }\n        return ans;\n    }\n    private List<Integer> topo(List<List<Integer>> adj, int[] in, int count) {\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 0; i < count; i++) if (in[i] == 0) q.offer(i);\n        List<Integer> res = new ArrayList<>();\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            res.add(u);\n            for (int v : adj.get(u)) {\n                if (--in[v] == 0) q.offer(v);\n            }\n        }\n        return res.size() == count ? res : new ArrayList<>();\n    }\n}",
+        "python": "class Solution:\n    def sortItems(self, n: int, m: int, group: list[int], beforeItems: list[list[int]]) -> list[int]:\n        from collections import deque, defaultdict\n        gid = m\n        for i in range(n):\n            if group[i] == -1:\n                group[i] = gid\n                gid += 1\n        item_adj = [[] for _ in range(n)]\n        group_adj = [[] for _ in range(gid)]\n        item_in = [0] * n\n        group_in = [0] * gid\n        for i in range(n):\n            for prev in beforeItems[i]:\n                item_adj[prev].append(i)\n                item_in[i] += 1\n                if group[prev] != group[i]:\n                    group_adj[group[prev]].append(group[i])\n                    group_in[group[i]] += 1\n        def topo(adj: list[list[int]], in_deg: list[int], sz: int) -> list[int]:\n            q = deque(i for i in range(sz) if in_deg[i] == 0)\n            res = []\n            while q:\n                u = q.popleft()\n                res.append(u)\n                for v in adj[u]:\n                    in_deg[v] -= 1\n                    if in_deg[v] == 0:\n                        q.append(v)\n            return res if len(res) == sz else []\n        item_order = topo(item_adj, item_in, n)\n        group_order = topo(group_adj, group_in, gid)\n        if not item_order or not group_order:\n            return []\n        group_to_items = defaultdict(list)\n        for it in item_order:\n            group_to_items[group[it]].append(it)\n        ans = []\n        for g in group_order:\n            ans.extend(group_to_items[g])\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Dual topological sort: order groups in groupGraph and items in itemGraph, then emit items grouped by group order in O(V + E) time.",
+      "steps": [
+        "Assign distinct groups m, m+1, ... to unassigned items.",
+        "Build itemGraph and groupGraph; calculate itemInDegree and groupInDegree.",
+        "Topologically sort itemGraph to get valid intra-group item sequence.",
+        "Topologically sort groupGraph to get valid inter-group sequence.",
+        "If either topological sort encounters a cycle (length != total), return empty array. Otherwise group items by group and emit in groupOrder."
+      ],
+      "time": "O(n + sum(beforeItems))",
+      "space": "O(n + sum(beforeItems))",
+      "code": {
+        "java": "class Solution {\n    public int[] sortItems(int n, int m, int[] group, List<List<Integer>> beforeItems) {\n        int gId = m;\n        for (int i = 0; i < n; i++) {\n            if (group[i] == -1) group[i] = gId++;\n        }\n        List<List<Integer>> itemAdj = new ArrayList<>();\n        List<List<Integer>> groupAdj = new ArrayList<>();\n        for (int i = 0; i < n; i++) itemAdj.add(new ArrayList<>());\n        for (int i = 0; i < gId; i++) groupAdj.add(new ArrayList<>());\n        int[] itemIn = new int[n], groupIn = new int[gId];\n        for (int i = 0; i < n; i++) {\n            for (int prev : beforeItems.get(i)) {\n                itemAdj.get(prev).add(i);\n                itemIn[i]++;\n                if (group[prev] != group[i]) {\n                    groupAdj.get(group[prev]).add(group[i]);\n                    groupIn[group[i]]++;\n                }\n            }\n        }\n        List<Integer> itemOrder = topoSort(itemAdj, itemIn, n);\n        List<Integer> groupOrder = topoSort(groupAdj, groupIn, gId);\n        if (itemOrder.isEmpty() || groupOrder.isEmpty()) return new int[0];\n        Map<Integer, List<Integer>> groupMap = new HashMap<>();\n        for (int it : itemOrder) {\n            groupMap.computeIfAbsent(group[it], k -> new ArrayList<>()).add(it);\n        }\n        int[] ans = new int[n];\n        int idx = 0;\n        for (int g : groupOrder) {\n            List<Integer> list = groupMap.get(g);\n            if (list != null) {\n                for (int it : list) ans[idx++] = it;\n            }\n        }\n        return ans;\n    }\n    private List<Integer> topoSort(List<List<Integer>> adj, int[] in, int count) {\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 0; i < count; i++) if (in[i] == 0) q.offer(i);\n        List<Integer> res = new ArrayList<>();\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            res.add(u);\n            for (int v : adj.get(u)) {\n                if (--in[v] == 0) q.offer(v);\n            }\n        }\n        return res.size() == count ? res : new ArrayList<>();\n    }\n}",
+        "python": "class Solution:\n    def sortItems(self, n: int, m: int, group: list[int], beforeItems: list[list[int]]) -> list[int]:\n        from collections import deque, defaultdict\n        gid = m\n        for i in range(n):\n            if group[i] == -1:\n                group[i] = gid\n                gid += 1\n        item_adj = [[] for _ in range(n)]\n        group_adj = [[] for _ in range(gid)]\n        item_in = [0] * n\n        group_in = [0] * gid\n        for i in range(n):\n            for prev in beforeItems[i]:\n                item_adj[prev].append(i)\n                item_in[i] += 1\n                if group[prev] != group[i]:\n                    group_adj[group[prev]].append(group[i])\n                    group_in[group[i]] += 1\n        def topo(adj: list[list[int]], in_deg: list[int], sz: int) -> list[int]:\n            q = deque(i for i in range(sz) if in_deg[i] == 0)\n            res = []\n            while q:\n                u = q.popleft()\n                res.append(u)\n                for v in adj[u]:\n                    in_deg[v] -= 1\n                    if in_deg[v] == 0:\n                        q.append(v)\n            return res if len(res) == sz else []\n        item_order = topo(item_adj, item_in, n)\n        group_order = topo(group_adj, group_in, gid)\n        if not item_order or not group_order:\n            return []\n        grouped = defaultdict(list)\n        for it in item_order:\n            grouped[group[it]].append(it)\n        ans = []\n        for g in group_order:\n            ans.extend(grouped[g])\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 471,
+    "whyNext": "Builds on cycle detection via DSU from Redundant Connection (Seq 222) by handling directed tree roots, distinguishing between a node having two parent edges, a directed cycle, or both.",
+    "hints": [
+      "In a valid rooted tree, every node except the root has in-degree 1, and the root has in-degree 0, with no cycles.",
+      "Case 1: A node has two parents (two incoming edges cand1 and cand2). One of them is redundant. Test removing cand2: if graph has no cycle, return cand2; else return cand1.",
+      "Case 2: No node has two parents, meaning a pure directed cycle exists. Use DSU to find the edge that completes the cycle."
+    ],
+    "brute": {
+      "idea": "Test removing each edge from right to left (last edge first) and verify if the remaining edges form a valid rooted tree.",
+      "steps": [
+        "Iterate i from edges.length - 1 down to 0.",
+        "Skip edge i and build graph from remaining edges.",
+        "Check if graph has exactly 1 root with in-degree 0, all other nodes have in-degree 1, and all nodes are reachable from root.",
+        "Return the first valid skipped edge."
+      ],
+      "whySlow": "Running tree validity checks for every edge takes O(E * (V + E)) = O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] findRedundantDirectedConnection(int[][] edges) {\n        int n = edges.length;\n        for (int i = n - 1; i >= 0; i--) {\n            if (isValidTree(edges, i, n)) return edges[i];\n        }\n        return new int[0];\n    }\n    private boolean isValidTree(int[][] edges, int skip, int n) {\n        int[] parent = new int[n + 1];\n        for (int i = 0; i <= n; i++) parent[i] = i;\n        int[] inDegree = new int[n + 1];\n        for (int i = 0; i < edges.length; i++) {\n            if (i == skip) continue;\n            int u = edges[i][0], v = edges[i][1];\n            inDegree[v]++;\n            if (inDegree[v] > 1) return false;\n            int r1 = find(parent, u), r2 = find(parent, v);\n            if (r1 == r2) return false;\n            parent[r1] = r2;\n        }\n        return true;\n    }\n    private int find(int[] p, int i) {\n        if (p[i] == i) return i;\n        return p[i] = find(p, p[i]);\n    }\n}",
+        "python": "class Solution:\n    def findRedundantDirectedConnection(self, edges: list[list[int]]) -> list[int]:\n        n = len(edges)\n        def is_valid(skip: int) -> bool:\n            parent = list(range(n + 1))\n            in_deg = [0] * (n + 1)\n            def find(i: int) -> int:\n                if parent[i] == i:\n                    return i\n                parent[i] = find(parent[i])\n                return parent[i]\n            for i in range(n):\n                if i == skip:\n                    continue\n                u, v = edges[i]\n                in_deg[v] += 1\n                if in_deg[v] > 1:\n                    return False\n                ru, rv = find(u), find(v)\n                if ru == rv:\n                    return False\n                parent[ru] = rv\n            return True\n        for i in range(n - 1, -1, -1):\n            if is_valid(i):\n                return edges[i]\n        return []"
+      }
+    },
+    "optimal": {
+      "idea": "Two-parent candidate isolation + DSU cycle detection: resolves 2-parent conflicts and directed cycles in O(n α(n)) time.",
+      "steps": [
+        "Track parent[v]: if v already has a parent, record candidate1 and candidate2, then ignore candidate2.",
+        "Run DSU on remaining edges: if an edge creates a cycle:",
+        "If a 2-parent conflict was detected, candidate1 must be the invalid edge; return candidate1.",
+        "Otherwise (no 2-parent conflict), this edge created the cycle; return it.",
+        "If DSU finishes without cycle, candidate2 was the invalid edge; return candidate2."
+      ],
+      "time": "O(n α(n))",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] findRedundantDirectedConnection(int[][] edges) {\n        int n = edges.length;\n        int[] parent = new int[n + 1];\n        int[] cand1 = null, cand2 = null;\n        for (int[] e : edges) {\n            int u = e[0], v = e[1];\n            if (parent[v] == 0) {\n                parent[v] = u;\n            } else {\n                cand1 = new int[]{parent[v], v};\n                cand2 = new int[]{u, v};\n                e[1] = 0;\n            }\n        }\n        int[] dsu = new int[n + 1];\n        for (int i = 0; i <= n; i++) dsu[i] = i;\n        for (int[] e : edges) {\n            if (e[1] == 0) continue;\n            int u = e[0], v = e[1];\n            int r1 = find(dsu, u), r2 = find(dsu, v);\n            if (r1 == r2) {\n                if (cand1 != null) return cand1;\n                return e;\n            }\n            dsu[r1] = r2;\n        }\n        return cand2;\n    }\n    private int find(int[] dsu, int i) {\n        if (dsu[i] == i) return i;\n        return dsu[i] = find(dsu, dsu[i]);\n    }\n}",
+        "python": "class Solution:\n    def findRedundantDirectedConnection(self, edges: list[list[int]]) -> list[int]:\n        n = len(edges)\n        parent = [0] * (n + 1)\n        cand1 = cand2 = None\n        for i, (u, v) in enumerate(edges):\n            if parent[v] == 0:\n                parent[v] = u\n            else:\n                cand1 = [parent[v], v]\n                cand2 = [u, v]\n                edges[i][1] = 0\n        dsu = list(range(n + 1))\n        def find(i: int) -> int:\n            if dsu[i] == i:\n                return i\n            dsu[i] = find(dsu[i])\n            return dsu[i]\n        for u, v in edges:\n            if v == 0:\n                continue\n            ru, rv = find(u), find(v)\n            if ru == rv:\n                return cand1 if cand1 else [u, v]\n            dsu[ru] = rv\n        return cand2"
+      }
+    }
+  },
+  {
+    "seq": 472,
+    "whyNext": "Builds on DSU edge selection from Redundant Connection II (Seq 471) by prioritizing type-3 shared edges (usable by both Alice and Bob) to maximize the number of redundant edges safely removable while preserving connectivity.",
+    "hints": [
+      "Type 3 edges can be used by both Alice and Bob, so processing them first saves the most single-user edges.",
+      "Maintain two separate DSU structures: one for Alice and one for Bob.",
+      "First pass: for each type-3 edge, try to union in both Alice and Bob. If it connects previously disjoint components in either, keep it; otherwise discard it (it's redundant). Second pass: process type-1 (Alice) and type-2 (Bob) edges. Finally verify both graphs have exactly 1 connected component."
+    ],
+    "brute": {
+      "idea": "Try all subsets of edges to find minimum spanning trees for Alice and Bob, subtracting used edges from total edges.",
+      "steps": [
+        "Filter edges by type.",
+        "Find MST for Alice and MST for Bob, maximizing shared edges.",
+        "Check if both connect all n nodes.",
+        "Return total edges - edges in union."
+      ],
+      "whySlow": "Combinatorial edge subset exploration is intractable.",
+      "time": "O(E α(V))",
+      "space": "O(V)",
+      "code": {
+        "java": "class Solution {\n    public int maxNumEdgesToRemove(int n, int[][] edges) {\n        int[] dsuA = new int[n + 1], dsuB = new int[n + 1];\n        for (int i = 0; i <= n; i++) { dsuA[i] = i; dsuB[i] = i; }\n        int used = 0, compA = n, compB = n;\n        for (int[] e : edges) {\n            if (e[0] == 3) {\n                boolean uA = union(dsuA, e[1], e[2]);\n                boolean uB = union(dsuB, e[1], e[2]);\n                if (uA) compA--;\n                if (uB) compB--;\n                if (uA || uB) used++;\n            }\n        }\n        for (int[] e : edges) {\n            if (e[0] == 1) {\n                if (union(dsuA, e[1], e[2])) { compA--; used++; }\n            } else if (e[0] == 2) {\n                if (union(dsuB, e[1], e[2])) { compB--; used++; }\n            }\n        }\n        if (compA != 1 || compB != 1) return -1;\n        return edges.length - used;\n    }\n    private int find(int[] dsu, int i) {\n        if (dsu[i] == i) return i;\n        return dsu[i] = find(dsu, dsu[i]);\n    }\n    private boolean union(int[] dsu, int i, int j) {\n        int r1 = find(dsu, i), r2 = find(dsu, j);\n        if (r1 == r2) return false;\n        dsu[r1] = r2;\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def maxNumEdgesToRemove(self, n: int, edges: list[list[int]]) -> int:\n        dsu_a = list(range(n + 1))\n        dsu_b = list(range(n + 1))\n        def find(dsu: list[int], i: int) -> int:\n            if dsu[i] == i:\n                return i\n            dsu[i] = find(dsu, dsu[i])\n            return dsu[i]\n        def union(dsu: list[int], i: int, j: int) -> bool:\n            r1, r2 = find(dsu, i), find(dsu, j)\n            if r1 == r2:\n                return False\n            dsu[r1] = r2\n            return True\n        used = 0\n        comp_a = comp_b = n\n        for t, u, v in edges:\n            if t == 3:\n                ua = union(dsu_a, u, v)\n                ub = union(dsu_b, u, v)\n                if ua:\n                    comp_a -= 1\n                if ub:\n                    comp_b -= 1\n                if ua or ub:\n                    used += 1\n        for t, u, v in edges:\n            if t == 1:\n                if union(dsu_a, u, v):\n                    comp_a -= 1\n                    used += 1\n            elif t == 2:\n                if union(dsu_b, u, v):\n                    comp_b -= 1\n                    used += 1\n        if comp_a != 1 or comp_b != 1:\n            return -1\n        return len(edges) - used"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy dual-DSU with Type 3 edge priority: maximize removal by unioning type 3 edges first, then individual edges in O(E α(V)) time.",
+      "steps": [
+        "Initialize DSU dsuA and dsuB with n elements and component counts compA = n, compB = n.",
+        "Track usedEdges = 0.",
+        "Loop type 3 edges: if edge connects new nodes in dsuA or dsuB, union both, usedEdges++, decrement components.",
+        "Loop type 1 edges on dsuA and type 2 edges on dsuB, incrementing usedEdges for successful unions.",
+        "If compA > 1 || compB > 1 return -1; else return edges.length - usedEdges."
+      ],
+      "time": "O(E α(V))",
+      "space": "O(V)",
+      "code": {
+        "java": "class Solution {\n    public int maxNumEdgesToRemove(int n, int[][] edges) {\n        int[] dsuA = new int[n + 1], dsuB = new int[n + 1];\n        for (int i = 0; i <= n; i++) {\n            dsuA[i] = i;\n            dsuB[i] = i;\n        }\n        int compA = n, compB = n, used = 0;\n        for (int[] e : edges) {\n            if (e[0] == 3) {\n                boolean a = union(dsuA, e[1], e[2]);\n                boolean b = union(dsuB, e[1], e[2]);\n                if (a) compA--;\n                if (b) compB--;\n                if (a || b) used++;\n            }\n        }\n        for (int[] e : edges) {\n            if (e[0] == 1) {\n                if (union(dsuA, e[1], e[2])) {\n                    compA--;\n                    used++;\n                }\n            } else if (e[0] == 2) {\n                if (union(dsuB, e[1], e[2])) {\n                    compB--;\n                    used++;\n                }\n            }\n        }\n        if (compA != 1 || compB != 1) return -1;\n        return edges.length - used;\n    }\n    private int find(int[] dsu, int i) {\n        if (dsu[i] == i) return i;\n        return dsu[i] = find(dsu, dsu[i]);\n    }\n    private boolean union(int[] dsu, int i, int j) {\n        int r1 = find(dsu, i), r2 = find(dsu, j);\n        if (r1 == r2) return false;\n        dsu[r1] = r2;\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def maxNumEdgesToRemove(self, n: int, edges: list[list[int]]) -> int:\n        dsu_a = list(range(n + 1))\n        dsu_b = list(range(n + 1))\n        def find(dsu: list[int], i: int) -> int:\n            if dsu[i] == i:\n                return i\n            dsu[i] = find(dsu, dsu[i])\n            return dsu[i]\n        def union(dsu: list[int], i: int, j: int) -> bool:\n            r1, r2 = find(dsu, i), find(dsu, j)\n            if r1 == r2:\n                return False\n            dsu[r1] = r2\n            return True\n        comp_a = comp_b = n\n        used = 0\n        for t, u, v in edges:\n            if t == 3:\n                a = union(dsu_a, u, v)\n                b = union(dsu_b, u, v)\n                if a:\n                    comp_a -= 1\n                if b:\n                    comp_b -= 1\n                if a or b:\n                    used += 1\n        for t, u, v in edges:\n            if t == 1:\n                if union(dsu_a, u, v):\n                    comp_a -= 1\n                    used += 1\n            elif t == 2:\n                if union(dsu_b, u, v):\n                    comp_b -= 1\n                    used += 1\n        if comp_a != 1 or comp_b != 1:\n            return -1\n        return len(edges) - used"
+      }
+    }
+  }
+]

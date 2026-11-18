@@ -8327,19 +8327,19 @@
   },
   {
     "seq": 451,
-    "lc": 1306,
-    "title": "Jump Game III",
-    "slug": "jump-game-iii",
+    "lc": 1905,
+    "title": "Count Sub Islands",
+    "slug": "count-sub-islands",
     "difficulty": "Medium",
-    "buildsOn": 449,
     "chapter": "ch-29",
+    "buildsOn": 450,
     "brute": {
-      "idea": "DFS without visited tracking",
-      "time": "infinite recursion"
+      "idea": "Find all cells of each grid2 island, then check if all collected cells are 1 in grid1.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "BFS/DFS tracking visited indices until value 0 reached",
-      "time": "O(n)"
+      "idea": "In-place boolean DFS sinking: sink grid2 island in-place, returning false if any constituent cell lacks grid1 land in O(m * n) time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "amazon",
@@ -8348,19 +8348,19 @@
   },
   {
     "seq": 452,
-    "lc": 1368,
-    "title": "Minimum Cost to Make at Least One Valid Path in a Grid",
-    "slug": "minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
-    "difficulty": "Hard",
-    "buildsOn": 447,
+    "lc": 1162,
+    "title": "As Far from Land as Possible",
+    "slug": "as-far-from-land-as-possible",
+    "difficulty": "Medium",
     "chapter": "ch-29",
+    "buildsOn": 204,
     "brute": {
-      "idea": "Try changing all subsets of direction arrows",
-      "time": "exponential"
+      "idea": "For every water cell (0), compute Manhattan distance to every land cell (1), find the min, and maximize across water cells.",
+      "time": "O((m * n)^2)"
     },
     "optimal": {
-      "idea": "0-1 BFS with deque (cost 0 push front, cost 1 push back)",
-      "time": "O(mn)"
+      "idea": "Multi-source BFS from land cells: expand BFS wavefront level by level, returning the number of levels expanded in O(n^2) time.",
+      "time": "O(n^2)"
     },
     "companies": [
       "google",
@@ -8369,19 +8369,19 @@
   },
   {
     "seq": 453,
-    "lc": 827,
-    "title": "Making A Large Island",
-    "slug": "making-a-large-island",
-    "difficulty": "Hard",
-    "buildsOn": 445,
+    "lc": 1926,
+    "title": "Nearest Exit from Entrance in Maze",
+    "slug": "nearest-exit-from-entrance-in-maze",
+    "difficulty": "Medium",
     "chapter": "ch-29",
+    "buildsOn": 205,
     "brute": {
-      "idea": "Try flipping each 0 to 1 and re-run flood fill",
-      "time": "O((mn)²)"
+      "idea": "Find all border exit coordinates first, then run BFS to find the shortest distance from entrance to any exit.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "Index each island with unique ID, check 4 neighbors of each 0",
-      "time": "O(mn)"
+      "idea": "Direct BFS boundary exit detection: return steps + 1 as soon as any neighboring empty cell touches the grid boundary in O(m * n) time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "meta",
@@ -8391,19 +8391,19 @@
   },
   {
     "seq": 454,
-    "lc": 909,
-    "title": "Snakes and Ladders",
-    "slug": "snakes-and-ladders",
+    "lc": 529,
+    "title": "Minesweeper",
+    "slug": "minesweeper",
     "difficulty": "Medium",
-    "buildsOn": 446,
     "chapter": "ch-29",
+    "buildsOn": 453,
     "brute": {
-      "idea": "DFS with high recursion limit",
-      "time": "exponential"
+      "idea": "BFS revelation: queue clicked square, count adjacent mines, expand if 0 mines.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "BFS shortest path on board states 1 to n²",
-      "time": "O(n²)"
+      "idea": "Recursive DFS reveal: directly update board cells in 8 directions when adjacent mine count is 0 in O(m * n) time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "amazon",
@@ -8413,19 +8413,19 @@
   },
   {
     "seq": 455,
-    "lc": 433,
-    "title": "Minimum Genetic Mutation",
-    "slug": "minimum-genetic-mutation",
+    "lc": 909,
+    "title": "Snakes and Ladders",
+    "slug": "snakes-and-ladders",
     "difficulty": "Medium",
-    "buildsOn": 454,
     "chapter": "ch-29",
+    "buildsOn": 454,
     "brute": {
-      "idea": "DFS with visited set",
-      "time": "O(4⁸)"
+      "idea": "Dijkstra's shortest path algorithm over the n^2 state graph.",
+      "time": "O(n^2 log n)"
     },
     "optimal": {
-      "idea": "BFS level-order gene mutation with bank set",
-      "time": "O(N · L)"
+      "idea": "Unweighted BFS on 1..n^2: each dice roll has uniform weight 1, so BFS guarantees the minimum moves in O(n^2) time.",
+      "time": "O(n^2)"
     },
     "companies": [
       "amazon",
@@ -8434,19 +8434,19 @@
   },
   {
     "seq": 456,
-    "lc": 1926,
-    "title": "Nearest Exit from Entrance in Maze",
-    "slug": "nearest-exit-from-entrance-in-maze",
+    "lc": 1129,
+    "title": "Shortest Path with Alternating Colors",
+    "slug": "shortest-path-with-alternating-colors",
     "difficulty": "Medium",
-    "buildsOn": 446,
     "chapter": "ch-29",
+    "buildsOn": 455,
     "brute": {
-      "idea": "DFS finding all paths to boundary",
-      "time": "exponential"
+      "idea": "Run separate BFS for each destination node from root 0 tracking alternating colors.",
+      "time": "O(n * (V + E))"
     },
     "optimal": {
-      "idea": "BFS from entrance returning first boundary cell distance",
-      "time": "O(mn)"
+      "idea": "Single multi-state BFS: 2 states per node (node, color) finds shortest alternating paths to all nodes in O(V + E) time.",
+      "time": "O(V + E)"
     },
     "companies": [
       "amazon",
@@ -8455,19 +8455,19 @@
   },
   {
     "seq": 457,
-    "lc": 1034,
-    "title": "Coloring A Border",
-    "slug": "coloring-a-border",
-    "difficulty": "Medium",
-    "buildsOn": 443,
+    "lc": 1345,
+    "title": "Jump Game IV",
+    "slug": "jump-game-iv",
+    "difficulty": "Hard",
     "chapter": "ch-29",
+    "buildsOn": 456,
     "brute": {
-      "idea": "DFS coloring everything then correcting",
-      "time": "O(mn)"
+      "idea": "Standard BFS exploring all neighbors without clearing mapped value lists.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "DFS component traversal identifying boundary-adjacent cells",
-      "time": "O(mn)"
+      "idea": "BFS with cleared value buckets: clear the bucket in the map once traversed, guaranteeing O(n) linear execution time.",
+      "time": "O(n)"
     },
     "companies": [
       "google",
@@ -8476,19 +8476,19 @@
   },
   {
     "seq": 458,
-    "lc": 1129,
-    "title": "Shortest Path with Alternating Colors",
-    "slug": "shortest-path-with-alternating-colors",
+    "lc": 2101,
+    "title": "Detonate the Maximum Bombs",
+    "slug": "detonate-the-maximum-bombs",
     "difficulty": "Medium",
-    "buildsOn": 448,
     "chapter": "ch-29",
+    "buildsOn": 212,
     "brute": {
-      "idea": "DFS path search with alternation check",
-      "time": "exponential"
+      "idea": "Build directed graph and run BFS from every node, tracking maximum reachable count.",
+      "time": "O(n^3)"
     },
     "optimal": {
-      "idea": "BFS tracking state (node, lastColor)",
-      "time": "O(V + E)"
+      "idea": "Directed adjacency list with bitset/DFS exploration: compute reachability component size for each node in O(n^3) time.",
+      "time": "O(n^3)"
     },
     "companies": [
       "amazon",
@@ -8497,18 +8497,18 @@
   },
   {
     "seq": 459,
-    "lc": 851,
-    "title": "Loud and Rich",
-    "slug": "loud-and-rich",
+    "lc": 2316,
+    "title": "Count Unreachable Pairs of Nodes in an Undirected Graph",
+    "slug": "count-unreachable-pairs-of-nodes-in-an-undirected-graph",
     "difficulty": "Medium",
-    "buildsOn": 195,
     "chapter": "ch-30",
+    "buildsOn": 211,
     "brute": {
-      "idea": "DFS from each person to find richest",
-      "time": "O(n²)"
+      "idea": "Run BFS from every node i to count how many nodes cannot be reached from i, then sum and divide by 2.",
+      "time": "O(n * (V + E))"
     },
     "optimal": {
-      "idea": "Topological sort Kahn's algorithm or memoized DFS",
+      "idea": "Component size multiplication: find connected component sizes with DFS, multiplying each size S by remaining unvisited nodes in O(V + E) time.",
       "time": "O(V + E)"
     },
     "companies": [
@@ -8518,19 +8518,19 @@
   },
   {
     "seq": 460,
-    "lc": 1857,
-    "title": "Largest Color Value in a Directed Graph",
-    "slug": "largest-color-value-in-a-directed-graph",
-    "difficulty": "Hard",
-    "buildsOn": 459,
+    "lc": 1202,
+    "title": "Smallest String With Swaps",
+    "slug": "smallest-string-with-swaps",
+    "difficulty": "Medium",
     "chapter": "ch-30",
+    "buildsOn": 222,
     "brute": {
-      "idea": "DFS every path counting colors",
-      "time": "exponential"
+      "idea": "Build graph of swappable index pairs, run DFS for each component to collect characters, sort them, and place them back.",
+      "time": "O(V + E + V log V)"
     },
     "optimal": {
-      "idea": "Topological sort with DP array dp[u][color] and cycle detection",
-      "time": "O(26 · (V + E))"
+      "idea": "Disjoint Set Union (DSU) + PriorityQueue grouping: group index components using DSU and greedily extract min characters from min-heaps in O((V + E) α(V) + V log V) time.",
+      "time": "O(n log n + pairs * α(n))"
     },
     "companies": [
       "google",
@@ -8539,19 +8539,19 @@
   },
   {
     "seq": 461,
-    "lc": 1202,
-    "title": "Smallest String With Swaps",
-    "slug": "smallest-string-with-swaps",
+    "lc": 959,
+    "title": "Regions Cut By Slashes",
+    "slug": "regions-cut-by-slashes",
     "difficulty": "Medium",
-    "buildsOn": 198,
     "chapter": "ch-30",
+    "buildsOn": 460,
     "brute": {
-      "idea": "Try all swap sequences",
-      "time": "exponential"
+      "idea": "Subdivide each 1x1 cell into 4 triangular quadrants (0: top, 1: right, 2: bottom, 3: left) and connect internal and adjacent triangles via DSU.",
+      "time": "O(n^2 α(n))"
     },
     "optimal": {
-      "idea": "Union-Find connected components, sort characters in each component",
-      "time": "O(V log V + E)"
+      "idea": "3x3 pixel upscaling: scale each cell to 3x3 pixels, drawing slashes as 1-pixels, and count 0-islands with DFS in O(n^2) time.",
+      "time": "O(n^2)"
     },
     "companies": [
       "amazon",
@@ -8560,19 +8560,19 @@
   },
   {
     "seq": 462,
-    "lc": 1615,
-    "title": "Maximal Network Rank",
-    "slug": "maximal-network-rank",
+    "lc": 1462,
+    "title": "Course Schedule IV",
+    "slug": "course-schedule-iv",
     "difficulty": "Medium",
-    "buildsOn": 461,
     "chapter": "ch-30",
+    "buildsOn": 218,
     "brute": {
-      "idea": "Check all pairs counting connected roads",
-      "time": "O(V² · E)"
+      "idea": "For each query [u, v], run BFS from u to check if v is reachable.",
+      "time": "O(Q * (V + E))"
     },
     "optimal": {
-      "idea": "Store degrees and adjacency set: deg[u] + deg[v] - (hasEdge ? 1 : 0)",
-      "time": "O(V²)"
+      "idea": "Transitive closure via Floyd-Warshall: precompute boolean reachable matrix in O(V^3) time, answering queries in O(1) time.",
+      "time": "O(V^3 + Q)"
     },
     "companies": [
       "microsoft",
@@ -8581,19 +8581,19 @@
   },
   {
     "seq": 463,
-    "lc": 1579,
-    "title": "Remove Max Number of Edges to Keep Graph Fully Traversable",
-    "slug": "remove-max-number-of-edges-to-keep-graph-fully-traversable",
-    "difficulty": "Hard",
-    "buildsOn": 462,
+    "lc": 2192,
+    "title": "All Ancestors of a Node in a Directed Acyclic Graph",
+    "slug": "all-ancestors-of-a-node-in-a-directed-acyclic-graph",
+    "difficulty": "Medium",
     "chapter": "ch-30",
+    "buildsOn": 462,
     "brute": {
-      "idea": "Try all subsets of removable edges",
-      "time": "O(2ⁿ)"
+      "idea": "Reverse edges and run BFS from every node to find all its ancestors, then sort each ancestor list.",
+      "time": "O(n * (V + E) + n^2 log n)"
     },
     "optimal": {
-      "idea": "Two Union-Finds (Alice & Bob), greedily prioritize Type 3 edges",
-      "time": "O(E α(V))"
+      "idea": "Forward DFS from 0 to n - 1: whenever visiting a descendant during DFS from i, append i to descendant's list, ensuring sorted order naturally in O(n * (V + E)) time.",
+      "time": "O(n * (V + E))"
     },
     "companies": [
       "google",
@@ -8602,19 +8602,19 @@
   },
   {
     "seq": 464,
-    "lc": 1976,
-    "title": "Number of Ways to Arrive at Destination",
-    "slug": "number-of-ways-to-arrive-at-destination",
+    "lc": 851,
+    "title": "Loud and Rich",
+    "slug": "loud-and-rich",
     "difficulty": "Medium",
-    "buildsOn": 200,
     "chapter": "ch-30",
+    "buildsOn": 463,
     "brute": {
-      "idea": "Find all paths with DFS and compare lengths",
-      "time": "exponential"
+      "idea": "For each person, traverse all richer individuals via BFS/DFS, tracking the one with lowest quiet value.",
+      "time": "O(n * (V + E))"
     },
     "optimal": {
-      "idea": "Dijkstra's algorithm tracking dist[u] and path count ways[u] mod 10⁹+7",
-      "time": "O((V + E) log V)"
+      "idea": "Memoized DFS / Topological DP: memoize the quietest ancestor for each node, running each edge once in O(V + E) time.",
+      "time": "O(V + E)"
     },
     "companies": [
       "amazon",
@@ -8623,18 +8623,18 @@
   },
   {
     "seq": 465,
-    "lc": 1786,
-    "title": "Number of Restricted Paths From First to Last Node",
-    "slug": "number-of-restricted-paths-from-first-to-last-node",
+    "lc": 1976,
+    "title": "Number of Ways to Arrive at Destination",
+    "slug": "number-of-ways-to-arrive-at-destination",
     "difficulty": "Medium",
-    "buildsOn": 464,
     "chapter": "ch-30",
+    "buildsOn": 227,
     "brute": {
-      "idea": "Find all paths with simple DFS",
-      "time": "exponential"
+      "idea": "Find minimum distance using Dijkstra, then count paths matching min distance using DFS.",
+      "time": "O(V! + E log V)"
     },
     "optimal": {
-      "idea": "Dijkstra from node n, then memoized DFS / DP along descending distance",
+      "idea": "Dijkstra with path-counting state: update ways and distances simultaneously during heap relaxation in O(E log V) time.",
       "time": "O(E log V)"
     },
     "companies": [
@@ -8644,19 +8644,19 @@
   },
   {
     "seq": 466,
-    "lc": 2092,
-    "title": "Find All People With Secret",
-    "slug": "find-all-people-with-secret",
+    "lc": 2290,
+    "title": "Minimum Obstacle Removal to Reach Corner",
+    "slug": "minimum-obstacle-removal-to-reach-corner",
     "difficulty": "Hard",
-    "buildsOn": 461,
     "chapter": "ch-30",
+    "buildsOn": 205,
     "brute": {
-      "idea": "Simulate meetings in order",
-      "time": "O(M²)"
+      "idea": "Dijkstra's shortest path algorithm using a standard PriorityQueue on grid cells.",
+      "time": "O(m * n log(m * n))"
     },
     "optimal": {
-      "idea": "Group meetings by timestamp, Union-Find reset unshared nodes",
-      "time": "O(M log M)"
+      "idea": "0-1 BFS with ArrayDeque: push 0-cost moves to front and 1-cost moves to back, solving minimum obstacles in O(m * n) linear time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "amazon",
@@ -8665,19 +8665,19 @@
   },
   {
     "seq": 467,
-    "lc": 1489,
-    "title": "Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree",
-    "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+    "lc": 1368,
+    "title": "Minimum Cost to Make at Least One Valid Path in a Grid",
+    "slug": "minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
     "difficulty": "Hard",
-    "buildsOn": 463,
     "chapter": "ch-30",
+    "buildsOn": 466,
     "brute": {
-      "idea": "All spanning trees comparison",
-      "time": "exponential"
+      "idea": "Dijkstra's algorithm using PriorityQueue with edge weights 0 (matching sign) and 1 (different sign).",
+      "time": "O(m * n log(m * n))"
     },
     "optimal": {
-      "idea": "Kruskal's algorithm excluding or force-including each edge",
-      "time": "O(E² α(V))"
+      "idea": "0-1 BFS: push 0-cost moves in current arrow direction to deque front and 1-cost turns to back in O(m * n) time.",
+      "time": "O(m * n)"
     },
     "companies": [
       "google",
@@ -8686,19 +8686,19 @@
   },
   {
     "seq": 468,
-    "lc": 1135,
-    "title": "Connecting Cities With Minimum Cost",
-    "slug": "connecting-cities-with-minimum-cost",
-    "difficulty": "Medium",
-    "buildsOn": 461,
+    "lc": 2050,
+    "title": "Parallel Courses III",
+    "slug": "parallel-courses-iii",
+    "difficulty": "Hard",
     "chapter": "ch-30",
+    "buildsOn": 219,
     "brute": {
-      "idea": "Try all subsets of connections",
-      "time": "O(2ⁿ)"
+      "idea": "Find all directed paths from any source node to any sink node, compute path sums of time, and take the maximum.",
+      "time": "O(2^V)"
     },
     "optimal": {
-      "idea": "Kruskal's MST algorithm with Union-Find",
-      "time": "O(E log E)"
+      "idea": "Kahn's topological sort with finish-time DP: propagate dist[v] = max(dist[v], dist[u] + time[v]) in O(V + E) time.",
+      "time": "O(V + E)"
     },
     "companies": [
       "amazon",
@@ -8707,19 +8707,19 @@
   },
   {
     "seq": 469,
-    "lc": 1168,
-    "title": "Optimize Water Distribution in a Village",
-    "slug": "optimize-water-distribution-in-a-village",
+    "lc": 1857,
+    "title": "Largest Color Value in a Directed Graph",
+    "slug": "largest-color-value-in-a-directed-graph",
     "difficulty": "Hard",
-    "buildsOn": 468,
     "chapter": "ch-30",
+    "buildsOn": 468,
     "brute": {
-      "idea": "Try all combinations of wells and pipes",
-      "time": "exponential"
+      "idea": "Find all simple paths in the directed graph using DFS with cycle detection, counting color frequencies on each path.",
+      "time": "O(2^V)"
     },
     "optimal": {
-      "idea": "Virtual node 0 for wells, Kruskal's algorithm on pipes + well edges",
-      "time": "O(E log E)"
+      "idea": "Topological Sort with 26-color DP table: Kahn's algorithm updates dp[v][c] in O(26 * (V + E)) time, returning -1 on cycle.",
+      "time": "O(26 * (V + E)) = O(V + E)"
     },
     "companies": [
       "google",
@@ -8728,19 +8728,19 @@
   },
   {
     "seq": 470,
-    "lc": 1627,
-    "title": "Graph Connectivity With Threshold",
-    "slug": "graph-connectivity-with-threshold",
+    "lc": 1203,
+    "title": "Sort Items by Groups Respecting Dependencies",
+    "slug": "sort-items-by-groups-respecting-dependencies",
     "difficulty": "Hard",
-    "buildsOn": 461,
     "chapter": "ch-30",
+    "buildsOn": 469,
     "brute": {
-      "idea": "Compute GCD for every query pair and traverse",
-      "time": "O(Q · V)"
+      "idea": "Assign singleton groups to unassigned items, build full dependency graph, and attempt global topological sort satisfying group contiguousness.",
+      "time": "O(V + E)"
     },
     "optimal": {
-      "idea": "Sieve multiples of numbers > threshold into Union-Find",
-      "time": "O(n log n + Q α(n))"
+      "idea": "Dual topological sort: order groups in groupGraph and items in itemGraph, then emit items grouped by group order in O(V + E) time.",
+      "time": "O(n + sum(beforeItems))"
     },
     "companies": [
       "google",
@@ -8749,18 +8749,18 @@
   },
   {
     "seq": 471,
-    "lc": 765,
-    "title": "Couples Holding Hands",
-    "slug": "couples-holding-hands",
+    "lc": 685,
+    "title": "Redundant Connection II",
+    "slug": "redundant-connection-ii",
     "difficulty": "Hard",
-    "buildsOn": 462,
     "chapter": "ch-30",
+    "buildsOn": 222,
     "brute": {
-      "idea": "Try all swap permutations",
-      "time": "O(n!)"
+      "idea": "Test removing each edge from right to left (last edge first) and verify if the remaining edges form a valid rooted tree.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Union-Find on couple indices: n - count of components",
+      "idea": "Two-parent candidate isolation + DSU cycle detection: resolves 2-parent conflicts and directed cycles in O(n α(n)) time.",
       "time": "O(n α(n))"
     },
     "companies": [
@@ -8770,19 +8770,19 @@
   },
   {
     "seq": 472,
-    "lc": 2101,
-    "title": "Detonate the Maximum Bombs",
-    "slug": "detonate-the-maximum-bombs",
-    "difficulty": "Medium",
-    "buildsOn": 449,
+    "lc": 1579,
+    "title": "Remove Max Number of Edges to Keep Graph Fully Traversable",
+    "slug": "remove-max-number-of-edges-to-keep-graph-fully-traversable",
+    "difficulty": "Hard",
     "chapter": "ch-30",
+    "buildsOn": 471,
     "brute": {
-      "idea": "Exhaustive chain reaction simulation",
-      "time": "O(n³)"
+      "idea": "Try all subsets of edges to find minimum spanning trees for Alice and Bob, subtracting used edges from total edges.",
+      "time": "O(E α(V))"
     },
     "optimal": {
-      "idea": "Directed graph: edge if bomb i covers bomb j, run DFS from each bomb",
-      "time": "O(n · (V + E))"
+      "idea": "Greedy dual-DSU with Type 3 edge priority: maximize removal by unioning type 3 edges first, then individual edges in O(E α(V)) time.",
+      "time": "O(E α(V))"
     },
     "companies": [
       "google",
@@ -8791,18 +8791,18 @@
   },
   {
     "seq": 473,
-    "lc": 1646,
-    "title": "Get Maximum in Generated Array",
-    "slug": "get-maximum-in-generated-array",
-    "difficulty": "Easy",
-    "buildsOn": 220,
+    "lc": 413,
+    "title": "Arithmetic Slices",
+    "slug": "arithmetic-slices",
+    "difficulty": "Medium",
     "chapter": "ch-31",
+    "buildsOn": 250,
     "brute": {
-      "idea": "Recalculate terms recursively",
-      "time": "O(2ⁿ)"
+      "idea": "Test every subarray nums[i..j] of length >= 3 to verify whether difference between adjacent elements remains constant.",
+      "time": "O(n^3)"
     },
     "optimal": {
-      "idea": "Linear DP array simulation tracking maximum value",
+      "idea": "O(1) space contiguous DP: maintain current consecutive streak, accumulating into total sum in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -8812,18 +8812,18 @@
   },
   {
     "seq": 474,
-    "lc": 1641,
-    "title": "Count Sorted Vowel Strings",
-    "slug": "count-sorted-vowel-strings",
+    "lc": 1218,
+    "title": "Longest Arithmetic Subsequence of Given Difference",
+    "slug": "longest-arithmetic-subsequence-of-given-difference",
     "difficulty": "Medium",
-    "buildsOn": 473,
     "chapter": "ch-31",
+    "buildsOn": 247,
     "brute": {
-      "idea": "Backtrack all lexicographically sorted vowel strings",
-      "time": "O(5ⁿ)"
+      "idea": "For each element, recursively search forward for the next element equal to cur + difference.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "DP array of 5 vowels or stars-and-bars combinatorics formula",
+      "idea": "HashMap dynamic programming: map each element x to 1 + dp[x - diff], running in O(n) single pass time.",
       "time": "O(n)"
     },
     "companies": [
@@ -8833,19 +8833,19 @@
   },
   {
     "seq": 475,
-    "lc": 368,
-    "title": "Largest Divisible Subset",
-    "slug": "largest-divisible-subset",
+    "lc": 1027,
+    "title": "Longest Arithmetic Subsequence",
+    "slug": "longest-arithmetic-subsequence",
     "difficulty": "Medium",
-    "buildsOn": 474,
     "chapter": "ch-31",
+    "buildsOn": 474,
     "brute": {
-      "idea": "Generate all subsets and verify divisibility",
-      "time": "O(2ⁿ)"
+      "idea": "Check all pairs (i, j) to establish an initial difference, then search forward for all subsequent elements with that difference.",
+      "time": "O(n^3)"
     },
     "optimal": {
-      "idea": "Sort, LIS-style DP dp[i] tracking max subset length and parent index",
-      "time": "O(n²)"
+      "idea": "2D DP with difference indexing: dp[i][diff] = dp[j][diff] + 1 for each predecessor j < i, running in O(n^2) time.",
+      "time": "O(n^2)"
     },
     "companies": [
       "google",

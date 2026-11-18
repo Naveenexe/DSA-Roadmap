@@ -1,0 +1,121 @@
+[
+  {
+    "seq": 473,
+    "whyNext": "Builds on contiguous subarray DP from Longest Turbulent Subarray (Seq 250) by incrementing running consecutive arithmetic lengths whenever nums[i] - nums[i-1] == nums[i-1] - nums[i-2], accumulating slices in O(n) time.",
+    "hints": [
+      "An arithmetic slice must have length >= 3 and identical differences between adjacent elements.",
+      "If nums[i] - nums[i-1] == nums[i-1] - nums[i-2], then every arithmetic slice ending at index i - 1 can be extended to index i, plus one new slice of length 3 is formed: dp[i] = dp[i-1] + 1.",
+      "If the difference changes, the streak resets: dp[i] = 0. Accumulate sum of all dp[i] to get the total number of arithmetic slices."
+    ],
+    "brute": {
+      "idea": "Test every subarray nums[i..j] of length >= 3 to verify whether difference between adjacent elements remains constant.",
+      "steps": [
+        "Loop i from 0 to n - 3.",
+        "Loop j from i + 2 to n - 1.",
+        "Check if diff = nums[k] - nums[k-1] is constant for all k in [i+1, j].",
+        "If constant, increment total slice count.",
+        "Return count."
+      ],
+      "whySlow": "O(n^3) nested subarray validation.",
+      "time": "O(n^3)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numberOfArithmeticSlices(int[] nums) {\n        int n = nums.length;\n        int count = 0;\n        for (int i = 0; i < n - 2; i++) {\n            int diff = nums[i + 1] - nums[i];\n            for (int j = i + 2; j < n; j++) {\n                if (nums[j] - nums[j - 1] == diff) {\n                    count++;\n                } else {\n                    break;\n                }\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def numberOfArithmeticSlices(self, nums: list[int]) -> int:\n        n = len(nums)\n        count = 0\n        for i in range(n - 2):\n            diff = nums[i + 1] - nums[i]\n            for j in range(i + 2, n):\n                if nums[j] - nums[j - 1] == diff:\n                    count += 1\n                else:\n                    break\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "O(1) space contiguous DP: maintain current consecutive streak, accumulating into total sum in O(n) time.",
+      "steps": [
+        "If nums.length < 3 return 0.",
+        "int curr = 0, total = 0;",
+        "Loop i from 2 to nums.length - 1: if nums[i] - nums[i-1] == nums[i-1] - nums[i-2]: curr++; total += curr; else curr = 0;",
+        "Return total."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int numberOfArithmeticSlices(int[] nums) {\n        if (nums == null || nums.length < 3) return 0;\n        int cur = 0, total = 0;\n        for (int i = 2; i < nums.length; i++) {\n            if (nums[i] - nums[i - 1] == nums[i - 1] - nums[i - 2]) {\n                cur++;\n                total += cur;\n            } else {\n                cur = 0;\n            }\n        }\n        return total;\n    }\n}",
+        "python": "class Solution:\n    def numberOfArithmeticSlices(self, nums: list[int]) -> int:\n        if len(nums) < 3:\n            return 0\n        cur = total = 0\n        for i in range(2, len(nums)):\n            if nums[i] - nums[i - 1] == nums[i - 1] - nums[i - 2]:\n                cur += 1\n                total += cur\n            else:\n                cur = 0\n        return total"
+      }
+    }
+  },
+  {
+    "seq": 474,
+    "whyNext": "Builds on hash-map based subsequence state transition from Longest Increasing Subsequence (Seq 247) by storing the longest arithmetic subsequence length ending at value x as dp[x] = dp[x - difference] + 1 in O(n) time.",
+    "hints": [
+      "Any element x can extend an arithmetic subsequence ending at x - difference.",
+      "Store dp[val] in a HashMap<Integer, Integer> representing the length of the longest subsequence ending at val.",
+      "For each num in arr: dp[num] = dp.getOrDefault(num - difference, 0) + 1. Track the maximum value in dp."
+    ],
+    "brute": {
+      "idea": "For each element, recursively search forward for the next element equal to cur + difference.",
+      "steps": [
+        "For each starting index i from 0 to n - 1: initialize length = 1, target = arr[i] + difference.",
+        "Scan forward for matching elements and increment length.",
+        "Track maximum length found."
+      ],
+      "whySlow": "Scanning forward for every starting element takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestSubsequence(int[] arr, int difference) {\n        int n = arr.length;\n        int maxLen = 1;\n        for (int i = 0; i < n; i++) {\n            int len = 1;\n            int cur = arr[i];\n            for (int j = i + 1; j < n; j++) {\n                if (arr[j] - cur == difference) {\n                    len++;\n                    cur = arr[j];\n                }\n            }\n            maxLen = Math.max(maxLen, len);\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def longestSubsequence(self, arr: list[int], difference: int) -> int:\n        max_len = 1\n        n = len(arr)\n        for i in range(n):\n            length = 1\n            cur = arr[i]\n            for j in range(i + 1, n):\n                if arr[j] - cur == difference:\n                    length += 1\n                    cur = arr[j]\n            max_len = max(max_len, length)\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "HashMap dynamic programming: map each element x to 1 + dp[x - diff], running in O(n) single pass time.",
+      "steps": [
+        "Map<Integer, Integer> dp = new HashMap<>(); int maxLen = 0;",
+        "For each x in arr: int prevLen = dp.getOrDefault(x - difference, 0); dp.put(x, prevLen + 1); maxLen = Math.max(maxLen, prevLen + 1);",
+        "Return maxLen."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int longestSubsequence(int[] arr, int difference) {\n        Map<Integer, Integer> dp = new HashMap<>();\n        int max = 0;\n        for (int x : arr) {\n            int len = dp.getOrDefault(x - difference, 0) + 1;\n            dp.put(x, len);\n            max = Math.max(max, len);\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestSubsequence(self, arr: list[int], difference: int) -> int:\n        dp = {}\n        max_len = 0\n        for x in arr:\n            length = dp.get(x - difference, 0) + 1\n            dp[x] = length\n            if length > max_len:\n                max_len = length\n        return max_len"
+      }
+    }
+  },
+  {
+    "seq": 475,
+    "whyNext": "Generalizes fixed difference sequences from Longest Arithmetic Subsequence of Given Difference (Seq 474) to arbitrary differences by maintaining a 2D DP table dp[i][diff] of arithmetic subsequence lengths ending at index i with difference diff.",
+    "hints": [
+      "Unlike the previous problem, the common difference is not fixed in advance.",
+      "Maintain dp[i][diff] representing the length of the longest arithmetic subsequence ending at index i with common difference diff.",
+      "For each pair (j, i) with j < i: diff = nums[i] - nums[j]. dp[i][diff] = dp[j].getOrDefault(diff, 1) + 1. Offset diff by 500 to store in flat array (or use array of HashMaps)."
+    ],
+    "brute": {
+      "idea": "Check all pairs (i, j) to establish an initial difference, then search forward for all subsequent elements with that difference.",
+      "steps": [
+        "Nested loop for first two elements nums[i] and nums[j].",
+        "Compute diff = nums[j] - nums[i].",
+        "Scan remaining elements for next terms in sequence.",
+        "Track maximum sequence length."
+      ],
+      "whySlow": "Checking all pairs and scanning forward takes O(n^3) time.",
+      "time": "O(n^3)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestArithSeqLength(int[] nums) {\n        int n = nums.length;\n        if (n <= 2) return n;\n        int max = 2;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                int diff = nums[j] - nums[i];\n                int len = 2;\n                int cur = nums[j];\n                for (int k = j + 1; k < n; k++) {\n                    if (nums[k] - cur == diff) {\n                        len++;\n                        cur = nums[k];\n                    }\n                }\n                max = Math.max(max, len);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestArithSeqLength(self, nums: list[int]) -> int:\n        n = len(nums)\n        if n <= 2:\n            return n\n        max_len = 2\n        for i in range(n):\n            for j in range(i + 1, n):\n                diff = nums[j] - nums[i]\n                length = 2\n                cur = nums[j]\n                for k in range(j + 1, n):\n                    if nums[k] - cur == diff:\n                        length += 1\n                        cur = nums[k]\n                max_len = max(max_len, length)\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "2D DP with difference indexing: dp[i][diff] = dp[j][diff] + 1 for each predecessor j < i, running in O(n^2) time.",
+      "steps": [
+        "Let n = nums.length. Array values in [0, 500], so diff is in [-500, 500]. Offset by 500 to fit in [0, 1000].",
+        "int[][] dp = new int[n][1001]; int maxLen = 2;",
+        "For i from 0 to n - 1: for j from 0 to i - 1: diff = nums[i] - nums[j] + 500; dp[i][diff] = Math.max(dp[i][diff], (dp[j][diff] == 0 ? 1 : dp[j][diff]) + 1); maxLen = Math.max(maxLen, dp[i][diff]);",
+        "Return maxLen."
+      ],
+      "time": "O(n^2)",
+      "space": "O(n * range) = O(1000 * n)",
+      "code": {
+        "java": "class Solution {\n    public int longestArithSeqLength(int[] nums) {\n        int n = nums.length;\n        if (n <= 2) return n;\n        int[][] dp = new int[n][1001];\n        int max = 2;\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                int diff = nums[i] - nums[j] + 500;\n                int len = dp[j][diff] == 0 ? 2 : dp[j][diff] + 1;\n                dp[i][diff] = Math.max(dp[i][diff], len);\n                max = Math.max(max, dp[i][diff]);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestArithSeqLength(self, nums: list[int]) -> int:\n        dp = {}\n        for i in range(len(nums)):\n            for j in range(i):\n                diff = nums[i] - nums[j]\n                dp[(i, diff)] = dp.get((j, diff), 1) + 1\n        return max(dp.values())"
+      }
+    }
+  }
+]
