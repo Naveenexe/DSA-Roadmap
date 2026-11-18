@@ -1635,57 +1635,63 @@ export default function Question() {
 
       </div>
 
-      {/* ROW 2: Personal Notes in Full-Width Card (Part 3) */}
-      <div className="glass-card question-notes-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.65rem', width: '100%', boxSizing: 'border-box' }}>
+      {/* ROW 2: Personal Notes in Full-Width Card (Part 3 & Part 4) */}
+      <div 
+        className={`glass-card question-notes-card ${notesCollapsed ? 'is-collapsed' : 'is-expanded'}`}
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          width: '100%', 
+          boxSizing: 'border-box',
+          transition: 'all 200ms ease'
+        }}
+      >
         <button
           type="button"
-          onClick={() => setNotesCollapsed(!notesCollapsed)}
+          onClick={() => setNotesCollapsed(prev => !prev)}
+          aria-expanded={!notesCollapsed}
+          aria-controls="question-notes-body"
           className="question-notes-toggle-header"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            width: '100%',
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-            textAlign: 'left'
-          }}
         >
-          <FileText size={16} color="var(--accent)" style={{ flexShrink: 0 }} />
+          <FileText size={18} color="var(--accent)" style={{ flexShrink: 0 }} />
           <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)' }}>
             Personal Notes
           </span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 'auto', flexShrink: 0 }}>
             {notesSaved ? 'Saved' : 'Saving...'}
           </span>
-          <span className="mobile-notes-chevron" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-muted)', flexShrink: 0 }}>
-            {notesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          <span 
+            className={`notes-chevron-indicator ${notesCollapsed ? 'is-collapsed' : 'is-expanded'}`}
+            style={{ display: 'inline-flex', alignItems: 'center' }}
+          >
+            <ChevronDown size={18} />
           </span>
         </button>
 
-        {/* Body of Notes */}
-        <div className={`question-notes-body ${notesCollapsed ? 'notes-collapsed-mobile' : ''}`}>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
-            placeholder="Record your edge cases, pitfalls, or takeaways here (auto-saved)..."
-            rows={4}
-            className="glass-input"
-            style={{ 
-              width: '100%', 
-              resize: 'vertical', 
-              lineHeight: 1.5, 
-              fontFamily: 'var(--font-sans)', 
-              fontSize: '16px',
-              borderRadius: 'var(--radius-inner)'
-            }}
-          />
-          <div style={{ textAlign: 'right', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            {notes.length}/2000 characters
+        {/* Body of Notes - only rendered while open per Part 4 */}
+        {!notesCollapsed && (
+          <div id="question-notes-body" className="question-notes-body" style={{ width: '100%', paddingTop: '8px' }}>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
+              placeholder="Record your edge cases, pitfalls, or takeaways here (auto-saved)..."
+              rows={4}
+              className="glass-input"
+              style={{ 
+                width: '100%', 
+                resize: 'vertical', 
+                lineHeight: 1.5, 
+                fontFamily: 'var(--font-sans)', 
+                fontSize: '16px',
+                borderRadius: 'var(--radius-inner)',
+                boxSizing: 'border-box'
+              }}
+            />
+            <div style={{ textAlign: 'right', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              {notes.length}/2000 characters
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* ROW 3: Previous & Next Question Buttons (Part 3, full width, two equal buttons) */}
