@@ -64,37 +64,11 @@ export function AppProvider({ children }) {
   const [activity, setActivity] = useState([]);
   const [toast, setToast] = useState(null);
 
-  // SRS 3.0: Stats, Solutions, and Interview Plan
+  // SRS 3.0: Stats and Interview Plan
   const [statsMap, setStatsMap] = useState(() => {
     try {
       const saved = localStorage.getItem('chainline_guest_stats');
       return saved ? JSON.parse(saved) : {};
-    } catch (_) {
-      return {};
-    }
-  });
-
-  const [solutionsMap, setSolutionsMap] = useState(() => {
-    try {
-      const saved = localStorage.getItem('chainline_guest_solutions');
-      return saved ? JSON.parse(saved) : {};
-    } catch (_) {
-      return {};
-    }
-  });
-
-  const [hasSolutionMap, setHasSolutionMap] = useState(() => {
-    try {
-      const saved = localStorage.getItem('chainline_guest_solutions');
-      if (!saved) return {};
-      const parsed = JSON.parse(saved);
-      const map = {};
-      Object.entries(parsed).forEach(([seq, sol]) => {
-        if ((sol?.java && sol.java.trim()) || (sol?.python && sol.python.trim())) {
-          map[seq] = true;
-        }
-      });
-      return map;
     } catch (_) {
       return {};
     }
@@ -186,13 +160,6 @@ export function AppProvider({ children }) {
           });
           setStatsMap(sMap);
         }
-        if (Array.isArray(extras.solutions)) {
-          const hMap = {};
-          extras.solutions.forEach(seq => {
-            hMap[seq] = true;
-          });
-          setHasSolutionMap(hMap);
-        }
       }
     } catch (err) {
       console.warn('Failed to sync user state from Supabase:', err.message);
@@ -261,8 +228,6 @@ export function AppProvider({ children }) {
       setReviews([]);
       setActivity([]);
       setStatsMap({});
-      setSolutionsMap({});
-      setHasSolutionMap({});
       setInterviewPlan({ date: null, company: null });
       return res.user;
     } catch (err) {
@@ -278,8 +243,6 @@ export function AppProvider({ children }) {
     setReviews([]);
     setActivity([]);
     setStatsMap({});
-    setSolutionsMap({});
-    setHasSolutionMap({});
     setInterviewPlan({ date: null, company: null });
     localStorage.removeItem('chainline_session_user');
     localStorage.removeItem('chainline_session_pin_hash');
@@ -661,78 +624,6 @@ export function AppProvider({ children }) {
     }
   }, [user, pinHash]);
 
-  // SRS 3.0: Save user code solution
-  const saveUserSolution = useCallback(async (seq, lang, code) => {
-    const qSeq = Number(seq);
-    if (code && code.length > 20000) {
-      showToast(getFriendlyErrorMessage('CODE_TOO_LONG'), 'error');
-      throw new Error('CODE_TOO_LONG');
-    }
-    if (lang !== 'java' && lang !== 'python') {
-      showToast(getFriendlyErrorMessage('BAD_LANGUAGE'), 'error');
-      throw new Error('BAD_LANGUAGE');
-    }
-
-    setSolutionsMap(prev => {
-      const existing = prev[qSeq] || {};
-      const updated = { ...existing, [lang]: code };
-      const nextMap = { ...prev, [qSeq]: updated };
-      if (!user) {
-        try {
-          localStorage.setItem('chainline_guest_solutions', JSON.stringify(nextMap));
-        } catch (_) {}
-      }
-      return nextMap;
-    });
-
-    setHasSolutionMap(prev => ({
-      ...prev,
-      [qSeq]: Boolean((code && code.trim()) || (solutionsMap[qSeq]?.[lang === 'java' ? 'python' : 'java']?.trim()))
-    }));
-
-    if (user && user.username) {
-      try {
-        await api.saveUserSolution({
-          username: user.username,
-          pinHash,
-          seq: qSeq,
-          language: lang,
-          code
-        });
-      } catch (err) {
-        console.warn('Failed to save user solution to server:', err.message);
-        throw err;
-      }
-    }
-  }, [user, pinHash, solutionsMap]);
-
-  // SRS 3.0: Load user code solution (cached or from API)
-  const loadUserSolution = useCallback(async (seq, lang) => {
-    const qSeq = Number(seq);
-    if (solutionsMap[qSeq] && solutionsMap[qSeq][lang] !== undefined) {
-      return solutionsMap[qSeq][lang];
-    }
-    if (user && user.username) {
-      try {
-        const rows = await api.getUserSolutions({ username: user.username, pinHash, seq: qSeq });
-        if (Array.isArray(rows)) {
-          const loaded = {};
-          rows.forEach(r => {
-            loaded[r.language] = r.code;
-          });
-          setSolutionsMap(prev => ({
-            ...prev,
-            [qSeq]: { ...(prev[qSeq] || {}), ...loaded }
-          }));
-          return loaded[lang] || '';
-        }
-      } catch (err) {
-        console.warn('Failed to load user solution from server:', err.message);
-      }
-    }
-    return '';
-  }, [user, pinHash, solutionsMap]);
-
   // SRS 3.0: Interview date & company plan
   const updateInterviewPlan = useCallback(async (date, company) => {
     const plan = { date: date || null, company: company ? company.trim() : null };
@@ -774,7 +665,6 @@ export function AppProvider({ children }) {
       reviews,
       activity,
       stats: Object.entries(statsMap).map(([seq, s]) => ({ question_seq: Number(seq), ...s })),
-      solutions: solutionsMap,
       interview: interviewPlan,
       exported_at: new Date().toISOString()
     };
@@ -815,16 +705,6 @@ export function AppProvider({ children }) {
         });
         setStatsMap(sMap);
       }
-      if (parsed.solutions && typeof parsed.solutions === 'object') {
-        setSolutionsMap(parsed.solutions);
-        const hMap = {};
-        Object.entries(parsed.solutions).forEach(([seq, sol]) => {
-          if ((sol?.java && sol.java.trim()) || (sol?.python && sol.python.trim())) {
-            hMap[seq] = true;
-          }
-        });
-        setHasSolutionMap(hMap);
-      }
       if (parsed.interview && typeof parsed.interview === 'object') {
         setInterviewPlan({
           date: parsed.interview.date || null,
@@ -857,12 +737,8 @@ export function AppProvider({ children }) {
     dueReviews,
     upcomingReviews,
     statsMap,
-    solutionsMap,
-    hasSolutionMap,
     interviewPlan,
     saveQuestionStats,
-    saveUserSolution,
-    loadUserSolution,
     updateInterviewPlan,
     clearInterviewPlan,
     toast,

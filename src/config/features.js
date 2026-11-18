@@ -6,7 +6,6 @@ export const FEATURES = {
   companies: true,
   companyPrep: true,
   timerStats: true,
-  mySolution: true,
   interviewPlan: true,
   activityV2: true,
 };

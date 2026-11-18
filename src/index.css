@@ -1767,8 +1767,8 @@ h1, h2, h3, [id] {
 
   .question-hint-grid-row2 {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
     width: 100% !important;
   }
 

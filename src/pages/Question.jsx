@@ -30,7 +30,6 @@ import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-python';
 import CompanyLogo from '../components/CompanyLogo';
 import SolveTimer from '../components/SolveTimer';
-import MyCodePanel from '../components/MyCodePanel';
 
 const STATUS_OPTIONS = [
   { value: 'todo', label: 'Todo', icon: Circle, color: 'var(--text-muted)' },
@@ -50,7 +49,6 @@ export default function Question() {
     chapters, 
     progressMap, 
     statsMap,
-    hasSolutionMap,
     saveQuestionStats,
     updateProgress, 
     showToast,
@@ -77,12 +75,12 @@ export default function Question() {
   // revealedHints: 0, 1, 2, or 3. Starts at 0.
   const [revealedHints, setRevealedHints] = useState(getSavedRevealedHints);
 
-  // Active view in right panel: null (initial), 'hint-1', 'hint-2', 'hint-3', 'approach', 'code', 'mycode'
+  // Active view in right panel: null (initial), 'hint-1', 'hint-2', 'hint-3', 'approach', 'code'
   const [activePanel, setActivePanel] = useState(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const urlPanel = params.get('panel');
-      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code', 'mycode'].includes(urlPanel)) {
+      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code'].includes(urlPanel)) {
         return urlPanel;
       }
       const saved = getSavedRevealedHints();
@@ -137,10 +135,6 @@ export default function Question() {
     setActivePanel('code');
   };
 
-  const handleMyCodeClick = () => {
-    setActivePanel('mycode');
-  };
-
   // Approach / Code sub-tab: 'brute' or 'optimal' (SRS 2.0 Part 1: Brute force first, default is brute)
   const [approachSubTab, setApproachSubTab] = useState('brute');
   const [codeSubTab, setCodeSubTab] = useState('brute');
@@ -190,6 +184,7 @@ export default function Question() {
 
   // Notes collapsible state (closed by default on mobile per Part 2 #6g)
   const [notesCollapsed, setNotesCollapsed] = useState(true);
+  const [slowPromptOpen, setSlowPromptOpen] = useState(false);
 
   // When opening dropdown on desktop, recalculate coordinates and sync focused index
   useEffect(() => {
@@ -335,7 +330,7 @@ export default function Question() {
     try {
       const params = new URLSearchParams(window.location.search);
       const urlPanel = params.get('panel');
-      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code', 'mycode'].includes(urlPanel)) {
+      if (urlPanel && ['hint-1', 'hint-2', 'hint-3', 'approach', 'code'].includes(urlPanel)) {
         setActivePanel(urlPanel);
       } else {
         const saved = getSavedRevealedHints();
@@ -463,8 +458,6 @@ export default function Question() {
       showToast('Failed to copy code to clipboard', 'error');
     }
   };
-
-  const [slowPromptOpen, setSlowPromptOpen] = useState(false);
 
   const handleStatusChange = (newStatus, customDue = null) => {
     setLocalStatus(newStatus);
@@ -1159,7 +1152,7 @@ export default function Question() {
               </button>
             </div>
 
-            {/* Row 2: Approach, Code, My code (SRS 3.0 Section 10: Grid 3 + 3) */}
+            {/* Row 2: Approach, Code (2 equal buttons) */}
             <div className="question-hint-grid-row2">
               <button
                 type="button"
@@ -1177,27 +1170,6 @@ export default function Question() {
               >
                 <Code2 size={16} />
                 <span>Code</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleMyCodeClick}
-                className={`question-grid-btn ${activePanel === 'mycode' ? 'active' : ''}`}
-                style={{ position: 'relative' }}
-              >
-                <Code2 size={16} />
-                <span>My code</span>
-                {hasSolutionMap[seq] && (
-                  <span style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    background: 'var(--accent)',
-                    position: 'absolute',
-                    top: 6,
-                    right: 8
-                  }} />
-                )}
               </button>
             </div>
           </div>
@@ -1265,36 +1237,11 @@ export default function Question() {
                 <Code2 size={14} />
                 <span>Code</span>
               </button>
-
-              {/* My Code Button (SRS 3.0 Section 7 & 10) */}
-              <button
-                type="button"
-                onClick={handleMyCodeClick}
-                className={`pill-nav-btn ${activePanel === 'mycode' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ position: 'relative' }}
-              >
-                <Code2 size={14} />
-                <span>My code</span>
-                {hasSolutionMap[seq] && (
-                  <span style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    background: 'var(--accent)',
-                    position: 'absolute',
-                    top: 6,
-                    right: 6
-                  }} />
-                )}
-              </button>
             </div>
           </div>
 
           {/* SECTION E & F: Open Panel at Full Width (Order 5 on mobile) */}
-          {activePanel === 'mycode' ? (
-            <MyCodePanel seq={seq} richSolution={richSolution} />
-          ) : (
-            <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
+          <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
             
             {/* INITIAL STATE: Nothing revealed yet */}
             {activePanel === null && revealedHints === 0 && (
@@ -1777,7 +1724,6 @@ export default function Question() {
             )}
 
           </div>
-        )}
 
         </div>
 

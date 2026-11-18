@@ -223,28 +223,6 @@ export const api = {
     });
   },
 
-  // SRS 3.0 Section 9.2: save_user_solution
-  async saveUserSolution({ username, pinHash, seq, language, code }) {
-    const cleanUser = username.trim().toLowerCase();
-    return await callRpc('save_user_solution', {
-      p_username: cleanUser,
-      p_pin_hash: pinHash || null,
-      p_seq: Number(seq),
-      p_language: language,
-      p_code: code || ''
-    });
-  },
-
-  // SRS 3.0 Section 9.2: get_user_solutions
-  async getUserSolutions({ username, pinHash, seq }) {
-    const cleanUser = username.trim().toLowerCase();
-    return await callRpc('get_user_solutions', {
-      p_username: cleanUser,
-      p_pin_hash: pinHash || null,
-      p_seq: Number(seq)
-    });
-  },
-
   // SRS 3.0 Section 9.2: save_interview
   async saveInterview({ username, pinHash, date, company }) {
     const cleanUser = username.trim().toLowerCase();
