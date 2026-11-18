@@ -1624,8 +1624,9 @@ export default function Question() {
 
           </div>
 
-          {/* SECTION C.2: Solve Timer Card at bottom of right column (Part 3) */}
+          {/* SECTION C.2: Solve Timer Card at bottom of right column (Part 3 & Part 5, keyed by seq) */}
           <SolveTimer 
+            key={seq}
             seq={seq} 
             difficulty={question.difficulty} 
             isDone={currentStatus === 'done'}
