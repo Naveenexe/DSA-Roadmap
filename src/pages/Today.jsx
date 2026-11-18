@@ -561,7 +561,7 @@ export default function Today() {
                           justifyContent: 'center',
                           gap: '0.45rem'
                         }}
-                        title="Needed hints; reset interval to 1 day and mark mistake"
+                        title="Needed hints; reset to Step 1, due tomorrow"
                       >
                         <RotateCcw size={16} />
                         <span>Forgot</span>

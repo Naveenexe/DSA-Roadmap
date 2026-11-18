@@ -2315,11 +2315,25 @@ h1, h2, h3, [id] {
       opacity: 1;
     }
   }
+  /* Toast Notification on mobile: sits above bottom bar with 16px side margins (Part 6) */
+  .toast-container {
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 16px !important;
+    right: 16px !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: calc(100% - 32px) !important;
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
+    text-align: center !important;
+    z-index: 1000 !important;
+  }
 }
 
-/* Toast Notification (z-index: 70) */
+/* Toast Notification (z-index: 1000) */
 .toast-container {
-  z-index: 70 !important;
+  z-index: 1000 !important;
 }
 
 /* ==========================================================================

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { api, getNextReviewDate, getFriendlyErrorMessage } from '../services/api';
 import { FEATURES } from '../config/features';
 
@@ -352,17 +352,14 @@ export function AppProvider({ children }) {
 
   // Submit Review Action (Section 5.6: Recalled or Forgot)
   const submitReview = async ({ questionSeq, action, dueDate = null }) => {
-    if (!user) return;
-
-    const prevProgress = { ...progressMap };
-    const prevReviews = [...reviews];
-
     if (action === 'delete') {
       setReviews(prev => prev.filter(r => r.question_seq !== questionSeq));
-      try {
-        await api.deleteReview({ username: user.username, pinHash, seq: questionSeq });
-      } catch (err) {
-        console.error('Failed to delete review:', err);
+      if (user && user.username) {
+        try {
+          await api.deleteReview({ username: user.username, pinHash, seq: questionSeq });
+        } catch (err) {
+          console.error('Failed to delete review:', err);
+        }
       }
       return;
     }
@@ -374,12 +371,14 @@ export function AppProvider({ children }) {
       if (rev.step >= 3) {
         // Step 4 finished (completed 21-day review)
         setReviews(prev => prev.filter(r => r.question_seq !== questionSeq));
-        try {
-          await api.deleteReview({ username: user.username, pinHash, seq: questionSeq });
-          showToast(`Problem #${questionSeq} master review completed!`, 'info');
-        } catch (err) {
-          console.error(err);
+        if (user && user.username) {
+          try {
+            await api.deleteReview({ username: user.username, pinHash, seq: questionSeq });
+          } catch (err) {
+            console.error(err);
+          }
         }
+        showToast(`Problem #${questionSeq} master review completed!`, 'info');
         return;
       }
 
@@ -391,19 +390,21 @@ export function AppProvider({ children }) {
         due_date: nextDue
       } : r));
 
-      try {
-        await api.saveReview({
-          username: user.username,
-          pinHash,
-          seq: questionSeq,
-          due: nextDue,
-          step: nextStep,
-          source: rev.source || 'auto'
-        });
-        showToast(`Next review scheduled for ${nextDue}`, 'info');
-      } catch (err) {
-        console.error(err);
+      if (user && user.username) {
+        try {
+          await api.saveReview({
+            username: user.username,
+            pinHash,
+            seq: questionSeq,
+            due: nextDue,
+            step: nextStep,
+            source: rev.source || 'auto'
+          });
+        } catch (err) {
+          console.error(err);
+        }
       }
+      showToast(`Next review scheduled for ${nextDue}`, 'info');
     } else if (action === 'forgot') {
       const tomStr = getNextReviewDate(0);
       setReviews(prev => {
@@ -412,41 +413,25 @@ export function AppProvider({ children }) {
         return filtered;
       });
 
-      // Mark mistake
-      setProgressMap(prev => {
-        const curr = prev[questionSeq] || { question_seq: questionSeq, status: 'todo', notes: '' };
-        return {
-          ...prev,
-          [questionSeq]: { ...curr, mistake: true }
-        };
-      });
+      // Keep counting Forgot in question_stats (save_stats with p_forgot true) for the Needs attention card per Part 6
+      saveQuestionStats(questionSeq, { forgot: true });
 
-      try {
-        await Promise.all([
-          api.saveReview({
+      if (user && user.username) {
+        try {
+          await api.saveReview({
             username: user.username,
             pinHash,
             seq: questionSeq,
             due: tomStr,
             step: 0,
             source: 'auto'
-          }),
-          api.saveProgress({
-            username: user.username,
-            pinHash,
-            seq: questionSeq,
-            status: progressMap[questionSeq]?.status || 'todo',
-            mistake: true,
-            notes: progressMap[questionSeq]?.notes || '',
-            day: new Date().toISOString().split('T')[0]
-          })
-        ]);
-        // SRS 3.0 Section 9.3: save_stats is called in addition with p_forgot set to true
-        saveQuestionStats(questionSeq, { forgot: true });
-        showToast(`Reset to Step 1: due tomorrow. Flagged as mistake.`, 'info');
-      } catch (err) {
-        console.error(err);
+          });
+        } catch (err) {
+          console.error('Failed to save review on forgot:', err);
+        }
       }
+
+      showToast('Reset to Step 1. Due tomorrow.', 'info');
     }
   };
 
@@ -516,12 +501,20 @@ export function AppProvider({ children }) {
     }
   };
 
-  const showToast = (message, type = 'info') => {
+  // Single Toast Notification with 4-second timeout (Part 6)
+  const toastTimerRef = useRef(null);
+
+  const showToast = useCallback((message, type = 'info') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
     setToast({ message, type });
-    setTimeout(() => {
+    toastTimerRef.current = setTimeout(() => {
       setToast(null);
-    }, 3200);
-  };
+      toastTimerRef.current = null;
+    }, 4000);
+  }, []);
 
   // Calculate Streak
   const streak = useMemo(() => {
@@ -754,6 +747,10 @@ export function AppProvider({ children }) {
     exportData,
     importData
   };
+
+  if (typeof window !== 'undefined') {
+    window.__chainline = value;
+  }
 
   return (
     <AppContext.Provider value={value}>

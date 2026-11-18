@@ -831,7 +831,7 @@ export default function Question() {
               <button
                 type="button"
                 onClick={handleMistakeToggle}
-                className="btn-secondary"
+                className={`btn-secondary question-mistake-btn ${isMistake ? 'active' : ''}`}
                 style={{
                   width: '100%',
                   minHeight: '48px',
