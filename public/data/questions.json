@@ -5105,14 +5105,14 @@
     "title": "Contains Duplicate II",
     "slug": "contains-duplicate-ii",
     "difficulty": "Easy",
-    "buildsOn": 1,
     "chapter": "ch-19",
+    "buildsOn": 1,
     "brute": {
-      "idea": "Compare every pair within distance k",
-      "time": "O(nk)"
+      "idea": "Compare each element with every other element within the next k positions using nested loops.",
+      "time": "O(n * k)"
     },
     "optimal": {
-      "idea": "Sliding window set or a map of last index",
+      "idea": "Maintain a sliding window HashSet containing at most k elements to detect duplicates in constant time.",
       "time": "O(n)"
     },
     "companies": [
@@ -5128,15 +5128,15 @@
     "title": "Intersection of Two Arrays",
     "slug": "intersection-of-two-arrays",
     "difficulty": "Easy",
-    "buildsOn": 301,
     "chapter": "ch-19",
+    "buildsOn": 301,
     "brute": {
-      "idea": "Compare every pair",
-      "time": "O(mn)"
+      "idea": "Iterate over nums1 and for each unique element search linearly through nums2.",
+      "time": "O(n * m)"
     },
     "optimal": {
-      "idea": "Two sets intersection",
-      "time": "O(m+n)"
+      "idea": "Store nums1 elements in a HashSet and filter nums2 against the set to collect unique common items.",
+      "time": "O(n + m)"
     },
     "companies": [
       "amazon",
@@ -5150,15 +5150,15 @@
     "title": "Intersection of Two Arrays II",
     "slug": "intersection-of-two-arrays-ii",
     "difficulty": "Easy",
-    "buildsOn": 302,
     "chapter": "ch-19",
+    "buildsOn": 302,
     "brute": {
-      "idea": "Compare and remove matches",
-      "time": "O(mn)"
+      "idea": "Mark matched elements in a boolean array for nums2 to handle duplicate frequencies without hash maps.",
+      "time": "O(n * m)"
     },
     "optimal": {
-      "idea": "Count map, or sort with two pointers",
-      "time": "O(m+n)"
+      "idea": "Count occurrences of elements in nums1 using a HashMap, then decrement counts when scanning nums2.",
+      "time": "O(n + m)"
     },
     "companies": [
       "amazon",
@@ -5172,14 +5172,14 @@
     "title": "Unique Number of Occurrences",
     "slug": "unique-number-of-occurrences",
     "difficulty": "Easy",
-    "buildsOn": 303,
     "chapter": "ch-19",
+    "buildsOn": 303,
     "brute": {
-      "idea": "Count each value by scanning",
+      "idea": "Calculate the frequency of each distinct element, collect them in a list, and compare all pairs for equality.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Count map plus a set of the counts",
+      "idea": "Count frequencies using a map, then insert all counts into a set to verify uniqueness.",
       "time": "O(n)"
     },
     "companies": [
@@ -5194,15 +5194,15 @@
     "title": "Find All Numbers Disappeared in an Array",
     "slug": "find-all-numbers-disappeared-in-an-array",
     "difficulty": "Easy",
-    "buildsOn": 13,
     "chapter": "ch-19",
+    "buildsOn": 13,
     "brute": {
-      "idea": "Set of seen numbers",
-      "time": "O(n) space"
+      "idea": "Store all numbers in a HashSet, then check every integer from 1 to n to see which ones are missing.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Mark seen by negating nums[abs(x)-1]",
-      "time": "O(1) space"
+      "idea": "Use the array indices as implicit hash buckets by negating values at index abs(x) - 1 to achieve O(1) extra space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -5216,15 +5216,15 @@
     "title": "Set Mismatch",
     "slug": "set-mismatch",
     "difficulty": "Easy",
-    "buildsOn": 305,
     "chapter": "ch-19",
+    "buildsOn": 305,
     "brute": {
-      "idea": "Count map for occurrences",
-      "time": "O(n) space"
+      "idea": "Count the frequency of each number from 1 to n using an auxiliary frequency array.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Negation marking or sum formulas",
-      "time": "O(1) space"
+      "idea": "Mark indices negative to detect the duplicate on the first pass, then identify the remaining positive index for the missing number.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -5237,14 +5237,14 @@
     "title": "Max Consecutive Ones",
     "slug": "max-consecutive-ones",
     "difficulty": "Easy",
-    "buildsOn": 306,
     "chapter": "ch-19",
+    "buildsOn": 306,
     "brute": {
-      "idea": "Check every subarray start",
+      "idea": "For every index i with value 1, scan forward to count the length of consecutive ones.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "One pass with a running count",
+      "idea": "One-pass linear scan keeping a running count of ones and resetting on zeros.",
       "time": "O(n)"
     },
     "companies": [
@@ -5259,14 +5259,14 @@
     "title": "Non-decreasing Array",
     "slug": "non-decreasing-array",
     "difficulty": "Medium",
-    "buildsOn": 307,
     "chapter": "ch-19",
+    "buildsOn": 307,
     "brute": {
-      "idea": "Try changing each element",
+      "idea": "Try modifying each element one by one to see if the resulting array becomes non-decreasing.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "One pass, fix at first drop",
+      "idea": "Greedily resolve inversions in a single pass; allow at most one violation by adapting either nums[i] or nums[i+1].",
       "time": "O(n)"
     },
     "companies": [
@@ -5281,14 +5281,14 @@
     "title": "Shortest Unsorted Continuous Subarray",
     "slug": "shortest-unsorted-continuous-subarray",
     "difficulty": "Medium",
-    "buildsOn": 308,
     "chapter": "ch-19",
+    "buildsOn": 308,
     "brute": {
-      "idea": "Sort a copy and compare boundaries",
+      "idea": "Compare the original array against a fully sorted clone to identify the first and last mismatching positions.",
       "time": "O(n log n)"
     },
     "optimal": {
-      "idea": "Scan with running max and min for the two ends",
+      "idea": "Find boundaries in a single two-way pass by tracking the running max from left and running min from right.",
       "time": "O(n)"
     },
     "companies": [
@@ -5303,14 +5303,14 @@
     "title": "Running Sum of 1d Array",
     "slug": "running-sum-of-1d-array",
     "difficulty": "Easy",
-    "buildsOn": 9,
     "chapter": "ch-19",
+    "buildsOn": 9,
     "brute": {
-      "idea": "Re-sum for each index",
+      "idea": "For every index i, sum all elements from 0 to i using an inner loop.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Prefix sum in place",
+      "idea": "Compute the cumulative sum in a single linear pass by accumulating into the array in-place.",
       "time": "O(n)"
     },
     "companies": [
@@ -5325,15 +5325,15 @@
     "title": "Range Sum Query - Immutable",
     "slug": "range-sum-query-immutable",
     "difficulty": "Easy",
-    "buildsOn": 310,
     "chapter": "ch-19",
+    "buildsOn": 310,
     "brute": {
-      "idea": "Sum range on every query",
+      "idea": "Store the raw array and iterate from left to right on every sum query.",
       "time": "O(n) per query"
     },
     "optimal": {
-      "idea": "Prefix sums array answering in O(1)",
-      "time": "O(1) per query"
+      "idea": "Precompute an (n+1)-sized prefix sum array to answer any range sum query in O(1) time via subtraction.",
+      "time": "O(1) per query, O(n) setup"
     },
     "companies": [
       "meta",
@@ -5347,15 +5347,15 @@
     "title": "Range Sum Query 2D - Immutable",
     "slug": "range-sum-query-2d-immutable",
     "difficulty": "Medium",
-    "buildsOn": 311,
     "chapter": "ch-19",
+    "buildsOn": 311,
     "brute": {
-      "idea": "Sum rectangle on every query",
-      "time": "O(mn) per query"
+      "idea": "Iterate across the designated rows and columns for each query to sum all cells.",
+      "time": "O(m * n) per query"
     },
     "optimal": {
-      "idea": "2D prefix sums inclusion-exclusion",
-      "time": "O(1) per query"
+      "idea": "Precompute 2D prefix sums to evaluate any rectangular region in O(1) time using inclusion-exclusion.",
+      "time": "O(1) per query, O(m * n) setup"
     },
     "companies": [
       "meta",
@@ -5370,14 +5370,14 @@
     "title": "Find Pivot Index",
     "slug": "find-pivot-index",
     "difficulty": "Easy",
-    "buildsOn": 310,
     "chapter": "ch-19",
+    "buildsOn": 310,
     "brute": {
-      "idea": "Sum both sides for each index",
+      "idea": "For every index i, sum elements from 0 to i-1 and elements from i+1 to n-1 and check equality.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Total sum and running left sum",
+      "idea": "Precalculate total sum, then iterate while maintaining running left sum to check equality in O(1) per index.",
       "time": "O(n)"
     },
     "companies": [
@@ -5392,14 +5392,14 @@
     "title": "Continuous Subarray Sum",
     "slug": "continuous-subarray-sum",
     "difficulty": "Medium",
-    "buildsOn": 11,
     "chapter": "ch-19",
+    "buildsOn": 11,
     "brute": {
-      "idea": "Check every subarray",
+      "idea": "Check all subarray spans of length >= 2 and test if their sum is a multiple of k.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Prefix remainder map with first seen index",
+      "idea": "Store the earliest index of each prefix remainder modulo k in a HashMap to verify a distance >= 2 in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -5414,14 +5414,14 @@
     "title": "First Unique Character in a String",
     "slug": "first-unique-character-in-a-string",
     "difficulty": "Easy",
-    "buildsOn": 3,
     "chapter": "ch-20",
+    "buildsOn": 3,
     "brute": {
-      "idea": "Scan whole string for each letter",
+      "idea": "For each character at index i, scan the rest of the string to see if it appears anywhere else.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Count letters in array, find first with count 1",
+      "idea": "Count character frequencies in a 26-element array on the first pass, then return the index of the first character with count 1 on the second pass.",
       "time": "O(n)"
     },
     "companies": [
@@ -5437,15 +5437,15 @@
     "title": "Ransom Note",
     "slug": "ransom-note",
     "difficulty": "Easy",
-    "buildsOn": 315,
     "chapter": "ch-20",
+    "buildsOn": 315,
     "brute": {
-      "idea": "Remove matching letters one by one",
-      "time": "O(mn)"
+      "idea": "Convert magazine to a mutable list or string, and for each letter in ransomNote search and delete it from magazine.",
+      "time": "O(m * n)"
     },
     "optimal": {
-      "idea": "Count letters in 26-slot array",
-      "time": "O(m+n)"
+      "idea": "Count magazine character frequencies in a fixed-size 26 array, then decrement for ransomNote letters.",
+      "time": "O(m + n)"
     },
     "companies": [
       "amazon",
@@ -5459,14 +5459,14 @@
     "title": "Isomorphic Strings",
     "slug": "isomorphic-strings",
     "difficulty": "Easy",
-    "buildsOn": 316,
     "chapter": "ch-20",
+    "buildsOn": 316,
     "brute": {
-      "idea": "Try all letter mappings",
-      "time": "O(n!)"
+      "idea": "Encode each string into a canonical pattern based on first occurrence of each character and compare the patterns.",
+      "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Two maps or last seen index array in one pass",
+      "idea": "Track the last seen index (+1) of characters in two 256-sized arrays to verify bidirectional mapping in a single pass.",
       "time": "O(n)"
     },
     "companies": [
@@ -5481,14 +5481,14 @@
     "title": "Word Pattern",
     "slug": "word-pattern",
     "difficulty": "Easy",
-    "buildsOn": 317,
     "chapter": "ch-20",
+    "buildsOn": 317,
     "brute": {
-      "idea": "Try all mappings",
-      "time": "O(n!)"
+      "idea": "Split words and build canonical index representation for pattern and words, then compare.",
+      "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Two maps pattern to word and word to pattern",
+      "idea": "Maintain two HashMaps for bidirectional pattern-char to word binding in a single pass.",
       "time": "O(n)"
     },
     "companies": [
@@ -5502,14 +5502,14 @@
     "title": "Longest Palindrome",
     "slug": "longest-palindrome",
     "difficulty": "Easy",
-    "buildsOn": 316,
     "chapter": "ch-20",
+    "buildsOn": 316,
     "brute": {
-      "idea": "Try every permutation",
-      "time": "O(n!)"
+      "idea": "Track unmatched characters in a set: add when seen once, remove when seen twice, then calculate length from remaining odd elements.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Count letter pairs, add 1 if any odd count exists",
+      "idea": "Count ASCII frequencies with an integer array, summing even pairs and adding 1 if any odd count exists.",
       "time": "O(n)"
     },
     "companies": [
@@ -5524,15 +5524,15 @@
     "title": "Length of Last Word",
     "slug": "length-of-last-word",
     "difficulty": "Easy",
-    "buildsOn": 319,
     "chapter": "ch-20",
+    "buildsOn": 319,
     "brute": {
-      "idea": "Split string into words array",
-      "time": "O(n) space"
+      "idea": "Split the string by whitespace into an array of words and return the length of the last word.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Scan backward skipping trailing spaces",
-      "time": "O(1) space"
+      "idea": "Scan backwards from the end of the string, skipping trailing spaces and counting characters of the final word in O(1) auxiliary space.",
+      "time": "O(n)"
     },
     "companies": [
       "apple",
@@ -5546,14 +5546,14 @@
     "title": "Roman to Integer",
     "slug": "roman-to-integer",
     "difficulty": "Easy",
-    "buildsOn": 320,
     "chapter": "ch-20",
+    "buildsOn": 320,
     "brute": {
-      "idea": "Long if-chains for two-letter pairs",
+      "idea": "Replace subtractive double-symbol pairs with simpler equivalents or sum via replacement passes.",
       "time": "O(n)"
     },
     "optimal": {
-      "idea": "Value map; subtract when smaller precedes larger",
+      "idea": "Single pass comparing current symbol value with the next symbol value, subtracting if smaller and adding otherwise.",
       "time": "O(n)"
     },
     "companies": [
@@ -5569,15 +5569,15 @@
     "title": "Integer to Roman",
     "slug": "integer-to-roman",
     "difficulty": "Medium",
-    "buildsOn": 321,
     "chapter": "ch-20",
+    "buildsOn": 321,
     "brute": {
-      "idea": "If chains for each digit place",
+      "idea": "Decompose the number into thousands, hundreds, tens, and units places and convert each digit independently.",
       "time": "O(1)"
     },
     "optimal": {
-      "idea": "Greedy over static symbol-value table from 1000 to 1",
-      "time": "O(1)"
+      "idea": "Greedily subtract the largest possible Roman value from num while appending its symbol to the result.",
+      "time": "O(1) bounded (at most 15 loops for num <= 3999)"
     },
     "companies": [
       "amazon",
@@ -5591,15 +5591,15 @@
     "title": "Add Binary",
     "slug": "add-binary",
     "difficulty": "Easy",
-    "buildsOn": 322,
     "chapter": "ch-20",
+    "buildsOn": 322,
     "brute": {
-      "idea": "Parse to integer and add (overflows)",
-      "time": "overflow risk"
+      "idea": "Parse both binary strings to decimal integers using built-in parsing, add them, and format back to binary.",
+      "time": "O(n + m)"
     },
     "optimal": {
-      "idea": "Add from right to left with carry",
-      "time": "O(max(m,n))"
+      "idea": "Simulate column-by-column binary addition from right to left using pointers and a carry variable.",
+      "time": "O(max(n, m))"
     },
     "companies": [
       "meta",
@@ -5613,15 +5613,15 @@
     "title": "Add Strings",
     "slug": "add-strings",
     "difficulty": "Easy",
-    "buildsOn": 323,
     "chapter": "ch-20",
+    "buildsOn": 323,
     "brute": {
-      "idea": "Parse to big integer (overflows)",
-      "time": "overflow risk"
+      "idea": "Convert input strings to large integer types (BigInteger) to perform the addition.",
+      "time": "O(n + m)"
     },
     "optimal": {
-      "idea": "Add digit by digit with carry from the back",
-      "time": "O(max(m,n))"
+      "idea": "Simulate elementary base-10 addition column-by-column from right to left with a carry variable.",
+      "time": "O(max(n, m))"
     },
     "companies": [
       "meta",
@@ -5636,15 +5636,15 @@
     "title": "Multiply Strings",
     "slug": "multiply-strings",
     "difficulty": "Medium",
-    "buildsOn": 324,
     "chapter": "ch-20",
+    "buildsOn": 324,
     "brute": {
-      "idea": "Repeated string addition",
-      "time": "huge"
+      "idea": "Multiply num1 by each individual digit of num2, shift with trailing zeros, and sum using Add Strings.",
+      "time": "O(m * n²)"
     },
     "optimal": {
-      "idea": "Schoolbook column multiplication into result array",
-      "time": "O(mn)"
+      "idea": "Grade-school multiplication storing intermediate products in an array of size m + n, propagating carries directly.",
+      "time": "O(m * n)"
     },
     "companies": [
       "meta",

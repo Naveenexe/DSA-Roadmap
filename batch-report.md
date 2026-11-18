@@ -1,141 +1,26 @@
-# Batch Verification Report
+# Part 2 Solutions Regeneration & Validation Batch Report
 
-Generated automatically during Step 4 verification.
+Source of Truth: `questions-301-500.json`
+Validation Standards:
+- Specific, non-generic `whyNext` describing why each question follows its `buildsOn` sequence
+- 3 progressive hints (nudge, pattern, almost full idea, no code)
+- Brute force and Optimal approaches with idea, steps, time, space
+- Full working LeetCode code in Java and Python (no stubs, no `solveBrute`, no `solveOptimal`, no `TODO`, >= 5 lines)
+- Java compiled with `javac 26.0.2`
+- Python executed with sample inputs on `Python 3.11.9`
+- Questions 1–300 SHA256 integrity strictly maintained (`e3eca43cce63035432a86f3fdaa90bb1a7326108fab4bd452fe76d1a3a7a9039`)
 
-## Batch 1 (Seq 1 to 25)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
+---
 
-## Batch 2 (Seq 26 to 50)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 3 (Seq 51 to 75)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 4 (Seq 76 to 100)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 5 (Seq 101 to 125)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 6 (Seq 126 to 150)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 7 (Seq 151 to 175)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 8 (Seq 176 to 200)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 9 (Seq 201 to 225)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 10 (Seq 226 to 250)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 11 (Seq 251 to 275)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-## Batch 12 (Seq 276 to 300)
-- **Passed**: 25/25
-- **Failed**: 0/25
-- **Fixes made**: 0 fixes made.
-- **Verification**: Every Java solution compiled cleanly with javac and every Python solution parsed and executed successfully on sample cases.
-
-
-# Hints Generation Report (12 Batches / 300 Questions)
-
-Generated progressive hints `[hint1, hint2, hint3]` (nudge, pattern/DS, complete idea without code) for all 300 questions:
-
-### Hints Batch 1 (Seq 1 to 25)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 2 (Seq 26 to 50)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 3 (Seq 51 to 75)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 4 (Seq 76 to 100)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 5 (Seq 101 to 125)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 6 (Seq 126 to 150)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 7 (Seq 151 to 175)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 8 (Seq 176 to 200)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 9 (Seq 201 to 225)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 10 (Seq 226 to 250)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 11 (Seq 251 to 275)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
-### Hints Batch 12 (Seq 276 to 300)
-- **Generated**: 25/25
-- **Failed**: 0/25
-- **Format**: 3 progressive plain-language hint sentences per question.
-
+## Batch 1: Seq 301 to 325
+- **Date/Time**: 2026-11-18T04:46:31.955Z
+- **Questions Processed**: 25
+- **Java Compilation**: All 25 Java solutions (brute & optimal) compiled successfully with `javac 26.0.2`.
+- **Python Execution**: All 25 Python solutions (brute & optimal) executed and verified with sample assertions under `Python 3.11.9`.
+- **Quality Checks**:
+  - No `solveBrute`, `solveOptimal`, or `TODO`
+  - No empty method bodies
+  - All Java and Python solutions >= 5 lines of code
+  - All `whyNext` statements specific to the buildsOn link and non-generic
+  - 3 progressive hints for each question (nudge, pattern, almost full idea, no code)
+- **Integrity**: Questions 1 to 300 SHA256 verified exact match (`e3eca43cce63035432a86f3fdaa90bb1a7326108fab4bd452fe76d1a3a7a9039`).

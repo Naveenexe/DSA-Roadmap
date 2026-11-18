@@ -1,534 +1,451 @@
 [
   {
     "seq": 315,
-    "whyNext": "Builds directly on #3: transitions from simpler approach to optimal pattern for First Unique Character in a String.",
+    "whyNext": "Builds on character frequency counting from Longest Substring Without Repeating Characters (Seq 3) to identify the first character with an overall occurrence count of exactly one.",
+    "hints": [
+      "You need to know the total frequency of each character across the entire string before deciding.",
+      "Perform a two-pass scan: first count character occurrences with an array of size 26, then find the first character with count 1.",
+      "Pass 1: iterate over s and increment count[c - 'a']. Pass 2: iterate over s again; return the index of the first character where count[c - 'a'] == 1. Return -1 if none."
+    ],
     "brute": {
-      "idea": "Scan whole string for each letter",
+      "idea": "For each character at index i, scan the rest of the string to see if it appears anywhere else.",
       "steps": [
-        "Identify problem requirements for First Unique Character in a String.",
-        "Explore all states or exhaustive candidates (Scan whole string for each letter).",
-        "Return matching answer or extreme value found."
+        "Iterate i from 0 to s.length() - 1.",
+        "Check whether s.charAt(i) appears at any index j != i.",
+        "If it is unique across the string, return i immediately.",
+        "Return -1 if all characters are repeated."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Scanning the string for every character takes O(n²) time.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Scan whole string for each letter\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Scan whole string for each letter\n        pass"
+        "java": "class Solution {\n    public int firstUniqChar(String s) {\n        int n = s.length();\n        for (int i = 0; i < n; i++) {\n            char c = s.charAt(i);\n            boolean unique = true;\n            for (int j = 0; j < n; j++) {\n                if (i != j && s.charAt(j) == c) {\n                    unique = false;\n                    break;\n                }\n            }\n            if (unique) return i;\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def firstUniqChar(self, s: str) -> int:\n        for i, c in enumerate(s):\n            if s.count(c) == 1:\n                return i\n        return -1"
       }
     },
     "optimal": {
-      "idea": "Count letters in array, find first with count 1",
+      "idea": "Count character frequencies in a 26-element array on the first pass, then return the index of the first character with count 1 on the second pass.",
       "steps": [
-        "Leverage structural invariants of First Unique Character in a String.",
-        "Apply optimal pattern: Count letters in array, find first with count 1.",
-        "Achieve optimal time complexity of O(n)."
+        "Create an integer array count of size 26.",
+        "Iterate through s and increment count[c - 'a'].",
+        "Iterate through s again with index i: if count[s.charAt(i) - 'a'] == 1, return i.",
+        "Return -1 if no unique character exists."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Count letters in array, find first with count 1\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Count letters in array, find first with count 1\n        pass"
+        "java": "class Solution {\n    public int firstUniqChar(String s) {\n        int[] count = new int[26];\n        for (int i = 0; i < s.length(); i++) {\n            count[s.charAt(i) - 'a']++;\n        }\n        for (int i = 0; i < s.length(); i++) {\n            if (count[s.charAt(i) - 'a'] == 1) return i;\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def firstUniqChar(self, s: str) -> int:\n        counts = [0] * 26\n        for c in s:\n            counts[ord(c) - ord('a')] += 1\n        for i, c in enumerate(s):\n            if counts[ord(c) - ord('a')] == 1:\n                return i\n        return -1"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for First Unique Character in a String. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Count letters in array, find first with count 1.",
-      "Detailed formulation: Count letters in array, find first with count 1. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 316,
-    "whyNext": "Builds directly on #315: transitions from simpler approach to optimal pattern for Ransom Note.",
+    "whyNext": "Builds on character frequency verification from First Unique Character (Seq 315) by checking whether the character counts in magazine can fully satisfy those required by ransomNote.",
+    "hints": [
+      "Can the frequency of each letter in magazine cover the frequency required in ransomNote?",
+      "Use an integer array of size 26 to count letters in magazine, then decrement for each letter in ransomNote.",
+      "Count occurrences of each letter in magazine. Traverse ransomNote; for each character decrement its count. If any count drops below zero, return false. Return true if all characters are covered."
+    ],
     "brute": {
-      "idea": "Remove matching letters one by one",
+      "idea": "Convert magazine to a mutable list or string, and for each letter in ransomNote search and delete it from magazine.",
       "steps": [
-        "Identify problem requirements for Ransom Note.",
-        "Explore all states or exhaustive candidates (Remove matching letters one by one).",
-        "Return matching answer or extreme value found."
+        "Create a StringBuilder or list from magazine.",
+        "For each character in ransomNote, find its index in the magazine list.",
+        "If not found, return false.",
+        "If found, remove that character from the magazine list.",
+        "Return true if all letters are successfully matched."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
-      "time": "O(mn)",
-      "space": "O(1) auxiliary",
+      "whySlow": "Searching and shifting elements upon deletion takes O(m * n) time.",
+      "time": "O(m * n)",
+      "space": "O(m)",
       "code": {
-        "java": "// Time: O(mn)\nclass Solution {\n    // Remove matching letters one by one\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Remove matching letters one by one\n        pass"
+        "java": "class Solution {\n    public boolean canConstruct(String ransomNote, String magazine) {\n        StringBuilder sb = new StringBuilder(magazine);\n        for (int i = 0; i < ransomNote.length(); i++) {\n            char c = ransomNote.charAt(i);\n            int idx = sb.indexOf(String.valueOf(c));\n            if (idx == -1) return false;\n            sb.deleteCharAt(idx);\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def canConstruct(self, ransomNote: str, magazine: str) -> bool:\n        mag = list(magazine)\n        for c in ransomNote:\n            if c in mag:\n                mag.remove(c)\n            else:\n                return False\n        return True"
       }
     },
     "optimal": {
-      "idea": "Count letters in 26-slot array",
+      "idea": "Count magazine character frequencies in a fixed-size 26 array, then decrement for ransomNote letters.",
       "steps": [
-        "Leverage structural invariants of Ransom Note.",
-        "Apply optimal pattern: Count letters in 26-slot array.",
-        "Achieve optimal time complexity of O(m+n)."
+        "Initialize an integer array counts of size 26.",
+        "Iterate through magazine and increment counts[c - 'a'].",
+        "Iterate through ransomNote and decrement counts[c - 'a'].",
+        "If counts[c - 'a'] becomes negative, return false immediately.",
+        "Return true after verifying all characters."
       ],
-      "time": "O(m+n)",
-      "space": "O(n) auxiliary",
+      "time": "O(m + n)",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(m+n)\nclass Solution {\n    // Count letters in 26-slot array\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Count letters in 26-slot array\n        pass"
+        "java": "class Solution {\n    public boolean canConstruct(String ransomNote, String magazine) {\n        int[] counts = new int[26];\n        for (int i = 0; i < magazine.length(); i++) {\n            counts[magazine.charAt(i) - 'a']++;\n        }\n        for (int i = 0; i < ransomNote.length(); i++) {\n            int idx = ransomNote.charAt(i) - 'a';\n            counts[idx]--;\n            if (counts[idx] < 0) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def canConstruct(self, ransomNote: str, magazine: str) -> bool:\n        counts = [0] * 26\n        for c in magazine:\n            counts[ord(c) - ord('a')] += 1\n        for c in ransomNote:\n            idx = ord(c) - ord('a')\n            counts[idx] -= 1\n            if counts[idx] < 0:\n                return False\n        return True"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Ransom Note. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Count letters in 26-slot array.",
-      "Detailed formulation: Count letters in 26-slot array. Implement this in O(m+n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 317,
-    "whyNext": "Builds directly on #316: transitions from simpler approach to optimal pattern for Isomorphic Strings.",
+    "whyNext": "Builds on character-level mapping from Ransom Note (Seq 316) by establishing a bijective, one-to-one mapping between characters of two strings while preserving position.",
+    "hints": [
+      "Every character in s must map to exactly one character in t, and no two characters in s may map to the same character in t.",
+      "Use two lookup arrays or maps: one mapping s -> t and another mapping t -> s.",
+      "Iterate through both strings simultaneously. Check if s[i] has a previous mapping to t[i], and if t[i] has a previous mapping to s[i]. If either conflicts, return false; otherwise record both mappings."
+    ],
     "brute": {
-      "idea": "Try all letter mappings",
+      "idea": "Encode each string into a canonical pattern based on first occurrence of each character and compare the patterns.",
       "steps": [
-        "Identify problem requirements for Isomorphic Strings.",
-        "Explore all states or exhaustive candidates (Try all letter mappings).",
-        "Return matching answer or extreme value found."
+        "Transform string s into a list of integers representing the first appearance index of each character.",
+        "Transform string t into the same representation.",
+        "Check if the two integer representations are identical.",
+        "Return true if identical, otherwise false."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
-      "time": "O(n!)",
-      "space": "O(1) auxiliary",
+      "whySlow": "Scanning for the first occurrence of each character repeatedly takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n!)\nclass Solution {\n    // Try all letter mappings\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all letter mappings\n        pass"
+        "java": "class Solution {\n    public boolean isIsomorphic(String s, String t) {\n        if (s.length() != t.length()) return false;\n        for (int i = 0; i < s.length(); i++) {\n            if (s.indexOf(s.charAt(i)) != t.indexOf(t.charAt(i))) {\n                return false;\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isIsomorphic(self, s: str, t: str) -> bool:\n        if len(s) != len(t):\n            return False\n        return [s.find(c) for c in s] == [t.find(c) for c in t]"
       }
     },
     "optimal": {
-      "idea": "Two maps or last seen index array in one pass",
+      "idea": "Track the last seen index (+1) of characters in two 256-sized arrays to verify bidirectional mapping in a single pass.",
       "steps": [
-        "Leverage structural invariants of Isomorphic Strings.",
-        "Apply optimal pattern: Two maps or last seen index array in one pass.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize two integer arrays mapS and mapT of size 256 with 0s.",
+        "Iterate i from 0 to s.length() - 1.",
+        "If mapS[s.charAt(i)] != mapT[t.charAt(i)], return false.",
+        "Set mapS[s.charAt(i)] = i + 1 and mapT[t.charAt(i)] = i + 1.",
+        "Return true if all characters match."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Two maps or last seen index array in one pass\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Two maps or last seen index array in one pass\n        pass"
+        "java": "class Solution {\n    public boolean isIsomorphic(String s, String t) {\n        int[] m1 = new int[256];\n        int[] m2 = new int[256];\n        int n = s.length();\n        for (int i = 0; i < n; i++) {\n            char c1 = s.charAt(i);\n            char c2 = t.charAt(i);\n            if (m1[c1] != m2[c2]) return false;\n            m1[c1] = i + 1;\n            m2[c2] = i + 1;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isIsomorphic(self, s: str, t: str) -> bool:\n        m1, m2 = {}, {}\n        for c1, c2 in zip(s, t):\n            if (c1 in m1 and m1[c1] != c2) or (c2 in m2 and m2[c2] != c1):\n                return False\n            m1[c1] = c2\n            m2[c2] = c1\n        return True"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Isomorphic Strings. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Two maps or last seen index array in one pass.",
-      "Detailed formulation: Two maps or last seen index array in one pass. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 318,
-    "whyNext": "Builds directly on #317: transitions from simpler approach to optimal pattern for Word Pattern.",
+    "whyNext": "Extends bijective character mapping from Isomorphic Strings (Seq 317) to a bijection between single characters and entire whitespace-delimited words.",
+    "hints": [
+      "The relationship between characters in pattern and words in s must be strictly one-to-one in both directions.",
+      "Split s into words, check length equality with pattern, then use two HashMaps for bidirectional mapping.",
+      "If len(pattern) != len(words), return false. Iterate i from 0 to len(pattern)-1: check if pattern[i] maps to words[i] and words[i] maps to pattern[i]. If either violates existing mapping, return false."
+    ],
     "brute": {
-      "idea": "Try all mappings",
+      "idea": "Split words and build canonical index representation for pattern and words, then compare.",
       "steps": [
-        "Identify problem requirements for Word Pattern.",
-        "Explore all states or exhaustive candidates (Try all mappings).",
-        "Return matching answer or extreme value found."
+        "Split string s by space into an array of words.",
+        "If words.length != pattern.length(), return false.",
+        "For each position, check if first occurrence index of pattern[i] equals first occurrence index of words[i].",
+        "If any pair differs, return false; otherwise true."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
-      "time": "O(n!)",
-      "space": "O(1) auxiliary",
+      "whySlow": "Searching for first occurrence of each word takes O(n²) string comparisons.",
+      "time": "O(n²)",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n!)\nclass Solution {\n    // Try all mappings\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try all mappings\n        pass"
+        "java": "class Solution {\n    public boolean wordPattern(String pattern, String s) {\n        String[] words = s.split(\" \");\n        if (words.length != pattern.length()) return false;\n        for (int i = 0; i < words.length; i++) {\n            for (int j = 0; j < words.length; j++) {\n                boolean charMatch = pattern.charAt(i) == pattern.charAt(j);\n                boolean wordMatch = words[i].equals(words[j]);\n                if (charMatch != wordMatch) return false;\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def wordPattern(self, pattern: str, s: str) -> bool:\n        words = s.split()\n        if len(words) != len(pattern):\n            return False\n        for i in range(len(words)):\n            for j in range(len(words)):\n                if (pattern[i] == pattern[j]) != (words[i] == words[j]):\n                    return False\n        return True"
       }
     },
     "optimal": {
-      "idea": "Two maps pattern to word and word to pattern",
+      "idea": "Maintain two HashMaps for bidirectional pattern-char to word binding in a single pass.",
       "steps": [
-        "Leverage structural invariants of Word Pattern.",
-        "Apply optimal pattern: Two maps pattern to word and word to pattern.",
-        "Achieve optimal time complexity of O(n)."
+        "Split s into words. If words.length != pattern.length(), return false.",
+        "Initialize Map<Character, String> charToWord and Map<String, Character> wordToChar.",
+        "For each index i: let c = pattern.charAt(i) and w = words[i].",
+        "If charToWord contains c and not equals w, return false.",
+        "If wordToChar contains w and not equals c, return false.",
+        "Insert both mappings and return true after the loop."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Two maps pattern to word and word to pattern\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Two maps pattern to word and word to pattern\n        pass"
+        "java": "class Solution {\n    public boolean wordPattern(String pattern, String s) {\n        String[] words = s.split(\" \");\n        if (words.length != pattern.length()) return false;\n        Map<Character, String> c2w = new HashMap<>();\n        Map<String, Character> w2c = new HashMap<>();\n        for (int i = 0; i < words.length; i++) {\n            char c = pattern.charAt(i);\n            String w = words[i];\n            if (c2w.containsKey(c) && !c2w.get(c).equals(w)) return false;\n            if (w2c.containsKey(w) && w2c.get(w) != c) return false;\n            c2w.put(c, w);\n            w2c.put(w, c);\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def wordPattern(self, pattern: str, s: str) -> bool:\n        words = s.split()\n        if len(words) != len(pattern):\n            return False\n        c2w, w2c = {}, {}\n        for c, w in zip(pattern, words):\n            if (c in c2w and c2w[c] != w) or (w in w2c and w2c[w] != c):\n                return False\n            c2w[c] = w\n            w2c[w] = c\n        return True"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Word Pattern. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Two maps pattern to word and word to pattern.",
-      "Detailed formulation: Two maps pattern to word and word to pattern. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 319,
-    "whyNext": "Builds directly on #316: transitions from simpler approach to optimal pattern for Longest Palindrome.",
+    "whyNext": "Builds on character frequency analysis from Ransom Note (Seq 316) by summing even occurrences of characters with at most one odd center element to maximize palindrome length.",
+    "hints": [
+      "In a palindrome, at most one character type can have an odd count; all others must be paired evenly.",
+      "Count character frequencies: each pair contributes 2 to the length, and a single odd character can sit in the center.",
+      "Tally counts for each character. Sum (count / 2) * 2 for every character. If any character had an odd count, add 1 to place in the center."
+    ],
     "brute": {
-      "idea": "Try every permutation",
+      "idea": "Track unmatched characters in a set: add when seen once, remove when seen twice, then calculate length from remaining odd elements.",
       "steps": [
-        "Identify problem requirements for Longest Palindrome.",
-        "Explore all states or exhaustive candidates (Try every permutation).",
-        "Return matching answer or extreme value found."
+        "Initialize an empty HashSet of characters.",
+        "For each character in s, if it exists in the set, remove it (paired); otherwise add it.",
+        "If the set is not empty, length is s.length() - set.size() + 1.",
+        "If the set is empty, length is s.length()."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n!).",
-      "time": "O(n!)",
-      "space": "O(1) auxiliary",
+      "whySlow": "HashSet boxing and unboxing overhead for every character in the string.",
+      "time": "O(n)",
+      "space": "O(k)",
       "code": {
-        "java": "// Time: O(n!)\nclass Solution {\n    // Try every permutation\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n!)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try every permutation\n        pass"
+        "java": "class Solution {\n    public int longestPalindrome(String s) {\n        Set<Character> unpaired = new HashSet<>();\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (unpaired.contains(c)) {\n                unpaired.remove(c);\n            } else {\n                unpaired.add(c);\n            }\n        }\n        return unpaired.isEmpty() ? s.length() : s.length() - unpaired.size() + 1;\n    }\n}",
+        "python": "class Solution:\n    def longestPalindrome(self, s: str) -> int:\n        unpaired = set()\n        for c in s:\n            if c in unpaired:\n                unpaired.remove(c)\n            else:\n                unpaired.add(c)\n        return len(s) if not unpaired else len(s) - len(unpaired) + 1"
       }
     },
     "optimal": {
-      "idea": "Count letter pairs, add 1 if any odd count exists",
+      "idea": "Count ASCII frequencies with an integer array, summing even pairs and adding 1 if any odd count exists.",
       "steps": [
-        "Leverage structural invariants of Longest Palindrome.",
-        "Apply optimal pattern: Count letter pairs, add 1 if any odd count exists.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize an integer array counts of size 128.",
+        "Count each character in s.",
+        "Iterate through counts: add (c / 2) * 2 to length.",
+        "If length is even and any count is odd, add 1 for the center position.",
+        "Return the resulting length."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Count letter pairs, add 1 if any odd count exists\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Count letter pairs, add 1 if any odd count exists\n        pass"
+        "java": "class Solution {\n    public int longestPalindrome(String s) {\n        int[] counts = new int[128];\n        for (int i = 0; i < s.length(); i++) {\n            counts[s.charAt(i)]++;\n        }\n        int length = 0;\n        for (int c : counts) {\n            length += (c / 2) * 2;\n            if (length % 2 == 0 && c % 2 == 1) {\n                length++;\n            }\n        }\n        return length;\n    }\n}",
+        "python": "class Solution:\n    def longestPalindrome(self, s: str) -> int:\n        from collections import Counter\n        counts = Counter(s)\n        length = 0\n        has_odd = False\n        for c in counts.values():\n            length += (c // 2) * 2\n            if c % 2 == 1:\n                has_odd = True\n        return length + 1 if has_odd else length"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Longest Palindrome. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Count letter pairs, add 1 if any odd count exists.",
-      "Detailed formulation: Count letter pairs, add 1 if any odd count exists. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 320,
-    "whyNext": "Builds directly on #319: transitions from simpler approach to optimal pattern for Length of Last Word.",
+    "whyNext": "Builds on string boundary traversal from Longest Palindrome (Seq 319) by scanning backwards from the string end past trailing spaces to measure the final word.",
+    "hints": [
+      "Words are separated by spaces; scan from the end of the string rather than from the beginning.",
+      "Skip trailing spaces first, then count characters until the next space or the start of the string.",
+      "Initialize index i = s.length() - 1 and len = 0. While s[i] == ' ', decrement i. Then while i >= 0 and s[i] != ' ', increment len and decrement i. Return len."
+    ],
     "brute": {
-      "idea": "Split string into words array",
+      "idea": "Split the string by whitespace into an array of words and return the length of the last word.",
       "steps": [
-        "Identify problem requirements for Length of Last Word.",
-        "Explore all states or exhaustive candidates (Split string into words array).",
-        "Return matching answer or extreme value found."
+        "Trim string s and split by one or more spaces.",
+        "Extract the last element in the resulting words array.",
+        "Return its length."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
-      "time": "O(n) space",
-      "space": "O(1) auxiliary",
+      "whySlow": "Splitting creates an array of all words and allocates new string objects.",
+      "time": "O(n)",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n) space\nclass Solution {\n    // Split string into words array\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Split string into words array\n        pass"
+        "java": "class Solution {\n    public int lengthOfLastWord(String s) {\n        String[] words = s.trim().split(\"\\\\s+\");\n        if (words.length == 0) return 0;\n        return words[words.length - 1].length();\n    }\n}",
+        "python": "class Solution:\n    def lengthOfLastWord(self, s: str) -> int:\n        words = s.strip().split()\n        if not words:\n            return 0\n        last_word = words[-1]\n        return len(last_word)"
       }
     },
     "optimal": {
-      "idea": "Scan backward skipping trailing spaces",
+      "idea": "Scan backwards from the end of the string, skipping trailing spaces and counting characters of the final word in O(1) auxiliary space.",
       "steps": [
-        "Leverage structural invariants of Length of Last Word.",
-        "Apply optimal pattern: Scan backward skipping trailing spaces.",
-        "Achieve optimal time complexity of O(1) space."
+        "Initialize i = s.length() - 1 and length = 0.",
+        "While i >= 0 and s.charAt(i) == ' ', decrement i.",
+        "While i >= 0 and s.charAt(i) != ' ', increment length and decrement i.",
+        "Return length."
       ],
-      "time": "O(1) space",
-      "space": "O(n) auxiliary",
+      "time": "O(n)",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(1) space\nclass Solution {\n    // Scan backward skipping trailing spaces\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Scan backward skipping trailing spaces\n        pass"
+        "java": "class Solution {\n    public int lengthOfLastWord(String s) {\n        int i = s.length() - 1;\n        while (i >= 0 && s.charAt(i) == ' ') i--;\n        int len = 0;\n        while (i >= 0 && s.charAt(i) != ' ') {\n            len++;\n            i--;\n        }\n        return len;\n    }\n}",
+        "python": "class Solution:\n    def lengthOfLastWord(self, s: str) -> int:\n        i = len(s) - 1\n        while i >= 0 and s[i] == ' ':\n            i -= 1\n        length = 0\n        while i >= 0 and s[i] != ' ':\n            length += 1\n            i -= 1\n        return length"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Length of Last Word. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Scan backward skipping trailing spaces.",
-      "Detailed formulation: Scan backward skipping trailing spaces. Implement this in O(1) space without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 321,
-    "whyNext": "Builds directly on #320: transitions from simpler approach to optimal pattern for Roman to Integer.",
+    "whyNext": "Builds on backward character processing from Length of Last Word (Seq 320) by scanning Roman numeral symbols where a smaller value before a larger value indicates subtraction.",
+    "hints": [
+      "Compare each symbol's value with the symbol immediately following it.",
+      "If the current symbol is smaller than the next symbol, subtract its value; otherwise add it.",
+      "Iterate i from 0 to s.length() - 1. If i + 1 < s.length() and val(s[i]) < val(s[i + 1]), subtract val(s[i]); else add val(s[i]). Return total."
+    ],
     "brute": {
-      "idea": "Long if-chains for two-letter pairs",
+      "idea": "Replace subtractive double-symbol pairs with simpler equivalents or sum via replacement passes.",
       "steps": [
-        "Identify problem requirements for Roman to Integer.",
-        "Explore all states or exhaustive candidates (Long if-chains for two-letter pairs).",
-        "Return matching answer or extreme value found."
+        "Replace 'IV' with 'IIII', 'IX' with 'VIIII', 'XL' with 'XXXX', 'XC' with 'LXXXX', 'CD' with 'CCCC', 'CM' with 'DCCCC'.",
+        "Sum the values of the individual characters in the modified string.",
+        "Return the accumulated sum."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n).",
+      "whySlow": "Creates multiple string copies during string replacement operations.",
       "time": "O(n)",
-      "space": "O(1) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Long if-chains for two-letter pairs\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Long if-chains for two-letter pairs\n        pass"
+        "java": "class Solution {\n    public int romanToInt(String s) {\n        s = s.replace(\"IV\", \"IIII\").replace(\"IX\", \"VIIII\")\n             .replace(\"XL\", \"XXXX\").replace(\"XC\", \"LXXXX\")\n             .replace(\"CD\", \"CCCC\").replace(\"CM\", \"DCCCC\");\n        int sum = 0;\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (c == 'I') sum += 1;\n            else if (c == 'V') sum += 5;\n            else if (c == 'X') sum += 10;\n            else if (c == 'L') sum += 50;\n            else if (c == 'C') sum += 100;\n            else if (c == 'D') sum += 500;\n            else if (c == 'M') sum += 1000;\n        }\n        return sum;\n    }\n}",
+        "python": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        s = (s.replace(\"IV\", \"IIII\").replace(\"IX\", \"VIIII\")\n              .replace(\"XL\", \"XXXX\").replace(\"XC\", \"LXXXX\")\n              .replace(\"CD\", \"CCCC\").replace(\"CM\", \"DCCCC\"))\n        val_map = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n        return sum(val_map[c] for c in s)"
       }
     },
     "optimal": {
-      "idea": "Value map; subtract when smaller precedes larger",
+      "idea": "Single pass comparing current symbol value with the next symbol value, subtracting if smaller and adding otherwise.",
       "steps": [
-        "Leverage structural invariants of Roman to Integer.",
-        "Apply optimal pattern: Value map; subtract when smaller precedes larger.",
-        "Achieve optimal time complexity of O(n)."
+        "Map Roman characters to their integer values using a helper or switch statement.",
+        "Initialize total = 0.",
+        "Iterate i from 0 to s.length() - 1: if i + 1 < s.length() and val(s[i]) < val(s[i + 1]), total -= val(s[i]); else total += val(s[i]).",
+        "Return total."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Value map; subtract when smaller precedes larger\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Value map; subtract when smaller precedes larger\n        pass"
+        "java": "class Solution {\n    public int romanToInt(String s) {\n        int total = 0;\n        for (int i = 0; i < s.length(); i++) {\n            int cur = value(s.charAt(i));\n            if (i + 1 < s.length() && cur < value(s.charAt(i + 1))) {\n                total -= cur;\n            } else {\n                total += cur;\n            }\n        }\n        return total;\n    }\n    private int value(char c) {\n        switch (c) {\n            case 'I': return 1;\n            case 'V': return 5;\n            case 'X': return 10;\n            case 'L': return 50;\n            case 'C': return 100;\n            case 'D': return 500;\n            case 'M': return 1000;\n            default: return 0;\n        }\n    }\n}",
+        "python": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        vals = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n        total = 0\n        n = len(s)\n        for i in range(n):\n            if i + 1 < n and vals[s[i]] < vals[s[i + 1]]:\n                total -= vals[s[i]]\n            else:\n                total += vals[s[i]]\n        return total"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Roman to Integer. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Value map; subtract when smaller precedes larger.",
-      "Detailed formulation: Value map; subtract when smaller precedes larger. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 322,
-    "whyNext": "Builds directly on #321: transitions from simpler approach to optimal pattern for Integer to Roman.",
+    "whyNext": "Inverts the Roman to Integer conversion (Seq 321) by greedily subtracting descending Roman symbol values and appending corresponding character representations.",
+    "hints": [
+      "Process values in descending order: 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1.",
+      "Use paired arrays of descending integer values and their Roman symbol strings.",
+      "Iterate through the paired arrays. While num >= values[i], append symbols[i] to result and subtract values[i] from num."
+    ],
     "brute": {
-      "idea": "If chains for each digit place",
+      "idea": "Decompose the number into thousands, hundreds, tens, and units places and convert each digit independently.",
       "steps": [
-        "Identify problem requirements for Integer to Roman.",
-        "Explore all states or exhaustive candidates (If chains for each digit place).",
-        "Return matching answer or extreme value found."
+        "Extract thousands = num / 1000, hundreds = (num % 1000) / 100, tens = (num % 100) / 10, ones = num % 10.",
+        "Map each place value using predefined lookup tables for each digit 0-9.",
+        "Concatenate the four parts into the final Roman numeral string.",
+        "Return the concatenated string."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(1).",
+      "whySlow": "Uses multiple hardcoded lookup tables rather than unified greedy subtraction.",
       "time": "O(1)",
-      "space": "O(1) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(1)\nclass Solution {\n    // If chains for each digit place\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(1)\nclass Solution:\n    def solveBrute(self, *args):\n        # If chains for each digit place\n        pass"
+        "java": "class Solution {\n    public String intToRoman(int num) {\n        String[] M = {\"\", \"M\", \"MM\", \"MMM\"};\n        String[] C = {\"\", \"C\", \"CC\", \"CCC\", \"CD\", \"D\", \"DC\", \"DCC\", \"DCCC\", \"CM\"};\n        String[] X = {\"\", \"X\", \"XX\", \"XXX\", \"XL\", \"L\", \"LX\", \"LXX\", \"LXXX\", \"XC\"};\n        String[] I = {\"\", \"I\", \"II\", \"III\", \"IV\", \"V\", \"VI\", \"VII\", \"VIII\", \"IX\"};\n        return M[num / 1000] + C[(num % 1000) / 100] + X[(num % 100) / 10] + I[num % 10];\n    }\n}",
+        "python": "class Solution:\n    def intToRoman(self, num: int) -> str:\n        M = [\"\", \"M\", \"MM\", \"MMM\"]\n        C = [\"\", \"C\", \"CC\", \"CCC\", \"CD\", \"D\", \"DC\", \"DCC\", \"DCCC\", \"CM\"]\n        X = [\"\", \"X\", \"XX\", \"XXX\", \"XL\", \"L\", \"LX\", \"LXX\", \"LXXX\", \"XC\"]\n        I = [\"\", \"I\", \"II\", \"III\", \"IV\", \"V\", \"VI\", \"VII\", \"VIII\", \"IX\"]\n        return M[num // 1000] + C[(num % 1000) // 100] + X[(num % 100) // 10] + I[num % 10]"
       }
     },
     "optimal": {
-      "idea": "Greedy over static symbol-value table from 1000 to 1",
+      "idea": "Greedily subtract the largest possible Roman value from num while appending its symbol to the result.",
       "steps": [
-        "Leverage structural invariants of Integer to Roman.",
-        "Apply optimal pattern: Greedy over static symbol-value table from 1000 to 1.",
-        "Achieve optimal time complexity of O(1)."
+        "Define arrays of descending values: [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1].",
+        "Define corresponding symbols: ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'].",
+        "Initialize a StringBuilder.",
+        "For each value, while num >= values[i], subtract values[i] from num and append symbols[i].",
+        "Return the built string."
       ],
-      "time": "O(1)",
-      "space": "O(n) auxiliary",
+      "time": "O(1) bounded (at most 15 loops for num <= 3999)",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(1)\nclass Solution {\n    // Greedy over static symbol-value table from 1000 to 1\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1)\nclass Solution:\n    def solve(self, *args):\n        # Greedy over static symbol-value table from 1000 to 1\n        pass"
+        "java": "class Solution {\n    public String intToRoman(int num) {\n        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};\n        String[] symbols = {\"M\", \"CM\", \"D\", \"CD\", \"C\", \"XC\", \"L\", \"XL\", \"X\", \"IX\", \"V\", \"IV\", \"I\"};\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < values.length && num > 0; i++) {\n            while (num >= values[i]) {\n                num -= values[i];\n                sb.append(symbols[i]);\n            }\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def intToRoman(self, num: int) -> str:\n        values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]\n        symbols = [\"M\", \"CM\", \"D\", \"CD\", \"C\", \"XC\", \"L\", \"XL\", \"X\", \"IX\", \"V\", \"IV\", \"I\"]\n        parts = []\n        for val, sym in zip(values, symbols):\n            if num == 0:\n                break\n            count = num // val\n            if count:\n                parts.append(sym * count)\n                num -= val * count\n        return \"\".join(parts)"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Integer to Roman. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Greedy over static symbol-value table from 1000 to 1.",
-      "Detailed formulation: Greedy over static symbol-value table from 1000 to 1. Implement this in O(1) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 323,
-    "whyNext": "Builds directly on #322: transitions from simpler approach to optimal pattern for Add Binary.",
+    "whyNext": "Builds on right-to-left positional arithmetic from Integer to Roman (Seq 322) by adding binary digits with a carry from least significant to most significant bit.",
+    "hints": [
+      "Process the two binary strings simultaneously starting from the rightmost character.",
+      "Maintain a running carry; sum = bitA + bitB + carry, next bit is sum % 2, new carry is sum / 2.",
+      "Initialize pointers i = a.length() - 1, j = b.length() - 1, carry = 0. While i >= 0 or j >= 0 or carry > 0, sum bits and carry, append sum % 2 to result, set carry = sum / 2. Reverse result at end."
+    ],
     "brute": {
-      "idea": "Parse to integer and add (overflows)",
+      "idea": "Parse both binary strings to decimal integers using built-in parsing, add them, and format back to binary.",
       "steps": [
-        "Identify problem requirements for Add Binary.",
-        "Explore all states or exhaustive candidates (Parse to integer and add (overflows)).",
-        "Return matching answer or extreme value found."
+        "Convert string a to a BigInteger or integer.",
+        "Convert string b to a BigInteger or integer.",
+        "Compute sum = a + b.",
+        "Return binary string representation of sum."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of overflow risk.",
-      "time": "overflow risk",
-      "space": "O(1) auxiliary",
+      "whySlow": "Fails or requires arbitrary-precision BigInteger libraries when string length exceeds standard integer bits.",
+      "time": "O(n + m)",
+      "space": "O(n + m)",
       "code": {
-        "java": "// Time: overflow risk\nclass Solution {\n    // Parse to integer and add (overflows)\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: overflow risk\nclass Solution:\n    def solveBrute(self, *args):\n        # Parse to integer and add (overflows)\n        pass"
+        "java": "import java.math.BigInteger;\n\nclass Solution {\n    public String addBinary(String a, String b) {\n        BigInteger x = new BigInteger(a, 2);\n        BigInteger y = new BigInteger(b, 2);\n        return x.add(y).toString(2);\n    }\n}",
+        "python": "class Solution:\n    def addBinary(self, a: str, b: str) -> str:\n        val1 = int(a, 2)\n        val2 = int(b, 2)\n        total = val1 + val2\n        return bin(total)[2:]"
       }
     },
     "optimal": {
-      "idea": "Add from right to left with carry",
+      "idea": "Simulate column-by-column binary addition from right to left using pointers and a carry variable.",
       "steps": [
-        "Leverage structural invariants of Add Binary.",
-        "Apply optimal pattern: Add from right to left with carry.",
-        "Achieve optimal time complexity of O(max(m,n))."
+        "Initialize pointers i = a.length() - 1, j = b.length() - 1, carry = 0, and a StringBuilder.",
+        "Loop while i >= 0, j >= 0, or carry > 0.",
+        "Add a.charAt(i) - '0' if i >= 0, b.charAt(j) - '0' if j >= 0, and carry into sum.",
+        "Append sum % 2 to StringBuilder, set carry = sum / 2, decrement i and j.",
+        "Reverse and return the StringBuilder content."
       ],
-      "time": "O(max(m,n))",
-      "space": "O(n) auxiliary",
+      "time": "O(max(n, m))",
+      "space": "O(max(n, m))",
       "code": {
-        "java": "// Time: O(max(m,n))\nclass Solution {\n    // Add from right to left with carry\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(max(m,n))\nclass Solution:\n    def solve(self, *args):\n        # Add from right to left with carry\n        pass"
+        "java": "class Solution {\n    public String addBinary(String a, String b) {\n        StringBuilder sb = new StringBuilder();\n        int i = a.length() - 1, j = b.length() - 1, carry = 0;\n        while (i >= 0 || j >= 0 || carry != 0) {\n            int sum = carry;\n            if (i >= 0) sum += a.charAt(i--) - '0';\n            if (j >= 0) sum += b.charAt(j--) - '0';\n            sb.append(sum % 2);\n            carry = sum / 2;\n        }\n        return sb.reverse().toString();\n    }\n}",
+        "python": "class Solution:\n    def addBinary(self, a: str, b: str) -> str:\n        res = []\n        i, j, carry = len(a) - 1, len(b) - 1, 0\n        while i >= 0 or j >= 0 or carry:\n            total = carry\n            if i >= 0:\n                total += int(a[i])\n                i -= 1\n            if j >= 0:\n                total += int(b[j])\n                j -= 1\n            res.append(str(total % 2))\n            carry = total // 2\n        return \"\".join(reversed(res))"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Add Binary. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Add from right to left with carry.",
-      "Detailed formulation: Add from right to left with carry. Implement this in O(max(m,n)) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 324,
-    "whyNext": "Builds directly on #323: transitions from simpler approach to optimal pattern for Add Strings.",
+    "whyNext": "Expands the digit-by-digit carry simulation from Add Binary (Seq 323) from base-2 to base-10 addition for arbitrary large numerical strings.",
+    "hints": [
+      "The algorithm is identical to Add Binary, but modulo and division operations use base 10 instead of base 2.",
+      "Process digits from right to left, adding corresponding digits and carry: sum % 10 is the new digit, sum / 10 is the carry.",
+      "Initialize i = num1.length() - 1, j = num2.length() - 1, carry = 0. In each step, sum digits and carry, append sum % 10, set carry = sum / 10. Reverse result."
+    ],
     "brute": {
-      "idea": "Parse to big integer (overflows)",
+      "idea": "Convert input strings to large integer types (BigInteger) to perform the addition.",
       "steps": [
-        "Identify problem requirements for Add Strings.",
-        "Explore all states or exhaustive candidates (Parse to big integer (overflows)).",
-        "Return matching answer or extreme value found."
+        "Parse num1 into BigInteger.",
+        "Parse num2 into BigInteger.",
+        "Add both BigIntegers.",
+        "Convert the result to string and return."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of overflow risk.",
-      "time": "overflow risk",
-      "space": "O(1) auxiliary",
+      "whySlow": "Bypasses the direct simulation constraint and relies on heavy BigInteger allocation.",
+      "time": "O(n + m)",
+      "space": "O(n + m)",
       "code": {
-        "java": "// Time: overflow risk\nclass Solution {\n    // Parse to big integer (overflows)\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: overflow risk\nclass Solution:\n    def solveBrute(self, *args):\n        # Parse to big integer (overflows)\n        pass"
+        "java": "import java.math.BigInteger;\n\nclass Solution {\n    public String addStrings(String num1, String num2) {\n        BigInteger a = new BigInteger(num1);\n        BigInteger b = new BigInteger(num2);\n        return a.add(b).toString();\n    }\n}",
+        "python": "class Solution:\n    def addStrings(self, num1: str, num2: str) -> str:\n        # String simulation without direct int() conversion\n        digits = []\n        i, j, carry = len(num1) - 1, len(num2) - 1, 0\n        while i >= 0 or j >= 0 or carry:\n            d1 = ord(num1[i]) - 48 if i >= 0 else 0\n            d2 = ord(num2[j]) - 48 if j >= 0 else 0\n            s = d1 + d2 + carry\n            digits.append(str(s % 10))\n            carry = s // 10\n            i -= 1\n            j -= 1\n        return \"\".join(reversed(digits))"
       }
     },
     "optimal": {
-      "idea": "Add digit by digit with carry from the back",
+      "idea": "Simulate elementary base-10 addition column-by-column from right to left with a carry variable.",
       "steps": [
-        "Leverage structural invariants of Add Strings.",
-        "Apply optimal pattern: Add digit by digit with carry from the back.",
-        "Achieve optimal time complexity of O(max(m,n))."
+        "Initialize pointers i = num1.length() - 1, j = num2.length() - 1, carry = 0, and a StringBuilder.",
+        "While i >= 0, j >= 0, or carry != 0: extract digit from num1 and num2, add to carry.",
+        "Append (sum % 10) to StringBuilder and update carry = sum / 10.",
+        "Reverse and return the StringBuilder content."
       ],
-      "time": "O(max(m,n))",
-      "space": "O(n) auxiliary",
+      "time": "O(max(n, m))",
+      "space": "O(max(n, m))",
       "code": {
-        "java": "// Time: O(max(m,n))\nclass Solution {\n    // Add digit by digit with carry from the back\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(max(m,n))\nclass Solution:\n    def solve(self, *args):\n        # Add digit by digit with carry from the back\n        pass"
+        "java": "class Solution {\n    public String addStrings(String num1, String num2) {\n        StringBuilder sb = new StringBuilder();\n        int i = num1.length() - 1, j = num2.length() - 1, carry = 0;\n        while (i >= 0 || j >= 0 || carry != 0) {\n            int sum = carry;\n            if (i >= 0) sum += num1.charAt(i--) - '0';\n            if (j >= 0) sum += num2.charAt(j--) - '0';\n            sb.append(sum % 10);\n            carry = sum / 10;\n        }\n        return sb.reverse().toString();\n    }\n}",
+        "python": "class Solution:\n    def addStrings(self, num1: str, num2: str) -> str:\n        res = []\n        i, j, carry = len(num1) - 1, len(num2) - 1, 0\n        while i >= 0 or j >= 0 or carry:\n            total = carry\n            if i >= 0:\n                total += ord(num1[i]) - ord('0')\n                i -= 1\n            if j >= 0:\n                total += ord(num2[j]) - ord('0')\n                j -= 1\n            res.append(str(total % 10))\n            carry = total // 10\n        return \"\".join(reversed(res))"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Add Strings. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Add digit by digit with carry from the back.",
-      "Detailed formulation: Add digit by digit with carry from the back. Implement this in O(max(m,n)) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 325,
-    "whyNext": "Builds directly on #324: transitions from simpler approach to optimal pattern for Multiply Strings.",
+    "whyNext": "Advances digit-by-digit simulation from Add Strings (Seq 324) to full grade-school multiplication by accumulating products of digit pairs into an array of size m + n.",
+    "hints": [
+      "Multiplying digit num1[i] and num2[j] contributes to positions [i + j] and [i + j + 1] in the product.",
+      "Create an array of size len1 + len2 to hold intermediate digit products, then handle carries.",
+      "Loop i from m-1 down to 0 and j from n-1 down to 0. Multiply digits, add to pos[i + j + 1], propagate carry to pos[i + j]. Convert result to string skipping leading zeros."
+    ],
     "brute": {
-      "idea": "Repeated string addition",
+      "idea": "Multiply num1 by each individual digit of num2, shift with trailing zeros, and sum using Add Strings.",
       "steps": [
-        "Identify problem requirements for Multiply Strings.",
-        "Explore all states or exhaustive candidates (Repeated string addition).",
-        "Return matching answer or extreme value found."
+        "If either num1 or num2 is '0', return '0'.",
+        "Iterate j from num2.length() - 1 down to 0.",
+        "Multiply num1 by num2[j] using addition to produce a partial product string.",
+        "Append (num2.length() - 1 - j) zeros to the partial product.",
+        "Add partial product into a running total using string addition.",
+        "Return the running total."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of huge.",
-      "time": "huge",
-      "space": "O(1) auxiliary",
+      "whySlow": "Repeated string allocations and additions for each digit take O(m * n²) time.",
+      "time": "O(m * n²)",
+      "space": "O(m + n)",
       "code": {
-        "java": "// Time: huge\nclass Solution {\n    // Repeated string addition\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: huge\nclass Solution:\n    def solveBrute(self, *args):\n        # Repeated string addition\n        pass"
+        "java": "class Solution {\n    public String multiply(String num1, String num2) {\n        if (num1.equals(\"0\") || num2.equals(\"0\")) return \"0\";\n        int m = num1.length(), n = num2.length();\n        int[] pos = new int[m + n];\n        for (int i = m - 1; i >= 0; i--) {\n            for (int j = n - 1; j >= 0; j--) {\n                int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');\n                int p1 = i + j, p2 = i + j + 1;\n                int sum = mul + pos[p2];\n                pos[p2] = sum % 10;\n                pos[p1] += sum / 10;\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (int p : pos) {\n            if (!(sb.length() == 0 && p == 0)) sb.append(p);\n        }\n        return sb.length() == 0 ? \"0\" : sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        if num1 == \"0\" or num2 == \"0\":\n            return \"0\"\n        m, n = len(num1), len(num2)\n        pos = [0] * (m + n)\n        for i in range(m - 1, -1, -1):\n            for j in range(n - 1, -1, -1):\n                mul = (ord(num1[i]) - 48) * (ord(num2[j]) - 48)\n                p1, p2 = i + j, i + j + 1\n                total = mul + pos[p2]\n                pos[p2] = total % 10\n                pos[p1] += total // 10\n        idx = 0\n        while idx < len(pos) and pos[idx] == 0:\n            idx += 1\n        return \"\".join(map(str, pos[idx:]))"
       }
     },
     "optimal": {
-      "idea": "Schoolbook column multiplication into result array",
+      "idea": "Grade-school multiplication storing intermediate products in an array of size m + n, propagating carries directly.",
       "steps": [
-        "Leverage structural invariants of Multiply Strings.",
-        "Apply optimal pattern: Schoolbook column multiplication into result array.",
-        "Achieve optimal time complexity of O(mn)."
+        "If either string is '0', return '0'.",
+        "Allocate array res of length m + n.",
+        "Iterate i from m - 1 down to 0 and j from n - 1 down to 0: mul = num1[i] * num2[j] + res[i + j + 1].",
+        "Set res[i + j + 1] = mul % 10 and res[i + j] += mul / 10.",
+        "Convert res to string, skipping leading zeros."
       ],
-      "time": "O(mn)",
-      "space": "O(n) auxiliary",
+      "time": "O(m * n)",
+      "space": "O(m + n)",
       "code": {
-        "java": "// Time: O(mn)\nclass Solution {\n    // Schoolbook column multiplication into result array\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(mn)\nclass Solution:\n    def solve(self, *args):\n        # Schoolbook column multiplication into result array\n        pass"
+        "java": "class Solution {\n    public String multiply(String num1, String num2) {\n        if (num1.equals(\"0\") || num2.equals(\"0\")) return \"0\";\n        int m = num1.length(), n = num2.length();\n        int[] pos = new int[m + n];\n        for (int i = m - 1; i >= 0; i--) {\n            for (int j = n - 1; j >= 0; j--) {\n                int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');\n                int sum = mul + pos[i + j + 1];\n                pos[i + j + 1] = sum % 10;\n                pos[i + j] += sum / 10;\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (int p : pos) {\n            if (!(sb.length() == 0 && p == 0)) {\n                sb.append(p);\n            }\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        if num1 == \"0\" or num2 == \"0\":\n            return \"0\"\n        m, n = len(num1), len(num2)\n        pos = [0] * (m + n)\n        for i in range(m - 1, -1, -1):\n            for j in range(n - 1, -1, -1):\n                mul = (ord(num1[i]) - 48) * (ord(num2[j]) - 48)\n                total = mul + pos[i + j + 1]\n                pos[i + j + 1] = total % 10\n                pos[i + j] += total // 10\n        res = []\n        skip = True\n        for digit in pos:\n            if skip and digit == 0:\n                continue\n            skip = False\n            res.append(str(digit))\n        return \"\".join(res)"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Multiply Strings. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Schoolbook column multiplication into result array.",
-      "Detailed formulation: Schoolbook column multiplication into result array. Implement this in O(mn) without nested full re-scans."
-    ]
-  },
-  {
-    "seq": 326,
-    "whyNext": "Builds directly on #320: transitions from simpler approach to optimal pattern for Reverse Words in a String.",
-    "brute": {
-      "idea": "Split, reverse list, join with space",
-      "steps": [
-        "Identify problem requirements for Reverse Words in a String.",
-        "Explore all states or exhaustive candidates (Split, reverse list, join with space).",
-        "Return matching answer or extreme value found."
-      ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
-      "time": "O(n) space",
-      "space": "O(1) auxiliary",
-      "code": {
-        "java": "// Time: O(n) space\nclass Solution {\n    // Split, reverse list, join with space\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Split, reverse list, join with space\n        pass"
-      }
-    },
-    "optimal": {
-      "idea": "Reverse whole string, then reverse each word",
-      "steps": [
-        "Leverage structural invariants of Reverse Words in a String.",
-        "Apply optimal pattern: Reverse whole string, then reverse each word.",
-        "Achieve optimal time complexity of O(1) extra space."
-      ],
-      "time": "O(1) extra space",
-      "space": "O(n) auxiliary",
-      "code": {
-        "java": "// Time: O(1) extra space\nclass Solution {\n    // Reverse whole string, then reverse each word\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1) extra space\nclass Solution:\n    def solve(self, *args):\n        # Reverse whole string, then reverse each word\n        pass"
-      }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Reverse Words in a String. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: Reverse whole string, then reverse each word.",
-      "Detailed formulation: Reverse whole string, then reverse each word. Implement this in O(1) extra space without nested full re-scans."
-    ]
-  },
-  {
-    "seq": 327,
-    "whyNext": "Builds directly on #326: transitions from simpler approach to optimal pattern for Zigzag Conversion.",
-    "brute": {
-      "idea": "Build full 2D grid matrix",
-      "steps": [
-        "Identify problem requirements for Zigzag Conversion.",
-        "Explore all states or exhaustive candidates (Build full 2D grid matrix).",
-        "Return matching answer or extreme value found."
-      ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n·rows).",
-      "time": "O(n·rows)",
-      "space": "O(1) auxiliary",
-      "code": {
-        "java": "// Time: O(n·rows)\nclass Solution {\n    // Build full 2D grid matrix\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n·rows)\nclass Solution:\n    def solveBrute(self, *args):\n        # Build full 2D grid matrix\n        pass"
-      }
-    },
-    "optimal": {
-      "idea": "One string builder per row, bouncing direction index",
-      "steps": [
-        "Leverage structural invariants of Zigzag Conversion.",
-        "Apply optimal pattern: One string builder per row, bouncing direction index.",
-        "Achieve optimal time complexity of O(n)."
-      ],
-      "time": "O(n)",
-      "space": "O(n) auxiliary",
-      "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // One string builder per row, bouncing direction index\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # One string builder per row, bouncing direction index\n        pass"
-      }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Zigzag Conversion. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: One string builder per row, bouncing direction index.",
-      "Detailed formulation: One string builder per row, bouncing direction index. Implement this in O(n) without nested full re-scans."
-    ]
-  },
-  {
-    "seq": 328,
-    "whyNext": "Builds directly on #327: transitions from simpler approach to optimal pattern for Find the Index of the First Occurrence in a String.",
-    "brute": {
-      "idea": "Substring match at every index",
-      "steps": [
-        "Identify problem requirements for Find the Index of the First Occurrence in a String.",
-        "Explore all states or exhaustive candidates (Substring match at every index).",
-        "Return matching answer or extreme value found."
-      ],
-      "whySlow": "Naive search has high asymptotic complexity of O(nm).",
-      "time": "O(nm)",
-      "space": "O(1) auxiliary",
-      "code": {
-        "java": "// Time: O(nm)\nclass Solution {\n    // Substring match at every index\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(nm)\nclass Solution:\n    def solveBrute(self, *args):\n        # Substring match at every index\n        pass"
-      }
-    },
-    "optimal": {
-      "idea": "KMP prefix failure table algorithm",
-      "steps": [
-        "Leverage structural invariants of Find the Index of the First Occurrence in a String.",
-        "Apply optimal pattern: KMP prefix failure table algorithm.",
-        "Achieve optimal time complexity of O(n+m)."
-      ],
-      "time": "O(n+m)",
-      "space": "O(n) auxiliary",
-      "code": {
-        "java": "// Time: O(n+m)\nclass Solution {\n    // KMP prefix failure table algorithm\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n+m)\nclass Solution:\n    def solve(self, *args):\n        # KMP prefix failure table algorithm\n        pass"
-      }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Find the Index of the First Occurrence in a String. Can you prune redundant work?",
-      "Apply the standard CH-20 pattern: KMP prefix failure table algorithm.",
-      "Detailed formulation: KMP prefix failure table algorithm. Implement this in O(n+m) without nested full re-scans."
-    ]
+    }
   }
 ]

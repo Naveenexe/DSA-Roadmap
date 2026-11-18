@@ -1,534 +1,567 @@
 [
   {
     "seq": 301,
-    "whyNext": "Builds directly on #1: transitions from simpler approach to optimal pattern for Contains Duplicate II.",
+    "whyNext": "Builds on hash set duplicate detection from Contains Duplicate (Seq 1) by enforcing a sliding window distance constraint of at most k indices.",
+    "hints": [
+      "Consider how tracking element indices or maintaining a bounded window can verify the distance constraint.",
+      "Use a sliding window HashSet of maximum size k or a HashMap storing the most recent index of each value.",
+      "As you iterate through the array, check if the current element exists in your window of size k; if present, return true, otherwise insert it and remove the element that fell outside the window."
+    ],
     "brute": {
-      "idea": "Compare every pair within distance k",
+      "idea": "Compare each element with every other element within the next k positions using nested loops.",
       "steps": [
-        "Identify problem requirements for Contains Duplicate II.",
-        "Explore all states or exhaustive candidates (Compare every pair within distance k).",
-        "Return matching answer or extreme value found."
+        "Iterate i from 0 to n - 1.",
+        "Iterate j from i + 1 up to min(i + k, n - 1).",
+        "If nums[i] equals nums[j], return true.",
+        "If no such pair is found after scanning all elements, return false."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(nk).",
-      "time": "O(nk)",
-      "space": "O(1) auxiliary",
+      "whySlow": "Scanning k elements for every index takes O(n * k) time in the worst case.",
+      "time": "O(n * k)",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(nk)\nclass Solution {\n    // Compare every pair within distance k\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(nk)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare every pair within distance k\n        pass"
+        "java": "class Solution {\n    public boolean containsNearbyDuplicate(int[] nums, int k) {\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j <= i + k && j < n; j++) {\n                if (nums[i] == nums[j]) {\n                    return true;\n                }\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def containsNearbyDuplicate(self, nums: list[int], k: int) -> bool:\n        n = len(nums)\n        for i in range(n):\n            limit = min(n, i + k + 1)\n            for j in range(i + 1, limit):\n                if nums[i] == nums[j]:\n                    return True\n        return False"
       }
     },
     "optimal": {
-      "idea": "Sliding window set or a map of last index",
+      "idea": "Maintain a sliding window HashSet containing at most k elements to detect duplicates in constant time.",
       "steps": [
-        "Leverage structural invariants of Contains Duplicate II.",
-        "Apply optimal pattern: Sliding window set or a map of last index.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize an empty HashSet to hold elements within the current window.",
+        "Iterate through nums with index i.",
+        "If the set already contains nums[i], return true.",
+        "Add nums[i] to the set.",
+        "If the set size exceeds k, remove nums[i - k] to maintain the window size.",
+        "Return false if the iteration finishes without finding any duplicate."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(min(n, k))",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Sliding window set or a map of last index\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Sliding window set or a map of last index\n        pass"
+        "java": "class Solution {\n    public boolean containsNearbyDuplicate(int[] nums, int k) {\n        Set<Integer> window = new HashSet<>();\n        for (int i = 0; i < nums.length; i++) {\n            if (i > k) {\n                window.remove(nums[i - k - 1]);\n            }\n            if (!window.add(nums[i])) {\n                return true;\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def containsNearbyDuplicate(self, nums: list[int], k: int) -> bool:\n        window = set()\n        for i, val in enumerate(nums):\n            if i > k:\n                window.remove(nums[i - k - 1])\n            if val in window:\n                return True\n            window.add(val)\n        return False"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Contains Duplicate II. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Sliding window set or a map of last index.",
-      "Detailed formulation: Sliding window set or a map of last index. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 302,
-    "whyNext": "Builds directly on #301: transitions from simpler approach to optimal pattern for Intersection of Two Arrays.",
+    "whyNext": "Extends set-based existence lookups from Contains Duplicate II (Seq 301) to two distinct collections by retaining only values present in both sets.",
+    "hints": [
+      "Think about converting one array to a set for quick existence tests, while collecting unique matches.",
+      "Use two HashSets: one for the first array and one to collect unique intersection elements from the second array.",
+      "Populate a set with elements of nums1, then iterate through nums2 and add elements that exist in the first set to an intersection set, then convert it to an array."
+    ],
     "brute": {
-      "idea": "Compare every pair",
+      "idea": "Iterate over nums1 and for each unique element search linearly through nums2.",
       "steps": [
-        "Identify problem requirements for Intersection of Two Arrays.",
-        "Explore all states or exhaustive candidates (Compare every pair).",
-        "Return matching answer or extreme value found."
+        "Create a list or set to store common unique elements.",
+        "For each element in nums1, search through all elements of nums2.",
+        "If found and not already in result list, add it.",
+        "Convert the result list to an array."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
-      "time": "O(mn)",
-      "space": "O(1) auxiliary",
+      "whySlow": "Searching nums2 for every element in nums1 takes O(n * m) time.",
+      "time": "O(n * m)",
+      "space": "O(min(n, m))",
       "code": {
-        "java": "// Time: O(mn)\nclass Solution {\n    // Compare every pair\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare every pair\n        pass"
+        "java": "class Solution {\n    public int[] intersection(int[] nums1, int[] nums2) {\n        List<Integer> res = new ArrayList<>();\n        for (int a : nums1) {\n            boolean found = false;\n            for (int b : nums2) {\n                if (a == b) {\n                    found = true;\n                    break;\n                }\n            }\n            if (found && !res.contains(a)) {\n                res.add(a);\n            }\n        }\n        int[] out = new int[res.size()];\n        for (int i = 0; i < res.size(); i++) out[i] = res.get(i);\n        return out;\n    }\n}",
+        "python": "class Solution:\n    def intersection(self, nums1: list[int], nums2: list[int]) -> list[int]:\n        res = []\n        for x in nums1:\n            if x in nums2 and x not in res:\n                res.append(x)\n        return res"
       }
     },
     "optimal": {
-      "idea": "Two sets intersection",
+      "idea": "Store nums1 elements in a HashSet and filter nums2 against the set to collect unique common items.",
       "steps": [
-        "Leverage structural invariants of Intersection of Two Arrays.",
-        "Apply optimal pattern: Two sets intersection.",
-        "Achieve optimal time complexity of O(m+n)."
+        "Insert all elements of nums1 into set1.",
+        "Create an empty set for the result.",
+        "Iterate through nums2; if an element is in set1, add it to the result set.",
+        "Convert the result set into an integer array."
       ],
-      "time": "O(m+n)",
-      "space": "O(n) auxiliary",
+      "time": "O(n + m)",
+      "space": "O(n + m)",
       "code": {
-        "java": "// Time: O(m+n)\nclass Solution {\n    // Two sets intersection\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Two sets intersection\n        pass"
+        "java": "class Solution {\n    public int[] intersection(int[] nums1, int[] nums2) {\n        Set<Integer> set1 = new HashSet<>();\n        for (int x : nums1) set1.add(x);\n        Set<Integer> inter = new HashSet<>();\n        for (int x : nums2) {\n            if (set1.contains(x)) inter.add(x);\n        }\n        int[] res = new int[inter.size()];\n        int idx = 0;\n        for (int x : inter) res[idx++] = x;\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def intersection(self, nums1: list[int], nums2: list[int]) -> list[int]:\n        set1 = set(nums1)\n        res = []\n        for x in set(nums2):\n            if x in set1:\n                res.append(x)\n        return res"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Intersection of Two Arrays. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Two sets intersection.",
-      "Detailed formulation: Two sets intersection. Implement this in O(m+n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 303,
-    "whyNext": "Builds directly on #302: transitions from simpler approach to optimal pattern for Intersection of Two Arrays II.",
+    "whyNext": "Transitions from unique set intersection in Seq 302 to multiset intersection by tracking element frequencies across both collections.",
+    "hints": [
+      "Each element must appear in the result as many times as it shows in both arrays.",
+      "Use a frequency HashMap for one array and decrement counts as you encounter matching elements in the second array.",
+      "Count occurrences of each number in nums1 with a map; scan nums2, and whenever an item has count > 0 in the map, append it to the result and decrement its count."
+    ],
     "brute": {
-      "idea": "Compare and remove matches",
+      "idea": "Mark matched elements in a boolean array for nums2 to handle duplicate frequencies without hash maps.",
       "steps": [
-        "Identify problem requirements for Intersection of Two Arrays II.",
-        "Explore all states or exhaustive candidates (Compare and remove matches).",
-        "Return matching answer or extreme value found."
+        "Create a boolean array visited for nums2 initialized to false.",
+        "For each element in nums1, find the first unvisited match in nums2.",
+        "Mark that index in visited as true and record the element.",
+        "Convert the gathered elements into an array."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(mn).",
-      "time": "O(mn)",
-      "space": "O(1) auxiliary",
+      "whySlow": "Linear search across nums2 for each element in nums1 takes O(n * m) time.",
+      "time": "O(n * m)",
+      "space": "O(m)",
       "code": {
-        "java": "// Time: O(mn)\nclass Solution {\n    // Compare and remove matches\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(mn)\nclass Solution:\n    def solveBrute(self, *args):\n        # Compare and remove matches\n        pass"
+        "java": "class Solution {\n    public int[] intersect(int[] nums1, int[] nums2) {\n        boolean[] used = new boolean[nums2.length];\n        List<Integer> res = new ArrayList<>();\n        for (int x : nums1) {\n            for (int j = 0; j < nums2.length; j++) {\n                if (!used[j] && nums2[j] == x) {\n                    used[j] = true;\n                    res.add(x);\n                    break;\n                }\n            }\n        }\n        int[] out = new int[res.size()];\n        for (int i = 0; i < res.size(); i++) out[i] = res.get(i);\n        return out;\n    }\n}",
+        "python": "class Solution:\n    def intersect(self, nums1: list[int], nums2: list[int]) -> list[int]:\n        used = [False] * len(nums2)\n        res = []\n        for x in nums1:\n            for j in range(len(nums2)):\n                if not used[j] and nums2[j] == x:\n                    used[j] = True\n                    res.append(x)\n                    break\n        return res"
       }
     },
     "optimal": {
-      "idea": "Count map, or sort with two pointers",
+      "idea": "Count occurrences of elements in nums1 using a HashMap, then decrement counts when scanning nums2.",
       "steps": [
-        "Leverage structural invariants of Intersection of Two Arrays II.",
-        "Apply optimal pattern: Count map, or sort with two pointers.",
-        "Achieve optimal time complexity of O(m+n)."
+        "Populate a frequency HashMap with elements of nums1.",
+        "Initialize an output list for matched numbers.",
+        "Iterate through nums2; if the current number exists in the map with count > 0, append it to the list and decrement the count in the map.",
+        "Convert the result list to an array and return it."
       ],
-      "time": "O(m+n)",
-      "space": "O(n) auxiliary",
+      "time": "O(n + m)",
+      "space": "O(min(n, m))",
       "code": {
-        "java": "// Time: O(m+n)\nclass Solution {\n    // Count map, or sort with two pointers\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(m+n)\nclass Solution:\n    def solve(self, *args):\n        # Count map, or sort with two pointers\n        pass"
+        "java": "class Solution {\n    public int[] intersect(int[] nums1, int[] nums2) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int x : nums1) map.put(x, map.getOrDefault(x, 0) + 1);\n        List<Integer> list = new ArrayList<>();\n        for (int x : nums2) {\n            if (map.getOrDefault(x, 0) > 0) {\n                list.add(x);\n                map.put(x, map.get(x) - 1);\n            }\n        }\n        int[] res = new int[list.size()];\n        for (int i = 0; i < list.size(); i++) res[i] = list.get(i);\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def intersect(self, nums1: list[int], nums2: list[int]) -> list[int]:\n        from collections import Counter\n        c1 = Counter(nums1)\n        res = []\n        for x in nums2:\n            if c1[x] > 0:\n                res.append(x)\n                c1[x] -= 1\n        return res"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Intersection of Two Arrays II. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Count map, or sort with two pointers.",
-      "Detailed formulation: Count map, or sort with two pointers. Implement this in O(m+n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 304,
-    "whyNext": "Builds directly on #303: transitions from simpler approach to optimal pattern for Unique Number of Occurrences.",
+    "whyNext": "Builds on frequency map construction from Intersection of Two Arrays II (Seq 303) by validating that all value occurrence counts are pairwise distinct.",
+    "hints": [
+      "Count each value's occurrences first, then check if any two values share the same frequency.",
+      "Use a HashMap to record frequencies and a HashSet to verify that the set of frequency values contains no duplicates.",
+      "Iterate through the array to populate the frequency map, then insert each frequency count into a HashSet. If the size of the set equals the number of keys in the map, all counts are unique."
+    ],
     "brute": {
-      "idea": "Count each value by scanning",
+      "idea": "Calculate the frequency of each distinct element, collect them in a list, and compare all pairs for equality.",
       "steps": [
-        "Identify problem requirements for Unique Number of Occurrences.",
-        "Explore all states or exhaustive candidates (Count each value by scanning).",
-        "Return matching answer or extreme value found."
+        "Collect distinct elements from arr.",
+        "Count occurrences of each distinct element by scanning arr.",
+        "Compare each count with every other count using nested loops.",
+        "Return false if any two counts match, otherwise true."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Counting elements repeatedly takes O(n * u) where u is distinct values, plus pairwise frequency comparison.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Count each value by scanning\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Count each value by scanning\n        pass"
+        "java": "class Solution {\n    public boolean uniqueOccurrences(int[] arr) {\n        List<Integer> distinct = new ArrayList<>();\n        for (int x : arr) if (!distinct.contains(x)) distinct.add(x);\n        List<Integer> freqs = new ArrayList<>();\n        for (int d : distinct) {\n            int cnt = 0;\n            for (int x : arr) if (x == d) cnt++;\n            freqs.add(cnt);\n        }\n        for (int i = 0; i < freqs.size(); i++) {\n            for (int j = i + 1; j < freqs.size(); j++) {\n                if (freqs.get(i).equals(freqs.get(j))) return false;\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def uniqueOccurrences(self, arr: list[int]) -> bool:\n        distinct = []\n        for x in arr:\n            if x not in distinct:\n                distinct.append(x)\n        counts = [arr.count(d) for d in distinct]\n        for i in range(len(counts)):\n            for j in range(i + 1, len(counts)):\n                if counts[i] == counts[j]:\n                    return False\n        return True"
       }
     },
     "optimal": {
-      "idea": "Count map plus a set of the counts",
+      "idea": "Count frequencies using a map, then insert all counts into a set to verify uniqueness.",
       "steps": [
-        "Leverage structural invariants of Unique Number of Occurrences.",
-        "Apply optimal pattern: Count map plus a set of the counts.",
-        "Achieve optimal time complexity of O(n)."
+        "Populate a frequency HashMap from arr.",
+        "Insert all values of the map into a HashSet.",
+        "Check if the size of the set matches the number of keys in the map.",
+        "Return true if sizes match, otherwise false."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Count map plus a set of the counts\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Count map plus a set of the counts\n        pass"
+        "java": "class Solution {\n    public boolean uniqueOccurrences(int[] arr) {\n        Map<Integer, Integer> counts = new HashMap<>();\n        for (int x : arr) counts.put(x, counts.getOrDefault(x, 0) + 1);\n        Set<Integer> uniqueFreqs = new HashSet<>(counts.values());\n        return uniqueFreqs.size() == counts.size();\n    }\n}",
+        "python": "class Solution:\n    def uniqueOccurrences(self, arr: list[int]) -> bool:\n        from collections import Counter\n        counts = Counter(arr)\n        return len(counts.values()) == len(set(counts.values()))"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Unique Number of Occurrences. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Count map plus a set of the counts.",
-      "Detailed formulation: Count map plus a set of the counts. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 305,
-    "whyNext": "Builds directly on #13: transitions from simpler approach to optimal pattern for Find All Numbers Disappeared in an Array.",
+    "whyNext": "Builds on missing value identification from Missing Number (Seq 13) by detecting multiple absent values in [1, n] using sign-inversion index marking.",
+    "hints": [
+      "Can you use the array indices themselves as hash buckets without allocating additional memory?",
+      "Mark visits by inverting the sign of the element at index abs(val) - 1.",
+      "Iterate through nums; for each value, find idx = abs(val) - 1 and negate nums[idx] if positive. On a second pass, any index with a positive value corresponds to a missing number idx + 1."
+    ],
     "brute": {
-      "idea": "Set of seen numbers",
+      "idea": "Store all numbers in a HashSet, then check every integer from 1 to n to see which ones are missing.",
       "steps": [
-        "Identify problem requirements for Find All Numbers Disappeared in an Array.",
-        "Explore all states or exhaustive candidates (Set of seen numbers).",
-        "Return matching answer or extreme value found."
+        "Insert all elements of nums into a HashSet.",
+        "Loop integer i from 1 to nums.length.",
+        "If i is not present in the set, append i to the result list.",
+        "Return the result list."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
-      "time": "O(n) space",
-      "space": "O(1) auxiliary",
+      "whySlow": "Allocates O(n) auxiliary space for the HashSet instead of reusing existing storage.",
+      "time": "O(n)",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n) space\nclass Solution {\n    // Set of seen numbers\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Set of seen numbers\n        pass"
+        "java": "class Solution {\n    public List<Integer> findDisappearedNumbers(int[] nums) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) seen.add(x);\n        List<Integer> missing = new ArrayList<>();\n        for (int i = 1; i <= nums.length; i++) {\n            if (!seen.contains(i)) missing.add(i);\n        }\n        return missing;\n    }\n}",
+        "python": "class Solution:\n    def findDisappearedNumbers(self, nums: list[int]) -> list[int]:\n        seen = set(nums)\n        missing = []\n        for i in range(1, len(nums) + 1):\n            if i not in seen:\n                missing.append(i)\n        return missing"
       }
     },
     "optimal": {
-      "idea": "Mark seen by negating nums[abs(x)-1]",
+      "idea": "Use the array indices as implicit hash buckets by negating values at index abs(x) - 1 to achieve O(1) extra space.",
       "steps": [
-        "Leverage structural invariants of Find All Numbers Disappeared in an Array.",
-        "Apply optimal pattern: Mark seen by negating nums[abs(x)-1].",
-        "Achieve optimal time complexity of O(1) space."
+        "Iterate through nums. For each element x, let targetIdx = abs(x) - 1.",
+        "If nums[targetIdx] is positive, negate it to mark that (targetIdx + 1) has been seen.",
+        "Perform a second pass: for any index i where nums[i] > 0, add (i + 1) to the missing numbers list.",
+        "Return the collected list of missing numbers."
       ],
-      "time": "O(1) space",
-      "space": "O(n) auxiliary",
+      "time": "O(n)",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(1) space\nclass Solution {\n    // Mark seen by negating nums[abs(x)-1]\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Mark seen by negating nums[abs(x)-1]\n        pass"
+        "java": "class Solution {\n    public List<Integer> findDisappearedNumbers(int[] nums) {\n        for (int i = 0; i < nums.length; i++) {\n            int idx = Math.abs(nums[i]) - 1;\n            if (nums[idx] > 0) {\n                nums[idx] = -nums[idx];\n            }\n        }\n        List<Integer> res = new ArrayList<>();\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] > 0) {\n                res.add(i + 1);\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def findDisappearedNumbers(self, nums: list[int]) -> list[int]:\n        for x in nums:\n            idx = abs(x) - 1\n            if nums[idx] > 0:\n                nums[idx] = -nums[idx]\n        return [i + 1 for i, val in enumerate(nums) if val > 0]"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Find All Numbers Disappeared in an Array. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Mark seen by negating nums[abs(x)-1].",
-      "Detailed formulation: Mark seen by negating nums[abs(x)-1]. Implement this in O(1) space without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 306,
-    "whyNext": "Builds directly on #305: transitions from simpler approach to optimal pattern for Set Mismatch.",
+    "whyNext": "Extends sign-inversion index marking from Find All Numbers Disappeared (Seq 305) to simultaneously isolate both the duplicated value and the missing number in [1, n].",
+    "hints": [
+      "When indexing abs(x) - 1, encountering an already negative value reveals the duplicate, while a positive slot at the end reveals the missing number.",
+      "Use sign negation to identify the duplicate during iteration, then identify the missing number by finding the positive index.",
+      "Traverse nums; for each x, let idx = abs(x) - 1. If nums[idx] < 0, x is the duplicate. Otherwise negate nums[idx]. In a second pass, the index i where nums[i] > 0 gives missing = i + 1."
+    ],
     "brute": {
-      "idea": "Count map for occurrences",
+      "idea": "Count the frequency of each number from 1 to n using an auxiliary frequency array.",
       "steps": [
-        "Identify problem requirements for Set Mismatch.",
-        "Explore all states or exhaustive candidates (Count map for occurrences).",
-        "Return matching answer or extreme value found."
+        "Allocate a frequency array counts of size n + 1.",
+        "Iterate through nums and increment counts[x] for each element.",
+        "Scan from 1 to n: find which number has count == 2 (duplicate) and which has count == 0 (missing).",
+        "Return [duplicate, missing]."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n) space.",
-      "time": "O(n) space",
-      "space": "O(1) auxiliary",
+      "whySlow": "Requires an extra array of size n + 1 for counting.",
+      "time": "O(n)",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n) space\nclass Solution {\n    // Count map for occurrences\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n) space\nclass Solution:\n    def solveBrute(self, *args):\n        # Count map for occurrences\n        pass"
+        "java": "class Solution {\n    public int[] findErrorNums(int[] nums) {\n        int n = nums.length;\n        int[] count = new int[n + 1];\n        for (int x : nums) count[x]++;\n        int dup = -1, missing = -1;\n        for (int i = 1; i <= n; i++) {\n            if (count[i] == 2) dup = i;\n            else if (count[i] == 0) missing = i;\n        }\n        return new int[]{dup, missing};\n    }\n}",
+        "python": "class Solution:\n    def findErrorNums(self, nums: list[int]) -> list[int]:\n        n = len(nums)\n        counts = [0] * (n + 1)\n        for x in nums:\n            counts[x] += 1\n        dup = missing = -1\n        for i in range(1, n + 1):\n            if counts[i] == 2:\n                dup = i\n            elif counts[i] == 0:\n                missing = i\n        return [dup, missing]"
       }
     },
     "optimal": {
-      "idea": "Negation marking or sum formulas",
+      "idea": "Mark indices negative to detect the duplicate on the first pass, then identify the remaining positive index for the missing number.",
       "steps": [
-        "Leverage structural invariants of Set Mismatch.",
-        "Apply optimal pattern: Negation marking or sum formulas.",
-        "Achieve optimal time complexity of O(1) space."
+        "Initialize dup and missing to -1.",
+        "For each value x in nums, inspect nums[abs(x) - 1]. If it is already negative, abs(x) is the duplicate; otherwise negate it.",
+        "Scan nums again: if nums[i] is positive, missing is i + 1.",
+        "Return [dup, missing]."
       ],
-      "time": "O(1) space",
-      "space": "O(n) auxiliary",
+      "time": "O(n)",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(1) space\nclass Solution {\n    // Negation marking or sum formulas\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1) space\nclass Solution:\n    def solve(self, *args):\n        # Negation marking or sum formulas\n        pass"
+        "java": "class Solution {\n    public int[] findErrorNums(int[] nums) {\n        int dup = -1, missing = -1;\n        for (int x : nums) {\n            int idx = Math.abs(x) - 1;\n            if (nums[idx] < 0) {\n                dup = Math.abs(x);\n            } else {\n                nums[idx] = -nums[idx];\n            }\n        }\n        for (int i = 0; i < nums.length; i++) {\n            if (nums[i] > 0) {\n                missing = i + 1;\n                break;\n            }\n        }\n        return new int[]{dup, missing};\n    }\n}",
+        "python": "class Solution:\n    def findErrorNums(self, nums: list[int]) -> list[int]:\n        dup = missing = -1\n        for x in nums:\n            idx = abs(x) - 1\n            if nums[idx] < 0:\n                dup = abs(x)\n            else:\n                nums[idx] = -nums[idx]\n        for i, val in enumerate(nums):\n            if val > 0:\n                missing = i + 1\n                break\n        return [dup, missing]"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Set Mismatch. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Negation marking or sum formulas.",
-      "Detailed formulation: Negation marking or sum formulas. Implement this in O(1) space without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 307,
-    "whyNext": "Builds directly on #306: transitions from simpler approach to optimal pattern for Max Consecutive Ones.",
+    "whyNext": "Builds on single-pass array traversal from Set Mismatch (Seq 306) by maintaining a running tally of consecutive ones that resets upon encountering zero.",
+    "hints": [
+      "Keep track of the current streak of ones and update the maximum streak seen so far.",
+      "Iterate once through the binary array, incrementing a streak counter on 1 and resetting to 0 on 0.",
+      "Initialize count and maxCount to 0. For each number, if it is 1, increment count and update maxCount; if 0, reset count to 0. Return maxCount."
+    ],
     "brute": {
-      "idea": "Check every subarray start",
+      "idea": "For every index i with value 1, scan forward to count the length of consecutive ones.",
       "steps": [
-        "Identify problem requirements for Max Consecutive Ones.",
-        "Explore all states or exhaustive candidates (Check every subarray start).",
-        "Return matching answer or extreme value found."
+        "Initialize maxConsecutive = 0.",
+        "For each index i, if nums[i] == 1, iterate j from i forward while nums[j] == 1.",
+        "Update maxConsecutive = max(maxConsecutive, j - i).",
+        "Return maxConsecutive."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Redundant forward scans can take O(n²) time in the worst case when array is all 1s.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Check every subarray start\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every subarray start\n        pass"
+        "java": "class Solution {\n    public int findMaxConsecutiveOnes(int[] nums) {\n        int max = 0;\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            if (nums[i] == 1) {\n                int count = 0;\n                for (int j = i; j < n && nums[j] == 1; j++) {\n                    count++;\n                }\n                max = Math.max(max, count);\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def findMaxConsecutiveOnes(self, nums: list[int]) -> int:\n        max_streak = 0\n        n = len(nums)\n        for i in range(n):\n            if nums[i] == 1:\n                cnt = 0\n                for j in range(i, n):\n                    if nums[j] == 1:\n                        cnt += 1\n                    else:\n                        break\n                max_streak = max(max_streak, cnt)\n        return max_streak"
       }
     },
     "optimal": {
-      "idea": "One pass with a running count",
+      "idea": "One-pass linear scan keeping a running count of ones and resetting on zeros.",
       "steps": [
-        "Leverage structural invariants of Max Consecutive Ones.",
-        "Apply optimal pattern: One pass with a running count.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize currentCount = 0 and maxCount = 0.",
+        "Iterate through each number in nums.",
+        "If the number is 1, increment currentCount and set maxCount = max(maxCount, currentCount).",
+        "If the number is 0, reset currentCount = 0.",
+        "Return maxCount."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // One pass with a running count\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # One pass with a running count\n        pass"
+        "java": "class Solution {\n    public int findMaxConsecutiveOnes(int[] nums) {\n        int max = 0, current = 0;\n        for (int num : nums) {\n            if (num == 1) {\n                current++;\n                if (current > max) max = current;\n            } else {\n                current = 0;\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def findMaxConsecutiveOnes(self, nums: list[int]) -> int:\n        max_cnt = cur = 0\n        for x in nums:\n            if x == 1:\n                cur += 1\n                if cur > max_cnt:\n                    max_cnt = cur\n            else:\n                cur = 0\n        return max_cnt"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Max Consecutive Ones. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: One pass with a running count.",
-      "Detailed formulation: One pass with a running count. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 308,
-    "whyNext": "Builds directly on #307: transitions from simpler approach to optimal pattern for Non-decreasing Array.",
+    "whyNext": "Builds on local condition checking from Max Consecutive Ones (Seq 307) by detecting an inversion in monotonicity and determining if a single element modification can resolve it.",
+    "hints": [
+      "Count how many times nums[i] > nums[i + 1]. If it happens more than once, it is impossible.",
+      "When an inversion occurs, decide whether to lower nums[i] or raise nums[i + 1] based on nums[i - 1].",
+      "If nums[i] > nums[i+1], increment count. If count > 1, return false. Check if i == 0 or nums[i-1] <= nums[i+1]; if so, conceptually lower nums[i]. Otherwise raise nums[i+1] = nums[i]."
+    ],
     "brute": {
-      "idea": "Try changing each element",
+      "idea": "Try modifying each element one by one to see if the resulting array becomes non-decreasing.",
       "steps": [
-        "Identify problem requirements for Non-decreasing Array.",
-        "Explore all states or exhaustive candidates (Try changing each element).",
-        "Return matching answer or extreme value found."
+        "First check if the original array is already non-decreasing.",
+        "For each index i from 0 to n - 1, save original value nums[i].",
+        "Try setting nums[i] = nums[i-1] (or nums[i+1] if i == 0) and check if sorted.",
+        "If any modification yields a non-decreasing array, return true; otherwise return false."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Testing n possible modifications each taking O(n) check time yields O(n²) total time.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Try changing each element\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Try changing each element\n        pass"
+        "java": "class Solution {\n    public boolean checkPossibility(int[] nums) {\n        for (int i = 0; i < nums.length; i++) {\n            int old = nums[i];\n            nums[i] = (i > 0) ? nums[i - 1] : Integer.MIN_VALUE;\n            if (isSorted(nums)) return true;\n            nums[i] = (i < nums.length - 1) ? nums[i + 1] : Integer.MAX_VALUE;\n            if (isSorted(nums)) return true;\n            nums[i] = old;\n        }\n        return false;\n    }\n    private boolean isSorted(int[] a) {\n        for (int i = 0; i < a.length - 1; i++) {\n            if (a[i] > a[i + 1]) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def checkPossibility(self, nums: list[int]) -> bool:\n        def is_sorted(arr):\n            return all(arr[i] <= arr[i+1] for i in range(len(arr)-1))\n        \n        for i in range(len(nums)):\n            old = nums[i]\n            nums[i] = nums[i-1] if i > 0 else float('-inf')\n            if is_sorted(nums):\n                return True\n            nums[i] = nums[i+1] if i < len(nums)-1 else float('inf')\n            if is_sorted(nums):\n                return True\n            nums[i] = old\n        return False"
       }
     },
     "optimal": {
-      "idea": "One pass, fix at first drop",
+      "idea": "Greedily resolve inversions in a single pass; allow at most one violation by adapting either nums[i] or nums[i+1].",
       "steps": [
-        "Leverage structural invariants of Non-decreasing Array.",
-        "Apply optimal pattern: One pass, fix at first drop.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize a violation counter modified = 0.",
+        "Iterate i from 0 to nums.length - 2.",
+        "If nums[i] > nums[i + 1]: increment modified; if modified > 1 return false.",
+        "If i == 0 or nums[i - 1] <= nums[i + 1], lower nums[i] = nums[i + 1]; otherwise raise nums[i + 1] = nums[i].",
+        "Return true if loop completes."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // One pass, fix at first drop\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # One pass, fix at first drop\n        pass"
+        "java": "class Solution {\n    public boolean checkPossibility(int[] nums) {\n        int count = 0;\n        for (int i = 0; i < nums.length - 1; i++) {\n            if (nums[i] > nums[i + 1]) {\n                count++;\n                if (count > 1) return false;\n                if (i == 0 || nums[i - 1] <= nums[i + 1]) {\n                    nums[i] = nums[i + 1];\n                } else {\n                    nums[i + 1] = nums[i];\n                }\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def checkPossibility(self, nums: list[int]) -> bool:\n        count = 0\n        for i in range(len(nums) - 1):\n            if nums[i] > nums[i + 1]:\n                count += 1\n                if count > 1:\n                    return False\n                if i == 0 or nums[i - 1] <= nums[i + 1]:\n                    nums[i] = nums[i + 1]\n                else:\n                    nums[i + 1] = nums[i]\n        return True"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Non-decreasing Array. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: One pass, fix at first drop.",
-      "Detailed formulation: One pass, fix at first drop. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 309,
-    "whyNext": "Builds directly on #308: transitions from simpler approach to optimal pattern for Shortest Unsorted Continuous Subarray.",
+    "whyNext": "Expands single-violation boundary detection from Non-decreasing Array (Seq 308) into finding the full bounded span of unsorted elements using prefix max and suffix min scans.",
+    "hints": [
+      "Any element in the unsorted subarray must be placed such that elements to its left are smaller and elements to its right are larger.",
+      "Identify the rightmost element smaller than the running maximum and the leftmost element larger than the running minimum.",
+      "Scan left-to-right maintaining the running max; whenever nums[i] < runningMax, mark right boundary at i. Scan right-to-left maintaining running min; whenever nums[i] > runningMin, mark left boundary at i. Result is right - left + 1."
+    ],
     "brute": {
-      "idea": "Sort a copy and compare boundaries",
+      "idea": "Compare the original array against a fully sorted clone to identify the first and last mismatching positions.",
       "steps": [
-        "Identify problem requirements for Shortest Unsorted Continuous Subarray.",
-        "Explore all states or exhaustive candidates (Sort a copy and compare boundaries).",
-        "Return matching answer or extreme value found."
+        "Create a sorted copy of nums.",
+        "Find the first index l from the left where nums[l] != sorted[l].",
+        "Find the first index r from the right where nums[r] != sorted[r].",
+        "If no mismatches exist, return 0; otherwise return r - l + 1."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n log n).",
+      "whySlow": "Sorting an array copy requires O(n log n) time and O(n) auxiliary space.",
       "time": "O(n log n)",
-      "space": "O(1) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n log n)\nclass Solution {\n    // Sort a copy and compare boundaries\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n log n)\nclass Solution:\n    def solveBrute(self, *args):\n        # Sort a copy and compare boundaries\n        pass"
+        "java": "class Solution {\n    public int findUnsortedSubarray(int[] nums) {\n        int[] sorted = nums.clone();\n        Arrays.sort(sorted);\n        int l = 0, r = nums.length - 1;\n        while (l < nums.length && nums[l] == sorted[l]) l++;\n        while (r > l && nums[r] == sorted[r]) r--;\n        return (r >= l) ? (r - l + 1) : 0;\n    }\n}",
+        "python": "class Solution:\n    def findUnsortedSubarray(self, nums: list[int]) -> int:\n        sorted_nums = sorted(nums)\n        l, r = 0, len(nums) - 1\n        while l < len(nums) and nums[l] == sorted_nums[l]:\n            l += 1\n        while r > l and nums[r] == sorted_nums[r]:\n            r -= 1\n        return (r - l + 1) if r >= l else 0"
       }
     },
     "optimal": {
-      "idea": "Scan with running max and min for the two ends",
+      "idea": "Find boundaries in a single two-way pass by tracking the running max from left and running min from right.",
       "steps": [
-        "Leverage structural invariants of Shortest Unsorted Continuous Subarray.",
-        "Apply optimal pattern: Scan with running max and min for the two ends.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize end = -1, start = -1, max = -infinity, min = +infinity.",
+        "Iterate i from 0 to n - 1: update max = max(max, nums[i]). If nums[i] < max, set end = i.",
+        "Simultaneously iterate from right (n - 1 - i): update min = min(min, nums[n - 1 - i]). If nums[n - 1 - i] > min, set start = n - 1 - i.",
+        "If end == -1, array is already sorted, return 0; else return end - start + 1."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Scan with running max and min for the two ends\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Scan with running max and min for the two ends\n        pass"
+        "java": "class Solution {\n    public int findUnsortedSubarray(int[] nums) {\n        int n = nums.length;\n        int end = -1, start = -1;\n        int max = nums[0], min = nums[n - 1];\n        for (int i = 1; i < n; i++) {\n            max = Math.max(max, nums[i]);\n            if (nums[i] < max) end = i;\n        }\n        for (int i = n - 2; i >= 0; i--) {\n            min = Math.min(min, nums[i]);\n            if (nums[i] > min) start = i;\n        }\n        return (end == -1) ? 0 : (end - start + 1);\n    }\n}",
+        "python": "class Solution:\n    def findUnsortedSubarray(self, nums: list[int]) -> int:\n        n = len(nums)\n        end, start = -1, -1\n        max_val, min_val = nums[0], nums[n - 1]\n        for i in range(1, n):\n            max_val = max(max_val, nums[i])\n            if nums[i] < max_val:\n                end = i\n        for i in range(n - 2, -1, -1):\n            min_val = min(min_val, nums[i])\n            if nums[i] > min_val:\n                start = i\n        return 0 if end == -1 else (end - start + 1)"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Shortest Unsorted Continuous Subarray. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Scan with running max and min for the two ends.",
-      "Detailed formulation: Scan with running max and min for the two ends. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 310,
-    "whyNext": "Builds directly on #9: transitions from simpler approach to optimal pattern for Running Sum of 1d Array.",
+    "whyNext": "Builds on running cumulative state from Product of Array Except Self (Seq 9) by computing the foundational 1D prefix sum array where each index stores the sum of all preceding elements.",
+    "hints": [
+      "Each position in the running sum is simply the previous running sum plus the current element.",
+      "Use prefix accumulation to compute each element in-place or into a new array.",
+      "Iterate from index 1 to n - 1 and set nums[i] += nums[i - 1], then return nums."
+    ],
     "brute": {
-      "idea": "Re-sum for each index",
+      "idea": "For every index i, sum all elements from 0 to i using an inner loop.",
       "steps": [
-        "Identify problem requirements for Running Sum of 1d Array.",
-        "Explore all states or exhaustive candidates (Re-sum for each index).",
-        "Return matching answer or extreme value found."
+        "Allocate a new result array of size n.",
+        "For each index i, initialize sum = 0.",
+        "Loop j from 0 to i and add nums[j] to sum.",
+        "Assign res[i] = sum.",
+        "Return res."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Summing from 0 to i for every position takes O(n²) time.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Re-sum for each index\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Re-sum for each index\n        pass"
+        "java": "class Solution {\n    public int[] runningSum(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) {\n            int sum = 0;\n            for (int j = 0; j <= i; j++) {\n                sum += nums[j];\n            }\n            res[i] = sum;\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def runningSum(self, nums: list[int]) -> list[int]:\n        res = []\n        for i in range(len(nums)):\n            total = sum(nums[:i + 1])\n            res.append(total)\n        return res"
       }
     },
     "optimal": {
-      "idea": "Prefix sum in place",
+      "idea": "Compute the cumulative sum in a single linear pass by accumulating into the array in-place.",
       "steps": [
-        "Leverage structural invariants of Running Sum of 1d Array.",
-        "Apply optimal pattern: Prefix sum in place.",
-        "Achieve optimal time complexity of O(n)."
+        "Iterate i from 1 to nums.length - 1.",
+        "Update nums[i] = nums[i] + nums[i - 1].",
+        "Return the modified nums array."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Prefix sum in place\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Prefix sum in place\n        pass"
+        "java": "class Solution {\n    public int[] runningSum(int[] nums) {\n        for (int i = 1; i < nums.length; i++) {\n            nums[i] += nums[i - 1];\n        }\n        return nums;\n    }\n}",
+        "python": "class Solution:\n    def runningSum(self, nums: list[int]) -> list[int]:\n        for i in range(1, len(nums)):\n            nums[i] += nums[i - 1]\n        return nums"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Running Sum of 1d Array. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Prefix sum in place.",
-      "Detailed formulation: Prefix sum in place. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 311,
-    "whyNext": "Builds directly on #310: transitions from simpler approach to optimal pattern for Range Sum Query - Immutable.",
+    "whyNext": "Applies the prefix sum array created in Running Sum of 1d Array (Seq 310) to answer arbitrary range sum queries in constant O(1) time.",
+    "hints": [
+      "Instead of summing between left and right on every query, precompute prefix sums during initialization.",
+      "Prefix sum array with prefix[i + 1] = prefix[i] + nums[i] enables sumRange(L, R) = prefix[R + 1] - prefix[L].",
+      "Construct a prefix array of size n + 1. In sumRange(left, right), directly return prefix[right + 1] - prefix[left]."
+    ],
     "brute": {
-      "idea": "Sum range on every query",
+      "idea": "Store the raw array and iterate from left to right on every sum query.",
       "steps": [
-        "Identify problem requirements for Range Sum Query - Immutable.",
-        "Explore all states or exhaustive candidates (Sum range on every query).",
-        "Return matching answer or extreme value found."
+        "Store a copy of nums in the constructor.",
+        "In sumRange(left, right), loop from left to right and sum all values.",
+        "Return the computed sum."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n) per query.",
+      "whySlow": "Each range query takes O(n) time, leading to O(q * n) time for q queries.",
       "time": "O(n) per query",
-      "space": "O(1) auxiliary",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(n) per query\nclass Solution {\n    // Sum range on every query\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n) per query\nclass Solution:\n    def solveBrute(self, *args):\n        # Sum range on every query\n        pass"
+        "java": "class NumArray {\n    private int[] data;\n    public NumArray(int[] nums) {\n        this.data = nums.clone();\n    }\n    public int sumRange(int left, int right) {\n        int sum = 0;\n        for (int i = left; i <= right; i++) {\n            sum += data[i];\n        }\n        return sum;\n    }\n}",
+        "python": "class NumArray:\n    def __init__(self, nums: list[int]):\n        self.data = list(nums)\n\n    def sumRange(self, left: int, right: int) -> int:\n        return sum(self.data[left:right + 1])"
       }
     },
     "optimal": {
-      "idea": "Prefix sums array answering in O(1)",
+      "idea": "Precompute an (n+1)-sized prefix sum array to answer any range sum query in O(1) time via subtraction.",
       "steps": [
-        "Leverage structural invariants of Range Sum Query - Immutable.",
-        "Apply optimal pattern: Prefix sums array answering in O(1).",
-        "Achieve optimal time complexity of O(1) per query."
+        "Allocate prefix array of size n + 1 with prefix[0] = 0.",
+        "Fill prefix[i + 1] = prefix[i] + nums[i] for all i from 0 to n - 1.",
+        "In sumRange(left, right), return prefix[right + 1] - prefix[left]."
       ],
-      "time": "O(1) per query",
-      "space": "O(n) auxiliary",
+      "time": "O(1) per query, O(n) setup",
+      "space": "O(n)",
       "code": {
-        "java": "// Time: O(1) per query\nclass Solution {\n    // Prefix sums array answering in O(1)\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1) per query\nclass Solution:\n    def solve(self, *args):\n        # Prefix sums array answering in O(1)\n        pass"
+        "java": "class NumArray {\n    private int[] prefix;\n    public NumArray(int[] nums) {\n        prefix = new int[nums.length + 1];\n        for (int i = 0; i < nums.length; i++) {\n            prefix[i + 1] = prefix[i] + nums[i];\n        }\n    }\n    public int sumRange(int left, int right) {\n        return prefix[right + 1] - prefix[left];\n    }\n}",
+        "python": "class NumArray:\n    def __init__(self, nums: list[int]):\n        self.prefix = [0] * (len(nums) + 1)\n        for i, x in enumerate(nums):\n            self.prefix[i + 1] = self.prefix[i] + x\n\n    def sumRange(self, left: int, right: int) -> int:\n        return self.prefix[right + 1] - self.prefix[left]"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Range Sum Query - Immutable. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Prefix sums array answering in O(1).",
-      "Detailed formulation: Prefix sums array answering in O(1). Implement this in O(1) per query without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 312,
-    "whyNext": "Builds directly on #311: transitions from simpler approach to optimal pattern for Range Sum Query 2D - Immutable.",
+    "whyNext": "Generalizes 1D prefix sum subtraction from Range Sum Query (Seq 311) to 2D matrices using 2D inclusion-exclusion principle for O(1) rectangular sum queries.",
+    "hints": [
+      "Can you calculate the sum of any rectangle using submatrices starting from (0,0)?",
+      "Use 2D prefix sums where prefix[r][c] represents the sum of the submatrix from (0,0) to (r-1,c-1).",
+      "Fill prefix[r+1][c+1] = matrix[r][c] + prefix[r][c+1] + prefix[r+1][c] - prefix[r][c]. Query result is prefix[r2+1][c2+1] - prefix[r1][c2+1] - prefix[r2+1][c1] + prefix[r1][c1]."
+    ],
     "brute": {
-      "idea": "Sum rectangle on every query",
+      "idea": "Iterate across the designated rows and columns for each query to sum all cells.",
       "steps": [
-        "Identify problem requirements for Range Sum Query 2D - Immutable.",
-        "Explore all states or exhaustive candidates (Sum rectangle on every query).",
-        "Return matching answer or extreme value found."
+        "Store the matrix in constructor.",
+        "In sumRegion(r1, c1, r2, c2), use nested loops from r1 to r2 and c1 to c2.",
+        "Accumulate and return the sum."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(mn) per query.",
-      "time": "O(mn) per query",
+      "whySlow": "Summing cell by cell takes O(m * n) time per query.",
+      "time": "O(m * n) per query",
       "space": "O(1) auxiliary",
       "code": {
-        "java": "// Time: O(mn) per query\nclass Solution {\n    // Sum rectangle on every query\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(mn) per query\nclass Solution:\n    def solveBrute(self, *args):\n        # Sum rectangle on every query\n        pass"
+        "java": "class NumMatrix {\n    private int[][] mat;\n    public NumMatrix(int[][] matrix) {\n        this.mat = matrix;\n    }\n    public int sumRegion(int row1, int col1, int row2, int col2) {\n        int sum = 0;\n        for (int r = row1; r <= row2; r++) {\n            for (int c = col1; c <= col2; c++) {\n                sum += mat[r][c];\n            }\n        }\n        return sum;\n    }\n}",
+        "python": "class NumMatrix:\n    def __init__(self, matrix: list[list[int]]):\n        self.mat = matrix\n\n    def sumRegion(self, row1: int, col1: int, row2: int, col2: int) -> int:\n        total = 0\n        for r in range(row1, row2 + 1):\n            for c in range(col1, col2 + 1):\n                total += self.mat[r][c]\n        return total"
       }
     },
     "optimal": {
-      "idea": "2D prefix sums inclusion-exclusion",
+      "idea": "Precompute 2D prefix sums to evaluate any rectangular region in O(1) time using inclusion-exclusion.",
       "steps": [
-        "Leverage structural invariants of Range Sum Query 2D - Immutable.",
-        "Apply optimal pattern: 2D prefix sums inclusion-exclusion.",
-        "Achieve optimal time complexity of O(1) per query."
+        "Initialize prefix matrix dp of size (m + 1) x (n + 1).",
+        "Fill dp[r + 1][c + 1] = matrix[r][c] + dp[r][c + 1] + dp[r + 1][c] - dp[r][c].",
+        "To query (r1, c1, r2, c2), return dp[r2 + 1][c2 + 1] - dp[r1][c2 + 1] - dp[r2 + 1][c1] + dp[r1][c1]."
       ],
-      "time": "O(1) per query",
-      "space": "O(n) auxiliary",
+      "time": "O(1) per query, O(m * n) setup",
+      "space": "O(m * n)",
       "code": {
-        "java": "// Time: O(1) per query\nclass Solution {\n    // 2D prefix sums inclusion-exclusion\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(1) per query\nclass Solution:\n    def solve(self, *args):\n        # 2D prefix sums inclusion-exclusion\n        pass"
+        "java": "class NumMatrix {\n    private int[][] dp;\n    public NumMatrix(int[][] matrix) {\n        if (matrix.length == 0 || matrix[0].length == 0) return;\n        int m = matrix.length, n = matrix[0].length;\n        dp = new int[m + 1][n + 1];\n        for (int r = 0; r < m; r++) {\n            for (int c = 0; c < n; c++) {\n                dp[r + 1][c + 1] = matrix[r][c] + dp[r][c + 1] + dp[r + 1][c] - dp[r][c];\n            }\n        }\n    }\n    public int sumRegion(int row1, int col1, int row2, int col2) {\n        return dp[row2 + 1][col2 + 1] - dp[row1][col2 + 1] - dp[row2 + 1][col1] + dp[row1][col1];\n    }\n}",
+        "python": "class NumMatrix:\n    def __init__(self, matrix: list[list[int]]):\n        if not matrix or not matrix[0]:\n            return\n        m, n = len(matrix), len(matrix[0])\n        self.dp = [[0] * (n + 1) for _ in range(m + 1)]\n        for r in range(m):\n            for c in range(n):\n                self.dp[r + 1][c + 1] = (matrix[r][c] + self.dp[r][c + 1] +\n                                        self.dp[r + 1][c] - self.dp[r][c])\n\n    def sumRegion(self, row1: int, col1: int, row2: int, col2: int) -> int:\n        return (self.dp[row2 + 1][col2 + 1] - self.dp[row1][col2 + 1] -\n                self.dp[row2 + 1][col1] + self.dp[row1][col1])"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Range Sum Query 2D - Immutable. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: 2D prefix sums inclusion-exclusion.",
-      "Detailed formulation: 2D prefix sums inclusion-exclusion. Implement this in O(1) per query without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 313,
-    "whyNext": "Builds directly on #310: transitions from simpler approach to optimal pattern for Find Pivot Index.",
+    "whyNext": "Builds on running prefix sums from Running Sum of 1d Array (Seq 310) by comparing running left sum with total sum minus current element to find an equilibrium pivot index.",
+    "hints": [
+      "The sum of numbers strictly to the left must equal totalSum - leftSum - nums[i].",
+      "First compute the total array sum; then maintain a running leftSum as you iterate from left to right.",
+      "Iterate through nums; if leftSum == totalSum - leftSum - nums[i], return current index. Otherwise add nums[i] to leftSum. Return -1 if not found."
+    ],
     "brute": {
-      "idea": "Sum both sides for each index",
+      "idea": "For every index i, sum elements from 0 to i-1 and elements from i+1 to n-1 and check equality.",
       "steps": [
-        "Identify problem requirements for Find Pivot Index.",
-        "Explore all states or exhaustive candidates (Sum both sides for each index).",
-        "Return matching answer or extreme value found."
+        "Iterate i from 0 to n - 1.",
+        "Calculate leftSum by adding nums[0..i-1].",
+        "Calculate rightSum by adding nums[i+1..n-1].",
+        "If leftSum == rightSum, return i.",
+        "Return -1 if no pivot matches."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Summing left and right partitions for each index takes O(n²) time.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Sum both sides for each index\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Sum both sides for each index\n        pass"
+        "java": "class Solution {\n    public int pivotIndex(int[] nums) {\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            int left = 0, right = 0;\n            for (int j = 0; j < i; j++) left += nums[j];\n            for (int j = i + 1; j < n; j++) right += nums[j];\n            if (left == right) return i;\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def pivotIndex(self, nums: list[int]) -> int:\n        n = len(nums)\n        for i in range(n):\n            if sum(nums[:i]) == sum(nums[i + 1:]):\n                return i\n        return -1"
       }
     },
     "optimal": {
-      "idea": "Total sum and running left sum",
+      "idea": "Precalculate total sum, then iterate while maintaining running left sum to check equality in O(1) per index.",
       "steps": [
-        "Leverage structural invariants of Find Pivot Index.",
-        "Apply optimal pattern: Total sum and running left sum.",
-        "Achieve optimal time complexity of O(n)."
+        "Calculate totalSum by summing all elements in nums.",
+        "Initialize leftSum = 0.",
+        "For each index i and value nums[i]: check if leftSum == totalSum - leftSum - nums[i]; if so return i.",
+        "Add nums[i] to leftSum.",
+        "Return -1 if no pivot index satisfies the condition."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Total sum and running left sum\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Total sum and running left sum\n        pass"
+        "java": "class Solution {\n    public int pivotIndex(int[] nums) {\n        int total = 0;\n        for (int x : nums) total += x;\n        int left = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (left == total - left - nums[i]) return i;\n            left += nums[i];\n        }\n        return -1;\n    }\n}",
+        "python": "class Solution:\n    def pivotIndex(self, nums: list[int]) -> int:\n        total = sum(nums)\n        left = 0\n        for i, x in enumerate(nums):\n            if left == total - left - x:\n                return i\n            left += x\n        return -1"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Find Pivot Index. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Total sum and running left sum.",
-      "Detailed formulation: Total sum and running left sum. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   },
   {
     "seq": 314,
-    "whyNext": "Builds directly on #11: transitions from simpler approach to optimal pattern for Continuous Subarray Sum.",
+    "whyNext": "Builds on prefix remainder hashing from Subarray Sum Equals K (Seq 11) by storing prefix sum modulo k in a hash map to detect divisible subarray spans of length at least two.",
+    "hints": [
+      "If prefixSum[j] % k == prefixSum[i] % k and j - i >= 2, the subarray between i and j has a sum that is a multiple of k.",
+      "Track the earliest index where each remainder (prefixSum % k) was encountered using a HashMap.",
+      "Initialize map with {0: -1}. Maintain running sum modulo k. If the remainder exists in map, check if (currentIdx - map[remainder] >= 2). If so return true; otherwise record map[remainder] = currentIdx."
+    ],
     "brute": {
-      "idea": "Check every subarray",
+      "idea": "Check all subarray spans of length >= 2 and test if their sum is a multiple of k.",
       "steps": [
-        "Identify problem requirements for Continuous Subarray Sum.",
-        "Explore all states or exhaustive candidates (Check every subarray).",
-        "Return matching answer or extreme value found."
+        "Iterate i from 0 to n - 2.",
+        "Initialize sum = nums[i].",
+        "Iterate j from i + 1 to n - 1.",
+        "Add nums[j] to sum. If sum % k == 0, return true.",
+        "Return false if no matching subarray is found."
       ],
-      "whySlow": "Naive search has high asymptotic complexity of O(n²).",
+      "whySlow": "Checking all pairs of endpoints takes O(n²) time.",
       "time": "O(n²)",
-      "space": "O(1) auxiliary",
+      "space": "O(1)",
       "code": {
-        "java": "// Time: O(n²)\nclass Solution {\n    // Check every subarray\n    public void solveBrute() {\n    }\n}",
-        "python": "# Time: O(n²)\nclass Solution:\n    def solveBrute(self, *args):\n        # Check every subarray\n        pass"
+        "java": "class Solution {\n    public boolean checkSubarraySum(int[] nums, int k) {\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            int sum = nums[i];\n            for (int j = i + 1; j < n; j++) {\n                sum += nums[j];\n                if (sum % k == 0) return true;\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def checkSubarraySum(self, nums: list[int], k: int) -> bool:\n        n = len(nums)\n        for i in range(n):\n            total = nums[i]\n            for j in range(i + 1, n):\n                total += nums[j]\n                if total % k == 0:\n                    return True\n        return False"
       }
     },
     "optimal": {
-      "idea": "Prefix remainder map with first seen index",
+      "idea": "Store the earliest index of each prefix remainder modulo k in a HashMap to verify a distance >= 2 in O(n) time.",
       "steps": [
-        "Leverage structural invariants of Continuous Subarray Sum.",
-        "Apply optimal pattern: Prefix remainder map with first seen index.",
-        "Achieve optimal time complexity of O(n)."
+        "Initialize HashMap remainderMap with (0 -> -1) to handle subarrays starting from index 0.",
+        "Maintain running sum = 0.",
+        "For each index i, add nums[i] to sum and compute remainder = sum % k.",
+        "If remainder exists in map: if i - map.get(remainder) >= 2, return true.",
+        "Else: store map.put(remainder, i).",
+        "Return false if iteration ends without finding such a subarray."
       ],
       "time": "O(n)",
-      "space": "O(n) auxiliary",
+      "space": "O(min(n, k))",
       "code": {
-        "java": "// Time: O(n)\nclass Solution {\n    // Prefix remainder map with first seen index\n    public void solve() {\n    }\n}",
-        "python": "# Time: O(n)\nclass Solution:\n    def solve(self, *args):\n        # Prefix remainder map with first seen index\n        pass"
+        "java": "class Solution {\n    public boolean checkSubarraySum(int[] nums, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        map.put(0, -1);\n        int sum = 0;\n        for (int i = 0; i < nums.length; i++) {\n            sum += nums[i];\n            int rem = sum % k;\n            if (map.containsKey(rem)) {\n                if (i - map.get(rem) >= 2) return true;\n            } else {\n                map.put(rem, i);\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def checkSubarraySum(self, nums: list[int], k: int) -> bool:\n        rem_map = {0: -1}\n        total = 0\n        for i, x in enumerate(nums):\n            total += x\n            rem = total % k\n            if rem in rem_map:\n                if i - rem_map[rem] >= 2:\n                    return True\n            else:\n                rem_map[rem] = i\n        return False"
       }
-    },
-    "hints": [
-      "Consider how you can simplify checking candidates for Continuous Subarray Sum. Can you prune redundant work?",
-      "Apply the standard CH-19 pattern: Prefix remainder map with first seen index.",
-      "Detailed formulation: Prefix remainder map with first seen index. Implement this in O(n) without nested full re-scans."
-    ]
+    }
   }
 ]
