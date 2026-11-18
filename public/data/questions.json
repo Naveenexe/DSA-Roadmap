@@ -7270,18 +7270,18 @@
   },
   {
     "seq": 401,
-    "lc": 889,
-    "title": "Construct Binary Tree from Preorder and Postorder Traversal",
-    "slug": "construct-binary-tree-from-preorder-and-postorder-traversal",
+    "lc": 129,
+    "title": "Sum Root to Leaf Numbers",
+    "slug": "sum-root-to-leaf-numbers",
     "difficulty": "Medium",
-    "buildsOn": 400,
     "chapter": "ch-26",
+    "buildsOn": 131,
     "brute": {
-      "idea": "Try all subtree division points",
-      "time": "O(n²)"
+      "idea": "Traverse all paths from root to leaf, store the path strings in a list, parse each string into an integer, and sum them.",
+      "time": "O(n * h)"
     },
     "optimal": {
-      "idea": "Map postorder indices to partition left and right subtrees",
+      "idea": "Direct integer accumulation DFS: carry current path value as an integer argument, summing leaf values directly in O(h) space.",
       "time": "O(n)"
     },
     "companies": [
@@ -7291,18 +7291,18 @@
   },
   {
     "seq": 402,
-    "lc": 1609,
-    "title": "Even Odd Tree",
-    "slug": "even-odd-tree",
+    "lc": 1026,
+    "title": "Maximum Difference Between Node and Ancestor",
+    "slug": "maximum-difference-between-node-and-ancestor",
     "difficulty": "Medium",
-    "buildsOn": 401,
     "chapter": "ch-26",
+    "buildsOn": 133,
     "brute": {
-      "idea": "Collect nodes per level into arrays and verify parity/order",
-      "time": "O(n) space"
+      "idea": "For every node, traverse all descendant nodes in its subtree to compute the maximum difference abs(root.val - descendant.val).",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "BFS level-order checking strictly increasing/decreasing parity in place",
+      "idea": "Top-down min/max tracking: pass minimum and maximum seen so far down each path; at leaves return max - min.",
       "time": "O(n)"
     },
     "companies": [
@@ -7312,18 +7312,18 @@
   },
   {
     "seq": 403,
-    "lc": 958,
-    "title": "Check Completeness of a Binary Tree",
-    "slug": "check-completeness-of-a-binary-tree",
+    "lc": 979,
+    "title": "Distribute Coins in Binary Tree",
+    "slug": "distribute-coins-in-binary-tree",
     "difficulty": "Medium",
-    "buildsOn": 402,
     "chapter": "ch-26",
+    "buildsOn": 134,
     "brute": {
-      "idea": "Index all nodes in array and check gaps",
-      "time": "O(n)"
+      "idea": "Iteratively simulate moving surplus coins to nearest deficit nodes using BFS tree distance calculation.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "BFS level-order: after first null node, no non-null may appear",
+      "idea": "Bottom-up postorder balance aggregation: each edge transfers abs(subtree_balance) coins, running in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7333,18 +7333,18 @@
   },
   {
     "seq": 404,
-    "lc": 654,
-    "title": "Maximum Binary Tree",
-    "slug": "maximum-binary-tree",
-    "difficulty": "Medium",
-    "buildsOn": 401,
+    "lc": 968,
+    "title": "Binary Tree Cameras",
+    "slug": "binary-tree-cameras",
+    "difficulty": "Hard",
     "chapter": "ch-26",
+    "buildsOn": 403,
     "brute": {
-      "idea": "Find maximum in range recursively",
-      "time": "O(n²)"
+      "idea": "Tree DP computing min cameras for each node under 3 states: (has camera, covered by child, covered by parent).",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Monotonic decreasing stack of tree nodes",
+      "idea": "Greedy postorder 3-state reduction: place cameras strictly at parents of uncovered nodes, minimizing camera count in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7358,14 +7358,14 @@
     "title": "Find Duplicate Subtrees",
     "slug": "find-duplicate-subtrees",
     "difficulty": "Medium",
-    "buildsOn": 404,
     "chapter": "ch-26",
+    "buildsOn": 128,
     "brute": {
-      "idea": "Compare every subtree with every other",
-      "time": "O(n³)"
+      "idea": "Serialize every subtree into a string and store in a map, comparing all subtree strings.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Postorder subtree string serialization in hash map",
+      "idea": "Subtree ID mapping: assign unique integer IDs to (val, leftId, rightId) triplets to compress subtree serialization into O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7376,19 +7376,19 @@
   },
   {
     "seq": 406,
-    "lc": 814,
-    "title": "Binary Tree Pruning",
-    "slug": "binary-tree-pruning",
-    "difficulty": "Medium",
-    "buildsOn": 399,
+    "lc": 987,
+    "title": "Vertical Order Traversal of a Binary Tree",
+    "slug": "vertical-order-traversal-of-a-binary-tree",
+    "difficulty": "Hard",
     "chapter": "ch-26",
+    "buildsOn": 136,
     "brute": {
-      "idea": "Check subtree sums repeatedly",
-      "time": "O(n²)"
+      "idea": "Traverse tree with DFS, collect all (col, row, val) tuples into a global list, sort them with custom comparator, and group by col.",
+      "time": "O(n log n)"
     },
     "optimal": {
-      "idea": "Postorder bottom-up pruning when left, right, and root are zero",
-      "time": "O(n)"
+      "idea": "BFS coordinate traversal with TreeMap grouping: collect row buckets per column to sort only overlapping cell nodes in O(n log(n/k)) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "amazon",
@@ -7397,18 +7397,18 @@
   },
   {
     "seq": 407,
-    "lc": 968,
-    "title": "Binary Tree Cameras",
-    "slug": "binary-tree-cameras",
-    "difficulty": "Hard",
-    "buildsOn": 406,
+    "lc": 530,
+    "title": "Minimum Absolute Difference in BST",
+    "slug": "minimum-absolute-difference-in-bst",
+    "difficulty": "Easy",
     "chapter": "ch-26",
+    "buildsOn": 152,
     "brute": {
-      "idea": "Try all subsets of camera placements",
-      "time": "exponential"
+      "idea": "Perform in-order traversal to store all node values in a list, then scan adjacent pairs to find the minimum difference.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Greedy postorder 3-state return (uncovered, camera, covered)",
+      "idea": "In-order traversal with a single previous node reference: compute differences on the fly in O(1) auxiliary space.",
       "time": "O(n)"
     },
     "companies": [
@@ -7418,19 +7418,19 @@
   },
   {
     "seq": 408,
-    "lc": 897,
-    "title": "Increasing Order Search Tree",
-    "slug": "increasing-order-search-tree",
+    "lc": 653,
+    "title": "Two Sum IV - Input is a BST",
+    "slug": "two-sum-iv-input-is-a-bst",
     "difficulty": "Easy",
-    "buildsOn": 396,
     "chapter": "ch-26",
+    "buildsOn": 2,
     "brute": {
-      "idea": "Collect nodes in array and rebuild right spine",
-      "time": "O(n) space"
+      "idea": "Perform in-order traversal to extract all elements into a sorted array, then use two pointers from both ends.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Inorder traversal relinking pointers in place",
-      "time": "O(h) space"
+      "idea": "One-pass HashSet traversal: check if complement k - node.val was seen, returning immediately upon match.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -7439,19 +7439,19 @@
   },
   {
     "seq": 409,
-    "lc": 938,
-    "title": "Range Sum of BST",
-    "slug": "range-sum-of-bst",
-    "difficulty": "Easy",
-    "buildsOn": 397,
+    "lc": 538,
+    "title": "Convert BST to Greater Tree",
+    "slug": "convert-bst-to-greater-tree",
+    "difficulty": "Medium",
     "chapter": "ch-26",
+    "buildsOn": 407,
     "brute": {
-      "idea": "Traverse every node and check range",
-      "time": "O(n)"
+      "idea": "For every node, traverse entire BST to sum all node values greater than it.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "BST pruning: skip left if node < low, skip right if node > high",
-      "time": "O(n) pruned"
+      "idea": "Reverse in-order traversal (right -> root -> left): accumulate suffix sum in a single pass in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "meta",
@@ -7461,18 +7461,18 @@
   },
   {
     "seq": 410,
-    "lc": 1008,
-    "title": "Construct Binary Search Tree from Preorder Traversal",
-    "slug": "construct-binary-search-tree-from-preorder-traversal",
+    "lc": 669,
+    "title": "Trim a Binary Search Tree",
+    "slug": "trim-a-binary-search-tree",
     "difficulty": "Medium",
-    "buildsOn": 409,
     "chapter": "ch-26",
+    "buildsOn": 151,
     "brute": {
-      "idea": "Insert nodes one by one",
-      "time": "O(n²)"
+      "idea": "Collect all BST values within [low, high] via in-order traversal and rebuild a balanced BST from the filtered list.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Monotonic recursion using upper-bound limit",
+      "idea": "Recursive in-place trimming: prune entire out-of-bounds branches by returning the valid child directly.",
       "time": "O(n)"
     },
     "companies": [
@@ -7482,18 +7482,18 @@
   },
   {
     "seq": 411,
-    "lc": 1372,
-    "title": "Longest ZigZag Path in a Binary Tree",
-    "slug": "longest-zigzag-path-in-a-binary-tree",
+    "lc": 1382,
+    "title": "Balance a Binary Search Tree",
+    "slug": "balance-a-binary-search-tree",
     "difficulty": "Medium",
-    "buildsOn": 405,
     "chapter": "ch-26",
+    "buildsOn": 154,
     "brute": {
-      "idea": "Explore zigzag from every node",
-      "time": "O(n²)"
+      "idea": "Rotate unbalanced nodes using AVL / Day-Stout-Warren vine tree rotations.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "DFS carrying left and right zigzag lengths",
+      "idea": "In-order extraction followed by divide-and-conquer bisection: creates an AVL-balanced BST in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7503,18 +7503,18 @@
   },
   {
     "seq": 412,
-    "lc": 1110,
-    "title": "Delete Nodes And Return Forest",
-    "slug": "delete-nodes-and-return-forest",
+    "lc": 1008,
+    "title": "Construct Binary Search Tree from Preorder Traversal",
+    "slug": "construct-binary-search-tree-from-preorder-traversal",
     "difficulty": "Medium",
-    "buildsOn": 406,
     "chapter": "ch-26",
+    "buildsOn": 140,
     "brute": {
-      "idea": "Delete nodes and find new roots iteratively",
-      "time": "O(n²)"
+      "idea": "For each node, find the boundary between values smaller than root (left subtree) and larger than root (right subtree), then recurse.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Postorder traversal adding children to forest when parent deleted",
+      "idea": "One-pass upper-bound recursion: advance a global index pointer through preorder array, placing nodes according to BST upper bound in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -7525,18 +7525,18 @@
   },
   {
     "seq": 413,
-    "lc": 1481,
-    "title": "Least Number of Unique Integers after K Removals",
-    "slug": "least-number-of-unique-integers-after-k-removals",
-    "difficulty": "Medium",
-    "buildsOn": 148,
+    "lc": 506,
+    "title": "Relative Ranks",
+    "slug": "relative-ranks",
+    "difficulty": "Easy",
     "chapter": "ch-27",
+    "buildsOn": 412,
     "brute": {
-      "idea": "Try removing all combinations of k elements",
-      "time": "exponential"
+      "idea": "Sort a copy of the scores array in descending order, then for each original score find its index in the sorted copy via linear scan.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Count frequencies, sort frequencies, greedily remove lowest counts first",
+      "idea": "Pair scores with indices and sort descending: map top 3 ranks to medals and remaining ranks to strings in O(n log n) time.",
       "time": "O(n log n)"
     },
     "companies": [
@@ -7546,19 +7546,19 @@
   },
   {
     "seq": 414,
-    "lc": 179,
-    "title": "Largest Number",
-    "slug": "largest-number",
-    "difficulty": "Medium",
-    "buildsOn": 154,
+    "lc": 1337,
+    "title": "The K Weakest Rows in a Matrix",
+    "slug": "the-k-weakest-rows-in-a-matrix",
+    "difficulty": "Easy",
     "chapter": "ch-27",
+    "buildsOn": 413,
     "brute": {
-      "idea": "Generate all permutations of numbers",
-      "time": "O(n!)"
+      "idea": "Count 1s in each row linearly, store pairs (count, row) in a list, sort entire list, and return first k row indices.",
+      "time": "O(m * n + m log m)"
     },
     "optimal": {
-      "idea": "Custom comparator sorting on (b+a).compareTo(a+b)",
-      "time": "O(n log n)"
+      "idea": "Binary search for soldier count + PriorityQueue of size k: finds the k weakest rows in O(m log n + m log k) time.",
+      "time": "O(m log n + m log k)"
     },
     "companies": [
       "amazon",
@@ -7568,19 +7568,19 @@
   },
   {
     "seq": 415,
-    "lc": 1005,
-    "title": "Maximize Sum Of Array After K Negations",
-    "slug": "maximize-sum-of-array-after-k-negations",
-    "difficulty": "Easy",
-    "buildsOn": 414,
+    "lc": 1481,
+    "title": "Least Number of Unique Integers after K Removals",
+    "slug": "least-number-of-unique-integers-after-k-removals",
+    "difficulty": "Medium",
     "chapter": "ch-27",
+    "buildsOn": 5,
     "brute": {
-      "idea": "Try all combinations of negations",
-      "time": "exponential"
+      "idea": "Count frequencies in a map, convert to an entry list, sort entries ascending by frequency, and greedily remove.",
+      "time": "O(n + u log u)"
     },
     "optimal": {
-      "idea": "Sort or min-heap: negate smallest negatives, then flip smallest abs value",
-      "time": "O(n log n)"
+      "idea": "Bucket sort on frequencies: bucket frequencies in range [1, n] to eliminate smallest frequencies in O(n) linear time.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -7589,19 +7589,19 @@
   },
   {
     "seq": 416,
-    "lc": 1710,
-    "title": "Maximum Units on a Truck",
-    "slug": "maximum-units-on-a-truck",
-    "difficulty": "Easy",
-    "buildsOn": 415,
+    "lc": 264,
+    "title": "Ugly Number II",
+    "slug": "ugly-number-ii",
+    "difficulty": "Medium",
     "chapter": "ch-27",
+    "buildsOn": 414,
     "brute": {
-      "idea": "Try all subsets of box combinations",
-      "time": "exponential"
+      "idea": "Use a Min-Heap (PriorityQueue) and a HashSet to continuously generate and extract the smallest ugly number.",
+      "time": "O(n log n)"
     },
     "optimal": {
-      "idea": "Sort boxes descending by units per box, greedily take until full",
-      "time": "O(n log n)"
+      "idea": "Three-pointer DP: generate ugly numbers in strictly ascending order without heap or set overhead in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -7610,19 +7610,19 @@
   },
   {
     "seq": 417,
-    "lc": 871,
-    "title": "Minimum Number of Refueling Stops",
-    "slug": "minimum-number-of-refueling-stops",
-    "difficulty": "Hard",
-    "buildsOn": 416,
+    "lc": 313,
+    "title": "Super Ugly Number",
+    "slug": "super-ugly-number",
+    "difficulty": "Medium",
     "chapter": "ch-27",
+    "buildsOn": 416,
     "brute": {
-      "idea": "Try all subsets of stations",
-      "time": "O(2ⁿ)"
+      "idea": "Min-Heap storing candidate super ugly numbers, popping the minimum and multiplying by each prime.",
+      "time": "O(n * k log(n * k))"
     },
     "optimal": {
-      "idea": "Max-heap of passed gas stations, refuel greedily when empty",
-      "time": "O(n log n)"
+      "idea": "K-pointer DP with cached next multiples: update next candidate in O(k) per step without heap overhead.",
+      "time": "O(n * k)"
     },
     "companies": [
       "google",
@@ -7635,15 +7635,15 @@
     "title": "Furthest Building You Can Reach",
     "slug": "furthest-building-you-can-reach",
     "difficulty": "Medium",
-    "buildsOn": 417,
     "chapter": "ch-27",
+    "buildsOn": 417,
     "brute": {
-      "idea": "Backtrack trying bricks or ladders",
-      "time": "exponential"
+      "idea": "Backtrack at each climb: branch on using bricks or using a ladder, tracking max building reached.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Min-heap of largest climbs using ladders, rest with bricks",
-      "time": "O(n log k)"
+      "idea": "Min-heap of ladders: allocate ladders to current climbs; when climbs exceed ladders, replace smallest climb with bricks in O(n log l) time.",
+      "time": "O(n log ladders)"
     },
     "companies": [
       "google",
@@ -7652,18 +7652,18 @@
   },
   {
     "seq": 419,
-    "lc": 646,
-    "title": "Maximum Length of Pair Chain",
-    "slug": "maximum-length-of-pair-chain",
+    "lc": 846,
+    "title": "Hand of Straights",
+    "slug": "hand-of-straights",
     "difficulty": "Medium",
-    "buildsOn": 158,
     "chapter": "ch-27",
+    "buildsOn": 5,
     "brute": {
-      "idea": "Check every subset of chains",
-      "time": "O(2ⁿ)"
+      "idea": "Sort the hand, maintain a boolean used array, and greedily find groupSize consecutive cards for each unused card.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Greedy sorting by interval end time",
+      "idea": "TreeMap frequency subtraction: greedily decrement groupSize consecutive card counts starting from smallest available key in O(n log n) time.",
       "time": "O(n log n)"
     },
     "companies": [
@@ -7673,19 +7673,19 @@
   },
   {
     "seq": 420,
-    "lc": 738,
-    "title": "Monotone Increasing Digits",
-    "slug": "monotone-increasing-digits",
+    "lc": 1296,
+    "title": "Divide Array in Sets of K Consecutive Numbers",
+    "slug": "divide-array-in-sets-of-k-consecutive-numbers",
     "difficulty": "Medium",
-    "buildsOn": 414,
     "chapter": "ch-27",
+    "buildsOn": 419,
     "brute": {
-      "idea": "Count down from n checking monotonicity",
-      "time": "O(n·d)"
+      "idea": "Sort array and greedily locate consecutive k elements for each unused element.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Scan right-to-left: decrement inversion point, fill 9s",
-      "time": "O(d)"
+      "idea": "HashMap + sorted unique keys: subtract consecutive frequencies directly in O(n log n) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "amazon",
@@ -7694,19 +7694,19 @@
   },
   {
     "seq": 421,
-    "lc": 1405,
-    "title": "Longest Happy String",
-    "slug": "longest-happy-string",
-    "difficulty": "Medium",
-    "buildsOn": 413,
+    "lc": 1005,
+    "title": "Maximize Sum Of Array After K Negations",
+    "slug": "maximize-sum-of-array-after-k-negations",
+    "difficulty": "Easy",
     "chapter": "ch-27",
+    "buildsOn": 171,
     "brute": {
-      "idea": "Try all combinations of letters",
-      "time": "exponential"
+      "idea": "Use a Min-Heap (PriorityQueue): pop the smallest element, negate it, and reinsert, repeating exactly k times.",
+      "time": "O(n + k log n)"
     },
     "optimal": {
-      "idea": "Max-heap of counts, greedily append most frequent unless 2 in row",
-      "time": "O(a+b+c)"
+      "idea": "Sort array: flip negative numbers from most negative to least. If k remains odd, flip element with smallest absolute value in O(n log n) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "microsoft",
@@ -7715,19 +7715,19 @@
   },
   {
     "seq": 422,
-    "lc": 605,
-    "title": "Can Place Flowers",
-    "slug": "can-place-flowers",
-    "difficulty": "Easy",
-    "buildsOn": 419,
+    "lc": 948,
+    "title": "Bag of Tokens",
+    "slug": "bag-of-tokens",
+    "difficulty": "Medium",
     "chapter": "ch-27",
+    "buildsOn": 421,
     "brute": {
-      "idea": "Try all valid placement patterns",
-      "time": "exponential"
+      "idea": "Recursively try both options (face up or face down) at each step to find maximum attainable score.",
+      "time": "O(2^n)"
     },
     "optimal": {
-      "idea": "Single pass: greedily plant at i if left, self, and right are zero",
-      "time": "O(n)"
+      "idea": "Greedy two-pointer approach: buy cheap tokens with power, sell expensive tokens for power, tracking maxScore in O(n log n) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "meta",
@@ -7737,19 +7737,19 @@
   },
   {
     "seq": 423,
-    "lc": 1753,
-    "title": "Maximum Score From Removing Stones",
-    "slug": "maximum-score-from-removing-stones",
+    "lc": 649,
+    "title": "Dota2 Senate",
+    "slug": "dota2-senate",
     "difficulty": "Medium",
-    "buildsOn": 421,
     "chapter": "ch-27",
+    "buildsOn": 422,
     "brute": {
-      "idea": "Simulate with max-heap step by step",
-      "time": "O(total)"
+      "idea": "Iterate across the senate string repeatedly with a boolean banned array, searching forward cyclically for the next unbanned opponent.",
+      "time": "O(n^2)"
     },
     "optimal": {
-      "idea": "Math: min(sum/2, sum - max)",
-      "time": "O(1)"
+      "idea": "Dual Queue BFS simulation: enqueue indices of 'R' and 'D' senators, re-enqueueing winners with index + n in O(n) time.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -7758,18 +7758,18 @@
   },
   {
     "seq": 424,
-    "lc": 1834,
-    "title": "Single-Threaded CPU",
-    "slug": "single-threaded-cpu",
+    "lc": 1353,
+    "title": "Maximum Number of Events That Can Be Attended",
+    "slug": "maximum-number-of-events-that-can-be-attended",
     "difficulty": "Medium",
-    "buildsOn": 418,
     "chapter": "ch-27",
+    "buildsOn": 188,
     "brute": {
-      "idea": "Scan available tasks at each time unit",
-      "time": "O(n²)"
+      "idea": "Sort events by end day and find the earliest available day for each event using a boolean array.",
+      "time": "O(n * max_days)"
     },
     "optimal": {
-      "idea": "Sort tasks by enqueue time, min-heap by processing time",
+      "idea": "Min-heap of end dates + day iteration: greedily attend earliest-ending available event each day in O(n log n) time.",
       "time": "O(n log n)"
     },
     "companies": [
@@ -7779,19 +7779,19 @@
   },
   {
     "seq": 425,
-    "lc": 1962,
-    "title": "Remove Stones to Minimize the Total",
-    "slug": "remove-stones-to-minimize-the-total",
+    "lc": 2406,
+    "title": "Divide Intervals Into Minimum Number of Groups",
+    "slug": "divide-intervals-into-minimum-number-of-groups",
     "difficulty": "Medium",
-    "buildsOn": 423,
     "chapter": "ch-27",
+    "buildsOn": 424,
     "brute": {
-      "idea": "Sort array repeatedly k times",
-      "time": "O(k n log n)"
+      "idea": "Sort intervals by start time and maintain a list of groups, adding each interval to the first compatible group.",
+      "time": "O(n * g)"
     },
     "optimal": {
-      "idea": "Max-heap: pop largest, floor divide by 2, push back",
-      "time": "O(k log n)"
+      "idea": "Min-heap of group end times: reuse the group that finishes earliest if its end time < interval.start in O(n log n) time.",
+      "time": "O(n log n)"
     },
     "companies": [
       "amazon",

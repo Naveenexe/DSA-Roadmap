@@ -243,5 +243,494 @@
         "python": "class Solution:\n    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:\n        if not root1:\n            return root2\n        if not root2:\n            return root1\n        root1.val += root2.val\n        root1.left = self.mergeTrees(root1.left, root2.left)\n        root1.right = self.mergeTrees(root1.right, root2.right)\n        return root1"
       }
     }
+  },
+  {
+    "seq": 401,
+    "whyNext": "Builds on root-to-leaf path tracking from Path Sum (Seq 131) by accumulating decimal path values (current * 10 + node.val) and summing them across all leaf nodes.",
+    "hints": [
+      "Every step down the tree multiplies the accumulated parent value by 10 and adds the current node's value.",
+      "A leaf node has both left and right children as null.",
+      "In dfs(node, cur): if node == null return 0. Compute cur = cur * 10 + node.val. If node is leaf return cur. Return dfs(node.left, cur) + dfs(node.right, cur)."
+    ],
+    "brute": {
+      "idea": "Traverse all paths from root to leaf, store the path strings in a list, parse each string into an integer, and sum them.",
+      "steps": [
+        "Use DFS to find all root-to-leaf path strings.",
+        "Store strings in an ArrayList.",
+        "Parse each string into an integer and sum up all values.",
+        "Return the total sum."
+      ],
+      "whySlow": "String construction and conversions add extra memory allocations and overhead.",
+      "time": "O(n * h)",
+      "space": "O(n * h)",
+      "code": {
+        "java": "class Solution {\n    public int sumNumbers(TreeNode root) {\n        List<String> paths = new ArrayList<>();\n        dfs(root, \"\", paths);\n        int total = 0;\n        for (String p : paths) total += Integer.parseInt(p);\n        return total;\n    }\n    private void dfs(TreeNode node, String cur, List<String> paths) {\n        if (node == null) return;\n        cur += node.val;\n        if (node.left == null && node.right == null) {\n            paths.add(cur);\n            return;\n        }\n        dfs(node.left, cur, paths);\n        dfs(node.right, cur, paths);\n    }\n}",
+        "python": "class Solution:\n    def sumNumbers(self, root: TreeNode) -> int:\n        paths = []\n        def dfs(node: TreeNode, cur: str) -> None:\n            if not node:\n                return\n            cur += str(node.val)\n            if not node.left and not node.right:\n                paths.append(cur)\n                return\n            dfs(node.left, cur)\n            dfs(node.right, cur)\n        dfs(root, \"\")\n        return sum(int(p) for p in paths)"
+      }
+    },
+    "optimal": {
+      "idea": "Direct integer accumulation DFS: carry current path value as an integer argument, summing leaf values directly in O(h) space.",
+      "steps": [
+        "Define dfs(node, currentSum).",
+        "If node is null, return 0.",
+        "currentSum = currentSum * 10 + node.val.",
+        "If node is a leaf (left and right are null), return currentSum.",
+        "Return dfs(node.left, currentSum) + dfs(node.right, currentSum)."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public int sumNumbers(TreeNode root) {\n        return dfs(root, 0);\n    }\n    private int dfs(TreeNode node, int sum) {\n        if (node == null) return 0;\n        sum = sum * 10 + node.val;\n        if (node.left == null && node.right == null) {\n            return sum;\n        }\n        return dfs(node.left, sum) + dfs(node.right, sum);\n    }\n}",
+        "python": "class Solution:\n    def sumNumbers(self, root: TreeNode) -> int:\n        def dfs(node: TreeNode, cur: int) -> int:\n            if not node:\n                return 0\n            cur = cur * 10 + node.val\n            if not node.left and not node.right:\n                return cur\n            return dfs(node.left, cur) + dfs(node.right, cur)\n        return dfs(root, 0)"
+      }
+    }
+  },
+  {
+    "seq": 402,
+    "whyNext": "Builds on ancestor relationship tracking from Lowest Common Ancestor (Seq 133) by passing the running minimum and maximum values along each path from root to leaf to maximize abs(ancestor - descendant).",
+    "hints": [
+      "Any node's maximum difference with its ancestors on a path is determined by the minimum and maximum ancestor values along that path.",
+      "Pass minVal and maxVal down from root in DFS.",
+      "At each node: update minVal = min(minVal, node.val) and maxVal = max(maxVal, node.val). At a leaf, the max difference for this branch is maxVal - minVal."
+    ],
+    "brute": {
+      "idea": "For every node, traverse all descendant nodes in its subtree to compute the maximum difference abs(root.val - descendant.val).",
+      "steps": [
+        "Traverse tree; for each node u, run a helper DFS exploring all nodes in u's subtree.",
+        "Compute abs(u.val - v.val) for every descendant v.",
+        "Update the global maximum difference found."
+      ],
+      "whySlow": "Visiting subtrees repeatedly results in O(n^2) time for degenerate trees.",
+      "time": "O(n^2)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private int maxDiff = 0;\n    public int maxAncestorDiff(TreeNode root) {\n        dfs(root);\n        return maxDiff;\n    }\n    private void dfs(TreeNode node) {\n        if (node == null) return;\n        checkDescendants(node, node.left);\n        checkDescendants(node, node.right);\n        dfs(node.left);\n        dfs(node.right);\n    }\n    private void checkDescendants(TreeNode anc, TreeNode desc) {\n        if (desc == null) return;\n        maxDiff = Math.max(maxDiff, Math.abs(anc.val - desc.val));\n        checkDescendants(anc, desc.left);\n        checkDescendants(anc, desc.right);\n    }\n}",
+        "python": "class Solution:\n    def maxAncestorDiff(self, root: TreeNode) -> int:\n        max_diff = 0\n        def check(anc: TreeNode, desc: TreeNode) -> None:\n            nonlocal max_diff\n            if not desc:\n                return\n            max_diff = max(max_diff, abs(anc.val - desc.val))\n            check(anc, desc.left)\n            check(anc, desc.right)\n        def dfs(node: TreeNode) -> None:\n            if not node:\n                return\n            check(node, node.left)\n            check(node, node.right)\n            dfs(node.left)\n            dfs(node.right)\n        dfs(root)\n        return max_diff"
+      }
+    },
+    "optimal": {
+      "idea": "Top-down min/max tracking: pass minimum and maximum seen so far down each path; at leaves return max - min.",
+      "steps": [
+        "In dfs(node, curMin, curMax): if node == null return curMax - curMin.",
+        "Update curMin = Math.min(curMin, node.val).",
+        "Update curMax = Math.max(curMax, node.val).",
+        "Return Math.max(dfs(node.left, curMin, curMax), dfs(node.right, curMin, curMax))."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public int maxAncestorDiff(TreeNode root) {\n        if (root == null) return 0;\n        return dfs(root, root.val, root.val);\n    }\n    private int dfs(TreeNode node, int minVal, int maxVal) {\n        if (node == null) return maxVal - minVal;\n        minVal = Math.min(minVal, node.val);\n        maxVal = Math.max(maxVal, node.val);\n        int left = dfs(node.left, minVal, maxVal);\n        int right = dfs(node.right, minVal, maxVal);\n        return Math.max(left, right);\n    }\n}",
+        "python": "class Solution:\n    def maxAncestorDiff(self, root: TreeNode) -> int:\n        if not root:\n            return 0\n        def dfs(node: TreeNode, low: int, high: int) -> int:\n            if not node:\n                return high - low\n            low = min(low, node.val)\n            high = max(high, node.val)\n            return max(dfs(node.left, low, high), dfs(node.right, low, high))\n        return dfs(root, root.val, root.val)"
+      }
+    }
+  },
+  {
+    "seq": 403,
+    "whyNext": "Builds on bottom-up subtree postorder traversal from Binary Tree Maximum Path Sum (Seq 134) by calculating the coin balance (coins - 1) of each subtree and accumulating abs(balance) moves.",
+    "hints": [
+      "Each node requires exactly 1 coin. A subtree with N nodes and C coins has a net balance of C - N.",
+      "The net balance of coins must cross the edge connecting this subtree to its parent, requiring abs(balance) moves.",
+      "Postorder DFS: balance = node.val - 1 + leftBalance + rightBalance. Accumulate ans += abs(leftBalance) + abs(rightBalance). Return balance."
+    ],
+    "brute": {
+      "idea": "Iteratively simulate moving surplus coins to nearest deficit nodes using BFS tree distance calculation.",
+      "steps": [
+        "Identify nodes with surplus coins (> 1) and deficit nodes (0 coins).",
+        "For each surplus coin, find closest deficit node via BFS.",
+        "Add distance to total moves and update coin counts.",
+        "Repeat until all nodes have exactly 1 coin."
+      ],
+      "whySlow": "Simulating individual coin moves across graph edges takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    private int moves = 0;\n    public int distributeCoins(TreeNode root) {\n        dfs(root);\n        return moves;\n    }\n    private int dfs(TreeNode node) {\n        if (node == null) return 0;\n        int l = dfs(node.left);\n        int r = dfs(node.right);\n        moves += Math.abs(l) + Math.abs(r);\n        return node.val + l + r - 1;\n    }\n}",
+        "python": "class Solution:\n    def distributeCoins(self, root: TreeNode) -> int:\n        moves = 0\n        def dfs(node: TreeNode) -> int:\n            nonlocal moves\n            if not node:\n                return 0\n            l = dfs(node.left)\n            r = dfs(node.right)\n            moves += abs(l) + abs(r)\n            return node.val + l + r - 1\n        dfs(root)\n        return moves"
+      }
+    },
+    "optimal": {
+      "idea": "Bottom-up postorder balance aggregation: each edge transfers abs(subtree_balance) coins, running in O(n) time.",
+      "steps": [
+        "Define dfs(node): if node == null return 0.",
+        "Compute leftBalance = dfs(node.left) and rightBalance = dfs(node.right).",
+        "Accumulate total moves += Math.abs(leftBalance) + Math.abs(rightBalance).",
+        "Return node.val - 1 + leftBalance + rightBalance."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private int totalMoves = 0;\n    public int distributeCoins(TreeNode root) {\n        postOrder(root);\n        return totalMoves;\n    }\n    private int postOrder(TreeNode node) {\n        if (node == null) return 0;\n        int left = postOrder(node.left);\n        int right = postOrder(node.right);\n        totalMoves += Math.abs(left) + Math.abs(right);\n        return node.val - 1 + left + right;\n    }\n}",
+        "python": "class Solution:\n    def distributeCoins(self, root: TreeNode) -> int:\n        ans = 0\n        def postorder(node: TreeNode) -> int:\n            nonlocal ans\n            if not node:\n                return 0\n            left = postorder(node.left)\n            right = postorder(node.right)\n            ans += abs(left) + abs(right)\n            return node.val - 1 + left + right\n        postorder(root)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 404,
+    "whyNext": "Builds on postorder state classification from Distribute Coins in Binary Tree (Seq 403) by returning 3 coverage states (0: uncovered, 1: covered without camera, 2: has camera) to greedily place cameras at parents of uncovered leaves.",
+    "hints": [
+      "Place cameras from bottom to top: placing a camera at a leaf's parent covers the leaf, the parent, and the grandparent, which is always more optimal than placing it at a leaf.",
+      "Define 3 states: 0 = node is not covered, 1 = node is covered, 2 = node has a camera.",
+      "If either child is uncovered (0), current node must have a camera (2). If either child has a camera (2), current node is covered (1). Otherwise current node is uncovered (0). If root ends as 0, add 1 camera."
+    ],
+    "brute": {
+      "idea": "Tree DP computing min cameras for each node under 3 states: (has camera, covered by child, covered by parent).",
+      "steps": [
+        "For each node, compute dynamic programming tuple (withCamera, coveredNoCamera, uncovered).",
+        "Combine states from left and right subtrees.",
+        "At root, return min(withCamera, coveredNoCamera)."
+      ],
+      "whySlow": "State transitions in full tree DP require computing multiple branch configurations.",
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public int minCameraCover(TreeNode root) {\n        int[] res = solve(root);\n        return Math.min(res[1], res[2]);\n    }\n    private int[] solve(TreeNode node) {\n        if (node == null) return new int[]{0, 0, 99999};\n        int[] L = solve(node.left);\n        int[] R = solve(node.right);\n        int d0 = L[1] + R[1];\n        int d1 = Math.min(L[2] + Math.min(R[1], R[2]), R[2] + Math.min(L[1], L[2]));\n        int d2 = 1 + Math.min(L[0], Math.min(L[1], L[2])) + Math.min(R[0], Math.min(R[1], R[2]));\n        return new int[]{d0, d1, d2};\n    }\n}",
+        "python": "class Solution:\n    def minCameraCover(self, root: TreeNode) -> int:\n        def solve(node: TreeNode) -> tuple[int, int, int]:\n            if not node:\n                return 0, 0, 99999\n            L = solve(node.left)\n            R = solve(node.right)\n            d0 = L[1] + R[1]\n            d1 = min(L[2] + min(R[1], R[2]), R[2] + min(L[1], L[2]))\n            d2 = 1 + min(L) + min(R)\n            return d0, d1, d2\n        res = solve(root)\n        return min(res[1], res[2])"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy postorder 3-state reduction: place cameras strictly at parents of uncovered nodes, minimizing camera count in O(n) time.",
+      "steps": [
+        "State 0 = uncovered, State 1 = covered (no camera), State 2 = has camera.",
+        "In dfs(node): if null return 1.",
+        "Compute left = dfs(node.left) and right = dfs(node.right).",
+        "If left == 0 || right == 0: cameras++, return 2.",
+        "If left == 2 || right == 2: return 1.",
+        "Return 0.",
+        "If dfs(root) == 0, add 1 camera to cover root. Return cameras."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private int cameras = 0;\n    public int minCameraCover(TreeNode root) {\n        if (dfs(root) == 0) cameras++;\n        return cameras;\n    }\n    private int dfs(TreeNode node) {\n        if (node == null) return 1;\n        int left = dfs(node.left);\n        int right = dfs(node.right);\n        if (left == 0 || right == 0) {\n            cameras++;\n            return 2;\n        }\n        if (left == 2 || right == 2) {\n            return 1;\n        }\n        return 0;\n    }\n}",
+        "python": "class Solution:\n    def minCameraCover(self, root: TreeNode) -> int:\n        cameras = 0\n        def dfs(node: TreeNode) -> int:\n            nonlocal cameras\n            if not node:\n                return 1\n            left = dfs(node.left)\n            right = dfs(node.right)\n            if left == 0 or right == 0:\n                cameras += 1\n                return 2\n            if left == 2 or right == 2:\n                return 1\n            return 0\n        if dfs(root) == 0:\n            cameras += 1\n        return cameras"
+      }
+    }
+  },
+  {
+    "seq": 405,
+    "whyNext": "Builds on tree serialization from Serialize and Deserialize Binary Tree (Seq 128) by hashing preorder subtree serialization strings and storing frequencies in a HashMap to collect roots with frequency exactly 2.",
+    "hints": [
+      "Serialize each subtree as a string: node.val + \",\" + serialize(left) + \",\" + serialize(right).",
+      "Store serialized strings in a HashMap<String, Integer> to count occurrences.",
+      "When a serialized subtree string count reaches exactly 2, add the current node to the result list."
+    ],
+    "brute": {
+      "idea": "Serialize every subtree into a string and store in a map, comparing all subtree strings.",
+      "steps": [
+        "Traverse tree postorder.",
+        "Generate serialized string for each subtree.",
+        "Update count in map.",
+        "If count == 2, add subtree root to result list."
+      ],
+      "whySlow": "String concatenation takes O(n) per node, resulting in O(n^2) overall time.",
+      "time": "O(n^2)",
+      "space": "O(n^2)",
+      "code": {
+        "java": "class Solution {\n    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {\n        List<TreeNode> res = new ArrayList<>();\n        Map<String, Integer> map = new HashMap<>();\n        serialize(root, map, res);\n        return res;\n    }\n    private String serialize(TreeNode node, Map<String, Integer> map, List<TreeNode> res) {\n        if (node == null) return \"#\";\n        String s = node.val + \",\" + serialize(node.left, map, res) + \",\" + serialize(node.right, map, res);\n        int cnt = map.getOrDefault(s, 0) + 1;\n        map.put(s, cnt);\n        if (cnt == 2) res.add(node);\n        return s;\n    }\n}",
+        "python": "class Solution:\n    def findDuplicateSubtrees(self, root: TreeNode) -> list[TreeNode]:\n        from collections import defaultdict\n        counts = defaultdict(int)\n        res = []\n        def serialize(node: TreeNode) -> str:\n            if not node:\n                return \"#\"\n            s = f\"{node.val},{serialize(node.left)},{serialize(node.right)}\"\n            counts[s] += 1\n            if counts[s] == 2:\n                res.append(node)\n            return s\n        serialize(root)\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Subtree ID mapping: assign unique integer IDs to (val, leftId, rightId) triplets to compress subtree serialization into O(n) time.",
+      "steps": [
+        "Assign an integer ID to each unique (node.val, leftId, rightId) tuple using a HashMap.",
+        "Track frequency of each ID in a second map.",
+        "When an ID's frequency reaches 2, add the current node to result list.",
+        "Return assigned ID for the current subtree."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    private Map<String, Integer> idMap = new HashMap<>();\n    private Map<Integer, Integer> countMap = new HashMap<>();\n    private List<TreeNode> duplicates = new ArrayList<>();\n    private int nextId = 1;\n    public List<TreeNode> findDuplicateSubtrees(TreeNode root) {\n        lookup(root);\n        return duplicates;\n    }\n    private int lookup(TreeNode node) {\n        if (node == null) return 0;\n        String key = node.val + \",\" + lookup(node.left) + \",\" + lookup(node.right);\n        int id = idMap.computeIfAbsent(key, k -> nextId++);\n        countMap.put(id, countMap.getOrDefault(id, 0) + 1);\n        if (countMap.get(id) == 2) {\n            duplicates.add(node);\n        }\n        return id;\n    }\n}",
+        "python": "class Solution:\n    def findDuplicateSubtrees(self, root: TreeNode) -> list[TreeNode]:\n        trees = {}\n        counts = {}\n        res = []\n        def lookup(node: TreeNode) -> int:\n            if not node:\n                return 0\n            key = (node.val, lookup(node.left), lookup(node.right))\n            if key not in trees:\n                trees[key] = len(trees) + 1\n            tree_id = trees[key]\n            counts[tree_id] = counts.get(tree_id, 0) + 1\n            if counts[tree_id] == 2:\n                res.append(node)\n            return tree_id\n        lookup(root)\n        return res"
+      }
+    }
+  },
+  {
+    "seq": 406,
+    "whyNext": "Builds on column coordinate tracking from Binary Tree Right Side View (Seq 136) by sorting nodes first by column x, then by row y, then by node value for tie-breaking.",
+    "hints": [
+      "Traverse tree tracking coordinates (row, col) for each node: root is (0, 0), left child is (row + 1, col - 1), right child is (row + 1, col + 1).",
+      "Nodes at the same column should be ordered by row; nodes with the same row and column must be sorted by their values.",
+      "Store triples (col, row, val) in a list, sort them using comparator (col, then row, then val), and group by col into sublists."
+    ],
+    "brute": {
+      "idea": "Traverse tree with DFS, collect all (col, row, val) tuples into a global list, sort them with custom comparator, and group by col.",
+      "steps": [
+        "Traverse tree collecting (col, row, val) for each node.",
+        "Sort list by col ascending, then row ascending, then val ascending.",
+        "Group sorted tuples by col into List<List<Integer>>.",
+        "Return grouped list."
+      ],
+      "whySlow": "Sorting all n nodes together takes O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    static class Point {\n        int col, row, val;\n        Point(int c, int r, int v) { this.col = c; this.row = r; this.val = v; }\n    }\n    public List<List<Integer>> verticalTraversal(TreeNode root) {\n        List<Point> points = new ArrayList<>();\n        dfs(root, 0, 0, points);\n        points.sort((a, b) -> {\n            if (a.col != b.col) return a.col - b.col;\n            if (a.row != b.row) return a.row - b.row;\n            return a.val - b.val;\n        });\n        List<List<Integer>> res = new ArrayList<>();\n        int prevCol = Integer.MIN_VALUE;\n        for (Point p : points) {\n            if (p.col != prevCol) {\n                res.add(new ArrayList<>());\n                prevCol = p.col;\n            }\n            res.get(res.size() - 1).add(p.val);\n        }\n        return res;\n    }\n    private void dfs(TreeNode node, int c, int r, List<Point> points) {\n        if (node == null) return;\n        points.add(new Point(c, r, node.val));\n        dfs(node.left, c - 1, r + 1, points);\n        dfs(node.right, c + 1, r + 1, points);\n    }\n}",
+        "python": "class Solution:\n    def verticalTraversal(self, root: TreeNode) -> list[list[int]]:\n        points = []\n        def dfs(node: TreeNode, c: int, r: int) -> None:\n            if not node:\n                return\n            points.append((c, r, node.val))\n            dfs(node.left, c - 1, r + 1)\n            dfs(node.right, c + 1, r + 1)\n        dfs(root, 0, 0)\n        points.sort()\n        from collections import defaultdict\n        grouped = defaultdict(list)\n        for c, r, val in points:\n            grouped[c].append(val)\n        return [grouped[c] for c in sorted(grouped)]"
+      }
+    },
+    "optimal": {
+      "idea": "BFS coordinate traversal with TreeMap grouping: collect row buckets per column to sort only overlapping cell nodes in O(n log(n/k)) time.",
+      "steps": [
+        "Use TreeMap<Integer, TreeMap<Integer, PriorityQueue<Integer>>>.",
+        "BFS queue stores (node, col, row).",
+        "Pop elements, add to map structure.",
+        "Iterate columns in TreeMap, then rows, then extract from min-heap.",
+        "Return grouped list of lists."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public List<List<Integer>> verticalTraversal(TreeNode root) {\n        TreeMap<Integer, TreeMap<Integer, PriorityQueue<Integer>>> map = new TreeMap<>();\n        Queue<Object[]> q = new LinkedList<>();\n        q.offer(new Object[]{root, 0, 0});\n        while (!q.isEmpty()) {\n            Object[] cur = q.poll();\n            TreeNode node = (TreeNode) cur[0];\n            int col = (int) cur[1], row = (int) cur[2];\n            map.computeIfAbsent(col, k -> new TreeMap<>())\n               .computeIfAbsent(row, k -> new PriorityQueue<>())\n               .offer(node.val);\n            if (node.left != null) q.offer(new Object[]{node.left, col - 1, row + 1});\n            if (node.right != null) q.offer(new Object[]{node.right, col + 1, row + 1});\n        }\n        List<List<Integer>> res = new ArrayList<>();\n        for (TreeMap<Integer, PriorityQueue<Integer>> rows : map.values()) {\n            List<Integer> colList = new ArrayList<>();\n            for (PriorityQueue<Integer> pq : rows.values()) {\n                while (!pq.isEmpty()) colList.add(pq.poll());\n            }\n            res.add(colList);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def verticalTraversal(self, root: TreeNode) -> list[list[int]]:\n        from collections import deque, defaultdict\n        if not root:\n            return []\n        nodes = defaultdict(lambda: defaultdict(list))\n        q = deque([(root, 0, 0)])\n        while q:\n            node, c, r = q.popleft()\n            nodes[c][r].append(node.val)\n            if node.left:\n                q.append((node.left, c - 1, r + 1))\n            if node.right:\n                q.append((node.right, c + 1, r + 1))\n        ans = []\n        for c in sorted(nodes):\n            col_vals = []\n            for r in sorted(nodes[c]):\n                col_vals.extend(sorted(nodes[c][r]))\n            ans.append(col_vals)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 407,
+    "whyNext": "Builds on in-order BST ordering from Validate Binary Search Tree (Seq 152) by comparing adjacent nodes in the sorted in-order traversal to minimize abs(current - previous).",
+    "hints": [
+      "An in-order traversal of a Binary Search Tree produces values in strictly sorted ascending order.",
+      "The minimum difference between any two nodes must occur between two adjacent values in this sorted order.",
+      "Track prevNode during in-order traversal: minDiff = min(minDiff, node.val - prevNode.val); prevNode = node."
+    ],
+    "brute": {
+      "idea": "Perform in-order traversal to store all node values in a list, then scan adjacent pairs to find the minimum difference.",
+      "steps": [
+        "Traverse BST in-order and append each value to an ArrayList.",
+        "Loop i from 1 to list.size() - 1.",
+        "Update minDiff = min(minDiff, list.get(i) - list.get(i - 1)).",
+        "Return minDiff."
+      ],
+      "whySlow": "Requires O(n) auxiliary list storage for all node values.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int getMinimumDifference(TreeNode root) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, list);\n        int min = Integer.MAX_VALUE;\n        for (int i = 1; i < list.size(); i++) {\n            min = Math.min(min, list.get(i) - list.get(i - 1));\n        }\n        return min;\n    }\n    private void inorder(TreeNode node, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, list);\n        list.add(node.val);\n        inorder(node.right, list);\n    }\n}",
+        "python": "class Solution:\n    def getMinimumDifference(self, root: TreeNode) -> int:\n        vals = []\n        def inorder(node: TreeNode) -> None:\n            if not node:\n                return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        return min(vals[i] - vals[i - 1] for i in range(1, len(vals)))"
+      }
+    },
+    "optimal": {
+      "idea": "In-order traversal with a single previous node reference: compute differences on the fly in O(1) auxiliary space.",
+      "steps": [
+        "Maintain Integer prev = null and minDiff = Integer.MAX_VALUE.",
+        "In in-order traversal: recurse left subtree.",
+        "If prev != null: minDiff = Math.min(minDiff, node.val - prev).",
+        "prev = node.val.",
+        "Recurse right subtree. Return minDiff."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private Integer prev = null;\n    private int minDiff = Integer.MAX_VALUE;\n    public int getMinimumDifference(TreeNode root) {\n        inorder(root);\n        return minDiff;\n    }\n    private void inorder(TreeNode node) {\n        if (node == null) return;\n        inorder(node.left);\n        if (prev != null) {\n            minDiff = Math.min(minDiff, node.val - prev);\n        }\n        prev = node.val;\n        inorder(node.right);\n    }\n}",
+        "python": "class Solution:\n    def getMinimumDifference(self, root: TreeNode) -> int:\n        prev = None\n        min_diff = float('inf')\n        def inorder(node: TreeNode) -> None:\n            nonlocal prev, min_diff\n            if not node:\n                return\n            inorder(node.left)\n            if prev is not None:\n                min_diff = min(min_diff, node.val - prev)\n            prev = node.val\n            inorder(node.right)\n        inorder(root)\n        return int(min_diff)"
+      }
+    }
+  },
+  {
+    "seq": 408,
+    "whyNext": "Builds on complement lookup from Two Sum (Seq 2) by checking if k - node.val exists in a HashSet during tree traversal, or using two BST iterators for O(1) space.",
+    "hints": [
+      "Use a HashSet to store visited node values. For each node, check if set.contains(k - node.val).",
+      "Alternatively, since it is a BST, an in-order traversal gives a sorted array, where standard two pointers can find the target sum in O(n) time.",
+      "In dfs(node, set, k): if node == null return false. If set.contains(k - node.val) return true. set.add(node.val). Return dfs(node.left) || dfs(node.right)."
+    ],
+    "brute": {
+      "idea": "Perform in-order traversal to extract all elements into a sorted array, then use two pointers from both ends.",
+      "steps": [
+        "Traverse tree in-order to build sorted ArrayList.",
+        "Set left = 0, right = list.size() - 1.",
+        "While left < right: sum = list[left] + list[right]. If sum == k return true; if sum < k left++; else right--.",
+        "Return false."
+      ],
+      "whySlow": "Requires extracting all elements into a separate list.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean findTarget(TreeNode root, int k) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, list);\n        int l = 0, r = list.size() - 1;\n        while (l < r) {\n            int sum = list.get(l) + list.get(r);\n            if (sum == k) return true;\n            if (sum < k) l++;\n            else r--;\n        }\n        return false;\n    }\n    private void inorder(TreeNode node, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, list);\n        list.add(node.val);\n        inorder(node.right, list);\n    }\n}",
+        "python": "class Solution:\n    def findTarget(self, root: TreeNode, k: int) -> bool:\n        vals = []\n        def inorder(node: TreeNode) -> None:\n            if not node:\n                return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        l, r = 0, len(vals) - 1\n        while l < r:\n            s = vals[l] + vals[r]\n            if s == k:\n                return True\n            if s < k:\n                l += 1\n            else:\n                r -= 1\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "One-pass HashSet traversal: check if complement k - node.val was seen, returning immediately upon match.",
+      "steps": [
+        "Initialize HashSet<Integer> seen.",
+        "Define dfs(node): if null return false.",
+        "If seen.contains(k - node.val) return true.",
+        "seen.add(node.val).",
+        "Return dfs(node.left) || dfs(node.right)."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean findTarget(TreeNode root, int k) {\n        Set<Integer> set = new HashSet<>();\n        return dfs(root, k, set);\n    }\n    private boolean dfs(TreeNode node, int k, Set<Integer> set) {\n        if (node == null) return false;\n        if (set.contains(k - node.val)) return true;\n        set.add(node.val);\n        return dfs(node.left, k, set) || dfs(node.right, k, set);\n    }\n}",
+        "python": "class Solution:\n    def findTarget(self, root: TreeNode, k: int) -> bool:\n        seen = set()\n        def dfs(node: TreeNode) -> bool:\n            if not node:\n                return False\n            if (k - node.val) in seen:\n                return True\n            seen.add(node.val)\n            return dfs(node.left) or dfs(node.right)\n        return dfs(root)"
+      }
+    }
+  },
+  {
+    "seq": 409,
+    "whyNext": "Reverses the in-order traversal from Minimum Absolute Difference in BST (Seq 407) by visiting right-root-left (reverse in-order) to accumulate a suffix sum of all greater node values.",
+    "hints": [
+      "Every node needs its value increased by the sum of all nodes with values greater than it in the BST.",
+      "In a BST, all greater values lie in the right subtree.",
+      "Perform a reverse in-order traversal: recurse right, add current node's value to running sum, update current node's value with running sum, and recurse left."
+    ],
+    "brute": {
+      "idea": "For every node, traverse entire BST to sum all node values greater than it.",
+      "steps": [
+        "For each node u in tree, compute sum of all v in tree where v.val > u.val.",
+        "Add this sum to u.val.",
+        "Return tree."
+      ],
+      "whySlow": "Traversing the entire tree for every node takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode convertBST(TreeNode root) {\n        List<Integer> vals = new ArrayList<>();\n        inorder(root, vals);\n        update(root, vals);\n        return root;\n    }\n    private void inorder(TreeNode node, List<Integer> vals) {\n        if (node == null) return;\n        inorder(node.left, vals);\n        vals.add(node.val);\n        inorder(node.right, vals);\n    }\n    private void update(TreeNode node, List<Integer> vals) {\n        if (node == null) return;\n        int sum = 0;\n        for (int v : vals) if (v > node.val) sum += v;\n        node.val += sum;\n        update(node.left, vals);\n        update(node.right, vals);\n    }\n}",
+        "python": "class Solution:\n    def convertBST(self, root: TreeNode) -> TreeNode:\n        vals = []\n        def inorder(node: TreeNode) -> None:\n            if not node:\n                return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        def update(node: TreeNode) -> None:\n            if not node:\n                return\n            greater_sum = sum(v for v in vals if v > node.val)\n            node.val += greater_sum\n            update(node.left)\n            update(node.right)\n        update(root)\n        return root"
+      }
+    },
+    "optimal": {
+      "idea": "Reverse in-order traversal (right -> root -> left): accumulate suffix sum in a single pass in O(n) time.",
+      "steps": [
+        "Maintain int runningSum = 0.",
+        "In reverseInorder(node): if null return.",
+        "reverseInorder(node.right).",
+        "runningSum += node.val; node.val = runningSum.",
+        "reverseInorder(node.left).",
+        "Return root."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private int sum = 0;\n    public TreeNode convertBST(TreeNode root) {\n        traverse(root);\n        return root;\n    }\n    private void traverse(TreeNode node) {\n        if (node == null) return;\n        traverse(node.right);\n        sum += node.val;\n        node.val = sum;\n        traverse(node.left);\n    }\n}",
+        "python": "class Solution:\n    def convertBST(self, root: TreeNode) -> TreeNode:\n        running_sum = 0\n        def traverse(node: TreeNode) -> None:\n            nonlocal running_sum\n            if not node:\n                return\n            traverse(node.right)\n            running_sum += node.val\n            node.val = running_sum\n            traverse(node.left)\n        traverse(root)\n        return root"
+      }
+    }
+  },
+  {
+    "seq": 410,
+    "whyNext": "Builds on BST deletion mechanics from Delete Node in a BST (Seq 151) by discarding subtrees outside [low, high] and reconnecting the trimmed valid children in O(n) time.",
+    "hints": [
+      "If node.val < low, all nodes in its left subtree are also < low, so the entire left subtree and node can be discarded; return trimBST(node.right, low, high).",
+      "If node.val > high, all nodes in its right subtree are also > high, so discard right subtree and node; return trimBST(node.left, low, high).",
+      "If low <= node.val <= high, keep node and trim both subtrees: node.left = trimBST(node.left, low, high) and node.right = trimBST(node.right, low, high). Return node."
+    ],
+    "brute": {
+      "idea": "Collect all BST values within [low, high] via in-order traversal and rebuild a balanced BST from the filtered list.",
+      "steps": [
+        "Traverse tree and collect nodes satisfying low <= val <= high.",
+        "Sort or keep sorted list.",
+        "Reconstruct BST recursively using middle elements.",
+        "Return new tree root."
+      ],
+      "whySlow": "Allocates a new tree structure rather than pruning existing pointer links in place.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode trimBST(TreeNode root, int low, int high) {\n        List<Integer> list = new ArrayList<>();\n        collect(root, low, high, list);\n        return build(list, 0, list.size() - 1);\n    }\n    private void collect(TreeNode node, int low, int high, List<Integer> list) {\n        if (node == null) return;\n        collect(node.left, low, high, list);\n        if (node.val >= low && node.val <= high) list.add(node.val);\n        collect(node.right, low, high, list);\n    }\n    private TreeNode build(List<Integer> list, int l, int r) {\n        if (l > r) return null;\n        int m = l + (r - l) / 2;\n        TreeNode node = new TreeNode(list.get(m));\n        node.left = build(list, l, m - 1);\n        node.right = build(list, m + 1, r);\n        return node;\n    }\n}",
+        "python": "class Solution:\n    def trimBST(self, root: TreeNode, low: int, high: int) -> TreeNode:\n        vals = []\n        def collect(node: TreeNode) -> None:\n            if not node:\n                return\n            collect(node.left)\n            if low <= node.val <= high:\n                vals.append(node.val)\n            collect(node.right)\n        collect(root)\n        def build(l: int, r: int) -> TreeNode:\n            if l > r:\n                return None\n            m = (l + r) // 2\n            node = TreeNode(vals[m])\n            node.left = build(l, m - 1)\n            node.right = build(m + 1, r)\n            return node\n        return build(0, len(vals) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "Recursive in-place trimming: prune entire out-of-bounds branches by returning the valid child directly.",
+      "steps": [
+        "If root == null, return null.",
+        "If root.val < low, return trimBST(root.right, low, high).",
+        "If root.val > high, return trimBST(root.left, low, high).",
+        "root.left = trimBST(root.left, low, high); root.right = trimBST(root.right, low, high).",
+        "Return root."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode trimBST(TreeNode root, int low, int high) {\n        if (root == null) return null;\n        if (root.val < low) {\n            return trimBST(root.right, low, high);\n        }\n        if (root.val > high) {\n            return trimBST(root.left, low, high);\n        }\n        root.left = trimBST(root.left, low, high);\n        root.right = trimBST(root.right, low, high);\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def trimBST(self, root: TreeNode, low: int, high: int) -> TreeNode:\n        if not root:\n            return None\n        if root.val < low:\n            return self.trimBST(root.right, low, high)\n        if root.val > high:\n            return self.trimBST(root.left, low, high)\n        root.left = self.trimBST(root.left, low, high)\n        root.right = self.trimBST(root.right, low, high)\n        return root"
+      }
+    }
+  },
+  {
+    "seq": 411,
+    "whyNext": "Builds on sorted array to balanced BST conversion from Convert Sorted Array to Binary Search Tree (Seq 154) by performing an in-order traversal to collect sorted node values and recursively bisecting the list to rebuild an optimally balanced BST.",
+    "hints": [
+      "In-order traversal of an unbalanced BST produces all values in strictly sorted ascending order.",
+      "Given a sorted list of values, picking the middle element as root and recursing on the left and right halves builds a height-balanced BST.",
+      "Step 1: list = inorder(root). Step 2: build(list, left, right) creates node with val = list[mid], node.left = build(list, left, mid - 1), node.right = build(list, mid + 1, right). Return build(list, 0, list.size() - 1)."
+    ],
+    "brute": {
+      "idea": "Rotate unbalanced nodes using AVL / Day-Stout-Warren vine tree rotations.",
+      "steps": [
+        "Flatten tree into a right-skewed vine list via right rotations.",
+        "Count total nodes n.",
+        "Perform successive left rotations to rebalance into a complete binary tree.",
+        "Return root."
+      ],
+      "whySlow": "Pointer rotation rebalancing involves complex multi-phase pointer rewiring.",
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode balanceBST(TreeNode root) {\n        List<Integer> list = new ArrayList<>();\n        inorder(root, list);\n        return build(list, 0, list.size() - 1);\n    }\n    private void inorder(TreeNode node, List<Integer> list) {\n        if (node == null) return;\n        inorder(node.left, list);\n        list.add(node.val);\n        inorder(node.right, list);\n    }\n    private TreeNode build(List<Integer> list, int l, int r) {\n        if (l > r) return null;\n        int m = l + (r - l) / 2;\n        TreeNode node = new TreeNode(list.get(m));\n        node.left = build(list, l, m - 1);\n        node.right = build(list, m + 1, r);\n        return node;\n    }\n}",
+        "python": "class Solution:\n    def balanceBST(self, root: TreeNode) -> TreeNode:\n        vals = []\n        def inorder(node: TreeNode) -> None:\n            if not node:\n                return\n            inorder(node.left)\n            vals.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        def build(l: int, r: int) -> TreeNode:\n            if l > r:\n                return None\n            m = (l + r) // 2\n            node = TreeNode(vals[m])\n            node.left = build(l, m - 1)\n            node.right = build(m + 1, r)\n            return node\n        return build(0, len(vals) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "In-order extraction followed by divide-and-conquer bisection: creates an AVL-balanced BST in O(n) time.",
+      "steps": [
+        "Perform in-order traversal to populate sorted ArrayList<Integer>.",
+        "Recursively construct balanced BST by choosing mid = (l + r) / 2 as current node.",
+        "Recurse left subtree with [l, mid - 1] and right subtree with [mid + 1, r].",
+        "Return root."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode balanceBST(TreeNode root) {\n        List<Integer> sorted = new ArrayList<>();\n        inorder(root, sorted);\n        return buildBalanced(sorted, 0, sorted.size() - 1);\n    }\n    private void inorder(TreeNode node, List<Integer> sorted) {\n        if (node == null) return;\n        inorder(node.left, sorted);\n        sorted.add(node.val);\n        inorder(node.right, sorted);\n    }\n    private TreeNode buildBalanced(List<Integer> sorted, int start, int end) {\n        if (start > end) return null;\n        int mid = start + (end - start) / 2;\n        TreeNode root = new TreeNode(sorted.get(mid));\n        root.left = buildBalanced(sorted, start, mid - 1);\n        root.right = buildBalanced(sorted, mid + 1, end);\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def balanceBST(self, root: TreeNode) -> TreeNode:\n        nodes = []\n        def inorder(node: TreeNode) -> None:\n            if not node:\n                return\n            inorder(node.left)\n            nodes.append(node.val)\n            inorder(node.right)\n        inorder(root)\n        def construct(start: int, end: int) -> TreeNode:\n            if start > end:\n                return None\n            mid = (start + end) // 2\n            curr = TreeNode(nodes[mid])\n            curr.left = construct(start, mid - 1)\n            curr.right = construct(mid + 1, end)\n            return curr\n        return construct(0, len(nodes) - 1)"
+      }
+    }
+  },
+  {
+    "seq": 412,
+    "whyNext": "Builds on preorder tree reconstruction from Construct Binary Tree from Preorder and Inorder Traversal (Seq 140) by utilizing BST upper bound constraints to reconstruct the tree in a single pass without needing explicit inorder traversal.",
+    "hints": [
+      "In preorder traversal, the first element is the root. All subsequent elements smaller than root belong to the left subtree, and elements greater belong to the right subtree.",
+      "You can reconstruct the BST by passing an upper bound parameter (bound) down recursive calls.",
+      "Maintain a global index pointer: if index == preorder.length or preorder[index] > bound, return null. Create node = new TreeNode(preorder[index++]); node.left = bstFromPreorder(node.val); node.right = bstFromPreorder(bound); return node."
+    ],
+    "brute": {
+      "idea": "For each node, find the boundary between values smaller than root (left subtree) and larger than root (right subtree), then recurse.",
+      "steps": [
+        "First element is root.",
+        "Scan remaining elements to find index of first element greater than root.",
+        "Left subarray belongs to left subtree; right subarray belongs to right subtree.",
+        "Recurse on left and right subarrays."
+      ],
+      "whySlow": "Scanning for the split point on skewed trees takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    public TreeNode bstFromPreorder(int[] preorder) {\n        return helper(preorder, 0, preorder.length - 1);\n    }\n    private TreeNode helper(int[] pre, int l, int r) {\n        if (l > r) return null;\n        TreeNode root = new TreeNode(pre[l]);\n        int split = l + 1;\n        while (split <= r && pre[split] < pre[l]) split++;\n        root.left = helper(pre, l + 1, split - 1);\n        root.right = helper(pre, split, r);\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def bstFromPreorder(self, preorder: list[int]) -> TreeNode:\n        def build(l: int, r: int) -> TreeNode:\n            if l > r:\n                return None\n            root = TreeNode(preorder[l])\n            split = l + 1\n            while split <= r and preorder[split] < preorder[l]:\n                split += 1\n            root.left = build(l + 1, split - 1)\n            root.right = build(split, r)\n            return root\n        return build(0, len(preorder) - 1)"
+      }
+    },
+    "optimal": {
+      "idea": "One-pass upper-bound recursion: advance a global index pointer through preorder array, placing nodes according to BST upper bound in O(n) time.",
+      "steps": [
+        "Maintain int idx = 0.",
+        "In bst(preorder, bound): if idx == preorder.length or preorder[idx] > bound, return null.",
+        "TreeNode root = new TreeNode(preorder[idx++]).",
+        "root.left = bst(preorder, root.val).",
+        "root.right = bst(preorder, bound).",
+        "Return root."
+      ],
+      "time": "O(n)",
+      "space": "O(h)",
+      "code": {
+        "java": "class Solution {\n    private int idx = 0;\n    public TreeNode bstFromPreorder(int[] preorder) {\n        return build(preorder, Integer.MAX_VALUE);\n    }\n    private TreeNode build(int[] pre, int bound) {\n        if (idx == pre.length || pre[idx] > bound) {\n            return null;\n        }\n        TreeNode root = new TreeNode(pre[idx++]);\n        root.left = build(pre, root.val);\n        root.right = build(pre, bound);\n        return root;\n    }\n}",
+        "python": "class Solution:\n    def bstFromPreorder(self, preorder: list[int]) -> TreeNode:\n        idx = 0\n        def build(bound: int) -> TreeNode:\n            nonlocal idx\n            if idx == len(preorder) or preorder[idx] > bound:\n                return None\n            root = TreeNode(preorder[idx])\n            idx += 1\n            root.left = build(root.val)\n            root.right = build(bound)\n            return root\n        return build(float('inf'))"
+      }
+    }
   }
 ]

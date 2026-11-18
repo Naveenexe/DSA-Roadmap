@@ -1,0 +1,538 @@
+[
+  {
+    "seq": 413,
+    "whyNext": "Builds on rank ordering from Construct Binary Search Tree from Preorder Traversal (Seq 412) and max-heap priority retrieval (Seq 157) by mapping score ranks into Gold, Silver, Bronze medals and ordinal placements.",
+    "hints": [
+      "Pair each athlete's score with their original index: (score[i], i).",
+      "Sort athletes by score descending, or insert them into a max-heap.",
+      "Assign titles: rank 1 is \"Gold Medal\", rank 2 is \"Silver Medal\", rank 3 is \"Bronze Medal\", and rank k >= 4 is String.valueOf(k)."
+    ],
+    "brute": {
+      "idea": "Sort a copy of the scores array in descending order, then for each original score find its index in the sorted copy via linear scan.",
+      "steps": [
+        "Clone score array into sortedCopy.",
+        "Sort sortedCopy in ascending order and reverse it.",
+        "For each score[i], find its index rank in sortedCopy.",
+        "Assign medal or rank string based on rank + 1."
+      ],
+      "whySlow": "Linear searching in sortedCopy for each score takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String[] findRelativeRanks(int[] score) {\n        int n = score.length;\n        int[] sorted = score.clone();\n        Arrays.sort(sorted);\n        String[] ans = new String[n];\n        for (int i = 0; i < n; i++) {\n            int rank = 1;\n            for (int j = n - 1; j >= 0; j--) {\n                if (sorted[j] == score[i]) break;\n                rank++;\n            }\n            if (rank == 1) ans[i] = \"Gold Medal\";\n            else if (rank == 2) ans[i] = \"Silver Medal\";\n            else if (rank == 3) ans[i] = \"Bronze Medal\";\n            else ans[i] = String.valueOf(rank);\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def findRelativeRanks(self, score: list[int]) -> list[str]:\n        sorted_scores = sorted(score, reverse=True)\n        ans = []\n        for s in score:\n            rank = sorted_scores.index(s) + 1\n            if rank == 1:\n                ans.append(\"Gold Medal\")\n            elif rank == 2:\n                ans.append(\"Silver Medal\")\n            elif rank == 3:\n                ans.append(\"Bronze Medal\")\n            else:\n                ans.append(str(rank))\n        return ans"
+      }
+    },
+    "optimal": {
+      "idea": "Pair scores with indices and sort descending: map top 3 ranks to medals and remaining ranks to strings in O(n log n) time.",
+      "steps": [
+        "Create an array of indices Integer[] idx = [0, 1, ..., n-1].",
+        "Sort idx descending by score: (a, b) -> score[b] - score[a].",
+        "Iterate i from 0 to n - 1: if i == 0 assign \"Gold Medal\", if i == 1 \"Silver Medal\", if i == 2 \"Bronze Medal\", else String.valueOf(i + 1).",
+        "Place result at ans[idx[i]]. Return ans."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String[] findRelativeRanks(int[] score) {\n        int n = score.length;\n        Integer[] idx = new Integer[n];\n        for (int i = 0; i < n; i++) idx[i] = i;\n        Arrays.sort(idx, (a, b) -> score[b] - score[a]);\n        String[] ans = new String[n];\n        for (int i = 0; i < n; i++) {\n            if (i == 0) ans[idx[i]] = \"Gold Medal\";\n            else if (i == 1) ans[idx[i]] = \"Silver Medal\";\n            else if (i == 2) ans[idx[i]] = \"Bronze Medal\";\n            else ans[idx[i]] = String.valueOf(i + 1);\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def findRelativeRanks(self, score: list[int]) -> list[str]:\n        n = len(score)\n        indices = sorted(range(n), key=lambda i: score[i], reverse=True)\n        ans = [\"\"] * n\n        for rank, idx in enumerate(indices):\n            if rank == 0:\n                ans[idx] = \"Gold Medal\"\n            elif rank == 1:\n                ans[idx] = \"Silver Medal\"\n            elif rank == 2:\n                ans[idx] = \"Bronze Medal\"\n            else:\n                ans[idx] = str(rank + 1)\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 414,
+    "whyNext": "Builds on index-rank sorting from Relative Ranks (Seq 413) by counting soldier counts per row with binary search and selecting the k smallest pairs using a max-heap.",
+    "hints": [
+      "Since 1s (soldiers) appear before 0s (civilians) in each row, binary search can find the soldier count in O(log cols) time.",
+      "A row i is weaker than row j if soldierCount[i] < soldierCount[j], or soldierCount[i] == soldierCount[j] and i < j.",
+      "Maintain a max-heap of size k storing (soldierCount, rowIndex) to keep the k weakest rows, then extract them in reverse order."
+    ],
+    "brute": {
+      "idea": "Count 1s in each row linearly, store pairs (count, row) in a list, sort entire list, and return first k row indices.",
+      "steps": [
+        "For each row, count 1s by iterating columns.",
+        "Store int[]{count, rowIndex} in a list.",
+        "Sort list by count ascending, then rowIndex ascending.",
+        "Collect the first k row indices into an array."
+      ],
+      "whySlow": "Counting 1s linearly and sorting all m rows takes O(m * n + m log m) time.",
+      "time": "O(m * n + m log m)",
+      "space": "O(m)",
+      "code": {
+        "java": "class Solution {\n    public int[] kWeakestRows(int[][] mat, int k) {\n        int m = mat.length, n = mat[0].length;\n        int[][] rows = new int[m][2];\n        for (int i = 0; i < m; i++) {\n            int cnt = 0;\n            for (int j = 0; j < n; j++) cnt += mat[i][j];\n            rows[i] = new int[]{cnt, i};\n        }\n        Arrays.sort(rows, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);\n        int[] ans = new int[k];\n        for (int i = 0; i < k; i++) ans[i] = rows[i][1];\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def kWeakestRows(self, mat: list[list[int]], k: int) -> list[int]:\n        counts = []\n        for i, row in enumerate(mat):\n            counts.append((sum(row), i))\n        counts.sort()\n        return [idx for _, idx in counts[:k]]"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search for soldier count + PriorityQueue of size k: finds the k weakest rows in O(m log n + m log k) time.",
+      "steps": [
+        "For each row, use binary search to find the count of 1s in O(log n) time.",
+        "Use a max-heap of size k storing (count, rowIndex) with comparator comparing count then row.",
+        "If heap size > k, poll the largest element.",
+        "Extract remaining elements from heap into array in reverse order. Return array."
+      ],
+      "time": "O(m log n + m log k)",
+      "space": "O(k)",
+      "code": {
+        "java": "class Solution {\n    public int[] kWeakestRows(int[][] mat, int k) {\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] != b[0] ? b[0] - a[0] : b[1] - a[1]);\n        for (int i = 0; i < mat.length; i++) {\n            int count = countOnes(mat[i]);\n            pq.offer(new int[]{count, i});\n            if (pq.size() > k) pq.poll();\n        }\n        int[] ans = new int[k];\n        for (int i = k - 1; i >= 0; i--) {\n            ans[i] = pq.poll()[1];\n        }\n        return ans;\n    }\n    private int countOnes(int[] row) {\n        int l = 0, r = row.length;\n        while (l < r) {\n            int mid = l + (r - l) / 2;\n            if (row[mid] == 1) l = mid + 1;\n            else r = mid;\n        }\n        return l;\n    }\n}",
+        "python": "class Solution:\n    def kWeakestRows(self, mat: list[list[int]], k: int) -> list[int]:\n        import heapq\n        def count_ones(row: list[int]) -> int:\n            l, r = 0, len(row)\n            while l < r:\n                mid = (l + r) // 2\n                if row[mid] == 1:\n                    l = mid + 1\n                else:\n                    r = mid\n            return l\n        pq = []\n        for i, row in enumerate(mat):\n            cnt = count_ones(row)\n            heapq.heappush(pq, (-cnt, -i))\n            if len(pq) > k:\n                heapq.heappop(pq)\n        ans = []\n        while pq:\n            _, idx = heapq.heappop(pq)\n            ans.append(-idx)\n        return ans[::-1]"
+      }
+    }
+  },
+  {
+    "seq": 415,
+    "whyNext": "Builds on frequency counting from Top K Frequent Elements (Seq 5) by sorting element frequencies ascending and greedily removing elements with the smallest frequencies first to minimize remaining unique integers.",
+    "hints": [
+      "To minimize unique integers remaining, always eliminate elements with the smallest frequency completely.",
+      "Count frequencies using a HashMap<Integer, Integer>.",
+      "Sort frequencies in ascending order. Loop through frequencies: if k >= freq, subtract freq from k and decrement unique count; otherwise break. Return remaining unique count."
+    ],
+    "brute": {
+      "idea": "Count frequencies in a map, convert to an entry list, sort entries ascending by frequency, and greedily remove.",
+      "steps": [
+        "Count frequency of each integer in map.",
+        "Store frequencies in a list and sort ascending.",
+        "Iterate through sorted list, subtracting frequencies from k until k is exhausted.",
+        "Return remaining count of frequencies."
+      ],
+      "whySlow": "Sorting all unique frequencies takes O(u log u) time.",
+      "time": "O(n + u log u)",
+      "space": "O(u)",
+      "code": {
+        "java": "class Solution {\n    public int findLeastNumOfUniqueInts(int[] arr, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int x : arr) map.put(x, map.getOrDefault(x, 0) + 1);\n        List<Integer> freqs = new ArrayList<>(map.values());\n        Collections.sort(freqs);\n        int remaining = freqs.size();\n        for (int f : freqs) {\n            if (k >= f) {\n                k -= f;\n                remaining--;\n            } else {\n                break;\n            }\n        }\n        return remaining;\n    }\n}",
+        "python": "class Solution:\n    def findLeastNumOfUniqueInts(self, arr: list[int], k: int) -> int:\n        from collections import Counter\n        counts = Counter(arr)\n        freqs = sorted(counts.values())\n        rem = len(freqs)\n        for f in freqs:\n            if k >= f:\n                k -= f\n                rem -= 1\n            else:\n                break\n        return rem"
+      }
+    },
+    "optimal": {
+      "idea": "Bucket sort on frequencies: bucket frequencies in range [1, n] to eliminate smallest frequencies in O(n) linear time.",
+      "steps": [
+        "Count occurrences in HashMap.",
+        "Create bucket array countOfFreq of size n + 1 where countOfFreq[f] is the number of distinct elements having frequency f.",
+        "Loop f from 1 to n: calculate maxCanRemove = min(countOfFreq[f], k / f); k -= maxCanRemove * f; remainingUniques -= maxCanRemove; if k < f break.",
+        "Return remainingUniques."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int findLeastNumOfUniqueInts(int[] arr, int k) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int x : arr) map.put(x, map.getOrDefault(x, 0) + 1);\n        int n = arr.length;\n        int[] bucket = new int[n + 1];\n        for (int f : map.values()) bucket[f]++;\n        int remaining = map.size();\n        for (int f = 1; f <= n; f++) {\n            int remove = Math.min(bucket[f], k / f);\n            k -= remove * f;\n            remaining -= remove;\n            if (k < f) break;\n        }\n        return remaining;\n    }\n}",
+        "python": "class Solution:\n    def findLeastNumOfUniqueInts(self, arr: list[int], k: int) -> int:\n        from collections import Counter\n        counts = Counter(arr)\n        n = len(arr)\n        bucket = [0] * (n + 1)\n        for f in counts.values():\n            bucket[f] += 1\n        rem = len(counts)\n        for f in range(1, n + 1):\n            remove = min(bucket[f], k // f)\n            k -= remove * f\n            rem -= remove\n            if k < f:\n                break\n        return rem"
+      }
+    }
+  },
+  {
+    "seq": 416,
+    "whyNext": "Builds on multi-way candidate selection from The K Weakest Rows in a Matrix (Seq 414) by advancing 3 pointers (for factors 2, 3, 5) across an ugly number array to generate sequence values in sorted order.",
+    "hints": [
+      "Every ugly number is formed by multiplying a previously generated ugly number by 2, 3, or 5.",
+      "Maintain 3 pointers: p2, p3, p5, all starting at index 0 in the ugly array.",
+      "Next ugly number is min(ugly[p2]*2, ugly[p3]*3, ugly[p5]*5). Advance every pointer whose multiple equals the chosen minimum to avoid duplicates."
+    ],
+    "brute": {
+      "idea": "Use a Min-Heap (PriorityQueue) and a HashSet to continuously generate and extract the smallest ugly number.",
+      "steps": [
+        "Initialize min-heap with 1L and add 1L to seen set.",
+        "Loop n times: pop smallest element cur.",
+        "For factor in {2, 3, 5}: if cur * factor not in seen, add to heap and seen.",
+        "Return (int) last popped element."
+      ],
+      "whySlow": "Heap insertions and hash set lookups take O(n log n) time.",
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int nthUglyNumber(int n) {\n        PriorityQueue<Long> pq = new PriorityQueue<>();\n        Set<Long> seen = new HashSet<>();\n        pq.offer(1L);\n        seen.add(1L);\n        long cur = 1L;\n        int[] primes = {2, 3, 5};\n        for (int i = 0; i < n; i++) {\n            cur = pq.poll();\n            for (int p : primes) {\n                long next = cur * p;\n                if (seen.add(next)) {\n                    pq.offer(next);\n                }\n            }\n        }\n        return (int) cur;\n    }\n}",
+        "python": "class Solution:\n    def nthUglyNumber(self, n: int) -> int:\n        import heapq\n        pq = [1]\n        seen = {1}\n        cur = 1\n        for _ in range(n):\n            cur = heapq.heappop(pq)\n            for p in (2, 3, 5):\n                nxt = cur * p\n                if nxt not in seen:\n                    seen.add(nxt)\n                    heapq.heappush(pq, nxt)\n        return cur"
+      }
+    },
+    "optimal": {
+      "idea": "Three-pointer DP: generate ugly numbers in strictly ascending order without heap or set overhead in O(n) time.",
+      "steps": [
+        "Initialize ugly array of size n with ugly[0] = 1.",
+        "Pointers i2 = 0, i3 = 0, i5 = 0.",
+        "For i from 1 to n - 1: nextVal = min(ugly[i2]*2, ugly[i3]*3, ugly[i5]*5); ugly[i] = nextVal.",
+        "If nextVal == ugly[i2]*2 increment i2; if nextVal == ugly[i3]*3 increment i3; if nextVal == ugly[i5]*5 increment i5.",
+        "Return ugly[n - 1]."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int nthUglyNumber(int n) {\n        int[] ugly = new int[n];\n        ugly[0] = 1;\n        int i2 = 0, i3 = 0, i5 = 0;\n        for (int i = 1; i < n; i++) {\n            int next2 = ugly[i2] * 2;\n            int next3 = ugly[i3] * 3;\n            int next5 = ugly[i5] * 5;\n            int next = Math.min(next2, Math.min(next3, next5));\n            ugly[i] = next;\n            if (next == next2) i2++;\n            if (next == next3) i3++;\n            if (next == next5) i5++;\n        }\n        return ugly[n - 1];\n    }\n}",
+        "python": "class Solution:\n    def nthUglyNumber(self, n: int) -> int:\n        ugly = [1] * n\n        i2 = i3 = i5 = 0\n        for i in range(1, n):\n            n2, n3, n5 = ugly[i2] * 2, ugly[i3] * 3, ugly[i5] * 5\n            nxt = min(n2, n3, n5)\n            ugly[i] = nxt\n            if nxt == n2:\n                i2 += 1\n            if nxt == n3:\n                i3 += 1\n            if nxt == n5:\n                i5 += 1\n        return ugly[-1]"
+      }
+    }
+  },
+  {
+    "seq": 417,
+    "whyNext": "Generalizes the 3-pointer generator from Ugly Number II (Seq 416) to k arbitrary prime factors by maintaining k pointers and an array of next multiples.",
+    "hints": [
+      "Instead of fixed primes {2, 3, 5}, you have k primes given in primes array.",
+      "Maintain an array pointers of size k, where pointers[j] indexes into the ugly array for primes[j].",
+      "Find the minimum next multiple across all k primes, set ugly[i] = min, and advance all pointers j whose multiple equals min to eliminate duplicate values."
+    ],
+    "brute": {
+      "idea": "Min-Heap storing candidate super ugly numbers, popping the minimum and multiplying by each prime.",
+      "steps": [
+        "Initialize PriorityQueue<Long> with 1L.",
+        "Pop minimum element n times.",
+        "Multiply popped element by each prime in primes array and push back to heap if unseen.",
+        "Return last popped value."
+      ],
+      "whySlow": "Heap operations with k primes take O(n * k * log(n*k)) time.",
+      "time": "O(n * k log(n * k))",
+      "space": "O(n * k)",
+      "code": {
+        "java": "class Solution {\n    public int nthSuperUglyNumber(int n, int[] primes) {\n        PriorityQueue<Long> pq = new PriorityQueue<>();\n        Set<Long> seen = new HashSet<>();\n        pq.offer(1L);\n        seen.add(1L);\n        long cur = 1L;\n        for (int i = 0; i < n; i++) {\n            cur = pq.poll();\n            for (int p : primes) {\n                long next = cur * p;\n                if (next > Integer.MAX_VALUE) break;\n                if (seen.add(next)) pq.offer(next);\n            }\n        }\n        return (int) cur;\n    }\n}",
+        "python": "class Solution:\n    def nthSuperUglyNumber(self, n: int, primes: list[int]) -> int:\n        import heapq\n        pq = [1]\n        seen = {1}\n        cur = 1\n        for _ in range(n):\n            cur = heapq.heappop(pq)\n            for p in primes:\n                nxt = cur * p\n                if nxt not in seen:\n                    seen.add(nxt)\n                    heapq.heappush(pq, nxt)\n        return cur"
+      }
+    },
+    "optimal": {
+      "idea": "K-pointer DP with cached next multiples: update next candidate in O(k) per step without heap overhead.",
+      "steps": [
+        "int[] ugly = new int[n]; ugly[0] = 1.",
+        "int k = primes.length; int[] idx = new int[k]; long[] next = new long[k];",
+        "Initialize next[j] = primes[j].",
+        "For i from 1 to n - 1: find minVal across next[j]; ugly[i] = (int) minVal.",
+        "For each j where next[j] == minVal: idx[j]++; next[j] = (long) ugly[idx[j]] * primes[j].",
+        "Return ugly[n - 1]."
+      ],
+      "time": "O(n * k)",
+      "space": "O(n + k)",
+      "code": {
+        "java": "class Solution {\n    public int nthSuperUglyNumber(int n, int[] primes) {\n        int k = primes.length;\n        int[] ugly = new int[n];\n        ugly[0] = 1;\n        int[] idx = new int[k];\n        long[] next = new long[k];\n        for (int j = 0; j < k; j++) next[j] = primes[j];\n        for (int i = 1; i < n; i++) {\n            long minVal = next[0];\n            for (int j = 1; j < k; j++) {\n                if (next[j] < minVal) minVal = next[j];\n            }\n            ugly[i] = (int) minVal;\n            for (int j = 0; j < k; j++) {\n                if (next[j] == minVal) {\n                    idx[j]++;\n                    next[j] = (long) ugly[idx[j]] * primes[j];\n                }\n            }\n        }\n        return ugly[n - 1];\n    }\n}",
+        "python": "class Solution:\n    def nthSuperUglyNumber(self, n: int, primes: list[int]) -> int:\n        k = len(primes)\n        ugly = [1] * n\n        idx = [0] * k\n        nxt = list(primes)\n        for i in range(1, n):\n            min_val = min(nxt)\n            ugly[i] = min_val\n            for j in range(k):\n                if nxt[j] == min_val:\n                    idx[j] += 1\n                    nxt[j] = ugly[idx[j]] * primes[j]\n        return ugly[-1]"
+      }
+    }
+  },
+  {
+    "seq": 418,
+    "whyNext": "Builds on greedy heap thresholding from Super Ugly Number (Seq 417) by using a min-heap to allocate ladders to the largest height climbs and bricks to the rest, stopping when bricks are exhausted.",
+    "hints": [
+      "Climbs (where heights[i+1] > heights[i]) must be paid for with either bricks or ladders.",
+      "A ladder covers an arbitrarily large climb, so ladders should be reserved for the largest climbs.",
+      "Maintain a min-heap of climbs where ladders are currently allocated. If heap size exceeds ladders, pop the smallest climb and pay for it with bricks. If bricks < 0, return i."
+    ],
+    "brute": {
+      "idea": "Backtrack at each climb: branch on using bricks or using a ladder, tracking max building reached.",
+      "steps": [
+        "In dfs(index, bricks, ladders): if index == heights.length - 1 return index.",
+        "diff = heights[index + 1] - heights[index].",
+        "If diff <= 0, recurse dfs(index + 1, bricks, ladders).",
+        "Try using diff bricks if bricks >= diff; try using 1 ladder if ladders > 0.",
+        "Return maximum index reached."
+      ],
+      "whySlow": "Exponential 2^n branching explores overlapping scenarios.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int furthestBuilding(int[] heights, int bricks, int ladders) {\n        return dfs(heights, 0, bricks, ladders);\n    }\n    private int dfs(int[] h, int idx, int b, int l) {\n        if (idx == h.length - 1) return idx;\n        int diff = h[idx + 1] - h[idx];\n        if (diff <= 0) return dfs(h, idx + 1, b, l);\n        int res = idx;\n        if (b >= diff) res = Math.max(res, dfs(h, idx + 1, b - diff, l));\n        if (l > 0) res = Math.max(res, dfs(h, idx + 1, b, l - 1));\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def furthestBuilding(self, heights: list[int], bricks: int, ladders: int) -> int:\n        def dfs(idx: int, b: int, l: int) -> int:\n            if idx == len(heights) - 1:\n                return idx\n            diff = heights[idx + 1] - heights[idx]\n            if diff <= 0:\n                return dfs(idx + 1, b, l)\n            best = idx\n            if b >= diff:\n                best = max(best, dfs(idx + 1, b - diff, l))\n            if l > 0:\n                best = max(best, dfs(idx + 1, b, l - 1))\n            return best\n        return dfs(0, bricks, ladders)"
+      }
+    },
+    "optimal": {
+      "idea": "Min-heap of ladders: allocate ladders to current climbs; when climbs exceed ladders, replace smallest climb with bricks in O(n log l) time.",
+      "steps": [
+        "Maintain PriorityQueue<Integer> ladderClimbs (min-heap).",
+        "Loop i from 0 to heights.length - 2: diff = heights[i + 1] - heights[i].",
+        "If diff > 0, offer diff to ladderClimbs.",
+        "If ladderClimbs.size() > ladders, pop smallest climb and bricks -= smallest climb.",
+        "If bricks < 0, return i.",
+        "Return heights.length - 1 if loop completes."
+      ],
+      "time": "O(n log ladders)",
+      "space": "O(ladders)",
+      "code": {
+        "java": "class Solution {\n    public int furthestBuilding(int[] heights, int bricks, int ladders) {\n        PriorityQueue<Integer> pq = new PriorityQueue<>();\n        for (int i = 0; i < heights.length - 1; i++) {\n            int diff = heights[i + 1] - heights[i];\n            if (diff > 0) {\n                pq.offer(diff);\n                if (pq.size() > ladders) {\n                    bricks -= pq.poll();\n                }\n                if (bricks < 0) return i;\n            }\n        }\n        return heights.length - 1;\n    }\n}",
+        "python": "class Solution:\n    def furthestBuilding(self, heights: list[int], bricks: int, ladders: int) -> int:\n        import heapq\n        pq = []\n        for i in range(len(heights) - 1):\n            diff = heights[i + 1] - heights[i]\n            if diff > 0:\n                heapq.heappush(pq, diff)\n                if len(pq) > ladders:\n                    bricks -= heapq.heappop(pq)\n                if bricks < 0:\n                    return i\n        return len(heights) - 1"
+      }
+    }
+  },
+  {
+    "seq": 419,
+    "whyNext": "Builds on frequency map operations from Top K Frequent Elements (Seq 5) by sorting card values and greedily forming groupSize consecutive card sequences starting from the smallest available card.",
+    "hints": [
+      "If hand.length % groupSize != 0, it is immediately impossible to divide the cards into equal groups.",
+      "Count frequencies with a TreeMap<Integer, Integer> (or sorted keys with HashMap).",
+      "Always pick the smallest card available as the start of a new group, and verify cards v, v+1, ..., v+groupSize-1 exist with sufficient counts."
+    ],
+    "brute": {
+      "idea": "Sort the hand, maintain a boolean used array, and greedily find groupSize consecutive cards for each unused card.",
+      "steps": [
+        "If hand.length % groupSize != 0 return false.",
+        "Sort hand array.",
+        "For each unused card i, search for next groupSize - 1 consecutive unused cards in sorted array.",
+        "Mark matched cards as used.",
+        "If any consecutive card is missing, return false. If all cards partitioned, return true."
+      ],
+      "whySlow": "Linear searching for each consecutive element takes O(n^2) time.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isNStraightHand(int[] hand, int groupSize) {\n        if (hand.length % groupSize != 0) return false;\n        Arrays.sort(hand);\n        boolean[] used = new boolean[hand.length];\n        for (int i = 0; i < hand.length; i++) {\n            if (used[i]) continue;\n            int cur = hand[i];\n            used[i] = true;\n            int count = 1;\n            for (int j = i + 1; j < hand.length && count < groupSize; j++) {\n                if (!used[j] && hand[j] == cur + 1) {\n                    cur = hand[j];\n                    used[j] = true;\n                    count++;\n                }\n            }\n            if (count < groupSize) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:\n        if len(hand) % groupSize != 0:\n            return False\n        hand.sort()\n        used = [False] * len(hand)\n        for i in range(len(hand)):\n            if used[i]:\n                continue\n            used[i] = True\n            cur = hand[i]\n            count = 1\n            for j in range(i + 1, len(hand)):\n                if not used[j] and hand[j] == cur + 1:\n                    cur = hand[j]\n                    used[j] = True\n                    count += 1\n                    if count == groupSize:\n                        break\n            if count < groupSize:\n                return False\n        return True"
+      }
+    },
+    "optimal": {
+      "idea": "TreeMap frequency subtraction: greedily decrement groupSize consecutive card counts starting from smallest available key in O(n log n) time.",
+      "steps": [
+        "If hand.length % groupSize != 0 return false.",
+        "Populate TreeMap<Integer, Integer> with frequencies.",
+        "While map is not empty: get first key minCard, let count = map.get(minCard).",
+        "For i from 0 to groupSize - 1: card = minCard + i; if map.getOrDefault(card, 0) < count return false; decrement count; if 0 remove from map.",
+        "Return true."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isNStraightHand(int[] hand, int groupSize) {\n        if (hand.length % groupSize != 0) return false;\n        TreeMap<Integer, Integer> count = new TreeMap<>();\n        for (int card : hand) count.put(card, count.getOrDefault(card, 0) + 1);\n        for (int card : count.keySet()) {\n            int cnt = count.get(card);\n            if (cnt > 0) {\n                for (int i = 0; i < groupSize; i++) {\n                    int nextCard = card + i;\n                    if (count.getOrDefault(nextCard, 0) < cnt) return false;\n                    count.put(nextCard, count.get(nextCard) - cnt);\n                }\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:\n        if len(hand) % groupSize != 0:\n            return False\n        from collections import Counter\n        count = Counter(hand)\n        for card in sorted(count):\n            cnt = count[card]\n            if cnt > 0:\n                for i in range(groupSize):\n                    nxt = card + i\n                    if count[nxt] < cnt:\n                        return False\n                    count[nxt] -= cnt\n        return True"
+      }
+    }
+  },
+  {
+    "seq": 420,
+    "whyNext": "Builds on consecutive sequence grouping from Hand of Straights (Seq 419) by applying identical greedy consecutive frequency reduction with larger constraints.",
+    "hints": [
+      "This problem is equivalent to Hand of Straights with groupSize = k.",
+      "Check length divisibility by k first.",
+      "Use a frequency map, sort unique keys, and for each key with count > 0, deduct count from the next k - 1 consecutive integers."
+    ],
+    "brute": {
+      "idea": "Sort array and greedily locate consecutive k elements for each unused element.",
+      "steps": [
+        "If nums.length % k != 0 return false.",
+        "Sort nums.",
+        "Simulate grouping using boolean used array.",
+        "Return true if all grouped, false otherwise."
+      ],
+      "whySlow": "O(n^2) nested search across the array.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPossibleDivide(int[] nums, int k) {\n        if (nums.length % k != 0) return false;\n        Arrays.sort(nums);\n        boolean[] used = new boolean[nums.length];\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) continue;\n            int cur = nums[i];\n            used[i] = true;\n            int count = 1;\n            for (int j = i + 1; j < nums.length && count < k; j++) {\n                if (!used[j] && nums[j] == cur + 1) {\n                    cur = nums[j];\n                    used[j] = true;\n                    count++;\n                }\n            }\n            if (count < k) return false;\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isPossibleDivide(self, nums: list[int], k: int) -> bool:\n        if len(nums) % k != 0:\n            return False\n        nums.sort()\n        used = [False] * len(nums)\n        for i in range(len(nums)):\n            if used[i]:\n                continue\n            used[i] = True\n            cur = nums[i]\n            count = 1\n            for j in range(i + 1, len(nums)):\n                if not used[j] and nums[j] == cur + 1:\n                    cur = nums[j]\n                    used[j] = True\n                    count += 1\n                    if count == k:\n                        break\n            if count < k:\n                return False\n        return True"
+      }
+    },
+    "optimal": {
+      "idea": "HashMap + sorted unique keys: subtract consecutive frequencies directly in O(n log n) time.",
+      "steps": [
+        "If nums.length % k != 0 return false.",
+        "Count frequencies in HashMap.",
+        "Sort unique keys.",
+        "For each key: if count > 0, deduct count from keys v to v + k - 1.",
+        "Return true."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean isPossibleDivide(int[] nums, int k) {\n        if (nums.length % k != 0) return false;\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int num : nums) map.put(num, map.getOrDefault(num, 0) + 1);\n        int[] sorted = new int[map.size()];\n        int idx = 0;\n        for (int key : map.keySet()) sorted[idx++] = key;\n        Arrays.sort(sorted);\n        for (int num : sorted) {\n            int cnt = map.get(num);\n            if (cnt > 0) {\n                for (int i = 0; i < k; i++) {\n                    int next = num + i;\n                    if (map.getOrDefault(next, 0) < cnt) return false;\n                    map.put(next, map.get(next) - cnt);\n                }\n            }\n        }\n        return true;\n    }\n}",
+        "python": "class Solution:\n    def isPossibleDivide(self, nums: list[int], k: int) -> bool:\n        if len(nums) % k != 0:\n            return False\n        from collections import Counter\n        counts = Counter(nums)\n        for num in sorted(counts):\n            cnt = counts[num]\n            if cnt > 0:\n                for i in range(k):\n                    nxt = num + i\n                    if counts[nxt] < cnt:\n                        return False\n                    counts[nxt] -= cnt\n        return True"
+      }
+    }
+  },
+  {
+    "seq": 421,
+    "whyNext": "Builds on greedy priority picking from Meeting Rooms II (Seq 171) by repeatedly flipping the smallest negative numbers first, and if k remains odd, flipping the element with the smallest absolute value.",
+    "hints": [
+      "Negating a negative number increases the total sum; negating the most negative numbers first yields the largest increase.",
+      "Sort array: flip negative numbers while k > 0. If k remains and is odd, flip the number with the smallest absolute value.",
+      "Alternatively, maintain a min-heap: pop smallest element, negate it, and push back, repeating k times."
+    ],
+    "brute": {
+      "idea": "Use a Min-Heap (PriorityQueue): pop the smallest element, negate it, and reinsert, repeating exactly k times.",
+      "steps": [
+        "Insert all nums into PriorityQueue<Integer>.",
+        "Loop k times: pop minVal, push -minVal.",
+        "Sum all elements remaining in the heap and return."
+      ],
+      "whySlow": "Heap operations take O(k log n) time.",
+      "time": "O(n + k log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int largestSumAfterKNegations(int[] nums, int k) {\n        PriorityQueue<Integer> pq = new PriorityQueue<>();\n        for (int x : nums) pq.offer(x);\n        for (int i = 0; i < k; i++) {\n            pq.offer(-pq.poll());\n        }\n        int sum = 0;\n        while (!pq.isEmpty()) sum += pq.poll();\n        return sum;\n    }\n}",
+        "python": "class Solution:\n    def largestSumAfterKNegations(self, nums: list[int], k: int) -> int:\n        import heapq\n        heapq.heapify(nums)\n        for _ in range(k):\n            heapq.heappush(nums, -heapq.heappop(nums))\n        return sum(nums)"
+      }
+    },
+    "optimal": {
+      "idea": "Sort array: flip negative numbers from most negative to least. If k remains odd, flip element with smallest absolute value in O(n log n) time.",
+      "steps": [
+        "Sort nums ascending.",
+        "For i from 0 to n - 1: if nums[i] < 0 and k > 0, nums[i] = -nums[i], k--.",
+        "Find minVal = min(nums[i]) for all i.",
+        "Calculate total sum.",
+        "If k % 2 != 0, subtract 2 * minVal from total sum. Return total sum."
+      ],
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int largestSumAfterKNegations(int[] nums, int k) {\n        Arrays.sort(nums);\n        for (int i = 0; i < nums.length && k > 0; i++) {\n            if (nums[i] < 0) {\n                nums[i] = -nums[i];\n                k--;\n            }\n        }\n        int sum = 0, min = Integer.MAX_VALUE;\n        for (int x : nums) {\n            sum += x;\n            min = Math.min(min, x);\n        }\n        if (k % 2 != 0) {\n            sum -= 2 * min;\n        }\n        return sum;\n    }\n}",
+        "python": "class Solution:\n    def largestSumAfterKNegations(self, nums: list[int], k: int) -> int:\n        nums.sort()\n        for i in range(len(nums)):\n            if nums[i] < 0 and k > 0:\n                nums[i] = -nums[i]\n                k -= 1\n        s = sum(nums)\n        if k % 2 != 0:\n            s -= 2 * min(nums)\n        return s"
+      }
+    }
+  },
+  {
+    "seq": 422,
+    "whyNext": "Builds on two-way greedy trade-offs from Maximize Sum Of Array After K Negations (Seq 421) by sorting tokens and using two pointers to buy score face-up with smallest tokens and sell score face-down for maximum power.",
+    "hints": [
+      "To maximize score, spend the minimum possible power to gain 1 score (buy smallest tokens face up).",
+      "When out of power, sacrifice 1 score to gain the maximum possible power (play largest token face down).",
+      "Two pointers: left = 0, right = tokens.length - 1. While left <= right: if power >= tokens[left], spend power, score++, left++, update maxScore. Else if score > 0, power += tokens[right], score--, right--. Else break."
+    ],
+    "brute": {
+      "idea": "Recursively try both options (face up or face down) at each step to find maximum attainable score.",
+      "steps": [
+        "In dfs(left, right, power, score): base case left > right return score.",
+        "Try playing token[left] face up if power >= token[left].",
+        "Try playing token[right] face down if score >= 1.",
+        "Return maximum score achievable."
+      ],
+      "whySlow": "Exponential 2^n state exploration.",
+      "time": "O(2^n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int bagOfTokensScore(int[] tokens, int power) {\n        Arrays.sort(tokens);\n        return dfs(tokens, 0, tokens.length - 1, power, 0);\n    }\n    private int dfs(int[] t, int l, int r, int p, int s) {\n        if (l > r) return s;\n        int max = s;\n        if (p >= t[l]) {\n            max = Math.max(max, dfs(t, l + 1, r, p - t[l], s + 1));\n        } else if (s > 0 && l < r) {\n            max = Math.max(max, dfs(t, l, r - 1, p + t[r], s - 1));\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def bagOfTokensScore(self, tokens: list[int], power: int) -> int:\n        tokens.sort()\n        def dfs(l: int, r: int, p: int, s: int) -> int:\n            if l > r:\n                return s\n            best = s\n            if p >= tokens[l]:\n                best = max(best, dfs(l + 1, r, p - tokens[l], s + 1))\n            elif s > 0 and l < r:\n                best = max(best, dfs(l, r - 1, p + tokens[r], s - 1))\n            return best\n        return dfs(0, len(tokens) - 1, power, 0)"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy two-pointer approach: buy cheap tokens with power, sell expensive tokens for power, tracking maxScore in O(n log n) time.",
+      "steps": [
+        "Sort tokens ascending.",
+        "Initialize l = 0, r = tokens.length - 1, score = 0, maxScore = 0.",
+        "While l <= r: if power >= tokens[l], power -= tokens[l++], score++, maxScore = Math.max(maxScore, score);",
+        "Else if score > 0, power += tokens[r--], score--;",
+        "Else break.",
+        "Return maxScore."
+      ],
+      "time": "O(n log n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int bagOfTokensScore(int[] tokens, int power) {\n        Arrays.sort(tokens);\n        int l = 0, r = tokens.length - 1;\n        int score = 0, maxScore = 0;\n        while (l <= r) {\n            if (power >= tokens[l]) {\n                power -= tokens[l++];\n                score++;\n                maxScore = Math.max(maxScore, score);\n            } else if (score > 0) {\n                power += tokens[r--];\n                score--;\n            } else {\n                break;\n            }\n        }\n        return maxScore;\n    }\n}",
+        "python": "class Solution:\n    def bagOfTokensScore(self, tokens: list[int], power: int) -> int:\n        tokens.sort()\n        l, r = 0, len(tokens) - 1\n        score = max_score = 0\n        while l <= r:\n            if power >= tokens[l]:\n                power -= tokens[l]\n                l += 1\n                score += 1\n                max_score = max(max_score, score)\n            elif score > 0:\n                power += tokens[r]\n                r -= 1\n                score -= 1\n            else:\n                break\n        return max_score"
+      }
+    }
+  },
+  {
+    "seq": 423,
+    "whyNext": "Builds on greedy elimination queues from Bag of Tokens (Seq 422) by maintaining separate FIFO queues for Radiant and Dire senators, re-enqueueing the surviving senator with an offset index (index + n).",
+    "hints": [
+      "A senator will always choose to ban the very next opposing senator who has not yet voted in this round.",
+      "Store original indices of Radiant senators in queue radiant and Dire senators in queue dire.",
+      "Compare front indices rIdx and dIdx: the smaller index votes first and bans the other. Re-enqueue winning senator with index + n for the next round. Stop when one queue is empty."
+    ],
+    "brute": {
+      "idea": "Iterate across the senate string repeatedly with a boolean banned array, searching forward cyclically for the next unbanned opponent.",
+      "steps": [
+        "Create boolean banned array of size n.",
+        "Loop rounds until all remaining senators belong to one faction.",
+        "In each round, if current senator is not banned, search forward for next opponent and mark them banned.",
+        "Return winning party name."
+      ],
+      "whySlow": "Cyclic forward search takes O(n^2) worst case.",
+      "time": "O(n^2)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String predictPartyVictory(String senate) {\n        int n = senate.length();\n        boolean[] banned = new boolean[n];\n        int rCount = 0, dCount = 0;\n        for (char c : senate.toCharArray()) {\n            if (c == 'R') rCount++; else dCount++;\n        }\n        while (rCount > 0 && dCount > 0) {\n            for (int i = 0; i < n; i++) {\n                if (banned[i]) continue;\n                char c = senate.charAt(i);\n                int j = (i + 1) % n;\n                while (banned[j] || senate.charAt(j) == c) {\n                    j = (j + 1) % n;\n                }\n                banned[j] = true;\n                if (c == 'R') dCount--; else rCount--;\n                if (rCount == 0 || dCount == 0) break;\n            }\n        }\n        return rCount > 0 ? \"Radiant\" : \"Dire\";\n    }\n}",
+        "python": "class Solution:\n    def predictPartyVictory(self, senate: str) -> str:\n        s = list(senate)\n        n = len(s)\n        banned = [False] * n\n        r_cnt = senate.count('R')\n        d_cnt = senate.count('D')\n        while r_cnt > 0 and d_cnt > 0:\n            for i in range(n):\n                if banned[i]:\n                    continue\n                c = s[i]\n                j = (i + 1) % n\n                while banned[j] or s[j] == c:\n                    j = (j + 1) % n\n                banned[j] = True\n                if c == 'R':\n                    d_cnt -= 1\n                else:\n                    r_cnt -= 1\n                if r_cnt == 0 or d_cnt == 0:\n                    break\n        return \"Radiant\" if r_cnt > 0 else \"Dire\""
+      }
+    },
+    "optimal": {
+      "idea": "Dual Queue BFS simulation: enqueue indices of 'R' and 'D' senators, re-enqueueing winners with index + n in O(n) time.",
+      "steps": [
+        "Queue<Integer> rad = new LinkedList<>(), dir = new LinkedList<>().",
+        "Add indices of 'R' to rad and 'D' to dir.",
+        "While both queues non-empty: pop rIdx and dIdx.",
+        "If rIdx < dIdx: rad.offer(rIdx + n); else dir.offer(dIdx + n).",
+        "Return rad.isEmpty() ? \"Dire\" : \"Radiant\"."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String predictPartyVictory(String senate) {\n        Queue<Integer> r = new LinkedList<>();\n        Queue<Integer> d = new LinkedList<>();\n        int n = senate.length();\n        for (int i = 0; i < n; i++) {\n            if (senate.charAt(i) == 'R') r.offer(i);\n            else d.offer(i);\n        }\n        while (!r.isEmpty() && !d.isEmpty()) {\n            int rIdx = r.poll();\n            int dIdx = d.poll();\n            if (rIdx < dIdx) {\n                r.offer(rIdx + n);\n            } else {\n                d.offer(dIdx + n);\n            }\n        }\n        return r.isEmpty() ? \"Dire\" : \"Radiant\";\n    }\n}",
+        "python": "class Solution:\n    def predictPartyVictory(self, senate: str) -> str:\n        from collections import deque\n        r = deque()\n        d = deque()\n        n = len(senate)\n        for i, ch in enumerate(senate):\n            if ch == 'R':\n                r.append(i)\n            else:\n                d.append(i)\n        while r and d:\n            r_idx = r.popleft()\n            d_idx = d.popleft()\n            if r_idx < d_idx:\n                r.append(r_idx + n)\n            else:\n                d.append(d_idx + n)\n        return \"Radiant\" if r else \"Dire\""
+      }
+    }
+  },
+  {
+    "seq": 424,
+    "whyNext": "Builds on interval scheduling from Non-overlapping Intervals (Seq 188) by iterating through each day, adding newly available events into a min-heap by end day, and greedily attending the event that ends earliest.",
+    "hints": [
+      "On any given day d, if multiple events are available, greedily attend the one with the earliest ending day (endDay).",
+      "Sort events by startDay.",
+      "Iterate day from 1 to 100,000: add endDay of all events starting today into a min-heap; remove all expired events (endDay < day); if heap is non-empty, poll one event and increment attended count."
+    ],
+    "brute": {
+      "idea": "Sort events by end day and find the earliest available day for each event using a boolean array.",
+      "steps": [
+        "Sort events by endDay ascending.",
+        "Create boolean visited[100001] for days.",
+        "For each event [start, end]: find first day d in [start, end] where !visited[d].",
+        "Mark visited[d] = true and increment count.",
+        "Return attended count."
+      ],
+      "whySlow": "Scanning day by day for each event takes O(n * span) time.",
+      "time": "O(n * max_days)",
+      "space": "O(max_days)",
+      "code": {
+        "java": "class Solution {\n    public int maxEvents(int[][] events) {\n        Arrays.sort(events, (a, b) -> a[1] - b[1]);\n        boolean[] days = new boolean[100001];\n        int count = 0;\n        for (int[] e : events) {\n            for (int d = e[0]; d <= e[1]; d++) {\n                if (!days[d]) {\n                    days[d] = true;\n                    count++;\n                    break;\n                }\n            }\n        }\n        return count;\n    }\n}",
+        "python": "class Solution:\n    def maxEvents(self, events: list[list[int]]) -> int:\n        events.sort(key=lambda x: x[1])\n        days = set()\n        count = 0\n        for s, e in events:\n            for d in range(s, e + 1):\n                if d not in days:\n                    days.add(d)\n                    count += 1\n                    break\n        return count"
+      }
+    },
+    "optimal": {
+      "idea": "Min-heap of end dates + day iteration: greedily attend earliest-ending available event each day in O(n log n) time.",
+      "steps": [
+        "Sort events by startDay.",
+        "Use PriorityQueue<Integer> pq (min-heap of end days).",
+        "Maintain day = 1, i = 0, ans = 0.",
+        "While i < events.length or !pq.isEmpty(): if pq is empty, day = events[i][0]; while i < n and events[i][0] <= day: pq.offer(events[i++][1]); remove expired from pq (pq.peek() < day); if !pq.isEmpty(): pq.poll(), ans++, day++.",
+        "Return ans."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int maxEvents(int[][] events) {\n        Arrays.sort(events, (a, b) -> a[0] - b[0]);\n        PriorityQueue<Integer> pq = new PriorityQueue<>();\n        int i = 0, n = events.length, ans = 0, day = 0;\n        while (i < n || !pq.isEmpty()) {\n            if (pq.isEmpty()) {\n                day = events[i][0];\n            }\n            while (i < n && events[i][0] <= day) {\n                pq.offer(events[i++][1]);\n            }\n            while (!pq.isEmpty() && pq.peek() < day) {\n                pq.poll();\n            }\n            if (!pq.isEmpty()) {\n                pq.poll();\n                ans++;\n                day++;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def maxEvents(self, events: list[list[int]]) -> int:\n        import heapq\n        events.sort()\n        pq = []\n        i = ans = day = 0\n        n = len(events)\n        while i < n or pq:\n            if not pq:\n                day = events[i][0]\n            while i < n and events[i][0] <= day:\n                heapq.heappush(pq, events[i][1])\n                i += 1\n            while pq and pq[0] < day:\n                heapq.heappop(pq)\n            if pq:\n                heapq.heappop(pq)\n                ans += 1\n                day += 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 425,
+    "whyNext": "Builds on interval sweep-line analysis from Maximum Number of Events That Can Be Attended (Seq 424) by finding the maximum number of mutually overlapping intervals via min-heap of active group end times.",
+    "hints": [
+      "Any two overlapping intervals must be in different groups, so the minimum number of groups equals the maximum number of overlapping intervals at any point in time.",
+      "Sort intervals by start time.",
+      "Use a min-heap storing the end times of each group: if the earliest ending group ends strictly before interval.start, reuse that group; otherwise create a new group."
+    ],
+    "brute": {
+      "idea": "Sort intervals by start time and maintain a list of groups, adding each interval to the first compatible group.",
+      "steps": [
+        "Sort intervals by start time.",
+        "Maintain List<Integer> groupEndTimes.",
+        "For each interval: iterate through groups; if groupEnd < interval.start, assign interval and update groupEnd.",
+        "If no existing group fits, add new group.",
+        "Return total groups."
+      ],
+      "whySlow": "Linearly scanning all groups for each interval takes O(n * groups) time.",
+      "time": "O(n * g)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minGroups(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);\n        List<Integer> groups = new ArrayList<>();\n        for (int[] iv : intervals) {\n            boolean placed = false;\n            for (int i = 0; i < groups.size(); i++) {\n                if (groups.get(i) < iv[0]) {\n                    groups.set(i, iv[1]);\n                    placed = true;\n                    break;\n                }\n            }\n            if (!placed) groups.add(iv[1]);\n        }\n        return groups.size();\n    }\n}",
+        "python": "class Solution:\n    def minGroups(self, intervals: list[list[int]]) -> int:\n        intervals.sort()\n        groups = []\n        for s, e in intervals:\n            placed = False\n            for i in range(len(groups)):\n                if groups[i] < s:\n                    groups[i] = e\n                    placed = True\n                    break\n            if not placed:\n                groups.append(e)\n        return len(groups)"
+      }
+    },
+    "optimal": {
+      "idea": "Min-heap of group end times: reuse the group that finishes earliest if its end time < interval.start in O(n log n) time.",
+      "steps": [
+        "Sort intervals ascending by start time.",
+        "Initialize PriorityQueue<Integer> pq (min-heap of end times).",
+        "For each interval [start, end]: if !pq.isEmpty() and pq.peek() < start, pop pq (reuse that group).",
+        "Add end to pq.",
+        "Return pq.size()."
+      ],
+      "time": "O(n log n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minGroups(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> a[0] != b[0] ? a[0] - b[0] : a[1] - b[1]);\n        PriorityQueue<Integer> pq = new PriorityQueue<>();\n        for (int[] iv : intervals) {\n            if (!pq.isEmpty() && pq.peek() < iv[0]) {\n                pq.poll();\n            }\n            pq.offer(iv[1]);\n        }\n        return pq.size();\n    }\n}",
+        "python": "class Solution:\n    def minGroups(self, intervals: list[list[int]]) -> int:\n        import heapq\n        intervals.sort()\n        pq = []\n        for s, e in intervals:\n            if pq and pq[0] < s:\n                heapq.heappop(pq)\n            heapq.heappush(pq, e)\n        return len(pq)"
+      }
+    }
+  }
+]
