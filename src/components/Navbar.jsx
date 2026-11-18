@@ -28,6 +28,16 @@ export default function Navbar({ onOpenAuth }) {
   const menuRef = useRef(null);
   const avatarBtnRef = useRef(null);
   const [avatarCoords, setAvatarCoords] = useState({ top: 0, right: 0 });
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 8);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Responsive mobile tracker
   const [isMobile, setIsMobile] = useState(() => {
@@ -417,8 +427,8 @@ export default function Navbar({ onOpenAuth }) {
   );
 
   return (
-    <header className="topbar-wrapper">
-      <div className="topbar-pill">
+    <header className={`topbar-wrapper ${isScrolled ? 'is-scrolled' : ''}`}>
+      <div className={`topbar-pill ${isScrolled ? 'is-scrolled' : ''}`}>
         {/* Brand Link */}
         <Link to="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
           <ChainlineLogo size={28} showText={true} />

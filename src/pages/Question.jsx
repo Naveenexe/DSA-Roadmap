@@ -523,12 +523,12 @@ export default function Question() {
   return (
     <div className="question-page-root" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', paddingTop: '0.25rem' }}>
       
-      {/* 5 / 7 Column Split Layout on Desktop; Single Column in exact 8-step order on mobile */}
+      {/* Row 1, two columns that end on the same line (align-items: stretch) per Part 3 */}
       <div className="question-grid-container" style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(12, 1fr)',
         gap: '1.5rem',
-        alignItems: 'start'
+        alignItems: 'stretch'
       }}>
         
         {/* LEFT 5 COLUMNS: Details, Links, Actions, Notes, Navigation */}
@@ -996,116 +996,15 @@ export default function Question() {
             )}
           </div>
 
-          {/* SECTION C.2: Solve Timer Row (SRS 3.0 Section 6.1) */}
-          <SolveTimer 
-            seq={seq} 
-            difficulty={question.difficulty} 
-            isDone={currentStatus === 'done'}
-          />
-
-          {/* SECTION G: Personal Notes in Collapsible Card (Order 6 on mobile, closed by default) */}
-          <div className="glass-card question-notes-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.65rem', width: '100%', boxSizing: 'border-box' }}>
-            <button
-              type="button"
-              onClick={() => setNotesCollapsed(!notesCollapsed)}
-              className="question-notes-toggle-header"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                width: '100%',
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                textAlign: 'left'
-              }}
-            >
-              <FileText size={16} color="var(--accent)" style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)' }}>
-                Personal Notes
-              </span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 'auto', flexShrink: 0 }}>
-                {notesSaved ? 'Saved' : 'Saving...'}
-              </span>
-              <span className="mobile-notes-chevron" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-muted)', flexShrink: 0 }}>
-                {notesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-              </span>
-            </button>
-
-            {/* Body of Notes - collapsible on mobile */}
-            <div className={`question-notes-body ${notesCollapsed ? 'notes-collapsed-mobile' : ''}`}>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
-                placeholder="Record your edge cases, pitfalls, or takeaways here (auto-saved)..."
-                rows={4}
-                className="glass-input"
-                style={{ 
-                  width: '100%', 
-                  resize: 'vertical', 
-                  lineHeight: 1.5, 
-                  fontFamily: 'var(--font-sans)', 
-                  fontSize: '16px',
-                  borderRadius: 'var(--radius-inner)'
-                }}
-              />
-              <div style={{ textAlign: 'right', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                {notes.length}/2000 characters
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION H: Previous & Next Question Buttons (Order 7 on mobile, two equal buttons side by side) */}
-          <div className="question-nav-footer" style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '12px',
-            width: '100%'
-          }}>
-            {prevQuestion ? (
-              <button
-                type="button"
-                onClick={() => navigate(`/question/${prevQuestion.seq}`)}
-                className="btn-secondary"
-                style={{ width: '100%', minHeight: '48px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', gap: '0.4rem', justifyContent: 'center' }}
-                title={`Previous: #${prevQuestion.seq} ${prevQuestion.title}`}
-              >
-                <ChevronLeft size={16} />
-                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  #{prevQuestion.seq} Prev
-                </span>
-              </button>
-            ) : (
-              <div />
-            )}
-
-            {nextQuestion ? (
-              <button
-                type="button"
-                onClick={() => navigate(`/question/${nextQuestion.seq}`)}
-                className="btn-primary"
-                style={{ width: '100%', minHeight: '48px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', gap: '0.4rem', justifyContent: 'center' }}
-                title={`Next: #${nextQuestion.seq} ${nextQuestion.title}`}
-              >
-                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  Next #{nextQuestion.seq}
-                </span>
-                <ChevronRight size={16} />
-              </button>
-            ) : (
-              <div />
-            )}
-          </div>
-
         </div>
 
-        {/* RIGHT 7 COLUMNS: Button Row + Dynamic Panels (Approach/Code/Hints) */}
+        {/* RIGHT 7 COLUMNS: Button Row + Dynamic Panels (Approach/Code/Hints) + Timer at bottom */}
         <div className="question-col-7" style={{
           gridColumn: 'span 7',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1rem'
+          gap: '1rem',
+          height: '100%'
         }}>
           
           {/* SECTION D: Five Buttons (Mobile: Glass card with 2-row grid; Desktop: Sticky Pill Bar) */}
@@ -1174,7 +1073,7 @@ export default function Question() {
             </div>
           </div>
 
-          <div className="desktop-only-pill-nav question-pill-nav-sticky">
+          <div className="desktop-only-pill-nav">
             <div className="question-pill-nav-scroll">
               {/* Hint 1 */}
               <button
@@ -1240,8 +1139,8 @@ export default function Question() {
             </div>
           </div>
 
-          {/* SECTION E & F: Open Panel at Full Width (Order 5 on mobile) */}
-          <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box' }}>
+          {/* SECTION E & F: Open Panel (grows to fill free height, scrolls when code is long per Part 3) */}
+          <div className="glass-card question-panel-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%', boxSizing: 'border-box', flex: 1, minHeight: 0 }}>
             
             {/* INITIAL STATE: Nothing revealed yet */}
             {activePanel === null && revealedHints === 0 && (
@@ -1725,8 +1624,110 @@ export default function Question() {
 
           </div>
 
+          {/* SECTION C.2: Solve Timer Card at bottom of right column (Part 3) */}
+          <SolveTimer 
+            seq={seq} 
+            difficulty={question.difficulty} 
+            isDone={currentStatus === 'done'}
+          />
+
         </div>
 
+      </div>
+
+      {/* ROW 2: Personal Notes in Full-Width Card (Part 3) */}
+      <div className="glass-card question-notes-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '0.65rem', width: '100%', boxSizing: 'border-box' }}>
+        <button
+          type="button"
+          onClick={() => setNotesCollapsed(!notesCollapsed)}
+          className="question-notes-toggle-header"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            width: '100%',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            textAlign: 'left'
+          }}
+        >
+          <FileText size={16} color="var(--accent)" style={{ flexShrink: 0 }} />
+          <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-color)' }}>
+            Personal Notes
+          </span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: 'auto', flexShrink: 0 }}>
+            {notesSaved ? 'Saved' : 'Saving...'}
+          </span>
+          <span className="mobile-notes-chevron" style={{ display: 'flex', alignItems: 'center', color: 'var(--text-muted)', flexShrink: 0 }}>
+            {notesCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+          </span>
+        </button>
+
+        {/* Body of Notes */}
+        <div className={`question-notes-body ${notesCollapsed ? 'notes-collapsed-mobile' : ''}`}>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
+            placeholder="Record your edge cases, pitfalls, or takeaways here (auto-saved)..."
+            rows={4}
+            className="glass-input"
+            style={{ 
+              width: '100%', 
+              resize: 'vertical', 
+              lineHeight: 1.5, 
+              fontFamily: 'var(--font-sans)', 
+              fontSize: '16px',
+              borderRadius: 'var(--radius-inner)'
+            }}
+          />
+          <div style={{ textAlign: 'right', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+            {notes.length}/2000 characters
+          </div>
+        </div>
+      </div>
+
+      {/* ROW 3: Previous & Next Question Buttons (Part 3, full width, two equal buttons) */}
+      <div className="question-nav-footer" style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '12px',
+        width: '100%'
+      }}>
+        {prevQuestion ? (
+          <button
+            type="button"
+            onClick={() => navigate(`/question/${prevQuestion.seq}`)}
+            className="btn-secondary"
+            style={{ width: '100%', minHeight: '48px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', gap: '0.4rem', justifyContent: 'center' }}
+            title={`Previous: #${prevQuestion.seq} ${prevQuestion.title}`}
+          >
+            <ChevronLeft size={16} />
+            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              #{prevQuestion.seq} Prev
+            </span>
+          </button>
+        ) : (
+          <div />
+        )}
+
+        {nextQuestion ? (
+          <button
+            type="button"
+            onClick={() => navigate(`/question/${nextQuestion.seq}`)}
+            className="btn-primary"
+            style={{ width: '100%', minHeight: '48px', padding: '0.6rem 0.85rem', fontSize: '0.85rem', gap: '0.4rem', justifyContent: 'center' }}
+            title={`Next: #${nextQuestion.seq} ${nextQuestion.title}`}
+          >
+            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              Next #{nextQuestion.seq}
+            </span>
+            <ChevronRight size={16} />
+          </button>
+        ) : (
+          <div />
+        )}
       </div>
 
       {/* Slow Rule Prompt Toast (SRS 3.0 Section 6.3) */}

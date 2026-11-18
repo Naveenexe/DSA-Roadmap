@@ -175,7 +175,31 @@ input, select, textarea {
   align-items: center;
   justify-content: space-between;
   padding: 0 1.25rem;
-  transition: background 200ms ease-out, border-color 200ms ease-out;
+  transition: background 250ms ease-out, border-color 250ms ease-out, backdrop-filter 250ms ease-out, box-shadow 250ms ease-out;
+}
+
+/* Scrolled Top Bar: 92% opaque with stronger blur (36px) per Part 3 */
+.topbar-pill.is-scrolled {
+  background: var(--topbar-scrolled-bg, rgba(255, 255, 255, 0.92)) !important;
+  backdrop-filter: blur(36px) !important;
+  -webkit-backdrop-filter: blur(36px) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22) !important;
+}
+
+[data-theme='light'] .topbar-pill.is-scrolled {
+  background: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 12px 32px rgba(60, 70, 160, 0.18) !important;
+}
+
+[data-theme='evening'] .topbar-pill.is-scrolled {
+  background: rgba(28, 23, 67, 0.92) !important;
+  box-shadow: 0 16px 44px rgba(10, 5, 30, 0.55) !important;
+}
+
+[data-theme='dark'] .topbar-pill.is-scrolled {
+  background: rgba(14, 18, 38, 0.92) !important;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.65) !important;
 }
 
 /* Three-Mode Glass Switcher in Top Bar (Desktop) */
@@ -537,32 +561,35 @@ input, select, textarea {
 
 .desktop-only-pill-nav {
   display: block;
+  position: static !important;
+  width: 100%;
 }
 
 .question-pill-nav-sticky {
-  position: sticky;
-  top: 88px;
-  z-index: 10;
-  padding: 6px 0;
-  border-radius: var(--radius-pill);
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+  padding: 0 !important;
 }
 
 .question-pill-nav-scroll {
   display: flex;
   gap: 8px;
-  overflow-x: auto;
+  width: 100%;
 }
 
 .pill-nav-btn {
-  flex-shrink: 0;
+  flex: 1 1 0;
+  min-width: 0;
   white-space: nowrap;
   min-height: 44px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: var(--radius-pill);
   font-size: 14px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 }
 
@@ -1695,9 +1722,11 @@ h1, h2, h3, [id] {
   /* All cards on phones must be strictly 100% width, stretching between 16px page margins */
   .question-header-card,
   .question-builds-card,
+  .question-asked-at-card,
   .question-actions-card,
-  .question-hint-card,
+  .mobile-only-hint-card,
   .question-panel-card,
+  .question-timer-card,
   .question-notes-card,
   .question-nav-footer {
     width: 100% !important;
@@ -1720,8 +1749,12 @@ h1, h2, h3, [id] {
     order: 2 !important;
   }
 
-  .question-actions-card {
+  .question-asked-at-card {
     order: 3 !important;
+  }
+
+  .question-actions-card {
+    order: 4 !important;
   }
 
   .question-leetcode-btn {
@@ -1746,7 +1779,7 @@ h1, h2, h3, [id] {
   .mobile-only-hint-card {
     display: flex !important;
     flex-direction: column !important;
-    order: 4 !important;
+    order: 5 !important;
     padding: 16px !important;
     gap: 8px !important;
     position: static !important;
@@ -1811,15 +1844,23 @@ h1, h2, h3, [id] {
 
   /* Solution Guidance / Content panel: auto height, padding 24px */
   .question-panel-card {
-    order: 5 !important;
+    order: 6 !important;
     width: 100% !important;
     min-height: auto !important;
     height: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
     padding: 24px !important;
   }
 
+  .question-timer-card {
+    order: 7 !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+
   .question-notes-card {
-    order: 6 !important;
+    order: 8 !important;
     width: 100% !important;
   }
 
@@ -1828,8 +1869,9 @@ h1, h2, h3, [id] {
   }
 
   .question-nav-footer {
-    order: 7 !important;
+    order: 9 !important;
     margin-bottom: 16px !important;
+    width: 100% !important;
   }
 
   /* Mobile Status Sheet Backdrop (z-index: 50) */
@@ -2205,4 +2247,52 @@ h1, h2, h3, [id] {
 /* Toast Notification (z-index: 70) */
 .toast-container {
   z-index: 70 !important;
+}
+
+/* ==========================================================================
+   Desktop Question Page Layout (1200px and wider per SRS Part 3)
+   ========================================================================== */
+@media (min-width: 1200px) {
+  .question-grid-container {
+    display: grid !important;
+    grid-template-columns: repeat(12, 1fr) !important;
+    gap: 1.5rem !important;
+    align-items: stretch !important;
+  }
+
+  .question-col-5 {
+    grid-column: span 5 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+  }
+
+  .question-col-7 {
+    grid-column: span 7 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    height: 100% !important;
+    min-height: 100% !important;
+  }
+
+  .question-panel-card {
+    flex: 1 1 auto !important;
+    max-height: calc(100vh - 260px) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .question-timer-card {
+    margin-top: auto !important;
+    width: 100% !important;
+  }
+
+  .question-notes-card {
+    width: 100% !important;
+  }
+
+  .question-nav-footer {
+    width: 100% !important;
+  }
 }

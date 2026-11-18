@@ -137,7 +137,8 @@ export default function SolveTimer({ seq, difficulty, isDone, onSlowDetected }) 
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px'
+        gap: '10px',
+        marginTop: 'auto'
       }}
     >
       {/* Desktop Layout: One row (Time, Start/Pause, Reset, Attempts) */}
