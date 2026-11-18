@@ -6200,15 +6200,15 @@
     "title": "Minimum Time to Complete Trips",
     "slug": "minimum-time-to-complete-trips",
     "difficulty": "Medium",
-    "buildsOn": 349,
     "chapter": "ch-22",
+    "buildsOn": 349,
     "brute": {
-      "idea": "Simulate time second by second",
-      "time": "O(T·n)"
+      "idea": "Simulate time unit by unit, counting how many trips each bus has completed until the total reaches totalTrips.",
+      "time": "O(answer * n)"
     },
     "optimal": {
-      "idea": "Binary search on total time with trips check",
-      "time": "O(n log T)"
+      "idea": "Binary search the time range [1, (long) min(time) * totalTrips] checking total trips in O(n log(min * totalTrips)) time.",
+      "time": "O(n log(min(time) * totalTrips))"
     },
     "companies": [
       "uber",
@@ -6221,15 +6221,15 @@
     "title": "Maximum Candies Allocated to K Children",
     "slug": "maximum-candies-allocated-to-k-children",
     "difficulty": "Medium",
-    "buildsOn": 351,
     "chapter": "ch-22",
+    "buildsOn": 351,
     "brute": {
-      "idea": "Try every pile size",
-      "time": "O(n·max)"
+      "idea": "Test each possible candy allocation per child starting from max(candies) downward until children served >= k.",
+      "time": "O(max(candies) * n)"
     },
     "optimal": {
-      "idea": "Binary search on pile size with child count check",
-      "time": "O(n log max)"
+      "idea": "Binary search on candy allocation per child in range [1, max(candies)] in O(n log(max)) time.",
+      "time": "O(n log(max))"
     },
     "companies": [
       "amazon",
@@ -6242,15 +6242,15 @@
     "title": "Time Based Key-Value Store",
     "slug": "time-based-key-value-store",
     "difficulty": "Medium",
-    "buildsOn": 350,
     "chapter": "ch-22",
+    "buildsOn": 350,
     "brute": {
-      "idea": "Linear scan list of timestamps on get",
-      "time": "O(n)"
+      "idea": "Store pairs in a HashMap of lists and linearly scan backwards to find the first timestamp <= target.",
+      "time": "O(m) per get, O(1) set"
     },
     "optimal": {
-      "idea": "Binary search over sorted timestamps for key",
-      "time": "O(log n)"
+      "idea": "Binary search over sorted timestamp entries for each key in O(log m) time per get query.",
+      "time": "O(log m) per get, O(1) set"
     },
     "companies": [
       "apple",
@@ -6265,15 +6265,15 @@
     "title": "Find K-th Smallest Pair Distance",
     "slug": "find-k-th-smallest-pair-distance",
     "difficulty": "Hard",
-    "buildsOn": 66,
     "chapter": "ch-22",
+    "buildsOn": 66,
     "brute": {
-      "idea": "Generate all pair distances and sort",
+      "idea": "Generate all n * (n - 1) / 2 pair distances, sort them, and return the k-th smallest element.",
       "time": "O(n² log n)"
     },
     "optimal": {
-      "idea": "Binary search distance with two-pointer count",
-      "time": "O(n log W)"
+      "idea": "Binary search the distance range [0, max - min], using two pointers to count pairs with diff <= mid in O(n log(max - min)) time.",
+      "time": "O(n log n + n log(max - min))"
     },
     "companies": [
       "google",
@@ -6287,15 +6287,15 @@
     "title": "Implement Queue using Stacks",
     "slug": "implement-queue-using-stacks",
     "difficulty": "Easy",
-    "buildsOn": 69,
     "chapter": "ch-23",
+    "buildsOn": 69,
     "brute": {
-      "idea": "Transfer all items on every push/pop",
-      "time": "O(n) per operation"
+      "idea": "Rebalance elements into a temporary stack on every single push operation to keep the queue head at the top.",
+      "time": "O(n) push, O(1) pop"
     },
     "optimal": {
-      "idea": "Two stacks in and out; transfer only when out is empty",
-      "time": "O(1) amortized"
+      "idea": "Two stacks: lazily transfer elements from inStack to outStack only when outStack is empty, achieving amortized O(1) operations.",
+      "time": "Amortized O(1) per operation"
     },
     "companies": [
       "amazon",
@@ -6309,15 +6309,15 @@
     "title": "Implement Stack using Queues",
     "slug": "implement-stack-using-queues",
     "difficulty": "Easy",
-    "buildsOn": 355,
     "chapter": "ch-23",
+    "buildsOn": 355,
     "brute": {
-      "idea": "Two queues moving all items on each push",
-      "time": "O(n) space"
+      "idea": "Use two queues: on pop, transfer n - 1 elements from q1 to q2, retrieve the remaining element, and swap references.",
+      "time": "O(1) push, O(n) pop"
     },
     "optimal": {
-      "idea": "One queue; rotate size-1 elements after push",
-      "time": "O(n) per push"
+      "idea": "Single queue rotation: upon enqueueing x, rotate the previous n - 1 elements behind x so x sits at the front.",
+      "time": "O(n) push, O(1) pop and top"
     },
     "companies": [
       "amazon",
@@ -6330,15 +6330,15 @@
     "title": "Number of Recent Calls",
     "slug": "number-of-recent-calls",
     "difficulty": "Easy",
-    "buildsOn": 356,
     "chapter": "ch-23",
+    "buildsOn": 356,
     "brute": {
-      "idea": "Store all pings and filter",
-      "time": "O(n)"
+      "idea": "Store all ping timestamps in a list and iterate through the entire list to count timestamps in [t - 3000, t].",
+      "time": "O(total calls) per ping"
     },
     "optimal": {
-      "idea": "Queue popping calls older than t - 3000",
-      "time": "O(1) amortized"
+      "idea": "Queue sliding window: enqueue t and discard elements older than t - 3000 from the front in amortized O(1) time.",
+      "time": "Amortized O(1) per ping"
     },
     "companies": [
       "amazon",
@@ -6351,14 +6351,14 @@
     "title": "Remove All Adjacent Duplicates In String",
     "slug": "remove-all-adjacent-duplicates-in-string",
     "difficulty": "Easy",
-    "buildsOn": 68,
     "chapter": "ch-23",
+    "buildsOn": 68,
     "brute": {
-      "idea": "Repeatedly find adjacent pairs and delete",
+      "idea": "Repeatedly scan the string to find and remove any adjacent duplicate pair until no duplicates remain.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Stack popping on matching character",
+      "idea": "Single pass with a stack (or StringBuilder): push new char or cancel matching top in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6373,15 +6373,15 @@
     "title": "Minimum Add to Make Parentheses Valid",
     "slug": "minimum-add-to-make-parentheses-valid",
     "difficulty": "Medium",
-    "buildsOn": 358,
     "chapter": "ch-23",
+    "buildsOn": 358,
     "brute": {
-      "idea": "Stack of brackets",
-      "time": "O(n) space"
+      "idea": "Simulate parentheses cancellation using an explicit stack of opening brackets.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Two counters tracking open balance and required insertions",
-      "time": "O(1) space"
+      "idea": "Count unmatched parentheses using two integer counters in O(n) time and O(1) space.",
+      "time": "O(n)"
     },
     "companies": [
       "meta",
@@ -6394,14 +6394,14 @@
     "title": "Minimum Remove to Make Valid Parentheses",
     "slug": "minimum-remove-to-make-valid-parentheses",
     "difficulty": "Medium",
-    "buildsOn": 359,
     "chapter": "ch-23",
+    "buildsOn": 359,
     "brute": {
-      "idea": "Try removing every subset of parentheses",
-      "time": "exponential"
+      "idea": "Mark invalid characters by replacing them with a placeholder or collecting invalid index positions.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Stack of index positions of unmatched parentheses",
+      "idea": "Two-pass in-place marker: remove invalid ')' from left-to-right, then remove excess '(' from right-to-left in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6416,14 +6416,14 @@
     "title": "Longest Valid Parentheses",
     "slug": "longest-valid-parentheses",
     "difficulty": "Hard",
-    "buildsOn": 360,
     "chapter": "ch-23",
+    "buildsOn": 360,
     "brute": {
-      "idea": "Check validity of every even-length substring",
+      "idea": "Check every even-length substring to see if it is a valid parentheses string.",
       "time": "O(n³)"
     },
     "optimal": {
-      "idea": "Stack initialized with -1, or two-pass counters",
+      "idea": "Stack storing indices initialized with -1 to measure valid spans in a single pass in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6438,14 +6438,14 @@
     "title": "Basic Calculator",
     "slug": "basic-calculator",
     "difficulty": "Hard",
-    "buildsOn": 71,
     "chapter": "ch-23",
+    "buildsOn": 71,
     "brute": {
-      "idea": "Recursive string parsing with copies",
+      "idea": "Recursively evaluate innermost parenthesized expressions by scanning for '(' and matching ')'.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Stack of signs and running results on opening parens",
+      "idea": "Single-pass evaluation using an integer stack to save running sum and sign upon '(' in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6461,14 +6461,14 @@
     "title": "Validate Stack Sequences",
     "slug": "validate-stack-sequences",
     "difficulty": "Medium",
-    "buildsOn": 68,
     "chapter": "ch-23",
+    "buildsOn": 68,
     "brute": {
-      "idea": "Try all pop orders",
-      "time": "exponential"
+      "idea": "Try all valid push/pop sequences to see if the target popped sequence can be produced.",
+      "time": "O(2ⁿ)"
     },
     "optimal": {
-      "idea": "Simulate pushes and greedy pops with a stack",
+      "idea": "Greedy stack simulation: push elements and eagerly pop whenever top matches popped[j] in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6482,15 +6482,15 @@
     "title": "Exclusive Time of Functions",
     "slug": "exclusive-time-of-functions",
     "difficulty": "Medium",
-    "buildsOn": 363,
     "chapter": "ch-23",
+    "buildsOn": 363,
     "brute": {
-      "idea": "Track function id per time unit",
-      "time": "O(T)"
+      "idea": "Simulate each second of time by maintaining a call stack and recording which function was running at each second.",
+      "time": "O(duration)"
     },
     "optimal": {
-      "idea": "Call stack tracking start time and accumulated duration",
-      "time": "O(n)"
+      "idea": "Stack tracking function calls, updating execution intervals on start and end events in O(logs) time.",
+      "time": "O(logs.size())"
     },
     "companies": [
       "meta",
@@ -6503,14 +6503,14 @@
     "title": "Final Prices With a Special Discount in a Shop",
     "slug": "final-prices-with-a-special-discount-in-a-shop",
     "difficulty": "Easy",
-    "buildsOn": 72,
     "chapter": "ch-23",
+    "buildsOn": 72,
     "brute": {
-      "idea": "Scan right for first smaller price",
+      "idea": "For each item i, search linearly from i + 1 to n - 1 for the first price <= prices[i].",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Monotonic increasing stack of indices",
+      "idea": "Monotonic stack storing indices: resolve discounts when encountering a smaller or equal price in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6524,14 +6524,14 @@
     "title": "132 Pattern",
     "slug": "132-pattern",
     "difficulty": "Medium",
-    "buildsOn": 74,
     "chapter": "ch-23",
+    "buildsOn": 74,
     "brute": {
-      "idea": "Check every triplet i < j < k",
+      "idea": "Check every triplet (i, j, k) with i < j < k to test if nums[i] < nums[k] < nums[j].",
       "time": "O(n³)"
     },
     "optimal": {
-      "idea": "Monotonic stack from right tracking middle element",
+      "idea": "Scan right-to-left using a monotonic decreasing stack to maintain the largest valid '2' candidate in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6545,14 +6545,14 @@
     "title": "Sum of Subarray Minimums",
     "slug": "sum-of-subarray-minimums",
     "difficulty": "Medium",
-    "buildsOn": 76,
     "chapter": "ch-23",
+    "buildsOn": 76,
     "brute": {
-      "idea": "Find minimum of every subarray",
+      "idea": "Iterate all subarrays, compute the minimum of each subarray, and sum them modulo 10^9 + 7.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Previous and next smaller element with monotonic stack",
+      "idea": "Monotonic stack calculating left and right dominance spans for each element in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6566,14 +6566,14 @@
     "title": "Longest Continuous Subarray With Absolute Diff Less Than or Equal to Limit",
     "slug": "longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit",
     "difficulty": "Medium",
-    "buildsOn": 48,
     "chapter": "ch-23",
+    "buildsOn": 48,
     "brute": {
-      "idea": "Check every subarray min and max",
+      "idea": "Test every subarray [i, j], compute its max and min values, and check if max - min <= limit.",
       "time": "O(n²)"
     },
     "optimal": {
-      "idea": "Sliding window with two monotonic deques (max and min)",
+      "idea": "Sliding window with two monotonic deques tracking window maximum and minimum in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6587,15 +6587,15 @@
     "title": "Remove Linked List Elements",
     "slug": "remove-linked-list-elements",
     "difficulty": "Easy",
-    "buildsOn": 90,
     "chapter": "ch-24",
+    "buildsOn": 90,
     "brute": {
-      "idea": "Copy matching elements to new list",
-      "time": "O(n) space"
+      "idea": "Collect all node values not equal to val into a list, then rebuild a fresh linked list.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Dummy head pointer skipping val matching nodes",
-      "time": "O(1) space"
+      "idea": "Single pass with dummy sentinel node relinking next pointers to bypass target nodes in O(1) extra space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -6608,14 +6608,14 @@
     "title": "Delete Node in a Linked List",
     "slug": "delete-node-in-a-linked-list",
     "difficulty": "Medium",
-    "buildsOn": 369,
     "chapter": "ch-24",
+    "buildsOn": 369,
     "brute": {
-      "idea": "Cannot traverse without head pointer",
-      "time": "N/A"
+      "idea": "Shift all values forward from node to the end of the list, then remove the final tail node.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Copy next node value and rewire next pointer",
+      "idea": "Overwriting node value with next node's value and bypassing next node in O(1) time.",
       "time": "O(1)"
     },
     "companies": [
@@ -6630,15 +6630,15 @@
     "title": "Swap Nodes in Pairs",
     "slug": "swap-nodes-in-pairs",
     "difficulty": "Medium",
-    "buildsOn": 83,
     "chapter": "ch-24",
+    "buildsOn": 83,
     "brute": {
-      "idea": "Copy values to array, swap, re-populate",
-      "time": "O(n) space"
+      "idea": "Swap the integer values of adjacent nodes without altering list pointer topology.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Dummy head rewiring adjacent pairs in place",
-      "time": "O(1) space"
+      "idea": "Iterative pointer rewiring using dummy sentinel node to swap pairs in O(1) auxiliary space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -6652,14 +6652,14 @@
     "title": "Rotate List",
     "slug": "rotate-list",
     "difficulty": "Medium",
-    "buildsOn": 89,
     "chapter": "ch-24",
+    "buildsOn": 89,
     "brute": {
-      "idea": "Rotate by 1 node k times",
-      "time": "O(nk)"
+      "idea": "Rotate the list right by 1 position k times iteratively.",
+      "time": "O(k * n)"
     },
     "optimal": {
-      "idea": "Count length, make circular ring, break at length - k",
+      "idea": "Form a circular list by connecting tail to head, then break the ring at index length - (k % length) in O(n) time.",
       "time": "O(n)"
     },
     "companies": [
@@ -6674,15 +6674,15 @@
     "title": "Odd Even Linked List",
     "slug": "odd-even-linked-list",
     "difficulty": "Medium",
-    "buildsOn": 371,
     "chapter": "ch-24",
+    "buildsOn": 371,
     "brute": {
-      "idea": "Collect nodes in two arrays and reconnect",
-      "time": "O(n) space"
+      "idea": "Collect odd-indexed nodes into one list and even-indexed nodes into another, then concatenate.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Two interleaved pointer heads odd and even, join at end",
-      "time": "O(1) space"
+      "idea": "Two pointers relinking odd and even nodes in a single pass with O(1) auxiliary space.",
+      "time": "O(n)"
     },
     "companies": [
       "bloomberg",
@@ -6696,15 +6696,15 @@
     "title": "Partition List",
     "slug": "partition-list",
     "difficulty": "Medium",
-    "buildsOn": 373,
     "chapter": "ch-24",
+    "buildsOn": 373,
     "brute": {
-      "idea": "Partition elements in an array and rebuild",
-      "time": "O(n) space"
+      "idea": "Collect all elements into two arrays (< x and >= x), concatenate them, and rebuild the linked list.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "Two dummy chains less and greater, stitch together",
-      "time": "O(1) space"
+      "idea": "Maintain two sublist pointers less and greater, relinking nodes in a single pass in O(1) extra space.",
+      "time": "O(n)"
     },
     "companies": [
       "amazon",
@@ -6717,15 +6717,15 @@
     "title": "Reverse Linked List II",
     "slug": "reverse-linked-list-ii",
     "difficulty": "Medium",
-    "buildsOn": 83,
     "chapter": "ch-24",
+    "buildsOn": 83,
     "brute": {
-      "idea": "Copy section to array and reverse",
-      "time": "O(n) space"
+      "idea": "Extract node values between left and right into an array, reverse the array, and write values back.",
+      "time": "O(n)"
     },
     "optimal": {
-      "idea": "In-place head-tail reversal of sub-segment",
-      "time": "O(1) space"
+      "idea": "In-place head-insertion subsegment reversal: relink nodes between left and right in a single pass in O(1) space.",
+      "time": "O(n)"
     },
     "companies": [
       "meta",

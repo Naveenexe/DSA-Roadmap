@@ -1,0 +1,288 @@
+[
+  {
+    "seq": 369,
+    "whyNext": "Builds on singly-linked list traversal from Reverse Linked List (Seq 90) by utilizing a dummy head node to seamlessly delete all nodes matching target val.",
+    "hints": [
+      "A dummy head pointing to head handles deletions of the original head node gracefully.",
+      "Iterate cur through the list: if cur.next.val == val, bypass it via cur.next = cur.next.next; else advance cur = cur.next.",
+      "Initialize dummy.next = head. Let cur = dummy. While cur.next != null: if cur.next.val == val cur.next = cur.next.next; else cur = cur.next. Return dummy.next."
+    ],
+    "brute": {
+      "idea": "Collect all node values not equal to val into a list, then rebuild a fresh linked list.",
+      "steps": [
+        "Traverse linked list, collecting node.val into an ArrayList if node.val != val.",
+        "Construct a new linked list from the collected values.",
+        "Return head of the new list."
+      ],
+      "whySlow": "Allocates a new node for every retained value instead of relinking existing nodes.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode removeElements(ListNode head, int val) {\n        List<Integer> vals = new ArrayList<>();\n        ListNode cur = head;\n        while (cur != null) {\n            if (cur.val != val) vals.add(cur.val);\n            cur = cur.next;\n        }\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        for (int v : vals) {\n            tail.next = new ListNode(v);\n            tail = tail.next;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def removeElements(self, head: ListNode, val: int) -> ListNode:\n        vals = []\n        cur = head\n        while cur:\n            if cur.val != val:\n                vals.append(cur.val)\n            cur = cur.next\n        dummy = ListNode(0)\n        tail = dummy\n        for v in vals:\n            tail.next = ListNode(v)\n            tail = tail.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass with dummy sentinel node relinking next pointers to bypass target nodes in O(1) extra space.",
+      "steps": [
+        "Create sentinel node dummy pointing to head.",
+        "Set cur = dummy.",
+        "While cur.next != null: if cur.next.val == val, set cur.next = cur.next.next; else cur = cur.next.",
+        "Return dummy.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode removeElements(ListNode head, int val) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode cur = dummy;\n        while (cur.next != null) {\n            if (cur.next.val == val) {\n                cur.next = cur.next.next;\n            } else {\n                cur = cur.next;\n            }\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def removeElements(self, head: ListNode, val: int) -> ListNode:\n        dummy = ListNode(0, head)\n        cur = dummy\n        while cur.next:\n            if cur.next.val == val:\n                cur.next = cur.next.next\n            else:\n                cur = cur.next\n        return dummy.next"
+      }
+    }
+  },
+  {
+    "seq": 370,
+    "whyNext": "Builds on node deletion from Remove Linked List Elements (Seq 369) by copying the next node's value into the target node and deleting the next node when head access is absent.",
+    "hints": [
+      "You are not given access to the head, only to the node to be deleted.",
+      "Copy the value of node.next into node.val, and point node.next to node.next.next.",
+      "Set node.val = node.next.val, then node.next = node.next.next."
+    ],
+    "brute": {
+      "idea": "Shift all values forward from node to the end of the list, then remove the final tail node.",
+      "steps": [
+        "Traverse from node to the second to last node, shifting values left: cur.val = cur.next.val.",
+        "Set the second to last node's next pointer to null.",
+        "Finish."
+      ],
+      "whySlow": "Shifting values all the way to the end takes O(n) operations when O(1) suffices.",
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void deleteNode(ListNode node) {\n        ListNode cur = node;\n        while (cur.next.next != null) {\n            cur.val = cur.next.val;\n            cur = cur.next;\n        }\n        cur.val = cur.next.val;\n        cur.next = null;\n    }\n}",
+        "python": "class Solution:\n    def deleteNode(self, node: ListNode) -> None:\n        cur = node\n        while cur.next.next:\n            cur.val = cur.next.val\n            cur = cur.next\n        cur.val = cur.next.val\n        cur.next = None"
+      }
+    },
+    "optimal": {
+      "idea": "Overwriting node value with next node's value and bypassing next node in O(1) time.",
+      "steps": [
+        "Copy value: node.val = node.next.val.",
+        "Bypass next node: node.next = node.next.next.",
+        "Node is effectively deleted."
+      ],
+      "time": "O(1)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public void deleteNode(ListNode node) {\n        node.val = node.next.val;\n        node.next = node.next.next;\n    }\n}",
+        "python": "class Solution:\n    def deleteNode(self, node: ListNode) -> None:\n        next_node = node.next\n        node.val = next_node.val\n        node.next = next_node.next"
+      }
+    }
+  },
+  {
+    "seq": 371,
+    "whyNext": "Builds on pointer relinking from Merge Two Sorted Lists (Seq 83) by swapping consecutive pairs of nodes using pointer adjustments around a dummy sentinel.",
+    "hints": [
+      "Use a dummy head node to track the head of the swapped list.",
+      "For each pair (first, second), adjust pointers: prev.next = second, first.next = second.next, second.next = first.",
+      "Initialize dummy.next = head, prev = dummy. While prev.next != null and prev.next.next != null: first = prev.next, second = prev.next.next; relink pointers; prev = first. Return dummy.next."
+    ],
+    "brute": {
+      "idea": "Swap the integer values of adjacent nodes without altering list pointer topology.",
+      "steps": [
+        "Traverse list in steps of two nodes: cur and cur.next.",
+        "Swap values: tmp = cur.val, cur.val = cur.next.val, cur.next.val = tmp.",
+        "Advance cur = cur.next.next.",
+        "Return head."
+      ],
+      "whySlow": "Modifies node values instead of actual pointer topology as requested in standard node swapping.",
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode swapPairs(ListNode head) {\n        ListNode cur = head;\n        while (cur != null && cur.next != null) {\n            int tmp = cur.val;\n            cur.val = cur.next.val;\n            cur.next.val = tmp;\n            cur = cur.next.next;\n        }\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def swapPairs(self, head: ListNode) -> ListNode:\n        cur = head\n        while cur and cur.next:\n            cur.val, cur.next.val = cur.next.val, cur.val\n            cur = cur.next.next\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "Iterative pointer rewiring using dummy sentinel node to swap pairs in O(1) auxiliary space.",
+      "steps": [
+        "Initialize dummy node with dummy.next = head, and prev = dummy.",
+        "While prev.next != null and prev.next.next != null: identify first = prev.next, second = prev.next.next.",
+        "first.next = second.next.",
+        "second.next = first.",
+        "prev.next = second.",
+        "Advance prev = first.",
+        "Return dummy.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode swapPairs(ListNode head) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode prev = dummy;\n        while (prev.next != null && prev.next.next != null) {\n            ListNode first = prev.next;\n            ListNode second = prev.next.next;\n            first.next = second.next;\n            second.next = first;\n            prev.next = second;\n            prev = first;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def swapPairs(self, head: ListNode) -> ListNode:\n        dummy = ListNode(0, head)\n        prev = dummy\n        while prev.next and prev.next.next:\n            first = prev.next\n            second = prev.next.next\n            first.next = second.next\n            second.next = first\n            prev.next = second\n            prev = first\n        return dummy.next"
+      }
+    }
+  },
+  {
+    "seq": 372,
+    "whyNext": "Builds on list length traversal and end-pointer joining from Reorder List (Seq 89) by connecting the tail to head into a ring, breaking at length - (k % length) to rotate.",
+    "hints": [
+      "Rotating by k places is equivalent to rotating by k % length places.",
+      "Connect the tail of the list to the head to form a circular list.",
+      "Find length n. Connect tail.next = head. Find the new tail at position n - (k % n) from the start. Set newHead = newTail.next and break circle with newTail.next = null."
+    ],
+    "brute": {
+      "idea": "Rotate the list right by 1 position k times iteratively.",
+      "steps": [
+        "If list is empty or has 1 node, return head.",
+        "Perform k % length rotations.",
+        "In each rotation: traverse to the second to last node, detach last node, and attach it as the new head.",
+        "Return head."
+      ],
+      "whySlow": "Performing k single-step rotations takes O(k * n) time.",
+      "time": "O(k * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode rotateRight(ListNode head, int k) {\n        if (head == null || head.next == null || k == 0) return head;\n        int len = 0;\n        ListNode cur = head;\n        while (cur != null) { len++; cur = cur.next; }\n        k = k % len;\n        for (int r = 0; r < k; r++) {\n            ListNode prev = null;\n            ListNode last = head;\n            while (last.next != null) {\n                prev = last;\n                last = last.next;\n            }\n            prev.next = null;\n            last.next = head;\n            head = last;\n        }\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def rotateRight(self, head: ListNode, k: int) -> ListNode:\n        if not head or not head.next or k == 0:\n            return head\n        n = 0\n        cur = head\n        while cur:\n            n += 1\n            cur = cur.next\n        k = k % n\n        for _ in range(k):\n            prev = None\n            last = head\n            while last.next:\n                prev = last\n                last = last.next\n            prev.next = None\n            last.next = head\n            head = last\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "Form a circular list by connecting tail to head, then break the ring at index length - (k % length) in O(n) time.",
+      "steps": [
+        "If head == null || head.next == null || k == 0 return head.",
+        "Traverse to tail and count length len.",
+        "Connect tail.next = head to form a ring.",
+        "Compute steps to new tail = len - (k % len).",
+        "Advance tail by steps. Let newHead = tail.next, set tail.next = null.",
+        "Return newHead."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode rotateRight(ListNode head, int k) {\n        if (head == null || head.next == null || k == 0) return head;\n        int len = 1;\n        ListNode tail = head;\n        while (tail.next != null) {\n            tail = tail.next;\n            len++;\n        }\n        tail.next = head;\n        int steps = len - (k % len);\n        for (int i = 0; i < steps; i++) {\n            tail = tail.next;\n        }\n        ListNode newHead = tail.next;\n        tail.next = null;\n        return newHead;\n    }\n}",
+        "python": "class Solution:\n    def rotateRight(self, head: ListNode, k: int) -> ListNode:\n        if not head or not head.next or k == 0:\n            return head\n        length = 1\n        tail = head\n        while tail.next:\n            tail = tail.next\n            length += 1\n        tail.next = head\n        steps = length - (k % length)\n        for _ in range(steps):\n            tail = tail.next\n        new_head = tail.next\n        tail.next = None\n        return new_head"
+      }
+    }
+  },
+  {
+    "seq": 373,
+    "whyNext": "Builds on alternating node separation from Swap Nodes in Pairs (Seq 371) by partitioning nodes into two independent odd and even sub-chains, then splicing evenHead onto oddTail.",
+    "hints": [
+      "Maintain two pointers: odd pointing to odd nodes and even pointing to even nodes.",
+      "Save evenHead = head.next so you can connect odd.next = evenHead at the end.",
+      "While even != null and even.next != null: odd.next = even.next, odd = odd.next; even.next = odd.next, even = even.next. Connect odd.next = evenHead. Return head."
+    ],
+    "brute": {
+      "idea": "Collect odd-indexed nodes into one list and even-indexed nodes into another, then concatenate.",
+      "steps": [
+        "Traverse list: add 1st, 3rd, 5th... node values to oddList, and 2nd, 4th, 6th... to evenList.",
+        "Combine oddList and evenList.",
+        "Write values back into the linked list nodes.",
+        "Return head."
+      ],
+      "whySlow": "Allocates extra lists and requires a second pass to overwrite values.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode oddEvenList(ListNode head) {\n        if (head == null || head.next == null) return head;\n        List<Integer> odds = new ArrayList<>();\n        List<Integer> evens = new ArrayList<>();\n        ListNode cur = head;\n        int idx = 1;\n        while (cur != null) {\n            if (idx % 2 == 1) odds.add(cur.val);\n            else evens.add(cur.val);\n            idx++;\n            cur = cur.next;\n        }\n        cur = head;\n        for (int v : odds) { cur.val = v; cur = cur.next; }\n        for (int v : evens) { cur.val = v; cur = cur.next; }\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def oddEvenList(self, head: ListNode) -> ListNode:\n        if not head or not head.next:\n            return head\n        odds, evens = [], []\n        cur = head\n        idx = 1\n        while cur:\n            if idx % 2 == 1:\n                odds.append(cur.val)\n            else:\n                evens.append(cur.val)\n            idx += 1\n            cur = cur.next\n        cur = head\n        for v in odds + evens:\n            cur.val = v\n            cur = cur.next\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "Two pointers relinking odd and even nodes in a single pass with O(1) auxiliary space.",
+      "steps": [
+        "If head == null return null.",
+        "Initialize odd = head, even = head.next, evenHead = even.",
+        "While even != null and even.next != null: odd.next = even.next; odd = odd.next; even.next = odd.next; even = even.next.",
+        "Connect odd.next = evenHead.",
+        "Return head."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode oddEvenList(ListNode head) {\n        if (head == null) return null;\n        ListNode odd = head, even = head.next, evenHead = even;\n        while (even != null && even.next != null) {\n            odd.next = even.next;\n            odd = odd.next;\n            even.next = odd.next;\n            even = even.next;\n        }\n        odd.next = evenHead;\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def oddEvenList(self, head: ListNode) -> ListNode:\n        if not head:\n            return None\n        odd = head\n        even = head.next\n        even_head = even\n        while even and even.next:\n            odd.next = even.next\n            odd = odd.next\n            even.next = odd.next\n            even = even.next\n        odd.next = even_head\n        return head"
+      }
+    }
+  },
+  {
+    "seq": 374,
+    "whyNext": "Builds on two-list partitioning from Odd Even Linked List (Seq 373) by separating nodes based on value comparison against x (< x and >= x), preserving relative order.",
+    "hints": [
+      "Create two dummy head chains: lessHead for values < x, and greaterHead for values >= x.",
+      "Iterate through the original list and append nodes to the respective chain.",
+      "Terminate greaterTail.next = null, and connect lessTail.next = greaterHead.next. Return lessHead.next."
+    ],
+    "brute": {
+      "idea": "Collect all elements into two arrays (< x and >= x), concatenate them, and rebuild the linked list.",
+      "steps": [
+        "Traverse linked list: if node.val < x add to less; else add to ge.",
+        "Create a dummy head node.",
+        "Append nodes for all values in less, then for all values in ge.",
+        "Return dummy.next."
+      ],
+      "whySlow": "Allocates auxiliary arrays and allocates new nodes instead of relinking existing nodes.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public ListNode partition(ListNode head, int x) {\n        List<Integer> less = new ArrayList<>();\n        List<Integer> ge = new ArrayList<>();\n        ListNode cur = head;\n        while (cur != null) {\n            if (cur.val < x) less.add(cur.val);\n            else ge.add(cur.val);\n            cur = cur.next;\n        }\n        ListNode dummy = new ListNode(0);\n        ListNode tail = dummy;\n        for (int v : less) { tail.next = new ListNode(v); tail = tail.next; }\n        for (int v : ge) { tail.next = new ListNode(v); tail = tail.next; }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def partition(self, head: ListNode, x: int) -> ListNode:\n        less, ge = [], []\n        cur = head\n        while cur:\n            if cur.val < x:\n                less.append(cur.val)\n            else:\n                ge.append(cur.val)\n            cur = cur.next\n        dummy = ListNode(0)\n        tail = dummy\n        for v in less + ge:\n            tail.next = ListNode(v)\n            tail = tail.next\n        return dummy.next"
+      }
+    },
+    "optimal": {
+      "idea": "Maintain two sublist pointers less and greater, relinking nodes in a single pass in O(1) extra space.",
+      "steps": [
+        "Initialize dummy nodes lessHead = new ListNode(0) and greaterHead = new ListNode(0).",
+        "Set less = lessHead and greater = greaterHead.",
+        "Traverse head: if val < x, less.next = head, less = less.next; else greater.next = head, greater = greater.next.",
+        "Set greater.next = null to terminate second sublist.",
+        "Connect less.next = greaterHead.next.",
+        "Return lessHead.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode partition(ListNode head, int x) {\n        ListNode lessHead = new ListNode(0), less = lessHead;\n        ListNode geHead = new ListNode(0), ge = geHead;\n        while (head != null) {\n            if (head.val < x) {\n                less.next = head;\n                less = less.next;\n            } else {\n                ge.next = head;\n                ge = ge.next;\n            }\n            head = head.next;\n        }\n        ge.next = null;\n        less.next = geHead.next;\n        return lessHead.next;\n    }\n}",
+        "python": "class Solution:\n    def partition(self, head: ListNode, x: int) -> ListNode:\n        less_head, ge_head = ListNode(0), ListNode(0)\n        less, ge = less_head, ge_head\n        while head:\n            if head.val < x:\n                less.next = head\n                less = less.next\n            else:\n                ge.next = head\n                ge = ge.next\n            head = head.next\n        ge.next = None\n        less.next = ge_head.next\n        return less_head.next"
+      }
+    }
+  },
+  {
+    "seq": 375,
+    "whyNext": "Extends in-place list reversal from Merge Two Sorted Lists (Seq 83) and Reverse Linked List to reverse only a bounded subsegment between indices left and right.",
+    "hints": [
+      "Advance pointer to node immediately preceding index left (leftPre).",
+      "Repeatedly take cur.next and move it directly after leftPre.",
+      "Initialize dummy.next = head. Advance prev left - 1 times. Set cur = prev.next. For right - left iterations: move = cur.next, cur.next = move.next, move.next = prev.next, prev.next = move. Return dummy.next."
+    ],
+    "brute": {
+      "idea": "Extract node values between left and right into an array, reverse the array, and write values back.",
+      "steps": [
+        "Traverse list to extract values between position left and right into a list.",
+        "Reverse the extracted values list.",
+        "Traverse the subsegment again and assign the reversed values back to node.val.",
+        "Return head."
+      ],
+      "whySlow": "Modifies node values and uses O(right - left) auxiliary space instead of pointer relinking.",
+      "time": "O(n)",
+      "space": "O(right - left)",
+      "code": {
+        "java": "class Solution {\n    public ListNode reverseBetween(ListNode head, int left, int right) {\n        List<Integer> vals = new ArrayList<>();\n        ListNode cur = head;\n        int idx = 1;\n        while (cur != null) {\n            if (idx >= left && idx <= right) vals.add(cur.val);\n            idx++;\n            cur = cur.next;\n        }\n        Collections.reverse(vals);\n        cur = head;\n        idx = 1;\n        int vIdx = 0;\n        while (cur != null) {\n            if (idx >= left && idx <= right) cur.val = vals.get(vIdx++);\n            idx++;\n            cur = cur.next;\n        }\n        return head;\n    }\n}",
+        "python": "class Solution:\n    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:\n        vals = []\n        cur = head\n        idx = 1\n        while cur:\n            if left <= idx <= right:\n                vals.append(cur.val)\n            idx += 1\n            cur = cur.next\n        vals.reverse()\n        cur = head\n        idx = 1\n        v_idx = 0\n        while cur:\n            if left <= idx <= right:\n                cur.val = vals[v_idx]\n                v_idx += 1\n            idx += 1\n            cur = cur.next\n        return head"
+      }
+    },
+    "optimal": {
+      "idea": "In-place head-insertion subsegment reversal: relink nodes between left and right in a single pass in O(1) space.",
+      "steps": [
+        "Create dummy node with dummy.next = head.",
+        "Advance prev pointer to left - 1 node.",
+        "Set cur = prev.next.",
+        "For i from 0 to right - left - 1: let move = cur.next, set cur.next = move.next, move.next = prev.next, prev.next = move.",
+        "Return dummy.next."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public ListNode reverseBetween(ListNode head, int left, int right) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode prev = dummy;\n        for (int i = 0; i < left - 1; i++) prev = prev.next;\n        ListNode cur = prev.next;\n        for (int i = 0; i < right - left; i++) {\n            ListNode move = cur.next;\n            cur.next = move.next;\n            move.next = prev.next;\n            prev.next = move;\n        }\n        return dummy.next;\n    }\n}",
+        "python": "class Solution:\n    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:\n        dummy = ListNode(0, head)\n        prev = dummy\n        for _ in range(left - 1):\n            prev = prev.next\n        cur = prev.next\n        for _ in range(right - left):\n            move = cur.next\n            cur.next = move.next\n            move.next = prev.next\n            prev.next = move\n        return dummy.next"
+      }
+    }
+  }
+]

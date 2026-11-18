@@ -1,0 +1,571 @@
+[
+  {
+    "seq": 355,
+    "whyNext": "Builds on LIFO stack mechanics from Valid Parentheses (Seq 69) by utilizing two stacks (inStack and outStack) to simulate FIFO queue operations with amortized O(1) push and pop.",
+    "hints": [
+      "One stack handles incoming pushes, and the second stack handles outgoing pops and peeks.",
+      "When the outStack is empty, transfer all elements from inStack to outStack to reverse their order.",
+      "push(x): push to inStack. pop(): if outStack empty, transfer inStack to outStack; pop outStack. peek(): same transfer; peek outStack. empty(): both stacks empty."
+    ],
+    "brute": {
+      "idea": "Rebalance elements into a temporary stack on every single push operation to keep the queue head at the top.",
+      "steps": [
+        "In push(x): transfer all elements from stack1 to stack2, push x onto stack1, transfer all elements back from stack2 to stack1.",
+        "In pop(): pop directly from stack1.",
+        "In peek(): peek directly from stack1.",
+        "In empty(): check stack1.isEmpty()."
+      ],
+      "whySlow": "Moving all elements back and forth on every push takes O(n) per push.",
+      "time": "O(n) push, O(1) pop",
+      "space": "O(n)",
+      "code": {
+        "java": "class MyQueue {\n    private Stack<Integer> s1 = new Stack<>();\n    private Stack<Integer> s2 = new Stack<>();\n    public MyQueue() {\n        this.s1 = new Stack<>();\n        this.s2 = new Stack<>();\n    }\n    public void push(int x) {\n        while (!s1.isEmpty()) s2.push(s1.pop());\n        s1.push(x);\n        while (!s2.isEmpty()) s1.push(s2.pop());\n    }\n    public int pop() {\n        return s1.pop();\n    }\n    public int peek() {\n        return s1.peek();\n    }\n    public boolean empty() {\n        return s1.isEmpty();\n    }\n}",
+        "python": "class MyQueue:\n    def __init__(self):\n        self.s1 = []\n        self.s2 = []\n\n    def push(self, x: int) -> None:\n        while self.s1:\n            self.s2.append(self.s1.pop())\n        self.s1.append(x)\n        while self.s2:\n            self.s1.append(self.s2.pop())\n\n    def pop(self) -> int:\n        return self.s1.pop()\n\n    def peek(self) -> int:\n        return self.s1[-1]\n\n    def empty(self) -> bool:\n        return not self.s1"
+      }
+    },
+    "optimal": {
+      "idea": "Two stacks: lazily transfer elements from inStack to outStack only when outStack is empty, achieving amortized O(1) operations.",
+      "steps": [
+        "push(x): push x directly onto inStack.",
+        "pop(): call shiftStacks(); pop from outStack.",
+        "peek(): call shiftStacks(); peek from outStack.",
+        "shiftStacks(): if outStack is empty, while inStack is not empty, pop from inStack and push to outStack.",
+        "empty(): return inStack.isEmpty() && outStack.isEmpty()."
+      ],
+      "time": "Amortized O(1) per operation",
+      "space": "O(n)",
+      "code": {
+        "java": "class MyQueue {\n    private Stack<Integer> in = new Stack<>();\n    private Stack<Integer> out = new Stack<>();\n    public MyQueue() {\n        this.in = new Stack<>();\n        this.out = new Stack<>();\n    }\n    public void push(int x) {\n        in.push(x);\n    }\n    public int pop() {\n        shift();\n        return out.pop();\n    }\n    public int peek() {\n        shift();\n        return out.peek();\n    }\n    public boolean empty() {\n        return in.isEmpty() && out.isEmpty();\n    }\n    private void shift() {\n        if (out.isEmpty()) {\n            while (!in.isEmpty()) {\n                out.push(in.pop());\n            }\n        }\n    }\n}",
+        "python": "class MyQueue:\n    def __init__(self):\n        self.in_stack = []\n        self.out_stack = []\n\n    def push(self, x: int) -> None:\n        self.in_stack.append(x)\n\n    def pop(self) -> int:\n        self._shift()\n        return self.out_stack.pop()\n\n    def peek(self) -> int:\n        self._shift()\n        return self.out_stack[-1]\n\n    def empty(self) -> bool:\n        return not self.in_stack and not self.out_stack\n\n    def _shift(self) -> None:\n        if not self.out_stack:\n            while self.in_stack:\n                self.out_stack.append(self.in_stack.pop())"
+      }
+    }
+  },
+  {
+    "seq": 356,
+    "whyNext": "Inverts the adapter pattern from Implement Queue using Stacks (Seq 355) by using queue rotations to simulate LIFO stack operations with a single FIFO queue.",
+    "hints": [
+      "To simulate a stack with a queue, the most recently pushed element must end up at the front of the queue.",
+      "When pushing a new element, enqueue it and then rotate the previous elements behind it.",
+      "push(x): add x to queue. For i from 0 to queue.size() - 2, poll an element and re-add it to the back. pop(): poll from queue. top(): peek from queue."
+    ],
+    "brute": {
+      "idea": "Use two queues: on pop, transfer n - 1 elements from q1 to q2, retrieve the remaining element, and swap references.",
+      "steps": [
+        "push(x): add to q1.",
+        "pop(): while q1.size() > 1, transfer to q2; remove last element from q1; swap q1 and q2; return removed element.",
+        "top(): similar transfer, keep last element, re-add to q2, swap queues.",
+        "empty(): return q1.isEmpty()."
+      ],
+      "whySlow": "Transferring elements on every pop or top takes O(n) time.",
+      "time": "O(1) push, O(n) pop",
+      "space": "O(n)",
+      "code": {
+        "java": "class MyStack {\n    private Queue<Integer> q1 = new LinkedList<>();\n    private Queue<Integer> q2 = new LinkedList<>();\n    public MyStack() {\n        this.q1 = new LinkedList<>();\n        this.q2 = new LinkedList<>();\n    }\n    public void push(int x) {\n        q1.offer(x);\n    }\n    public int pop() {\n        while (q1.size() > 1) q2.offer(q1.poll());\n        int top = q1.poll();\n        Queue<Integer> tmp = q1; q1 = q2; q2 = tmp;\n        return top;\n    }\n    public int top() {\n        while (q1.size() > 1) q2.offer(q1.poll());\n        int top = q1.poll();\n        q2.offer(top);\n        Queue<Integer> tmp = q1; q1 = q2; q2 = tmp;\n        return top;\n    }\n    public boolean empty() {\n        return q1.isEmpty();\n    }\n}",
+        "python": "class MyStack:\n    def __init__(self):\n        from collections import deque\n        self.q1 = deque()\n        self.q2 = deque()\n\n    def push(self, x: int) -> None:\n        self.q1.append(x)\n\n    def pop(self) -> int:\n        while len(self.q1) > 1:\n            self.q2.append(self.q1.popleft())\n        val = self.q1.popleft()\n        self.q1, self.q2 = self.q2, self.q1\n        return val\n\n    def top(self) -> int:\n        while len(self.q1) > 1:\n            self.q2.append(self.q1.popleft())\n        val = self.q1.popleft()\n        self.q2.append(val)\n        self.q1, self.q2 = self.q2, self.q1\n        return val\n\n    def empty(self) -> bool:\n        return not self.q1"
+      }
+    },
+    "optimal": {
+      "idea": "Single queue rotation: upon enqueueing x, rotate the previous n - 1 elements behind x so x sits at the front.",
+      "steps": [
+        "In push(x): add x to queue.",
+        "Loop size - 1 times: poll the front element and offer it back to the tail.",
+        "pop(): directly poll from front.",
+        "top(): directly peek front.",
+        "empty(): return queue.isEmpty()."
+      ],
+      "time": "O(n) push, O(1) pop and top",
+      "space": "O(n)",
+      "code": {
+        "java": "class MyStack {\n    private Queue<Integer> queue = new LinkedList<>();\n    public MyStack() {\n        this.queue = new LinkedList<>();\n    }\n    public void push(int x) {\n        queue.offer(x);\n        int sz = queue.size();\n        for (int i = 0; i < sz - 1; i++) {\n            queue.offer(queue.poll());\n        }\n    }\n    public int pop() {\n        return queue.poll();\n    }\n    public int top() {\n        return queue.peek();\n    }\n    public boolean empty() {\n        return queue.isEmpty();\n    }\n}",
+        "python": "class MyStack:\n    def __init__(self):\n        from collections import deque\n        self.q = deque()\n\n    def push(self, x: int) -> None:\n        self.q.append(x)\n        for _ in range(len(self.q) - 1):\n            self.q.append(self.q.popleft())\n\n    def pop(self) -> int:\n        return self.q.popleft()\n\n    def top(self) -> int:\n        return self.q[0]\n\n    def empty(self) -> bool:\n        return not self.q"
+      }
+    }
+  },
+  {
+    "seq": 357,
+    "whyNext": "Applies queue FIFO eviction from Implement Stack using Queues (Seq 356) by maintaining timestamps in a Queue and evicting calls older than t - 3000.",
+    "hints": [
+      "Calls arrive with strictly increasing timestamps; a queue preserves this chronological order naturally.",
+      "Add the current timestamp t, then pop all timestamps from the front that are strictly less than t - 3000.",
+      "In ping(t): queue.offer(t). While queue.peek() < t - 3000: queue.poll(). Return queue.size()."
+    ],
+    "brute": {
+      "idea": "Store all ping timestamps in a list and iterate through the entire list to count timestamps in [t - 3000, t].",
+      "steps": [
+        "Append t to timestamps list.",
+        "Initialize count = 0.",
+        "Loop through all recorded timestamps: if ts >= t - 3000, count++.",
+        "Return count."
+      ],
+      "whySlow": "Scanning all past calls takes O(total calls) time per ping.",
+      "time": "O(total calls) per ping",
+      "space": "O(total calls)",
+      "code": {
+        "java": "class RecentCounter {\n    private List<Integer> list = new ArrayList<>();\n    public RecentCounter() {\n        this.list = new ArrayList<>();\n    }\n    public int ping(int t) {\n        list.add(t);\n        int count = 0;\n        int min = t - 3000;\n        for (int time : list) {\n            if (time >= min) count++;\n        }\n        return count;\n    }\n}",
+        "python": "class RecentCounter:\n    def __init__(self):\n        self.records = []\n\n    def ping(self, t: int) -> int:\n        self.records.append(t)\n        low = t - 3000\n        return sum(1 for time in self.records if time >= low)"
+      }
+    },
+    "optimal": {
+      "idea": "Queue sliding window: enqueue t and discard elements older than t - 3000 from the front in amortized O(1) time.",
+      "steps": [
+        "Add timestamp t to Queue.",
+        "While queue.peek() < t - 3000, dequeue the head element.",
+        "Return queue.size()."
+      ],
+      "time": "Amortized O(1) per ping",
+      "space": "O(W) where W <= 3001 calls",
+      "code": {
+        "java": "class RecentCounter {\n    private Queue<Integer> q = new LinkedList<>();\n    public RecentCounter() {\n        this.q = new LinkedList<>();\n    }\n    public int ping(int t) {\n        q.offer(t);\n        while (q.peek() < t - 3000) {\n            q.poll();\n        }\n        return q.size();\n    }\n}",
+        "python": "class RecentCounter:\n    def __init__(self):\n        from collections import deque\n        self.q = deque()\n\n    def ping(self, t: int) -> int:\n        self.q.append(t)\n        while self.q[0] < t - 3000:\n            self.q.popleft()\n        return len(self.q)"
+      }
+    }
+  },
+  {
+    "seq": 358,
+    "whyNext": "Builds on stack top cancellation from Min Stack (Seq 68) by popping adjacent matching characters from a character stack to eliminate consecutive duplicate pairs.",
+    "hints": [
+      "Process characters one by one using a stack.",
+      "If the current character equals the character at the top of the stack, pop it (they cancel out); otherwise push it.",
+      "Initialize StringBuilder as stack. For each c in s: if sb.length() > 0 and sb.charAt(sb.length() - 1) == c, delete last char; else append c. Return sb.toString()."
+    ],
+    "brute": {
+      "idea": "Repeatedly scan the string to find and remove any adjacent duplicate pair until no duplicates remain.",
+      "steps": [
+        "Initialize boolean changed = true.",
+        "While changed: set changed = false. Scan s for adjacent duplicate s[i] == s[i + 1].",
+        "If found: delete pair s[i..i+1], set changed = true, break to restart search.",
+        "Return resulting string."
+      ],
+      "whySlow": "Scanning and substring slicing repeatedly takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String removeDuplicates(String s) {\n        StringBuilder sb = new StringBuilder(s);\n        boolean changed = true;\n        while (changed) {\n            changed = false;\n            for (int i = 0; i < sb.length() - 1; i++) {\n                if (sb.charAt(i) == sb.charAt(i + 1)) {\n                    sb.delete(i, i + 2);\n                    changed = true;\n                    break;\n                }\n            }\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def removeDuplicates(self, s: str) -> str:\n        res = list(s)\n        changed = True\n        while changed:\n            changed = False\n            for i in range(len(res) - 1):\n                if res[i] == res[i + 1]:\n                    del res[i:i + 2]\n                    changed = True\n                    break\n        return \"\".join(res)"
+      }
+    },
+    "optimal": {
+      "idea": "Single pass with a stack (or StringBuilder): push new char or cancel matching top in O(n) time.",
+      "steps": [
+        "Initialize StringBuilder sb to act as a character stack.",
+        "For each character c in s: if sb has characters and sb.charAt(sb.length() - 1) == c, remove the top character.",
+        "Otherwise append c to sb.",
+        "Return sb.toString()."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String removeDuplicates(String s) {\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            int len = sb.length();\n            if (len > 0 && sb.charAt(len - 1) == c) {\n                sb.deleteCharAt(len - 1);\n            } else {\n                sb.append(c);\n            }\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def removeDuplicates(self, s: str) -> str:\n        stack = []\n        for c in s:\n            if stack and stack[-1] == c:\n                stack.pop()\n            else:\n                stack.append(c)\n        return \"\".join(stack)"
+      }
+    }
+  },
+  {
+    "seq": 359,
+    "whyNext": "Builds on stack cancellation from Remove All Adjacent Duplicates (Seq 358) by tallying unmatched closing brackets and remaining unclosed opening brackets.",
+    "hints": [
+      "Track balance of open parentheses; unmatched closing brackets immediately demand an inserted open bracket.",
+      "Maintain openCount and addedCount. On '(', openCount++. On ')': if openCount > 0, openCount--; else addedCount++.",
+      "Total additions required is addedCount + openCount."
+    ],
+    "brute": {
+      "idea": "Simulate parentheses cancellation using an explicit stack of opening brackets.",
+      "steps": [
+        "Initialize a Stack of Characters.",
+        "Initialize requiredInserts = 0.",
+        "For each char: if '(', push. If ')': if stack not empty, pop; else increment requiredInserts.",
+        "Return requiredInserts + stack.size()."
+      ],
+      "whySlow": "Stack object allocation and boxing overhead for an O(1) counter problem.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int minAddToMakeValid(String s) {\n        Stack<Character> stack = new Stack<>();\n        int added = 0;\n        for (char c : s.toCharArray()) {\n            if (c == '(') {\n                stack.push(c);\n            } else {\n                if (!stack.isEmpty()) stack.pop();\n                else added++;\n            }\n        }\n        return added + stack.size();\n    }\n}",
+        "python": "class Solution:\n    def minAddToMakeValid(self, s: str) -> int:\n        stack = []\n        added = 0\n        for c in s:\n            if c == '(':\n                stack.append(c)\n            else:\n                if stack:\n                    stack.pop()\n                else:\n                    added += 1\n        return added + len(stack)"
+      }
+    },
+    "optimal": {
+      "idea": "Count unmatched parentheses using two integer counters in O(n) time and O(1) space.",
+      "steps": [
+        "Initialize open = 0 and needed = 0.",
+        "For each char in s: if c == '(', open++; else: if open > 0 open--; else needed++.",
+        "Return needed + open."
+      ],
+      "time": "O(n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int minAddToMakeValid(String s) {\n        int open = 0, needed = 0;\n        for (int i = 0; i < s.length(); i++) {\n            if (s.charAt(i) == '(') {\n                open++;\n            } else {\n                if (open > 0) open--;\n                else needed++;\n            }\n        }\n        return needed + open;\n    }\n}",
+        "python": "class Solution:\n    def minAddToMakeValid(self, s: str) -> int:\n        open_cnt = needed = 0\n        for c in s:\n            if c == '(':\n                open_cnt += 1\n            else:\n                if open_cnt > 0:\n                    open_cnt -= 1\n                else:\n                    needed += 1\n        return needed + open_cnt"
+      }
+    }
+  },
+  {
+    "seq": 360,
+    "whyNext": "Builds on unmatched bracket identification from Minimum Add to Make Valid (Seq 359) by recording invalid bracket indices and removing them to construct a valid parentheses string.",
+    "hints": [
+      "Identify the indices of all invalid '(' and ')' parentheses.",
+      "Use a stack to track indices of unmatched '('; record unmatched ')' in a boolean or index set.",
+      "Pass 1: scan string, push index of '(' to stack; on ')', pop stack if non-empty, else mark index for removal. Add remaining stack indices to removal set. Pass 2: build string skipping marked indices."
+    ],
+    "brute": {
+      "idea": "Mark invalid characters by replacing them with a placeholder or collecting invalid index positions.",
+      "steps": [
+        "Convert string to char array.",
+        "Track indices of unmatched open parentheses in a stack.",
+        "For each ')', if stack is empty, mark char as empty; else pop stack.",
+        "Mark remaining indices in stack as empty.",
+        "Filter out empty chars and return string."
+      ],
+      "whySlow": "Boxing indices in a Stack object and multiple string conversions.",
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String minRemoveToMakeValid(String s) {\n        Stack<Integer> stack = new Stack<>();\n        Set<Integer> invalid = new HashSet<>();\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (c == '(') stack.push(i);\n            else if (c == ')') {\n                if (stack.isEmpty()) invalid.add(i);\n                else stack.pop();\n            }\n        }\n        while (!stack.isEmpty()) invalid.add(stack.pop());\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < s.length(); i++) {\n            if (!invalid.contains(i)) sb.append(s.charAt(i));\n        }\n        return sb.toString();\n    }\n}",
+        "python": "class Solution:\n    def minRemoveToMakeValid(self, s: str) -> str:\n        stack = []\n        invalid = set()\n        for i, c in enumerate(s):\n            if c == '(':\n                stack.append(i)\n            elif c == ')':\n                if stack:\n                    stack.pop()\n                else:\n                    invalid.add(i)\n        invalid.update(stack)\n        return \"\".join(c for i, c in enumerate(s) if i not in invalid)"
+      }
+    },
+    "optimal": {
+      "idea": "Two-pass in-place marker: remove invalid ')' from left-to-right, then remove excess '(' from right-to-left in O(n) time.",
+      "steps": [
+        "First pass: build intermediate StringBuilder sb1, tracking open count. Append characters; if ')' and open == 0, skip it; if ')' and open > 0, decrement open and append.",
+        "Second pass: scan sb1 backwards. If '(' and open > 0, decrement open and skip; else append to result.",
+        "Reverse result and return string."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public String minRemoveToMakeValid(String s) {\n        StringBuilder sb = new StringBuilder();\n        int open = 0;\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (c == '(') {\n                open++;\n                sb.append(c);\n            } else if (c == ')') {\n                if (open > 0) {\n                    open--;\n                    sb.append(c);\n                }\n            } else {\n                sb.append(c);\n            }\n        }\n        StringBuilder res = new StringBuilder();\n        for (int i = sb.length() - 1; i >= 0; i--) {\n            char c = sb.charAt(i);\n            if (c == '(' && open > 0) {\n                open--;\n            } else {\n                res.append(c);\n            }\n        }\n        return res.reverse().toString();\n    }\n}",
+        "python": "class Solution:\n    def minRemoveToMakeValid(self, s: str) -> str:\n        first_pass = []\n        open_cnt = 0\n        for c in s:\n            if c == '(':\n                open_cnt += 1\n                first_pass.append(c)\n            elif c == ')':\n                if open_cnt > 0:\n                    open_cnt -= 1\n                    first_pass.append(c)\n            else:\n                first_pass.append(c)\n        res = []\n        for c in reversed(first_pass):\n            if c == '(' and open_cnt > 0:\n                open_cnt -= 1\n            else:\n                res.append(c)\n        return \"\".join(reversed(res))"
+      }
+    }
+  },
+  {
+    "seq": 361,
+    "whyNext": "Builds on parentheses validation from Minimum Remove to Make Valid (Seq 360) by using an index stack initialized with base -1 to measure the maximum contiguous length of valid parentheses.",
+    "hints": [
+      "A stack storing indices can measure the distance between the current valid end and the last invalid boundary.",
+      "Initialize stack with -1 to serve as a base marker for valid substrings starting at index 0.",
+      "For each index i: if '(', push i. If ')': pop. If stack empty, push i as new base; else maxLen = max(maxLen, i - stack.peek()). Return maxLen."
+    ],
+    "brute": {
+      "idea": "Check every even-length substring to see if it is a valid parentheses string.",
+      "steps": [
+        "Iterate i from 0 to s.length() - 1.",
+        "Iterate j from i + 2 to s.length() with step 2.",
+        "Check validity of substring s[i..j-1] using a counter.",
+        "If valid, update maxLen = max(maxLen, j - i).",
+        "Return maxLen."
+      ],
+      "whySlow": "Checking all O(n²) even-length substrings takes O(n³) time.",
+      "time": "O(n³)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestValidParentheses(String s) {\n        int max = 0;\n        int n = s.length();\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 2; j <= n; j += 2) {\n                if (isValid(s, i, j)) {\n                    max = Math.max(max, j - i);\n                }\n            }\n        }\n        return max;\n    }\n    private boolean isValid(String s, int start, int end) {\n        int bal = 0;\n        for (int k = start; k < end; k++) {\n            if (s.charAt(k) == '(') bal++;\n            else bal--;\n            if (bal < 0) return false;\n        }\n        return bal == 0;\n    }\n}",
+        "python": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        def is_valid(sub):\n            bal = 0\n            for c in sub:\n                bal += 1 if c == '(' else -1\n                if bal < 0:\n                    return False\n            return bal == 0\n\n        max_len = 0\n        n = len(s)\n        for i in range(n):\n            for j in range(i + 2, n + 1, 2):\n                if is_valid(s[i:j]):\n                    max_len = max(max_len, j - i)\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "Stack storing indices initialized with -1 to measure valid spans in a single pass in O(n) time.",
+      "steps": [
+        "Initialize Stack<Integer> stack = new Stack<>() and push -1.",
+        "Initialize maxLen = 0.",
+        "For i from 0 to s.length() - 1: if s[i] == '(', push i.",
+        "If s[i] == ')': pop the top index. If stack is empty, push i (new boundary); else maxLen = max(maxLen, i - stack.peek()).",
+        "Return maxLen."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int longestValidParentheses(String s) {\n        Stack<Integer> stack = new Stack<>();\n        stack.push(-1);\n        int max = 0;\n        for (int i = 0; i < s.length(); i++) {\n            if (s.charAt(i) == '(') {\n                stack.push(i);\n            } else {\n                stack.pop();\n                if (stack.isEmpty()) {\n                    stack.push(i);\n                } else {\n                    max = Math.max(max, i - stack.peek());\n                }\n            }\n        }\n        return max;\n    }\n}",
+        "python": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        stack = [-1]\n        max_len = 0\n        for i, c in enumerate(s):\n            if c == '(':\n                stack.append(i)\n            else:\n                stack.pop()\n                if not stack:\n                    stack.append(i)\n                else:\n                    max_len = max(max_len, i - stack[-1])\n        return max_len"
+      }
+    }
+  },
+  {
+    "seq": 362,
+    "whyNext": "Builds on stack-based arithmetic parsing from Evaluate Reverse Polish Notation (Seq 71) by maintaining running result, sign, and a stack to handle nested parentheses and signs.",
+    "hints": [
+      "Maintain a running result and current sign (+1 or -1).",
+      "When encountering '(', push running result and sign onto stack, then reset result = 0, sign = 1.",
+      "When encountering ')', pop sign and previous result, updating result = prevResult + prevSign * result."
+    ],
+    "brute": {
+      "idea": "Recursively evaluate innermost parenthesized expressions by scanning for '(' and matching ')'.",
+      "steps": [
+        "Scan for the first ')' and match its opening '('.",
+        "Evaluate the simple addition/subtraction expression inside.",
+        "Replace the parenthesized segment with its computed value.",
+        "Repeat until no parentheses remain, then evaluate the final expression."
+      ],
+      "whySlow": "Repeated string parsing and replacement takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int calculate(String s) {\n        Stack<Integer> stack = new Stack<>();\n        int res = 0, num = 0, sign = 1;\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (Character.isDigit(c)) {\n                num = num * 10 + (c - '0');\n            } else if (c == '+') {\n                res += sign * num;\n                num = 0;\n                sign = 1;\n            } else if (c == '-') {\n                res += sign * num;\n                num = 0;\n                sign = -1;\n            } else if (c == '(') {\n                stack.push(res);\n                stack.push(sign);\n                res = 0;\n                sign = 1;\n            } else if (c == ')') {\n                res += sign * num;\n                num = 0;\n                res *= stack.pop();\n                res += stack.pop();\n            }\n        }\n        res += sign * num;\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def calculate(self, s: str) -> int:\n        stack = []\n        res = num = 0\n        sign = 1\n        for c in s:\n            if c.isdigit():\n                num = num * 10 + int(c)\n            elif c in \"+-\":\n                res += sign * num\n                num = 0\n                sign = 1 if c == '+' else -1\n            elif c == '(':\n                stack.append(res)\n                stack.append(sign)\n                res = 0\n                sign = 1\n            elif c == ')':\n                res += sign * num\n                num = 0\n                res *= stack.pop()\n                res += stack.pop()\n        res += sign * num\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Single-pass evaluation using an integer stack to save running sum and sign upon '(' in O(n) time.",
+      "steps": [
+        "Initialize res = 0, num = 0, sign = 1, and Stack<Integer> stack.",
+        "Iterate through string: on digit, accumulate num = num * 10 + d.",
+        "On '+' or '-': res += sign * num; num = 0; sign = (c == '+') ? 1 : -1.",
+        "On '(': push res, push sign; res = 0; sign = 1.",
+        "On ')': res += sign * num; num = 0; res = stack.pop() * res + stack.pop().",
+        "Add trailing sign * num and return res."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int calculate(String s) {\n        Stack<Integer> stack = new Stack<>();\n        int res = 0, num = 0, sign = 1;\n        for (int i = 0; i < s.length(); i++) {\n            char c = s.charAt(i);\n            if (Character.isDigit(c)) {\n                num = num * 10 + (c - '0');\n            } else if (c == '+') {\n                res += sign * num;\n                num = 0;\n                sign = 1;\n            } else if (c == '-') {\n                res += sign * num;\n                num = 0;\n                sign = -1;\n            } else if (c == '(') {\n                stack.push(res);\n                stack.push(sign);\n                res = 0;\n                sign = 1;\n            } else if (c == ')') {\n                res += sign * num;\n                num = 0;\n                res = stack.pop() * res + stack.pop();\n            }\n        }\n        return res + sign * num;\n    }\n}",
+        "python": "class Solution:\n    def calculate(self, s: str) -> int:\n        stack = []\n        res = num = 0\n        sign = 1\n        for c in s:\n            if c.isdigit():\n                num = num * 10 + int(c)\n            elif c in \"+-\":\n                res += sign * num\n                num = 0\n                sign = 1 if c == '+' else -1\n            elif c == '(':\n                stack.append(res)\n                stack.append(sign)\n                res = 0\n                sign = 1\n            elif c == ')':\n                res += sign * num\n                num = 0\n                res = stack.pop() * res + stack.pop()\n        return res + sign * num"
+      }
+    }
+  },
+  {
+    "seq": 363,
+    "whyNext": "Builds on stack LIFO simulation from Min Stack (Seq 68) by greedily pushing elements from pushed and popping whenever the top matches the next expected popped element.",
+    "hints": [
+      "Simulate the push and pop process using an explicit stack.",
+      "Iterate through pushed; for each element, push it onto the stack.",
+      "After each push, while stack is non-empty and stack.peek() == popped[j], pop from stack and increment j. Return stack.isEmpty()."
+    ],
+    "brute": {
+      "idea": "Try all valid push/pop sequences to see if the target popped sequence can be produced.",
+      "steps": [
+        "Model transitions: push next element or pop if possible.",
+        "Search state space (pushIdx, popIdx, stack).",
+        "If popIdx reaches popped.length, return true.",
+        "If all paths fail, return false."
+      ],
+      "whySlow": "State space search can branch exponentially without greedy matching.",
+      "time": "O(2ⁿ)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean validateStackSequences(int[] pushed, int[] popped) {\n        Stack<Integer> st = new Stack<>();\n        int j = 0;\n        for (int x : pushed) {\n            st.push(x);\n            while (!st.isEmpty() && j < popped.length && st.peek() == popped[j]) {\n                st.pop();\n                j++;\n            }\n        }\n        return st.isEmpty();\n    }\n}",
+        "python": "class Solution:\n    def validateStackSequences(self, pushed: list[int], popped: list[int]) -> bool:\n        stack = []\n        j = 0\n        for x in pushed:\n            stack.append(x)\n            while stack and j < len(popped) and stack[-1] == popped[j]:\n                stack.pop()\n                j += 1\n        return len(stack) == 0"
+      }
+    },
+    "optimal": {
+      "idea": "Greedy stack simulation: push elements and eagerly pop whenever top matches popped[j] in O(n) time.",
+      "steps": [
+        "Initialize Stack<Integer> stack = new Stack<>() and j = 0.",
+        "For each value x in pushed: push x.",
+        "While stack is not empty and j < popped.length and stack.peek() == popped[j]: pop and increment j.",
+        "Return j == popped.length."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean validateStackSequences(int[] pushed, int[] popped) {\n        Stack<Integer> st = new Stack<>();\n        int j = 0;\n        for (int x : pushed) {\n            st.push(x);\n            while (!st.isEmpty() && j < popped.length && st.peek() == popped[j]) {\n                st.pop();\n                j++;\n            }\n        }\n        return j == popped.length;\n    }\n}",
+        "python": "class Solution:\n    def validateStackSequences(self, pushed: list[int], popped: list[int]) -> bool:\n        stack = []\n        j = 0\n        for x in pushed:\n            stack.append(x)\n            while stack and j < len(popped) and stack[-1] == popped[j]:\n                stack.pop()\n                j += 1\n        return j == len(popped)"
+      }
+    }
+  },
+  {
+    "seq": 364,
+    "whyNext": "Builds on call-stack simulation from Validate Stack Sequences (Seq 363) by tracking function call intervals on a call stack and attributing elapsed time between timestamps to the active function.",
+    "hints": [
+      "Use a stack to maintain the currently executing function IDs.",
+      "Track prevTime. When a new log arrives at timestamp, the function on top of the stack has been executing from prevTime to timestamp.",
+      "If log is 'start': add timestamp - prevTime to res[stack.peek()], push function ID, update prevTime = timestamp. If 'end': add timestamp - prevTime + 1 to res[stack.pop()], update prevTime = timestamp + 1."
+    ],
+    "brute": {
+      "idea": "Simulate each second of time by maintaining a call stack and recording which function was running at each second.",
+      "steps": [
+        "Parse all events.",
+        "For each second t from 0 to maxTime, determine the active function at time t and increment its tally.",
+        "Return the array of execution times."
+      ],
+      "whySlow": "Simulating every second takes O(total duration) time.",
+      "time": "O(duration)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] exclusiveTime(int n, List<String> logs) {\n        int[] res = new int[n];\n        Stack<Integer> stack = new Stack<>();\n        int prev = 0;\n        for (String log : logs) {\n            String[] parts = log.split(\":\");\n            int id = Integer.parseInt(parts[0]);\n            String type = parts[1];\n            int time = Integer.parseInt(parts[2]);\n            if (type.equals(\"start\")) {\n                if (!stack.isEmpty()) {\n                    res[stack.peek()] += time - prev;\n                }\n                stack.push(id);\n                prev = time;\n            } else {\n                res[stack.pop()] += time - prev + 1;\n                prev = time + 1;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def exclusiveTime(self, n: int, logs: list[str]) -> list[int]:\n        res = [0] * n\n        stack = []\n        prev = 0\n        for log in logs:\n            fn_id, action, time = log.split(\":\")\n            fn_id, time = int(fn_id), int(time)\n            if action == \"start\":\n                if stack:\n                    res[stack[-1]] += time - prev\n                stack.append(fn_id)\n                prev = time\n            else:\n                res[stack.pop()] += time - prev + 1\n                prev = time + 1\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Stack tracking function calls, updating execution intervals on start and end events in O(logs) time.",
+      "steps": [
+        "Initialize res array of size n, Stack<Integer> stack, and prevTime = 0.",
+        "Parse each log into id, type, and time.",
+        "If 'start': if stack is not empty, res[stack.peek()] += time - prevTime; push id; prevTime = time.",
+        "If 'end': res[stack.pop()] += time - prevTime + 1; prevTime = time + 1.",
+        "Return res."
+      ],
+      "time": "O(logs.size())",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] exclusiveTime(int n, List<String> logs) {\n        int[] res = new int[n];\n        Stack<Integer> stack = new Stack<>();\n        int prev = 0;\n        for (String log : logs) {\n            String[] parts = log.split(\":\");\n            int id = Integer.parseInt(parts[0]);\n            String action = parts[1];\n            int time = Integer.parseInt(parts[2]);\n            if (action.equals(\"start\")) {\n                if (!stack.isEmpty()) {\n                    res[stack.peek()] += time - prev;\n                }\n                stack.push(id);\n                prev = time;\n            } else {\n                res[stack.pop()] += time - prev + 1;\n                prev = time + 1;\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def exclusiveTime(self, n: int, logs: list[str]) -> list[int]:\n        res = [0] * n\n        stack = []\n        prev = 0\n        for log in logs:\n            fn_id_s, action, time_s = log.split(\":\")\n            fn_id = int(fn_id_s)\n            time = int(time_s)\n            if action == \"start\":\n                if stack:\n                    res[stack[-1]] += time - prev\n                stack.append(fn_id)\n                prev = time\n            else:\n                res[stack.pop()] += time - prev + 1\n                prev = time + 1\n        return res"
+      }
+    }
+  },
+  {
+    "seq": 365,
+    "whyNext": "Builds on monotonic stack next-element searching from Daily Temperatures (Seq 72) by finding the next smaller or equal price to the right to compute discounted item prices.",
+    "hints": [
+      "For each item i, find the first j > i such that prices[j] <= prices[i].",
+      "Use a monotonic increasing stack storing indices of prices.",
+      "Iterate through prices: while stack is non-empty and prices[stack.peek()] >= prices[i], idx = stack.pop(), res[idx] = prices[idx] - prices[i]. Push i."
+    ],
+    "brute": {
+      "idea": "For each item i, search linearly from i + 1 to n - 1 for the first price <= prices[i].",
+      "steps": [
+        "Clone prices array into res.",
+        "For each i from 0 to n - 1, loop j from i + 1 to n - 1.",
+        "If prices[j] <= prices[i], res[i] = prices[i] - prices[j], and break.",
+        "Return res."
+      ],
+      "whySlow": "Searching forward for each element takes O(n²) worst-case time.",
+      "time": "O(n²)",
+      "space": "O(1) auxiliary",
+      "code": {
+        "java": "class Solution {\n    public int[] finalPrices(int[] prices) {\n        int n = prices.length;\n        int[] res = prices.clone();\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                if (prices[j] <= prices[i]) {\n                    res[i] = prices[i] - prices[j];\n                    break;\n                }\n            }\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def finalPrices(self, prices: list[int]) -> list[int]:\n        res = list(prices)\n        n = len(prices)\n        for i in range(n):\n            for j in range(i + 1, n):\n                if prices[j] <= prices[i]:\n                    res[i] = prices[i] - prices[j]\n                    break\n        return res"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic stack storing indices: resolve discounts when encountering a smaller or equal price in O(n) time.",
+      "steps": [
+        "Initialize res = prices.clone() and Stack<Integer> stack.",
+        "For i from 0 to prices.length - 1: while stack not empty and prices[stack.peek()] >= prices[i], idx = stack.pop(), res[idx] -= prices[i].",
+        "Push i onto stack.",
+        "Return res."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int[] finalPrices(int[] prices) {\n        int[] res = prices.clone();\n        Stack<Integer> stack = new Stack<>();\n        for (int i = 0; i < prices.length; i++) {\n            while (!stack.isEmpty() && prices[stack.peek()] >= prices[i]) {\n                res[stack.pop()] -= prices[i];\n            }\n            stack.push(i);\n        }\n        return res;\n    }\n}",
+        "python": "class Solution:\n    def finalPrices(self, prices: list[int]) -> list[int]:\n        res = list(prices)\n        stack = []\n        for i, p in enumerate(prices):\n            while stack and prices[stack[-1]] >= p:\n                res[stack.pop()] -= p\n            stack.append(i)\n        return res"
+      }
+    }
+  },
+  {
+    "seq": 366,
+    "whyNext": "Builds on monotonic stack element ordering from Car Fleet (Seq 74) by scanning backwards with a monotonic decreasing stack to find values for nums[j] and nums[k] while tracking maximum nums[k] < nums[j].",
+    "hints": [
+      "We need indices i < j < k with nums[i] < nums[k] < nums[j].",
+      "Scan from right to left, keeping track of candidate values for nums[k] using a monotonic stack.",
+      "Maintain third = -infinity. Scan i from n - 1 down to 0: if nums[i] < third, return true. While stack not empty and nums[i] > stack.peek(), third = stack.pop(). Push nums[i]. Return false."
+    ],
+    "brute": {
+      "idea": "Check every triplet (i, j, k) with i < j < k to test if nums[i] < nums[k] < nums[j].",
+      "steps": [
+        "Iterate i from 0 to n - 3.",
+        "Iterate j from i + 1 to n - 2.",
+        "If nums[j] <= nums[i], continue.",
+        "Iterate k from j + 1 to n - 1: if nums[i] < nums[k] && nums[k] < nums[j], return true.",
+        "Return false."
+      ],
+      "whySlow": "Testing all triplets takes O(n³) time.",
+      "time": "O(n³)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public boolean find132pattern(int[] nums) {\n        int n = nums.length;\n        for (int i = 0; i < n - 2; i++) {\n            for (int j = i + 1; j < n - 1; j++) {\n                if (nums[j] <= nums[i]) continue;\n                for (int k = j + 1; k < n; k++) {\n                    if (nums[i] < nums[k] && nums[k] < nums[j]) return true;\n                }\n            }\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def find132pattern(self, nums: list[int]) -> bool:\n        n = len(nums)\n        for i in range(n - 2):\n            for j in range(i + 1, n - 1):\n                if nums[j] <= nums[i]:\n                    continue\n                for k in range(j + 1, n):\n                    if nums[i] < nums[k] < nums[j]:\n                        return True\n        return False"
+      }
+    },
+    "optimal": {
+      "idea": "Scan right-to-left using a monotonic decreasing stack to maintain the largest valid '2' candidate in O(n) time.",
+      "steps": [
+        "Initialize third = Integer.MIN_VALUE, and a Stack<Integer> for '3' candidates.",
+        "Scan i from nums.length - 1 down to 0.",
+        "If nums[i] < third, a '132' pattern is found; return true.",
+        "While stack is not empty and nums[i] > stack.peek(): third = stack.pop().",
+        "Push nums[i] onto stack.",
+        "Return false if loop terminates."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public boolean find132pattern(int[] nums) {\n        int third = Integer.MIN_VALUE;\n        Stack<Integer> stack = new Stack<>();\n        for (int i = nums.length - 1; i >= 0; i--) {\n            if (nums[i] < third) return true;\n            while (!stack.isEmpty() && nums[i] > stack.peek()) {\n                third = stack.pop();\n            }\n            stack.push(nums[i]);\n        }\n        return false;\n    }\n}",
+        "python": "class Solution:\n    def find132pattern(self, nums: list[int]) -> bool:\n        third = float('-inf')\n        stack = []\n        for x in reversed(nums):\n            if x < third:\n                return True\n            while stack and x > stack[-1]:\n                third = stack.pop()\n            stack.append(x)\n        return False"
+      }
+    }
+  },
+  {
+    "seq": 367,
+    "whyNext": "Builds on histogram boundary expansion from Largest Rectangle in Histogram (Seq 76) by using monotonic stacks to find previous and next smaller element spans for each item, accumulating arr[i] * leftCount * rightCount.",
+    "hints": [
+      "Each element arr[i] is the minimum in (i - prevSmaller) * (nextSmaller - i) distinct subarrays.",
+      "Find previous strictly smaller element and next smaller or equal element using monotonic stacks.",
+      "For each i: left = i - prevSmaller[i], right = nextSmaller[i] - i. Contribution is (left * right % MOD) * arr[i] % MOD. Sum contributions modulo 10^9 + 7."
+    ],
+    "brute": {
+      "idea": "Iterate all subarrays, compute the minimum of each subarray, and sum them modulo 10^9 + 7.",
+      "steps": [
+        "Initialize total = 0, MOD = 10^9 + 7.",
+        "For i from 0 to n - 1: set min = arr[i].",
+        "For j from i to n - 1: min = min(min, arr[j]), total = (total + min) % MOD.",
+        "Return total."
+      ],
+      "whySlow": "Iterating through all O(n²) subarrays takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int sumSubarrayMins(int[] arr) {\n        long total = 0;\n        int mod = 1_000_000_007;\n        int n = arr.length;\n        for (int i = 0; i < n; i++) {\n            int min = arr[i];\n            for (int j = i; j < n; j++) {\n                if (arr[j] < min) min = arr[j];\n                total = (total + min) % mod;\n            }\n        }\n        return (int) total;\n    }\n}",
+        "python": "class Solution:\n    def sumSubarrayMins(self, arr: list[int]) -> int:\n        total = 0\n        mod = 10**9 + 7\n        n = len(arr)\n        for i in range(n):\n            cur_min = arr[i]\n            for j in range(i, n):\n                if arr[j] < cur_min:\n                    cur_min = arr[j]\n                total = (total + cur_min) % mod\n        return total"
+      }
+    },
+    "optimal": {
+      "idea": "Monotonic stack calculating left and right dominance spans for each element in O(n) time.",
+      "steps": [
+        "Calculate prevSmaller[i]: count of elements to left where arr[j] >= arr[i].",
+        "Calculate nextSmaller[i]: count of elements to right where arr[j] > arr[i].",
+        "Multiply arr[i] * leftCount * rightCount for each element.",
+        "Sum all products modulo 10^9 + 7 and return."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int sumSubarrayMins(int[] arr) {\n        int n = arr.length;\n        int mod = 1_000_000_007;\n        int[] left = new int[n];\n        int[] right = new int[n];\n        Stack<Integer> s1 = new Stack<>();\n        Stack<Integer> s2 = new Stack<>();\n        for (int i = 0; i < n; i++) {\n            while (!s1.isEmpty() && arr[s1.peek()] >= arr[i]) s1.pop();\n            left[i] = s1.isEmpty() ? i + 1 : i - s1.peek();\n            s1.push(i);\n        }\n        for (int i = n - 1; i >= 0; i--) {\n            while (!s2.isEmpty() && arr[s2.peek()] > arr[i]) s2.pop();\n            right[i] = s2.isEmpty() ? n - i : s2.peek() - i;\n            s2.push(i);\n        }\n        long sum = 0;\n        for (int i = 0; i < n; i++) {\n            long count = ((long) left[i] * right[i]) % mod;\n            sum = (sum + count * arr[i]) % mod;\n        }\n        return (int) sum;\n    }\n}",
+        "python": "class Solution:\n    def sumSubarrayMins(self, arr: list[int]) -> int:\n        n = len(arr)\n        mod = 10**9 + 7\n        left = [0] * n\n        right = [0] * n\n        s1 = []\n        for i in range(n):\n            while s1 and arr[s1[-1]] >= arr[i]:\n                s1.pop()\n            left[i] = i + 1 if not s1 else i - s1[-1]\n            s1.append(i)\n        s2 = []\n        for i in range(n - 1, -1, -1):\n            while s2 and arr[s2[-1]] > arr[i]:\n                s2.pop()\n            right[i] = n - i if not s2 else s2[-1] - i\n            s2.append(i)\n        total = 0\n        for i in range(n):\n            total = (total + arr[i] * left[i] * right[i]) % mod\n        return total"
+      }
+    }
+  },
+  {
+    "seq": 368,
+    "whyNext": "Builds on monotonic queue extrema maintenance from Sliding Window Maximum (Seq 48) by utilizing two monotonic deques (maxDeque and minDeque) to maintain max - min <= limit over a flexible sliding window.",
+    "hints": [
+      "Maintain both the maximum and minimum of the sliding window in O(1) amortized time using two deques.",
+      "Expand right edge. While maxDeque.peekFirst() - minDeque.peekFirst() > limit, shrink left edge.",
+      "Update maxLen = max(maxLen, right - left + 1)."
+    ],
+    "brute": {
+      "idea": "Test every subarray [i, j], compute its max and min values, and check if max - min <= limit.",
+      "steps": [
+        "Iterate i from 0 to n - 1.",
+        "Maintain min = nums[i] and max = nums[i].",
+        "For j from i to n - 1: min = min(min, nums[j]), max = max(max, nums[j]).",
+        "If max - min <= limit, maxLen = max(maxLen, j - i + 1); else break.",
+        "Return maxLen."
+      ],
+      "whySlow": "Testing all subarrays takes O(n²) time.",
+      "time": "O(n²)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int longestSubarray(int[] nums, int limit) {\n        int maxLen = 0;\n        int n = nums.length;\n        for (int i = 0; i < n; i++) {\n            int min = nums[i], max = nums[i];\n            for (int j = i; j < n; j++) {\n                if (nums[j] < min) min = nums[j];\n                if (nums[j] > max) max = nums[j];\n                if (max - min <= limit) {\n                    maxLen = Math.max(maxLen, j - i + 1);\n                } else {\n                    break;\n                }\n            }\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def longestSubarray(self, nums: list[int], limit: int) -> int:\n        max_len = 0\n        n = len(nums)\n        for i in range(n):\n            low = high = nums[i]\n            for j in range(i, n):\n                low = min(low, nums[j])\n                high = max(high, nums[j])\n                if high - low <= limit:\n                    max_len = max(max_len, j - i + 1)\n                else:\n                    break\n        return max_len"
+      }
+    },
+    "optimal": {
+      "idea": "Sliding window with two monotonic deques tracking window maximum and minimum in O(n) time.",
+      "steps": [
+        "Initialize Deque<Integer> maxQ and minQ, and pointer left = 0.",
+        "For right from 0 to nums.length - 1: maintain monotonic decreasing maxQ and monotonic increasing minQ.",
+        "While maxQ.peekFirst() - minQ.peekFirst() > limit: if maxQ.peekFirst() == nums[left] maxQ.pollFirst(); if minQ.peekFirst() == nums[left] minQ.pollFirst(); left++.",
+        "Track maxLen = max(maxLen, right - left + 1).",
+        "Return maxLen."
+      ],
+      "time": "O(n)",
+      "space": "O(n)",
+      "code": {
+        "java": "class Solution {\n    public int longestSubarray(int[] nums, int limit) {\n        Deque<Integer> maxQ = new ArrayDeque<>();\n        Deque<Integer> minQ = new ArrayDeque<>();\n        int l = 0, maxLen = 0;\n        for (int r = 0; r < nums.length; r++) {\n            while (!maxQ.isEmpty() && nums[r] > maxQ.peekLast()) maxQ.pollLast();\n            while (!minQ.isEmpty() && nums[r] < minQ.peekLast()) minQ.pollLast();\n            maxQ.offerLast(nums[r]);\n            minQ.offerLast(nums[r]);\n            while (maxQ.peekFirst() - minQ.peekFirst() > limit) {\n                if (maxQ.peekFirst() == nums[l]) maxQ.pollFirst();\n                if (minQ.peekFirst() == nums[l]) minQ.pollFirst();\n                l++;\n            }\n            maxLen = Math.max(maxLen, r - l + 1);\n        }\n        return maxLen;\n    }\n}",
+        "python": "class Solution:\n    def longestSubarray(self, nums: list[int], limit: int) -> int:\n        from collections import deque\n        max_q = deque()\n        min_q = deque()\n        l = max_len = 0\n        for r, val in enumerate(nums):\n            while max_q and val > max_q[-1]:\n                max_q.pop()\n            while min_q and val < min_q[-1]:\n                min_q.pop()\n            max_q.append(val)\n            min_q.append(val)\n            while max_q[0] - min_q[0] > limit:\n                if max_q[0] == nums[l]:\n                    max_q.popleft()\n                if min_q[0] == nums[l]:\n                    min_q.popleft()\n                l += 1\n            max_len = max(max_len, r - l + 1)\n        return max_len"
+      }
+    }
+  }
+]

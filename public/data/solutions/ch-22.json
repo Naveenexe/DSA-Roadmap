@@ -325,5 +325,173 @@
         "python": "class Solution:\n    def successfulPairs(self, spells: list[int], potions: list[int], success: int) -> list[int]:\n        import bisect\n        potions.sort()\n        m = len(potions)\n        res = []\n        for s in spells:\n            min_potion = (success + s - 1) // s\n            idx = bisect.bisect_left(potions, min_potion)\n            res.append(m - idx)\n        return res"
       }
     }
+  },
+  {
+    "seq": 351,
+    "whyNext": "Builds on binary search on the answer from Minimum Limit of Balls in a Bag (Seq 349) by searching monotonic elapsed time T in [1, min(time) * totalTrips] to verify if sum(floor(T / t)) >= totalTrips.",
+    "hints": [
+      "The more time allocated, the more trips the buses can complete in total; this relationship is strictly monotonic.",
+      "Binary search for the minimum elapsed time T in the search range [1, (long) min(time) * totalTrips].",
+      "Set l = 1, r = (long) minTime * totalTrips. While l <= r: mid = (l + r) / 2. Compute completed trips = sum(mid / t). If completed >= totalTrips, ans = mid, r = mid - 1; else l = mid + 1. Return ans."
+    ],
+    "brute": {
+      "idea": "Simulate time unit by unit, counting how many trips each bus has completed until the total reaches totalTrips.",
+      "steps": [
+        "Initialize time = 1.",
+        "Loop indefinitely: compute trips = sum(time / t) across all bus durations.",
+        "If trips >= totalTrips, return time.",
+        "Increment time."
+      ],
+      "whySlow": "Simulating minute by minute takes O(answer * n) time, where answer can be up to 10^14.",
+      "time": "O(answer * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public long minimumTime(int[] time, int totalTrips) {\n        long t = 1;\n        while (true) {\n            long trips = 0;\n            for (int bus : time) {\n                trips += t / bus;\n            }\n            if (trips >= totalTrips) return t;\n            t++;\n        }\n    }\n}",
+        "python": "class Solution:\n    def minimumTime(self, time: list[int], totalTrips: int) -> int:\n        t = 1\n        while True:\n            trips = sum(t // bus for bus in time)\n            if trips >= totalTrips:\n                return t\n            t += 1"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search the time range [1, (long) min(time) * totalTrips] checking total trips in O(n log(min * totalTrips)) time.",
+      "steps": [
+        "Find minTime among all buses.",
+        "Initialize l = 1 and r = (long) minTime * totalTrips, ans = r.",
+        "While l <= r: let mid = l + (r - l) / 2.",
+        "Calculate total completed = sum(mid / bus) for all buses in time.",
+        "If total >= totalTrips: ans = mid, r = mid - 1; else l = mid + 1.",
+        "Return ans."
+      ],
+      "time": "O(n log(min(time) * totalTrips))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public long minimumTime(int[] time, int totalTrips) {\n        long min = time[0];\n        for (int b : time) if (b < min) min = b;\n        long l = 1, r = min * totalTrips, ans = r;\n        while (l <= r) {\n            long mid = l + (r - l) / 2;\n            long trips = 0;\n            for (int b : time) {\n                trips += mid / b;\n            }\n            if (trips >= totalTrips) {\n                ans = mid;\n                r = mid - 1;\n            } else {\n                l = mid + 1;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def minimumTime(self, time: list[int], totalTrips: int) -> int:\n        l = 1\n        r = min(time) * totalTrips\n        ans = r\n        while l <= r:\n            mid = (l + r) // 2\n            trips = sum(mid // b for b in time)\n            if trips >= totalTrips:\n                ans = mid\n                r = mid - 1\n            else:\n                l = mid + 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 352,
+    "whyNext": "Builds on binary search on the answer from Minimum Time to Complete Trips (Seq 351) by bisecting pile size C in [1, max(candies)] to verify if sum(pile / C) >= k children.",
+    "hints": [
+      "If each child can receive C candies, then each pile i can provide candies[i] // C children.",
+      "Binary search for the maximum candy pile size C in range [1, max(candies)].",
+      "Set l = 1, r = max(candies), ans = 0. While l <= r: mid = (l + r) / 2. Compute children = sum(c / mid). If children >= k: ans = mid, l = mid + 1; else r = mid - 1. Return ans."
+    ],
+    "brute": {
+      "idea": "Test each possible candy allocation per child starting from max(candies) downward until children served >= k.",
+      "steps": [
+        "Find maxCandies in candies.",
+        "Iterate c from maxCandies down to 1.",
+        "Compute childrenServed = sum(pile / c).",
+        "If childrenServed >= k, return c.",
+        "Return 0 if no valid pile size found."
+      ],
+      "whySlow": "Linear search over pile sizes takes O(max(candies) * n) time.",
+      "time": "O(max(candies) * n)",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maximumCandies(int[] candies, long k) {\n        int max = 0;\n        for (int c : candies) if (c > max) max = c;\n        for (int c = max; c >= 1; c--) {\n            long served = 0;\n            for (int p : candies) {\n                served += p / c;\n            }\n            if (served >= k) return c;\n        }\n        return 0;\n    }\n}",
+        "python": "class Solution:\n    def maximumCandies(self, candies: list[int], k: int) -> int:\n        max_c = max(candies)\n        for c in range(max_c, 0, -1):\n            served = sum(p // c for p in candies)\n            if served >= k:\n                return c\n        return 0"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search on candy allocation per child in range [1, max(candies)] in O(n log(max)) time.",
+      "steps": [
+        "Find maxVal in candies.",
+        "Initialize l = 1, r = maxVal, ans = 0.",
+        "While l <= r: let mid = l + (r - l) / 2.",
+        "Calculate total children = sum(p / mid) for all piles.",
+        "If total >= k: ans = mid, l = mid + 1; else r = mid - 1.",
+        "Return ans."
+      ],
+      "time": "O(n log(max))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int maximumCandies(int[] candies, long k) {\n        int r = 0;\n        for (int c : candies) if (c > r) r = c;\n        int l = 1, ans = 0;\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            long count = 0;\n            for (int c : candies) {\n                count += c / mid;\n            }\n            if (count >= k) {\n                ans = mid;\n                l = mid + 1;\n            } else {\n                r = mid - 1;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class Solution:\n    def maximumCandies(self, candies: list[int], k: int) -> int:\n        l, r = 1, max(candies)\n        ans = 0\n        while l <= r:\n            mid = (l + r) // 2\n            total = sum(c // mid for c in candies)\n            if total >= k:\n                ans = mid\n                l = mid + 1\n            else:\n                r = mid - 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 353,
+    "whyNext": "Builds on binary search thresholding from Successful Pairs of Spells and Potions (Seq 350) by storing values with strictly increasing timestamps in a HashMap of lists and using binary search to retrieve the latest timestamp <= target.",
+    "hints": [
+      "Timestamps for any given key are strictly increasing, meaning the list of entries for each key is already sorted by timestamp.",
+      "Use binary search on the list of (timestamp, value) pairs for key to find the largest timestamp <= query timestamp.",
+      "In get(key, timestamp): retrieve list for key; if null return \"\". Binary search for the rightmost pair with pair.timestamp <= timestamp. If found return pair.value, else return \"\"."
+    ],
+    "brute": {
+      "idea": "Store pairs in a HashMap of lists and linearly scan backwards to find the first timestamp <= target.",
+      "steps": [
+        "Store entries as (timestamp, value) in a list under map[key].",
+        "In get(key, timestamp): iterate backwards through list.",
+        "Return value of first element with entry.timestamp <= timestamp.",
+        "If none found or key absent, return \"\"."
+      ],
+      "whySlow": "Scanning backwards linearly takes O(m) time where m is number of entries under that key.",
+      "time": "O(m) per get, O(1) set",
+      "space": "O(total entries)",
+      "code": {
+        "java": "class TimeMap {\n    static class Entry {\n        int timestamp;\n        String value;\n        Entry(int t, String v) { this.timestamp = t; this.value = v; }\n    }\n    private Map<String, List<Entry>> map;\n    public TimeMap() {\n        map = new HashMap<>();\n    }\n    public void set(String key, String value, int timestamp) {\n        map.computeIfAbsent(key, k -> new ArrayList<>()).add(new Entry(timestamp, value));\n    }\n    public String get(String key, int timestamp) {\n        if (!map.containsKey(key)) return \"\";\n        List<Entry> list = map.get(key);\n        for (int i = list.size() - 1; i >= 0; i--) {\n            if (list.get(i).timestamp <= timestamp) {\n                return list.get(i).value;\n            }\n        }\n        return \"\";\n    }\n}",
+        "python": "class TimeMap:\n    def __init__(self):\n        self.store = {}\n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        if key not in self.store:\n            self.store[key] = []\n        self.store[key].append((timestamp, value))\n\n    def get(self, key: str, timestamp: int) -> str:\n        if key not in self.store:\n            return \"\"\n        entries = self.store[key]\n        for t, v in reversed(entries):\n            if t <= timestamp:\n                return v\n        return \"\""
+      }
+    },
+    "optimal": {
+      "idea": "Binary search over sorted timestamp entries for each key in O(log m) time per get query.",
+      "steps": [
+        "Store (timestamp, value) in ArrayList under map[key]. Since timestamps arrive in strictly ascending order, list is pre-sorted.",
+        "In get(key, timestamp): binary search for the largest index with entry.timestamp <= timestamp.",
+        "Initialize l = 0, r = list.size() - 1, res = \"\".",
+        "While l <= r: mid = (l + r) / 2. If list[mid].timestamp <= timestamp: res = list[mid].value, l = mid + 1; else r = mid - 1.",
+        "Return res."
+      ],
+      "time": "O(log m) per get, O(1) set",
+      "space": "O(total entries)",
+      "code": {
+        "java": "class TimeMap {\n    static class Entry {\n        int timestamp;\n        String value;\n        Entry(int t, String v) { this.timestamp = t; this.value = v; }\n    }\n    private Map<String, List<Entry>> map;\n    public TimeMap() {\n        map = new HashMap<>();\n    }\n    public void set(String key, String value, int timestamp) {\n        map.computeIfAbsent(key, k -> new ArrayList<>()).add(new Entry(timestamp, value));\n    }\n    public String get(String key, int timestamp) {\n        if (!map.containsKey(key)) return \"\";\n        List<Entry> list = map.get(key);\n        int l = 0, r = list.size() - 1;\n        String ans = \"\";\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            if (list.get(mid).timestamp <= timestamp) {\n                ans = list.get(mid).value;\n                l = mid + 1;\n            } else {\n                r = mid - 1;\n            }\n        }\n        return ans;\n    }\n}",
+        "python": "class TimeMap:\n    def __init__(self):\n        self.store = {}\n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        if key not in self.store:\n            self.store[key] = []\n        self.store[key].append((timestamp, value))\n\n    def get(self, key: str, timestamp: int) -> str:\n        if key not in self.store:\n            return \"\"\n        entries = self.store[key]\n        l, r = 0, len(entries) - 1\n        ans = \"\"\n        while l <= r:\n            mid = (l + r) // 2\n            if entries[mid][0] <= timestamp:\n                ans = entries[mid][1]\n                l = mid + 1\n            else:\n                r = mid - 1\n        return ans"
+      }
+    }
+  },
+  {
+    "seq": 354,
+    "whyNext": "Builds on binary search over sorted arrays from Median of Two Sorted Arrays (Seq 66) by binary searching the distance value D in [0, max - min] and counting pair distances <= D using a two-pointer sliding window.",
+    "hints": [
+      "Sort the array: for any target distance D, you can count pairs with distance <= D in O(n) time using two pointers.",
+      "Binary search for the distance D in range [0, nums[n - 1] - nums[0]].",
+      "Set l = 0, r = max - min. While l < r: mid = (l + r) / 2. Count pairs (i, j) with nums[j] - nums[i] <= mid using sliding window. If count >= k, r = mid; else l = mid + 1. Return l."
+    ],
+    "brute": {
+      "idea": "Generate all n * (n - 1) / 2 pair distances, sort them, and return the k-th smallest element.",
+      "steps": [
+        "Calculate difference abs(nums[i] - nums[j]) for all pairs (i, j) with i < j.",
+        "Store all differences in an array of size n(n - 1)/2.",
+        "Sort the differences array.",
+        "Return the element at index k - 1."
+      ],
+      "whySlow": "Generating and sorting all O(n²) distances takes O(n² log n) time and O(n²) space.",
+      "time": "O(n² log n)",
+      "space": "O(n²)",
+      "code": {
+        "java": "class Solution {\n    public int smallestDistancePair(int[] nums, int k) {\n        int n = nums.length;\n        int[] diffs = new int[n * (n - 1) / 2];\n        int idx = 0;\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                diffs[idx++] = Math.abs(nums[i] - nums[j]);\n            }\n        }\n        Arrays.sort(diffs);\n        return diffs[k - 1];\n    }\n}",
+        "python": "class Solution:\n    def smallestDistancePair(self, nums: list[int], k: int) -> int:\n        diffs = []\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                diffs.append(abs(nums[i] - nums[j]))\n        diffs.sort()\n        return diffs[k - 1]"
+      }
+    },
+    "optimal": {
+      "idea": "Binary search the distance range [0, max - min], using two pointers to count pairs with diff <= mid in O(n log(max - min)) time.",
+      "steps": [
+        "Sort nums in ascending order.",
+        "Initialize l = 0 and r = nums[nums.length - 1] - nums[0].",
+        "While l < r: let mid = l + (r - l) / 2.",
+        "Count pairs with distance <= mid: initialize count = 0, left = 0; for right from 0 to n - 1: while nums[right] - nums[left] > mid, increment left; count += right - left.",
+        "If count >= k: r = mid; else l = mid + 1.",
+        "Return l."
+      ],
+      "time": "O(n log n + n log(max - min))",
+      "space": "O(1)",
+      "code": {
+        "java": "class Solution {\n    public int smallestDistancePair(int[] nums, int k) {\n        Arrays.sort(nums);\n        int n = nums.length;\n        int l = 0, r = nums[n - 1] - nums[0];\n        while (l < r) {\n            int mid = l + (r - l) / 2;\n            int count = 0, left = 0;\n            for (int right = 0; right < n; right++) {\n                while (nums[right] - nums[left] > mid) {\n                    left++;\n                }\n                count += right - left;\n            }\n            if (count >= k) {\n                r = mid;\n            } else {\n                l = mid + 1;\n            }\n        }\n        return l;\n    }\n}",
+        "python": "class Solution:\n    def smallestDistancePair(self, nums: list[int], k: int) -> int:\n        nums.sort()\n        n = len(nums)\n        l, r = 0, nums[-1] - nums[0]\n        while l < r:\n            mid = (l + r) // 2\n            count = left = 0\n            for right in range(n):\n                while nums[right] - nums[left] > mid:\n                    left += 1\n                count += right - left\n            if count >= k:\n                r = mid\n            else:\n                l = mid + 1\n        return l"
+      }
+    }
   }
 ]
