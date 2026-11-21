@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../context/AppContext';
 import ChainlineLogo from './ChainlineLogo';
 import { 
@@ -42,6 +43,88 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
     setPinDigits(['', '', '', '']);
     if (theme) setSelectedTheme(theme);
   }, [initialTab, isOpen, theme]);
+
+  const triggerRef = useRef(null);
+  const cardRef = useRef(null);
+
+  // Lock body scroll while modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isOpen]);
+
+  // Trap focus inside modal & return focus to trigger on close
+  useEffect(() => {
+    if (!isOpen) return;
+
+    triggerRef.current = document.activeElement;
+
+    const timer = setTimeout(() => {
+      if (cardRef.current) {
+        const firstInput = cardRef.current.querySelector('input');
+        if (firstInput) {
+          firstInput.focus();
+        } else {
+          const firstFocusable = cardRef.current.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          firstFocusable?.focus();
+        }
+      }
+    }, 50);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (onClose) onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && cardRef.current) {
+        const focusables = Array.from(
+          cardRef.current.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter(el => el.offsetParent !== null);
+
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', handleKeyDown);
+      if (triggerRef.current && typeof triggerRef.current.focus === 'function') {
+        triggerRef.current.focus();
+      }
+    };
+  }, [isOpen, onClose]);
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget && onClose) {
+      onClose();
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -136,9 +219,16 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
     }
   };
 
-  return (
-    <div className="auth-overlay">
-      <div className="auth-container-card auth-two-column-grid">
+  return createPortal(
+    <div className="auth-overlay" onClick={handleBackdropClick}>
+      <div 
+        ref={cardRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Sign in or Create account"
+        className="auth-container-card auth-two-column-grid"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Close button */}
         {onClose && (
@@ -147,7 +237,7 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
             onClick={onClose}
             className="icon-circle-btn auth-close-btn"
             title="Close"
-            aria-label="Close authentication modal"
+            aria-label="Close"
           >
             <X size={18} />
           </button>
@@ -170,6 +260,7 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
 
           {/* Three Floating Glass Preview Cards (Desktop only, removed on phones) */}
           <div className="auth-preview-cards-container">
+            <span className="auth-preview-badge">Example</span>
             {/* Preview Card 1: Progress Ring & Status */}
             <div className="glass-card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
               <div style={{ position: 'relative', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -511,6 +602,7 @@ export default function AuthView({ isOpen, onClose, initialTab = 'signin' }) {
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
